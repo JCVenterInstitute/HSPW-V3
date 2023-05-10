@@ -7,23 +7,97 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Comment_Table from '../components/protein_detail_comment_table'
-import BarChart from '../components/barChart_protein_detail'
-import { maxWidth } from '@mui/system';
-import NightingaleNavigation from '@nightingale-elements/nightingale-navigation';
-import NightingaleSequence from '@nightingale-elements/nightingale-sequence';
-import NightingaleManager from '@nightingale-elements/nightingale-manager';
-import NightingaleColouredSequence from '@nightingale-elements/nightingale-coloured-sequence';
-import NightingaleInterproTrack from '@nightingale-elements/nightingale-interpro-track';
-import ProtvistaSequence from 'protvista-sequence';
-import ProtvistaStructure from "protvista-structure";
-import ProtvistaTrack from "protvista-track";
-import DataLoader from "data-loader";
-import ProtvistaFeatureAdapter  from 'protvista-feature-adapter';
-import ProtvistaManager from 'protvista-manager';
-import ProtvistaColorSequence from 'protvista-coloured-sequence';
-import ProtvistaNavigation from 'protvista-navigation';
-import NightingaleLinegraphTrack from 'nightingale-linegraph-track';
-import ProtvistaInterproTrack from 'protvista-interpro-track';
+import { useEffect, useState } from 'react';
+import './style.css';
+
+import { useParams} from "react-router";
+import ProtvistaUniprot from 'protvista-uniprot';
+import BChart from '../components/TwoSidedBarChart';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+  } from 'chart.js';
+  import { Bar } from 'react-chartjs-2';
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+);
+let i = 0;
+export const options = {
+    indexAxis: 'y',
+    responsive: true,
+    title: {
+      display: true,
+      text: 'Data Pasien Keluar Masuk',
+      fontSize: 20,
+    },
+    legend: {
+      position: 'bottom',
+    },
+    plugins:{
+        tooltip: {
+            callbacks: {
+                label: function(context) {
+                    let label = 0;
+                    if(context.parsed.x){
+                        label = Math.abs(context.parsed.x);
+                    }
+                    return label;
+                }
+            }
+        }
+    },
+    scales: {
+      xAxes: [{
+        stacked: true,
+        ticks: {
+          callback: value => Math.abs(value)
+        }
+      }],
+      yAxes: [{
+        stacked: true,
+        ticks: {
+          reverse: true,
+        }
+      },
+      {
+        type: 'category',
+        position: 'right',
+        offset: true,
+        ticks: {
+          reverse: true,
+        },
+        gridLines: {
+          display: false
+        }
+      }]
+    }
+  };
+
+  export const data= {
+    labels: ['0-4', '5-9', '10-14', '15-19', '20+'],
+    datasets: [{
+        label: 'Pasien Masuk',
+        data: [100, 90, 80, 70, 60000],
+        backgroundColor: 'red',
+      },
+      {
+        label: 'Pasien Keluar',
+        data: [-100, -75, -60, -75, -70],
+        backgroundColor: 'blue',
+      },
+    ]
+  };
 
 
 const th = {
@@ -46,11 +120,259 @@ const td = {
 
 const sequence="MAMYDDEFDTKASDLTFSPWVEVENWKDVTTRLRAIKFALQADRDKIPGVLSDLKTNCPYSAFKRFPDKSLYSVLSKEAViAVAQIQSASGFKRRADEKNAVSGLVSVTPTQISQSASSSAATPVGLATVKPPRESDSAFQEDTFSYAKFDDASTAFHKALAYLEGLSLRPTYRRKFEKDMNVKWGGSGSAPSGAPAGGSSGSAPPTSGSSGSGAAPTPPPNP";
 
-const protein_detail = () => {
+const Protein_Detail = (props) => {
+    const [message, setMessage] = useState("");
+    const params = useParams();
+    let url = 'http://localhost:8000/protein/'+params['proteinid'];
+  
+  const [isLoading, setLoading] = useState(true);
+  const [data,setData] = useState("");
+  const [p,setP] = useState("");
+  const fetchProtein = async()=>{
+    const response = await fetch(url);
+    if (!response.ok) {
+        const message = `An error has occured: ${response.status}`;
+        throw new Error(message);
+    }
+    const protein = await response.json();
+    setData(protein);
+    console.log('data: '+JSON.stringify(data));
+    let p = [];
+    for(let i = 0; i < data[0]["_source"]["Salivary Proteins"]["Feature"].length;i++){
+        
+        if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].database === "GO"){
+
+            if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("IPI")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000353','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("EXP")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000269','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("IDA")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000314','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("IMP")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000315','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("IGI")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000316','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("IEP")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000270','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("HTP")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0006056','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("HDA")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0007005','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("HMP")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0007001','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("HGI")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0007003','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("HEP")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0007007','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("IBA")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000318','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("IBD")){
+ 
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000319','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("IKR")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000320','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("IRD")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000321','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("ISS")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000250','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("ISO")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000266','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("ISA")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000247','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("ISM")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000255','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("IGC")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000317','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("RCA")){
+ 
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000245','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("TAS")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000304','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("NAS")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000303','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("IC")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000305','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("ND")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0000307','evidence_reference':''});
+            }
+            else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[2]["value"].includes("IEA")){
+
+                p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[1]["value"],
+                'evidence_code':'ECO:0007669','evidence_reference':''});
+            }
+            else{
+                console.log('');
+            }
+        }
+        else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].database === "Reactome"){
+
+            p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].id,'feature_key':'Pathway','description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].database + " " +data[0]["_source"]["Salivary Proteins"]["Feature"][i].id+" "+data[0]["_source"]["Salivary Proteins"]["Feature"][i].properties[0]["value"],
+            'evidence_code':'','evidence_reference':''});
+        }
+        else{
+            
+            for(let j = 0; j<data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments.length;j++){
+
+                if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].commentType === 'INTERACTION'){
+                    continue;
+                }
+
+                else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].commentType === "SUBUNIT"){
+                    p.push({'id':'','feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].commentType,'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].texts[0].value,
+                    'evidence_code':'','evidence_reference':''});
+                }
+
+                else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].commentType === "SUBCELLULAR LOCATION"){
+
+                    for(let m = 0; m < data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].subcellularLocations.length;m++){
+   
+                        p.push({'id':data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].subcellularLocations[m].location.id,'feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].commentType,'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].subcellularLocations[m].location.value,
+                        'evidence_code':'','evidence_reference':''});
+                    }
+                    
+                }
+
+                else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].commentType === "PTM"){
+
+                    let ref = []
+                    for(let m = 0; m < data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].texts[0].evidences.length;m++){
+                      
+                        ref.push(data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].texts[0].evidences[m].source+": "+data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].texts[0].evidences[0].id);
+                    }
+                    p.push({'id':'','feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].commentType,'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].texts[0].value,
+                        'evidence_code':data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].texts[0].evidences[0].evidenceCode,'evidence_reference':ref});
+                    
+                }
+
+                else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].commentType === "MASS SPECTROMETRY"){
+                    for(let m = 0; m < data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].evidences.length;m++){
+                        
+                    }
+                    p.push({'id':'','feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].commentType,'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].note,
+                        'evidence_code':data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].evidences[0].evidenceCode,'evidence_reference':data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].evidences[0].source+": "+data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].evidences[0].id});
+                }
+
+                else if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].commentType === "SIMILARITY"){
+ 
+                    for(let m = 0; m < data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].texts.length;m++){
+
+                    }
+
+                    p.push({'id':'','feature_key':data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].commentType,'description':data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].texts[0].value,'evidence_code':data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].texts[0].evidences[0].evidenceCode,'evidence_reference':''});
+                }
+
+                /*
+                
+                if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].commentType !== 'INTERACTION'){
+                    console.log(data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].commentType);
+                    console.log(data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].texts[0].value);
+                    
+                    if(data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].commentType == "PTM"){
+                        console.log('hi123');
+                        console.log(data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].commentType);
+                        console.log(data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].texts[0].value);
+                        for(let o = 0; o < data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].texts[0].evidences.length;o++){
+                            console.log(data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].texts[0].evidences[o].evidenceCode);
+                            console.log(data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].texts[0].evidences[o].source+": "+data[0]["_source"]["Salivary Proteins"]["Feature"][i].comments[j].texts[0].evidences[0].id);
+                        }
+                    }
+                    
+                }*/
+                
+            }
+        }
+    }
+    
+    setP(p);
+    setLoading(false);
+  }
+
+  useEffect(()=>{
+    fetchProtein();
+    
+  });
+
+
+
+  if(isLoading === true){
+    return <h2>Loading</h2>
+  }
   return (
     <>
     <div style={{margin:'20px'}}>
-        <h2 style={{color:'black', marginBottom:'20px'}}>Salivary acidic proline-rich phosphoprotein 1/2 [Homo sapiens]</h2>
+        <h2 style={{color:'black', marginBottom:'20px'}}>{data[0]["_source"]["Salivary Proteins"]["Protein Name"]}</h2>
         <h2 style={{color:'black', marginBottom:'20px', fontWeight:'bold'}}>Names and Origin</h2>
         <TableContainer component={Paper} style={{padding:'10px'}}>
             <Table sx={{minWidth:650}} aria-label="simple table" style={{border: "1px solid black"}}>
@@ -62,17 +384,11 @@ const protein_detail = () => {
                                 <i>Official name:</i>
                             </p>
 
-                            Salivary acidic proline-rich phosphoprotein 1/2
+                            {data[0]["_source"]["Salivary Proteins"]["Protein Name"]}
                             <p style={{color:'black',textAlign:'left'}}><i>Alternative name(s):</i></p>
 
-                            Db-s, PRP-1/PRP-2, Parotid acidic protein, Pa, Parotid double-band protein, Parotid isoelectric focusing variant protein, PIF-S, Parotid proline-rich protein 1/2, Pr1/Pr2, Protein C
-                            <p style={{color:'black',textAlign:'left'}}><i>Cleaved into the following chains:</i></p>
-
-                            Salivary acidic proline-rich phosphoprotein 1/2
-                            <br></br>
-                            Salivary acidic proline-rich phosphoprotein 3/4 (Db-F,PIF-F,PRP-3/PRP-4,Protein A)
-                            <br></br>
-                            Peptide P-C
+                            {data[0]["_source"]["Salivary Proteins"]["Also known as"]}
+                            
                         </TableCell>
                     </TableRow>
                     <TableRow>
@@ -106,72 +422,29 @@ Homo sapiens</a></TableCell>
                     <TableCell style={{borderBottom: "2px solid #116988"}}><a style={{color: '#116988'}} href='https://salivaryproteome.org/public/index.php/Property:Known_officially_as'>Sequence</a></TableCell>
                 </TableRow>
                 <TableRow>
-                    <TableCell>P02810-1</TableCell>
+                    <TableCell>{data[0]["_id"]}</TableCell>
                     <TableCell>Canonical sequence	</TableCell>
                     <TableCell></TableCell>
-                    <TableCell>166</TableCell>
-                    <TableCell>17016.5</TableCell>
+                    <TableCell>{data[0]["_source"]["Salivary Proteins"]["protein_sequence_length"]}</TableCell>
+                    <TableCell>{data[0]["_source"]["Salivary Proteins"]["Mass"]}</TableCell>
                     <TableCell><a style={{color: '#116988'}} href='https://salivaryproteome.org/public/index.php/HSPW:PE90567/1'>HSPW:PE90567/1
 </a></TableCell>
                 </TableRow>
             </TableHead>
         </Table>
         <h2 style={{color:'black', marginBottom:'20px', fontWeight:'bold',marginTop:'20px'}}>Comments</h2>
-        <Comment_Table />
+        <Comment_Table data={p}/>
         <h2 style={{color:'black', marginBottom:'20px', fontWeight:'bold',marginTop:'20px'}}>Features</h2>
-        <nightingale-manager>
-                <nightingale-navigation length="50" display-start="1" display-end="32" highlight="1:32" rulerstart="1" height="30"/>
-                <nightingale-sequence
-  sequence="SEQUENCESEQUENCESEQUENCESEQUENCE"
-  width="800"
-  height="30"
-  length="32"
-  display-start="10"
-  display-end="20"
-  highlight="3:15"
-  id="my-nightingale-sequence-id"> 
-                </nightingale-sequence>
-
-                <nightingale-coloured-sequence
-                    sequence="SEQUENCESEQUENCESEQUENCESEQUENCE"
-  width="800"
-  height="30"
-  length="32"
-  display-start="10"
-  display-end="20"
-  highlight="3:15"
-  scale="hydrophobicity-scale"
-></nightingale-coloured-sequence>
-        </nightingale-manager>
-        <h4>protvista</h4>
-        <protvista-manager attributes="length displaystart displayend variantfilters highlight" displaystart="1" displayend="100" id="example">
-            <protvista-navigation length="770" />
-            <protvista-sequence length="223" sequence={sequence} />
-            <protvista-coloured-sequence length="770" scale="hydrophobicity-interface-scale" sequence={sequence}/>
-            <protvista-coloured-sequence length="770" scale="isoelectric-point-scale" color_range="white:0,dodgerblue:11" sequence={sequence}/>
-            <protvista-track length="770">
-                <protvista-feature-adapter id="adapter1">
-                    <data-loader>
-                        <source src="https://www.ebi.ac.uk/proteins/api/features/P05067?categories=PTM" />
-                    </data-loader>
-                </protvista-feature-adapter>
-            </protvista-track>  
-            <protvista-interpro-track length="770" start="34" end="400"></protvista-interpro-track>
-            <nightingale-linegraph-track id="track" width="770" length="5">
-                <protvista-feature-adapter id="adapter1">
-                    <data-loader>
-                        <source src="https://www.ebi.ac.uk/proteins/api/features/P05067?categories=PTM" />
-                    </data-loader>
-                </protvista-feature-adapter>
-            </nightingale-linegraph-track>
-        </protvista-manager>
+        <protvista-uniprot accession={data[0]["_id"]} />
         <h2 style={{color:'black', marginBottom:'20px', fontWeight:'bold',marginTop:'20px'}}>Glycans</h2>
-        <p style={{color:'black', marginBottom:'20px', marginTop:'20px',fontSize:'16px',textAlign:'left'}}>There are currently no glycans associated with the protein.</p>
+        <p style={{color:'black', marginBottom:'20px', marginTop:'20px',fontSize:'1 6px',textAlign:'left'}}>There are currently no glycans associated with the protein.</p>
         <h2 style={{color:'black', marginBottom:'20px', fontWeight:'bold',marginTop:'20px'}}>Expression</h2>
         <p style={{color:'black', marginBottom:'20px', marginTop:'20px',fontSize:'16px',textAlign:'left'}}>
             Abundance and localization of gene products based on both RNA and immunohistochemistry data from the <a href='http://www.proteinatlas.org/ENSG00000134551'>Human Protein Atlas</a>. Click on the tissue names to view primary data.
         </p>
-        <BarChart />
+        <div style={{marginLeft:'15%'}}>
+            <BChart data={data[0]["_source"]["Salivary Proteins"]["Atlas"]} gene_id={data[0]["_source"]["Salivary Proteins"]["EnsemblG"]}/>
+        </div>
         <h2 style={{color:'black', marginBottom:'20px', fontWeight:'bold',marginTop:'20px'}}>Proteomics</h2>
         <Table style={{width:'80%'}}>
             <TableHead>
@@ -226,29 +499,29 @@ Homo sapiens</a></TableCell>
                         <TableCell sx={th}>RefSeq</TableCell>
                         <TableCell sx={td} style={{maxWidth:'100%'}}>
                             <p style={{color:'black',textAlign:'left',fontSize:'18px'}}>
-                                <a href='https://www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=protein&id=NP_001103683.1'>NP_001103683.1</a>,<a href='https://www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=protein&id=NM_001110213.1'>NM_001110213.1</a>,<a href='https://www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=protein&id=NP_001278243.1'>NP_001278243.1</a>,<a href='https://www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=protein&id=NM_001291314.1'>NM_001291314.1</a>,<a href='https://www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=protein&id=NP_001278244.1'>NP_001278244.1</a>,
-                                <a href='https://www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=protein&id=NM_001291315.1'>NM_001291315.1</a>
+                                {data[0]["_source"]["Salivary Proteins"]["RefSeq"].map(value=>{return <div key={value}><a href={'https://www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=protein&id='+value}>{value}</a></div>})}
                             </p>
                         </TableCell>
                     </TableRow>
                     <TableRow>
                         <TableCell sx={th}>PeptideAtlas</TableCell>
                         <TableCell sx={td}>
-                            <a href='https://db.systemsbiology.net/sbeams/cgi/PeptideAtlas/Search?action=GO&search_key=P02810'>P02810</a>
+                            <a href={'https://db.systemsbiology.net/sbeams/cgi/PeptideAtlas/Search?action=GO&search_key=' + data[0]["_source"]["Salivary Proteins"]["PeptideAtlas"]}>{data[0]["_source"]["Salivary Proteins"]["PeptideAtlas"].split(';')}</a>
                         </TableCell>
                     </TableRow>
                     <TableRow>
                         <TableCell sx={th}>Ensembl</TableCell>
                         <TableCell sx={td} style={{maxWidth:'100%'}}>
                             <p style={{color:'black',textAlign:'left',fontSize:'18px'}}>
-                                <a href='http://www.ensembl.org/id/ENST00000381847.7'>ENST00000381847.7</a>, <a href='http://www.ensembl.org/id/ENSP00000371271.3'>ENSP00000371271.3</a>, <a href='http://www.ensembl.org/id/ENSG00000134551.13'>ENSG00000134551.13</a>,<a href='http://www.ensembl.org/id/ENST00000396400.4'>ENST00000396400.4</a>,<a href='http://www.ensembl.org/id/ENSP00000379682.3'>ENSP00000379682.3</a>, <a href='http://www.ensembl.org/id/ENST00000572141.1'>ENST00000572141.1</a>, <a href='http://www.ensembl.org/id/ENSP00000458690.1'>ENSP00000458690.1</a>, <a href='http://www.ensembl.org/id/ENSG00000272803.5'>ENSG00000272803.5</a>, <a href='http://www.ensembl.org/id/ENST00000575657.5'>ENST00000575657.5</a>,<a href='http://www.ensembl.org/id/ENSP00000461041.1'>ENSP00000461041.1</a>,<a href='http://www.ensembl.org/id/ENST00000622570.4'>ENST00000622570.4</a>, <a href='http://www.ensembl.org/id/ENSP00000481810.1'>ENSP00000481810.1</a>, <a href='http://www.ensembl.org/id/ENSG00000275679.4'>ENSG00000275679.4</a>,<a href='http://www.ensembl.org/id/ENST00000622848.2'>ENST00000622848</a>, <a href='http://www.ensembl.org/id/ENSP00000483458.1'>ENSP00000483458</a>
+                                {data[0]["_source"]["Salivary Proteins"]["Ensembl"].map(value=>{return <div key={value}><a href={'http://www.ensembl.org/id/'+value}>{value}</a></div>})}
+                                <a href={'http://www.ensembl.org/id/' + data[0]["_source"]["Salivary Proteins"]["EnsemblG"]}>{data[0]["_source"]["Salivary Proteins"]["EnsemblG"]}</a>
                            </p>
                         </TableCell>
                     </TableRow>
                     <TableRow>
                         <TableCell sx={th}>GeneCards</TableCell>
                         <TableCell sx={td}>
-                            <a href='http://www.genecards.org/cgi-bin/carddisp.pl?gene=PRH1'>PRH1</a>,<a href ='http://www.genecards.org/cgi-bin/carddisp.pl?gene=PRH2'>PRH2</a>
+                        {data[0]["_source"]["Salivary Proteins"]["GeneCards"].map(value=>{return <div key={value}><a href={'https://www.genecards.org/cgi-bin/carddisp.pl?gene='+value}>{value}</a></div>})}
                         </TableCell>
                     </TableRow>
                 </TableHead>
@@ -259,14 +532,6 @@ Homo sapiens</a></TableCell>
   );
 };
   
-export default protein_detail;
-window.customElements.define("protvista-sequence", ProtvistaSequence);
-window.customElements.define("protvista-structure", ProtvistaStructure);
-window.customElements.define("protvista-track", ProtvistaTrack);
-window.customElements.define("data-loader", DataLoader);
-window.customElements.define("protvista-feature-adapter", ProtvistaFeatureAdapter);
-window.customElements.define("protvista-manager",ProtvistaManager);
-window.customElements.define("protvista-coloured-sequence",ProtvistaColorSequence);
-window.customElements.define("protvista-navigation",ProtvistaNavigation);
-window.customElements.define("nightingale-linegraph-track",NightingaleLinegraphTrack);
-window.customElements.define("protvista-interpro-track",ProtvistaInterproTrack);
+export default Protein_Detail;
+<><script src="https://d3js.org/d3.v4.min.js" charset="utf-8" defer></script><script src="https://cdn.jsdelivr.net/npm/protvista-uniprot@latest/dist/protvista-uniprot.js"></script></>
+window.customElements.define('protvista-uniprot', ProtvistaUniprot);

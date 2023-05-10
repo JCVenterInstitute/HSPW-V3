@@ -5,7 +5,7 @@ export const data = [
   ["Disease", "Number of Samples"],
   ["COVID-19", 120],
   ["Oral Squamous Cell Carcinoma", 10],
-  ["Sjogren's Syndromeute", 7],
+  ["Sjogren's Syndrome", 7],
   ["Disease Free", 859] // CSS-style declaration
 ];
 

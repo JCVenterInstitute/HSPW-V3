@@ -55,12 +55,6 @@
     float: right;
   }
 
-  .container{
-    width:100%;
-    height:5%;
-    margin-bottom: 250px;
-    display: center;
-  }
   
   
   #coneG {
@@ -265,4 +259,8 @@ body {
   padding: 6px 12px;
   border: 1px solid #ccc;
   border-top: none;
+}
+
+a .download-link{
+  display:none;
 }

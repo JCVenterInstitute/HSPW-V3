@@ -1,5 +1,5 @@
 import "./filter.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-enterprise";
 import { Link } from "react-router-dom";
@@ -9,21 +9,35 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { DATA } from "./data_signature";
 
 function App() {
+  const [message, setMessage] = useState("");
+  useEffect(() => {
+    fetch("http://localhost:8000/protein_signature")
+      .then((res) => res.json())
+      .then((data) => setMessage(data));
+
+  }, []);
+  let data1 = [];
+  for(let i = 0; i < message.length;i++){
+    data1.push(message[i]["_source"]);
+  }
+
+  console.log(data1.length);
   const [gridApi, setGridApi] = useState();
-  const rowData = DATA;
+  const rowData = data1;
 
 
   const columns = [
     {
       headerName: "InterPro_ID",
-      field: "InterPro_ID",
-      checkboxSelection: true,
+      field: "InterPro ID",
+      checkboxSelection: false,
+      headerCheckboxSelection: false,
       headerCheckboxSelection: true,
       maxWidth:320
     },
     { headerName: "Type", field: "Type",wrapText: true,maxWidth:145 },
     { headerName: "Name", field: "Name",wrapText: true,autoHeight: true,cellStyle:{'word-break': 'break-word'} },
-    { headerName: "# of Members", field: "Number_of_Members",wrapText: true,maxWidth:205 },
+    { headerName: "# of Members", field: "# of Members.length",wrapText: true,maxWidth:205 },
 
 ];
 
@@ -51,6 +65,9 @@ function App() {
           rowData={rowData}
           columnDefs={columns}
           defaultColDef={defColumnDefs}
+          overlayNoRowsTemplate={
+            '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
+          }
           onGridReady={onGridReady}
           pagination= {true}
           paginationPageSize= {50}

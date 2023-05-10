@@ -1,27 +1,54 @@
 import "./filter.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-enterprise";
 import { Link } from "react-router-dom";
 
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import { DATA } from "./data_gene";
+import { ICellRendererParams } from "ag-grid-community";
+
+function LinkComponent(props: ICellRendererParams) {
+  return (
+    <a
+      target="_blank"
+      rel="noopener noreferrer"
+      href={'http://localhost:3000/gene/'+props.value}
+    >
+      EntrezGene:{props.value}
+    </a>
+  );
+}
 
 function App() {
+  const [message, setMessage] = useState("");
+  const [number, setNumber] = useState("");
+  useEffect(() => {
+    fetch("http://localhost:8000/genes")
+      .then((res) => res.json())
+      .then((data) => setMessage(data));
+
+  }, []);
+  let data1 = [];
+  for(let i = 0; i < message.length;i++){
+    data1.push(message[i]["_source"]);
+  }
+
+  console.log(data1.length);
   const [gridApi, setGridApi] = useState();
-  const rowData = DATA;
+  const rowData = data1;
 
 
   const columns = [
     {
       headerName: "Gene",
-      field: "gene",
-      checkboxSelection: true,
-      headerCheckboxSelection: true,
+      field: "GeneID",
+      checkboxSelection: false,
+      headerCheckboxSelection: false,
+      cellRenderer: "LinkComponent"
     },
-    { headerName: "Gene Name", field: "gene_name",wrapText: true,autoHeight: true,cellStyle:{'word-break': 'break-word'}},
-    { headerName: "Location", field: "location" },
+    { headerName: "Gene Name", field: "Gene Name",wrapText: true,autoHeight: true,cellStyle:{'word-break': 'break-word'}},
+    { headerName: "Location", field: "Location" },
 
 ];
 
@@ -49,8 +76,14 @@ function App() {
           rowData={rowData}
           columnDefs={columns}
           defaultColDef={defColumnDefs}
+          overlayNoRowsTemplate={
+            '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
+          }
           onGridReady={onGridReady}
           pagination= {true}
+          frameworkComponents={{
+            LinkComponent
+          }}
           paginationPageSize= {50}
           sideBar={{
             position: 'left',

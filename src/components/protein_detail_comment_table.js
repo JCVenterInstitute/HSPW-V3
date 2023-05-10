@@ -73,26 +73,98 @@ const DATA = [
     }
 ];
 
-function App() {
+function LinkDescription(props: ICellRendererParams) {
+  if(props.value.includes("GO")){
+    let id = props.value.substring(0,11);
+    return(
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href={"https://www.ebi.ac.uk/QuickGO/term/"+id}
+      >{props.value}</a>
+    );
+  }
+  else if(props.value.includes("KEGG")){
+    let id = props.value.split(" ");
+    id = id[0].split(":")[1];
+    return(
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href={"https://www.genome.jp/kegg-bin/show_pathway?"+id}
+      >{props.value}</a>
+    );
+  }
+  else if(props.value.includes("Reactome")){
+    let id = props.value.split(" ");
+    console.log('513: '+id[1]);
+    id = id[1];
+    return(
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href={"http://www.reactome.org/content/detail/"+id}
+      >{props.value}</a>
+    );
+  }
+  else{
+    return props.value;
+  }
+}
+
+function LinkCode(props: ICellRendererParams){
+    return(
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href={"https://www.ebi.ac.uk/QuickGO/term/"+props.value}
+      >{props.value}</a>
+    );
+}
+
+function LinkRef(props: ICellRendererParams){
+ 
+    if(props.value.includes('PubMed')){
+      let id = props.value.split(" ")[1];
+      return(
+          <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href={"https://pubmed.ncbi.nlm.nih.gov/"+id}
+          >{props.value}</a>
+        
+      );
+    }
+    else if(props.value.includes('UniProt')){
+      let id = props.value.split(":")[1];
+      return(
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href={"https://www.uniprot.org/uniprotkb/"+id}
+        >{props.value}</a>
+      );
+    }
+}
+
+function App(props) {
   const [gridApi, setGridApi] = useState();
-  const rowData = DATA;
+  const rowData = props.data;
 
 
   const columns = [
     {
       headerName: "Feature Key",
       field: "feature_key",
-      checkboxSelection: true,
-      headerCheckboxSelection: true,
+      checkboxSelection: false,
+      headerCheckboxSelection: false,
       maxWidth:355,
       minWidth:185,
       wrapText: true,autoHeight: true,cellStyle:{'word-break': 'break-word'}
     },
-    { headerName: "Description", field: "description",wrapText: true,maxWidth:355,minWidth:305,wrapText: true,autoHeight: true,cellStyle:{'word-break': 'break-word'} },
-    { headerName: "Evidence Code", field: "evidence_code",wrapText: true,autoHeight: true,cellStyle:{'word-break': 'break-word'},minWidth:165 },
-    { headerName: "Evidence Reference", field: "evidence_reference",wrapText: true,minWidth:195 },
-    { headerName: "Variant", field: "variant",wrapText: true,maxWidth:205 },
-    { headerName: "Reported By", field: "reported_by",wrapText: true,maxWidth:205 },
+    { headerName: "Description", field: "description",cellRenderer: "LinkDescription",wrapText: true,maxWidth:355,minWidth:305,wrapText: true,autoHeight: true,cellStyle:{'word-break': 'break-word'} },
+    { headerName: "Evidence Code", field: "evidence_code",cellRenderer: "LinkCode",wrapText: true,autoHeight: true,cellStyle:{'word-break': 'break-word'},minWidth:165 },
+    { headerName: "Evidence Reference", cellRenderer: "LinkRef",field: "evidence_reference",wrapText: true,minWidth:195 },
 ];
 
   const defColumnDefs = { flex: 1, filter: true,wrapHeaderText: true,
@@ -120,6 +192,9 @@ function App() {
           rowData={rowData}
           columnDefs={columns}
           defaultColDef={defColumnDefs}
+          frameworkComponents={{
+            LinkDescription, LinkCode, LinkRef
+          }}
           onGridReady={onGridReady}
           pagination= {true}
           paginationPageSize= {50}

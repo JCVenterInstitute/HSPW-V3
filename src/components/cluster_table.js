@@ -1,5 +1,5 @@
 import "./filter.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-enterprise";
 import { Link } from "react-router-dom";
@@ -9,22 +9,35 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { DATA } from "./data_cluster";
 
 function App() {
+  const [message, setMessage] = useState("");
+  useEffect(() => {
+    fetch("http://localhost:8000/protein_cluster")
+      .then((res) => res.json())
+      .then((data) => setMessage(data));
+
+  }, []);
+  let data1 = [];
+  for(let i = 0; i < message.length;i++){
+    data1.push(message[i]["_source"]);
+  }
+
   const [gridApi, setGridApi] = useState();
-  const rowData = DATA;
+  const rowData = data1;
 
   const columns = [
     {
       headerName: "Cluster",
-      field: "Cluster",
-      checkboxSelection: true,
+      field: "Cluster ID",
       headerCheckboxSelection: true,
       maxWidth:195,
       minWidth:195,
+      checkboxSelection: false,
+      headerCheckboxSelection: false,
       wrapText: true
     },
-    { headerName: "Representative Protein", field: "Representative_Protein",maxWidth:205,wrapText: true,suppressSizeToFit: true },
+    { headerName: "Representative Protein", field: "Representative Salivary Protein",maxWidth:205,wrapText: true,suppressSizeToFit: true },
     { headerName: "Representative Protein Name", field: "Representative_Protein_Name",wrapText: true,autoHeight: true,cellStyle:{'word-break': 'break-word'} },
-    { headerName: "# of Members", field: "Number_of_Members",wrapText: true,maxWidth:145,maxWidth:145 },
+    { headerName: "# of Members", field: "# of Members Salivary Protein.length",wrapText: true,maxWidth:145,maxWidth:145 },
 
 ];
 
@@ -55,6 +68,9 @@ function App() {
           defaultColDef={defColumnDefs}
           onGridReady={onGridReady}
           pagination= {true}
+          overlayNoRowsTemplate={
+            '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
+          }
           paginationPageSize= {50}
           sideBar={{
             position: 'left',

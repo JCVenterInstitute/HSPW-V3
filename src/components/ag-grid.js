@@ -32,8 +32,8 @@ function App() {
     {
       headerName: "Study",
       field: "study",
-      checkboxSelection: true,
-      headerCheckboxSelection: true,
+      checkboxSelection: false,
+      headerCheckboxSelection: false,
       maxWidth:141.5,
       autoHeight: true,
       wrapText: true,

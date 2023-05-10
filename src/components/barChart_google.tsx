@@ -13,11 +13,11 @@ export const data = [
       calc: "stringify",
     },
   ],
-  ["Submandibular gland", 165,"blue", null],
-  ["Sublingual gland", 155,"blue", null],
-  ["Parotid gland", 345,"blue",  null],
-  ["Whole Saliva", 344,"blue",null],
-  ["Blood Plasma", 50,"blue",null],
+  ["Submandibular gland", 165,"light blue", null],
+  ["Sublingual gland", 155,"light blue", null],
+  ["Parotid gland", 345,"light blue",  null],
+  ["Whole Saliva", 344,"light blue",null],
+  ["Blood Plasma", 50,"light blue",null],
 ];
 
 export const options = {

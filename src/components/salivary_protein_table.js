@@ -192,8 +192,8 @@ function App() {
     {
       headerName: "UniProt  Accession",
       field: "uniprot_accession",
-      checkboxSelection: true,
-      headerCheckboxSelection: true,
+      checkboxSelection: false,
+      headerCheckboxSelection: false,
       minWidth:'215',
       cellStyle:{'word-break': 'break-word'}
     },

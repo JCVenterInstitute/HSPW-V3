@@ -37,7 +37,7 @@ export const MuiDrawer = () => {
               <MenuItem onClick={popupState.close} component="a" href="/protein_cluster">Protein clusters</MenuItem>
               <MenuItem onClick={popupState.close} component="a" href="/protein_signature">Protein signatures</MenuItem>
               <MenuItem onClick={popupState.close} component="a" href="/gene">Genes</MenuItem>
-              <MenuItem onClick={popupState.close}>Citations</MenuItem>
+              <MenuItem onClick={popupState.close} component="a" href="/citation">Citations</MenuItem>
             </Menu>
         </React.Fragment>
       )}

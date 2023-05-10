@@ -11,6 +11,9 @@ import BarChart_google from "../components/barChart_google.tsx";
 import Analysis_Filter from "../components/analysis_filter.js";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
+import Table from '../components/csv_to_json_table.js';
+import heatmap from './top100var_heatmap_626170.png';
+import { saveAs } from 'file-saver'
 
 const Option = (props) => {
   return (
@@ -53,6 +56,10 @@ function openCity(evt, cityName) {
     document.getElementById(cityName).style.display = "block";
     evt.currentTarget.className += " active";
   }
+
+  const downloadImage = () => {
+    saveAs('https://timesofindia.indiatimes.com/thumb/msid-70238371,imgsize-89579,width-400,resizemode-4/70238371.jpg', 'image.png') // Put your image url here.
+  };
 
 const Analysis = () => {
 
@@ -97,6 +104,15 @@ const Analysis = () => {
             <input type="checkbox" id="filtering6" name="filtering6" value="MedianIV" style={{margin:'10px'}}/>
             <label for="filtering4">Median intensity value</label><br />
         </div>
+        <div style={{margin:'10px'}}>
+            <h2>
+                Visualization
+            </h2>
+            <input type="checkbox" id="filtering1" name="filtering1" value="IR" style={{margin:'10px'}}/>
+            <label for="filtering1">Volcano Plot</label><br />
+            <input type="checkbox" id="filtering2" name="filtering2" value="SD" style={{margin:'10px'}}/>
+            <label for="filtering2">Heatmap</label><br />
+        </div>
         <div style={{marginLeft:'auto', marginRight:'auto', width:'8em',marginTop:'7rem'}}>
             <input type="submit" value="Submit" style={{marginLeft:'auto', marginRight:'auto', width:'8em'}}></input>
         </div>
@@ -106,15 +122,19 @@ const Analysis = () => {
     <div style={{marginLeft:'250px'}}>
     <Tabs>
     <TabList>
-      <Tab>Title 1</Tab>
-      <Tab>Title 2</Tab>
+      <Tab>Data</Tab>
+      <Tab>Visualization</Tab>
+      <Tab></Tab>
     </TabList>
 
     <TabPanel>
-    <iframe width="1100" height="800" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRGb6rChPWtMXA5rv0XSg6znw2ufu-uh6vUXvRL97sY35gT5hypFtf-v1jh9l6grzousFz_4GOt_wqy/pubhtml?widget=true&amp;headers=false"></iframe>
+        <Table />
     </TabPanel>
     <TabPanel>
-      <h2>Any content 2</h2>
+        <div style={{marginLeft:'auto', marginRight:'auto', width:'10em',marginTop:'2rem'}}>
+            <button onClick={downloadImage} style={{width:'10em'}}>Export</button>
+        </div>
+        <img src={heatmap}/>
     </TabPanel>
   </Tabs>
     </div>

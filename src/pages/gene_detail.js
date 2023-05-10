@@ -6,6 +6,9 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { useEffect, useState } from 'react';
+
+import { useParams} from "react-router";
 
 const th = {
     background: '#f2f2f2',
@@ -23,17 +26,53 @@ const td = {
     fontSize:'18px'
 };
 
-const gene_detail = () => {
+const Gene_detail = (props) => {
+    const [message, setMessage] = useState("");
+    const params = useParams();
+    let url = 'http://localhost:8000/genes/'+params['geneid'];
+    useEffect(() => {
+
+     fetch('http://localhost:8000/genes/EntrezGene:1')
+      .then((res) => res.json())
+      .then((data) => {
+        setMessage(data);
+    });
+
+  }, []);
+  const [isLoading, setLoading] = useState(true);
+  const [data,setData] = useState("");
+  let gene_id = 0;
+  let gene_link = "https://www.ncbi.nlm.nih.gov/gene/";
+  const fetchGenes = async()=>{
+    const response = await fetch(url);
+    if (!response.ok) {
+        const message = `An error has occured: ${response.status}`;
+        throw new Error(message);
+    }
+    const genes = await response.json();
+    setData(genes);
+    setLoading(false);
+  }
+
+  useEffect(()=>{
+    fetchGenes();
+  });
+
+  if(isLoading === true){
+    return <h2>Loading</h2>
+  }
+  
   return (
     <>
+    
     <div style={{margin:'20px'}}>
-        <h2 style={{color:'black', marginBottom:'20px'}}>A1BG alpha-1-B glycoprotein [Homo sapiens]</h2>
+        <h2 style={{color:'black', marginBottom:'20px'}}>EntrezGene:{data[0]["_source"]["GeneID"]}</h2>
         <TableContainer component={Paper} style={{padding:'10px'}}>
             <Table sx={{minWidth:650}} aria-label="simple table" style={{border: "1px solid black"}}>
                 <TableHead>
                     <TableRow sx={{border: "1px solid black"}}>
                         <TableCell sx={th}>Aliases</TableCell>
-                        <TableCell sx={td}>A1B, ABG, DKFZp686F0970, GAB, HYST2477</TableCell>
+                        <TableCell sx={td}>{data[0]["_source"]["Aliases"]}</TableCell>
                     </TableRow>
                     <TableRow>
                         <TableCell sx={th}>Organism</TableCell>
@@ -45,11 +84,11 @@ const gene_detail = () => {
                     </TableRow>
                     <TableRow>
                         <TableCell sx={th}>Chromosome location</TableCell>
-                        <TableCell sx={td}>19q13.4</TableCell>
+                        <TableCell sx={td}>{data[0]["_source"]["Location"]}</TableCell>
                     </TableRow>
                     <TableRow>
                         <TableCell sx={th}>Summary</TableCell>
-                        <TableCell sx={td}>	The protein encoded by this gene is a plasma glycoprotein of unknown function. The protein shows sequence similarity to the variable regions of some immunoglobulin supergene family member proteins. [provided by RefSeq]</TableCell>
+                        <TableCell sx={td}>{data[0]["_source"]["Summary"]}</TableCell>
                     </TableRow>
                     <TableRow sx={{border: "1px solid black"}}>
                         <TableCell sx={th}>Gene products</TableCell>
@@ -62,8 +101,8 @@ const gene_detail = () => {
                                         <TableCell style={{border: "1px solid black", color: '#116988'}}>Link</TableCell>
                                     </TableRow>
                                     <TableRow style={{border: "1px solid black"}}>
-                                        <TableCell style={{border: "1px solid black"}}>P04217</TableCell>
-                                        <TableCell style={{border: "1px solid black"}}>Alpha-1B-glycoprotein</TableCell>
+                                        <TableCell style={{border: "1px solid black"}}>{data[0]["_source"]["Gene Products"]}</TableCell>
+                                        <TableCell style={{border: "1px solid black"}}>{data[0]["_source"]["Gene Name"]}</TableCell>
                                         <TableCell style={{border: "1px solid black"}}><a href='https://salivaryproteome.org/public/index.php/HSPW:PDE8DF3'>HSPW:PDE8DF3</a></TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -72,14 +111,15 @@ const gene_detail = () => {
                     </TableRow>
                     <TableRow style={{border: "1px solid black"}}>
                         <TableCell style={th}>Link</TableCell>
-                        <TableCell style={td}><a href='https://www.ncbi.nlm.nih.gov/gene/1'>Entrez Gene</a></TableCell>
+                        <TableCell style={td}><a href={gene_link + data[0]["_source"]["GeneID"]}>Entrez Gene</a></TableCell>
                     </TableRow>
                 </TableHead>
             </Table>
         </TableContainer>
     </div>
+    
     </>
   );
 };
   
-export default gene_detail;
+export default Gene_detail;

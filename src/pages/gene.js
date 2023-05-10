@@ -1,12 +1,10 @@
-import React, { Component } from 'react';
-import Gene from '../components/gene_table';
+import React, { useState, useEffect } from 'react';
+import Gene_table from '../components/gene_table';
 import gene_chart from '../components/gene_chart.png';
 import Chart from 'react-google-charts';
 import main_feature from '../components/hero.jpeg'
 import { Element } from 'react-faux-dom';
 import * as d3 from 'd3';
-import BarChart_D3 from '../components/barchart_d3';
-
 export const data = [
   ["Chromosome", "count"],
   ["1",973],
@@ -83,7 +81,8 @@ export const options = {
 };
 
 
-const SignUp = () => {
+const Gene = () => {
+  
   
   return (
     <>
@@ -93,11 +92,9 @@ const SignUp = () => {
     </div>
     <h2 style={{textAlign:'center',marginTop:'10px'}}>Chromosome location of the genes</h2>
     <Chart chartType="ColumnChart" width="100%" height="400px" data={data} options={options}/>
-    
-    <Gene />
-    
+    <Gene_table />
     </>
   );
 };
-  
-export default SignUp;
+
+export default Gene;
