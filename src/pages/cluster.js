@@ -150,7 +150,6 @@ const Protein_Cluster = () => {
       .then((data) => setNumber(data["# of Members Salivary Protein"]));
   }, []);
 
-  console.log(message);
 
   return (
     <>

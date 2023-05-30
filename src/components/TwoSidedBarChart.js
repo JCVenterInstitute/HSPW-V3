@@ -3,7 +3,8 @@ import * as d3 from 'd3';
 
 const TwoSidedBarChart = (props) => {
   const chartRef = useRef(null);
-  var color = d3.scaleOrdinal(d3.schemeCategory10);
+  var color = d3.scaleOrdinal()
+  .range(["#3182BD", "#6BAED6", "#9ECAE1", "#C6DBEF", "#E6550D", "#FD8D3C", "#FDAE65","#FDD0A2","#31A354","#74C476","#A1D99B","#C7E9C0","#756BB1","#9E9AC8","#BCBDDC","#636363","#969696","#BDBDBD","#D9D9D9"]);
   var canvasWidth = 880;
    var barsWidthTotal = 350;
    var barHeight = 15;
@@ -162,7 +163,7 @@ const TwoSidedBarChart = (props) => {
         return color(0);
       }
       else{
-        return color(parseInt(d.nx)%10)
+        return color(parseInt(d.nx)%20)
       }
       })
       .on("click", function(d) { window.open("https://www.proteinatlas.org/" + props.gene_id +'/tissue/'+d.tissue); })
@@ -196,7 +197,7 @@ const TwoSidedBarChart = (props) => {
         return color(0);
       }
       else{
-        return color(parseInt(d.score)%10)
+        return color(parseInt(d.nx)%20)
       }
       })
       .on("click", function(d) { window.open("https://www.proteinatlas.org/" + props.gene_id +'/tissue/'+d.tissue); })

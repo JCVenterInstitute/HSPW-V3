@@ -288,13 +288,12 @@ app.get("/protein", (req, res) => {
       index: 'testing123',
       body: query
     });
-    console.log(Object.keys(JSON.parse(JSON.stringify(response.body.hits.hits))).length);
-    console.log(JSON.stringify(response.body.hits.hits[0]["_source"]["Protein Name"]));
+
     return response.body.hits.hits;
   }
   
   app.get("/protein/:id",(req,res)=>{
-    console.log(req.params.id);
+
     let a = search_proteinID(req.params.id);
     a.then(function(result){
       console.log(result);

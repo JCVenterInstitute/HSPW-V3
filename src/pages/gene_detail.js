@@ -29,16 +29,9 @@ const td = {
 const Gene_detail = (props) => {
     const [message, setMessage] = useState("");
     const params = useParams();
+    
     let url = 'http://localhost:8000/genes/'+params['geneid'];
-    useEffect(() => {
 
-     fetch('http://localhost:8000/genes/EntrezGene:1')
-      .then((res) => res.json())
-      .then((data) => {
-        setMessage(data);
-    });
-
-  }, []);
   const [isLoading, setLoading] = useState(true);
   const [data,setData] = useState("");
   let gene_id = 0;
@@ -51,11 +44,34 @@ const Gene_detail = (props) => {
     }
     const genes = await response.json();
     setData(genes);
+
+  }
+
+  const [proteinName, setProteinName] = useState("");
+  const fetchProtein = async()=>{
+    let p = [];
+    data[0]["_source"]["Gene Products"].map(async (item)=> await fetch('https://rest.uniprot.org/uniprotkb/'+item+'.json')
+    .then((res)=>res.json())
+    .then((proteinName)=>{if(proteinName["proteinDescription"]["recommendedName"]["fullName"]["value"] !== undefined){
+        console.log(proteinName.proteinDescription.recommendedName.fullName.value);
+        p.push(proteinName["proteinDescription"]["recommendedName"]["fullName"]["value"]);
+        console.log(p);
+        setProteinName(p);
+    }
+    else{
+        console.log(proteinName);
+        p.push(proteinName["proteinDescription"]["submissionNames"]["fullName"]["value"]);
+        setProteinName(p);
+    }})
+    .catch((error)=>console.log(error)));
+    
     setLoading(false);
   }
 
   useEffect(()=>{
     fetchGenes();
+    fetchProtein();
+    console.log(JSON.stringify(proteinName));
   });
 
   if(isLoading === true){
@@ -100,11 +116,10 @@ const Gene_detail = (props) => {
                                         <TableCell style={{border: "1px solid black"}}><a style={{color: '#116988'}} href='https://salivaryproteome.org/public/index.php/Property:Known_officially_as'>Protein Name</a></TableCell>
                                         <TableCell style={{border: "1px solid black", color: '#116988'}}>Link</TableCell>
                                     </TableRow>
-                                    <TableRow style={{border: "1px solid black"}}>
-                                        <TableCell style={{border: "1px solid black"}}>{data[0]["_source"]["Gene Products"]}</TableCell>
-                                        <TableCell style={{border: "1px solid black"}}>{data[0]["_source"]["Gene Name"]}</TableCell>
-                                        <TableCell style={{border: "1px solid black"}}><a href='https://salivaryproteome.org/public/index.php/HSPW:PDE8DF3'>HSPW:PDE8DF3</a></TableCell>
-                                    </TableRow>
+
+                                    {data[0]["_source"]["Gene Products"].map((value,i,arr)=>{return <TableRow style={{border: "1px solid black"}}><TableCell style={{border: "1px solid black"}}>{value}</TableCell><TableCell style={{border: "1px solid black"}}>{proteinName[1]}</TableCell><TableCell style={{border: "1px solid black"}}><a href='https://salivaryproteome.org/public/index.php/HSPW:PDE8DF3'>HSPW:PDE8DF3</a></TableCell></TableRow>})}
+                                        
+
                                 </TableHead>
                             </Table>
                         </TableCell>

@@ -3,7 +3,7 @@ import NavBar from './NavBar1.tsx'
   
 const Navbar = () => {
   return (
-    <NavBar />
+    <><NavBar /></>
   );
 };
   

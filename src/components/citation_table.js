@@ -1,5 +1,5 @@
 import "./filter.css";
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect,useCallback,useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-enterprise";
 import { Link } from "react-router-dom";
@@ -46,9 +46,9 @@ function App() {
       minWidth:185,
       wrapText: true
     },
-    { headerName: "Date of Publication", field: "Date of Publication",maxWidth:205,wrapText: true,suppressSizeToFit: true, sortable: true,sort: 'asc' },
-    { headerName: "Title", field: "Title",wrapText: true,autoHeight: true,cellStyle:{'word-break': 'break-word'} },
-    { headerName: "Journal", field: "Journal",wrapText: true,maxWidth:145,maxWidth:145 },
+    { headerName: "Date of Publication", field: "Date of Publication",maxWidth:205, sortable: true,wrapText: true,suppressSizeToFit: true, sortable: true,sort: 'asc' },
+    { headerName: "Title", field: "Title",wrapText: true,autoHeight: true,cellStyle:{'word-break': 'break-word'}, sortable: true },
+    { headerName: "Journal", field: "Journal",wrapText: true,maxWidth:145,maxWidth:145, sortable: true },
 
 ];
 
@@ -69,11 +69,77 @@ function App() {
     const searchText = e.target.value;
     gridApi.api.setQuickFilter(searchText);
   };
+  const gridRef = useRef();
+
+  const paginationNumberFormatter = useCallback((params) => {
+    return params.value.toLocaleString();
+  }, []);
+
+  const onFirstDataRendered = useCallback((params) => {
+    gridRef.current.api.paginationGoToPage(0);
+  }, []);
+
+  const onPageSizeChanged = useCallback(() => {
+    var value = document.getElementById('page-size').value;
+    gridRef.current.api.paginationSetPageSize(Number(value));
+  }, []);
+
+  const onBtExport = useCallback(() => {
+    gridRef.current.api.exportDataAsExcel();
+  }, []);
+
+  const onFilterTextBoxChanged = useCallback(() => {
+    gridRef.current.api.setQuickFilter(
+      document.getElementById('filter-text-box').value
+    );
+  }, []);
+
+  const onPrintQuickFilterTexts = useCallback(() => {
+    gridRef.current.api.forEachNode(function (rowNode, index) {
+      console.log(
+        'Row ' +
+          index +
+          ' quick filter text is ' +
+          rowNode.quickFilterAggregateText
+      );
+    });
+  }, []);
+
   return (
     <div className="AppBox1">
+      <div className="example-header" style={{marginLeft:'35px'}}>
+      <label>Search: </label>
+      <input
+            type="text"
+            id="filter-text-box"
+            placeholder="Filter..."
+            onInput={onFilterTextBoxChanged}
+            style={{width:'50%',padding:'0.25rem 0.75rem'}}
+          />
+          <b style={{marginLeft:'15%'}}>Page size: </b>
+          <select onChange={onPageSizeChanged} id="page-size">
+            <option value="50" selected={true}>
+              50
+            </option>
+            <option value="100">100</option>
+            <option value="500">500</option>
+            <option value="1000">1000</option>
+          </select>
+
+          <button
+            onClick={onBtExport}
+            style={{ marginBottom: '5px', fontWeight: 'bold', textAlign: 'right',marginLeft:'3%' }}
+          >
+            Export to Excel
+          </button>
+        </div>
       <div className="ag-theme-material ag-cell-wrap-text ag-theme-alpine" style={{ height: 600 }}>
         <AgGridReact
           className="ag-cell-wrap-text"
+          ref={gridRef}
+          cacheQuickFilter={true}
+          paginationNumberFormatter={paginationNumberFormatter}
+          onFirstDataRendered={onFirstDataRendered}
           rowData={rowData}
           overlayLoadingTemplate={
             '<span class="ag-overlay-loading-center">Please wait while your rows are loading</span>'
@@ -115,30 +181,6 @@ function App() {
                 toolPanelParams: {
                   suppressFilterSearch: false,
                 },
-              },
-              {
-                id: "QuickSearch",
-                labelDefault: "Quick Search",
-                labelKey: "QuickSearch",
-                iconKey: "menu",
-                toolPanel: () => (
-                  <div>
-                    <h4>Global Search</h4>
-                    <input
-                      placeholder="Search..."
-                      type="search"
-                      style={{
-                        width: 190,
-                        height: 35,
-                        outline: "none",
-                        border: "none",
-                        borderBottom: `1px #181616 solid`,
-                        padding: `0 5px`,
-                      }}
-                      onChange={applyQuickFilter}
-                    />
-                  </div>
-                ),
               },
             ],
             defaultToolPanel: 'filters'

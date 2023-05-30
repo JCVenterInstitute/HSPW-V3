@@ -97,7 +97,7 @@ function LinkDescription(props: ICellRendererParams) {
   }
   else if(props.value.includes("Reactome")){
     let id = props.value.split(" ");
-    console.log('513: '+id[1]);
+
     id = id[1];
     return(
       <a
