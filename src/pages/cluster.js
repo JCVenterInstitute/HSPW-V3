@@ -187,9 +187,6 @@ const Protein_Cluster = () => {
             style={{display: 'block', marginLeft: 'auto', marginRight: 'auto',paddingBottom:'20px'}}
         />
         <h2 style={{textAlign:'center',marginTop:'20px'}}>Cluster Size</h2>
-        <div style={{marginLeft:'20%'}}>
-          <BChart data={data2} width={800} height={500}/>
-        </div>
     <Cluster /></>
   );
 };

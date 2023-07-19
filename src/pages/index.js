@@ -15,6 +15,7 @@ import protein_cluster from '../components/icon-clustering.png';
 import api from '../components/icon-api.png';
 import help from '../components/icon-help.png';
 import { Timeline } from 'react-twitter-widgets'
+import ChordDiagram from '../components/chordDiagram.js';
 import { PopupService } from 'ag-grid-community';
 
 
@@ -81,7 +82,8 @@ class Home extends React.Component {
             {
               imageSrc: pubmed,
               title: 'PubMed',
-              blurb: 'Includes links to full text articles and other related resources.'
+              blurb: 'Includes links to full text articles and other related resources.',
+              location: '/citation'
             },
             {
               imageSrc: gene,
@@ -92,7 +94,8 @@ class Home extends React.Component {
             {
               imageSrc: protein_cluster,
               title: 'Cluster Search',
-              blurb: 'Search clusters that share one or more common proteins are merged further.'
+              blurb: 'Search clusters that share one or more common proteins are merged further.',
+              location: '/protein_cluster'
             },
             {
               imageSrc: api,
@@ -138,6 +141,7 @@ class Home extends React.Component {
         <StyledEngineProvider injectFirst>
           <div id="application" data-layout={page.layout}>
             <Carousel />
+            <ChordDiagram />
             <div id="page-content">
               <div className="basic-card-container">
                 { 

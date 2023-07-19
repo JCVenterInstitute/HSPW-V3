@@ -1,10 +1,14 @@
 const express = require("express");
 const cors = require("cors");
+const axios = require("axios");
 const app = express();
 const { Client } = require("@opensearch-project/opensearch");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const createAwsOpensearchConnector = require("aws-opensearch-connector");
 const fs = require('fs');
+
+app.use(cors());
+app.use(express.json());
 
 var host = 'https://search-hspw-dev2-dmdd32xae4fmxh7t4g6skv67aa.us-east-2.es.amazonaws.com';
 
@@ -22,6 +26,23 @@ const getClient = async () => {
         node: host,
     });
 };
+
+async function getMapping() {
+  var client = await getClient();
+  var response = await client.indices.getMapping({
+    index: 'protein_cluster'
+  });
+  return Object.keys(response.body["protein_cluster"]["mappings"]["properties"]);
+  console.log(Object.keys(response.body["protein_cluster"]["mappings"]["properties"]));
+};
+
+app.get("/a123", (req, res) => {
+  let a = getMapping();
+  a.then(function(result){
+    console.log(result);
+    res.json(result);
+  });
+});
 
 async function search_cluster() {
 
@@ -44,8 +65,7 @@ async function search_cluster() {
     console.log(JSON.stringify(response.body.hits.hits[0]["_source"]["Cluster ID"]));
     return response.body.hits.hits;
   }
-app.use(cors());
-app.use(express.json());
+
 
 app.get("/protein_cluster", (req, res) => {
   let a = search_cluster();
@@ -73,8 +93,6 @@ async function search_gene() {
     index: 'genes',
     body: query
   });
-  console.log(Object.keys(JSON.parse(JSON.stringify(response.body.hits.hits))).length);
-  console.log(JSON.stringify(response.body.hits.hits[0]["_source"]["GeneID"]));
   return response.body.hits.hits;
 }
 
@@ -212,9 +230,33 @@ app.get("/citation/:id",(req,res)=>{
   });
 });
 
-async function search_citation() {
+
+async function search_citation_field() {
 
   // Initialize the client.
+  var client = await getClient();
+
+  
+
+  var response = await client.indices.getFieldMapping({
+    index: 'citation',
+  });
+  console.log('123');
+  return response.body.hits.hits;
+}
+
+app.get("/citation/field", (req, res) => {
+  let a = search_citation_field();
+  a.then(function(result){
+    console.log('321:'+result);
+    res.json(result);
+  });
+  
+  });
+
+async function search_citation() {
+
+  // Initialize the client
   var client = await getClient();
 
   
@@ -285,7 +327,7 @@ app.get("/protein", (req, res) => {
     };
   
     var response = await client.search({
-      index: 'testing123',
+      index: 'protein',
       body: query
     });
 

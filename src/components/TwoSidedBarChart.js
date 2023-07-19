@@ -110,7 +110,6 @@ const TwoSidedBarChart = (props) => {
       },
     ];
     var maxV = Math.max.apply(Math,props.data.map(function(o){if(o.nx.includes("?")){return 0;}else{return Math.abs(parseInt(o.nx));}}));
-    console.log('qwe: '+maxV);
     const x = d3.scaleLinear().range([0, (width+100)]);
     var x1 = d3.scaleLinear().domain([-0.1,maxV]).rangeRound([0,barsWidthTotal-50]);
     var x2 = d3.scaleLinear().domain([-0.05,4]).rangeRound([0,barsWidthTotal]);

@@ -27,7 +27,7 @@ const td = {
 };
 
 const Gene_detail = (props) => {
-    const [message, setMessage] = useState("");
+    const [message, setMessage] = useState(true);
     const params = useParams();
     
     let url = 'http://localhost:8000/genes/'+params['geneid'];
@@ -44,7 +44,7 @@ const Gene_detail = (props) => {
     }
     const genes = await response.json();
     setData(genes);
-
+    setMessage(false);
   }
 
   const [proteinName, setProteinName] = useState("");
@@ -53,7 +53,7 @@ const Gene_detail = (props) => {
     data[0]["_source"]["Gene Products"].map(async (item)=> await fetch('https://rest.uniprot.org/uniprotkb/'+item+'.json')
     .then((res)=>res.json())
     .then((proteinName)=>{if(proteinName["proteinDescription"]["recommendedName"]["fullName"]["value"] !== undefined){
-        console.log(proteinName.proteinDescription.recommendedName.fullName.value);
+        console.log('123:'+proteinName.proteinDescription.recommendedName.fullName.value);
         p.push(proteinName["proteinDescription"]["recommendedName"]["fullName"]["value"]);
         console.log(p);
         setProteinName(p);
@@ -70,8 +70,9 @@ const Gene_detail = (props) => {
 
   useEffect(()=>{
     fetchGenes();
-    fetchProtein();
-    console.log(JSON.stringify(proteinName));
+    if(message === false){
+        fetchProtein();
+    }
   });
 
   if(isLoading === true){

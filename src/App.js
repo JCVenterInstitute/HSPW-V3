@@ -21,6 +21,9 @@ import Citation from './pages/citation'
 import Citation_Detail from './pages/citation_detail';
 import InterProScan from './pages/interproscan.js';
 import Signature_Detail from './pages/signature_detail';
+import Basic_Search from './pages/basic_search';
+import Experiment_Search from './pages/experiment_search';
+import Protein_Set_Search from './pages/protein_set_search';
 
 function App() {
   
@@ -45,6 +48,9 @@ return (
         <Route path='/citation' element={<Citation/>} />
         <Route path='/citation/:citationid' element={<Citation_Detail/>} />
         <Route path='/InterProScan' element={<InterProScan/>} />
+        <Route path='/Basic_Search' element={<Basic_Search/>} />
+        <Route path='/Experiment_Search' element={<Experiment_Search/>} />
+        <Route path='/Protein_Set_Search' element={<Protein_Set_Search/>} />
     </Routes>
     <Footer />
     </Router>
