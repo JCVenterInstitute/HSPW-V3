@@ -7,13 +7,13 @@
   },
   "command" : {
     "name" : "pythonshell",
-    "scriptLocation" : "s3://shuv-protein-reference-files/scripts/download-uniprot-proteins.py",
+    "scriptLocation" : "s3://proteins-reference/scripts/download-uniprot-proteins.py",
     "pythonVersion" : "3.9"
   },
   "defaultArguments" : {
     "--enable-job-insights" : "false",
     "--job-language" : "python",
-    "--TempDir" : "s3://shuv-protein-reference-files/temporary/",
+    "--TempDir" : "s3://proteins-reference/temporary/",
     "--enable-glue-datacatalog" : "true"
   },
   "maxRetries" : 0,
