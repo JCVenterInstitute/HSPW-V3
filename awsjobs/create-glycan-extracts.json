@@ -1,0 +1,31 @@
+{
+  "name" : "create-glycan-extracts",
+  "description" : "",
+  "role" : "arn:aws:iam::552623730819:role/GluePipelineRole",
+  "executionProperty" : {
+    "maxConcurrentRuns" : 1
+  },
+  "command" : {
+    "name" : "pythonshell",
+    "scriptLocation" : "s3://proteins-reference/scripts/create-glycan-extracts.py",
+    "pythonVersion" : "3.9"
+  },
+  "defaultArguments" : {
+    "--enable-job-insights" : "false",
+    "--job-language" : "python",
+    "--TempDir" : "s3://proteins-reference/temporary/",
+    "--enable-glue-datacatalog" : "true"
+  },
+  "maxRetries" : 0,
+  "allocatedCapacity" : 0,
+  "timeout" : 2880,
+  "maxCapacity" : 0.0625,
+  "glueVersion" : "3.0",
+  "executionClass" : "STANDARD",
+  "sourceControlDetails" : {
+    "provider" : "GITHUB",
+    "repository" : "HSPW-V3",
+    "branch" : "main",
+    "folder" : "awsjobs"
+  }
+}
