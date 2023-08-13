@@ -1,9 +1,9 @@
 # Import libraries
 import requests
 import boto3
-from botocore.exceptions import ClientError
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from botocore.exceptions import ClientError
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -16,31 +16,26 @@ s3_client = boto3.client('s3')
 def get_protein_ids(bucket_name, file_name):
     try:
         response = s3_client.get_object(Bucket=bucket_name, Key=file_name)
-        content = response['Body'].read().decode('utf-8')
-        protein_ids = content.split(',')
-        return protein_ids
-    except Exception as e:
-        logger.exception(f"An error occurred while reading '{file_name}': {str(e)}")
-        return None
+        return response['Body'].read().decode('utf-8').split(',')
+    except (ClientError, Exception) as e:
+        logger.exception(f"An error occurred while reading '{file_name}': {e}")
+        return []
 
-# Download a single file and save it to S3 bucket
+# Download uniprot file to S3
 def download_uniprot_files(bucket_name, folder_name, protein_id):
     uniprot_file_name = f'{protein_id}.json'
     uniprot_file_url = f'https://www.uniprot.org/uniprotkb/{uniprot_file_name}'
     uniprot_file_path = f'{folder_name}/{uniprot_file_name}'
     
     try:
+        # Download JSON file content
         response = requests.get(uniprot_file_url)
         if response.status_code == 200:
+            # Save it to S3 bucket
             print(f'Downloading Uniprot protein file {uniprot_file_url} ...\n')
             json_content = response.content
-            response = s3_client.put_object(
-                Bucket=bucket_name,
-                Key=uniprot_file_path,
-                Body=json_content
-            )
-            if response:
-                print(f'{uniprot_file_name} downloaded successfully and saved to {bucket_name}/{uniprot_file_path}')
+            s3_client.put_object(Bucket=bucket_name, Key=uniprot_file_path, Body=json_content)
+            print(f'{uniprot_file_name} downloaded successfully and saved to {bucket_name}/{uniprot_file_path}')
             return protein_id
         else:
             logger.error(f"Failed to download {uniprot_file_url}: HTTP status code {response.status_code}")
@@ -48,44 +43,49 @@ def download_uniprot_files(bucket_name, folder_name, protein_id):
     except Exception as e:
         logger.exception(f"An error occurred while processing Protein ID {protein_id}: {str(e)}")
         return None
-
+        
 def main():
     # S3 info
     proteins_reference_bucket = 'proteins-reference'
     uniprot_proteins_bucket = 'uniprot-proteins'
     uniprot_proteins_folder = 'uniprot_protein_files'
+    batch_size = 300
     
     # Get all protein ids
     protein_ids = get_protein_ids(proteins_reference_bucket, 'protein_ids.csv')
-    if protein_ids:
-        total_files = len(protein_ids)
-    else:
+    if not protein_ids:
         print("No protein ids found!")
         return
+
+    # Prepare batches
+    total_files = len(protein_ids)
+    id_batches = [protein_ids[i:i+batch_size] for i in range(0, total_files, batch_size)]
     
-    processed_files = 0
-    downloaded = 0
-    failed = 0
-    # Download and upload files using multi-threading
+    processed_files = downloaded = failed = 0
+    # Download uniprot files using multi-threading
     with ThreadPoolExecutor() as executor:
-        future_to_id = {executor.submit(download_uniprot_files, uniprot_proteins_bucket, uniprot_proteins_folder, protein_id): protein_id for protein_id in protein_ids}
-        for future in as_completed(future_to_id):
-            protein_id = future_to_id[future]
-            try:
-                data = future.result()
-                if data:
-                    downloaded += 1
-                    print(f"Processing of Protein ID {protein_id} completed successfully.")
-                else:
+        for batch_id, batch in enumerate(id_batches, start=1):
+            print(f"\nBATCH {batch_id} PROCESSING ... \n")
+            future_to_id = {executor.submit(download_uniprot_files, uniprot_proteins_bucket, uniprot_proteins_folder, protein_id): protein_id for protein_id in batch}
+            for future in as_completed(future_to_id):
+                protein_id = future_to_id[future]
+                try:
+                    data = future.result()
+                    if data:
+                        downloaded += 1
+                        print(f"Processing of Protein ID {protein_id} completed successfully.")
+                    else:
+                        failed +=1
+                        logger.error(f"Processing of Protein ID {protein_id} failed.")
+                except Exception as e:
                     failed +=1
-                    logger.error(f"Processing of Protein ID {protein_id} failed.")
-            except Exception as e:
-                failed +=1
-                logger.exception(f"An error occurred while processing Protein ID {protein_id}: {str(e)}")
-                
-            processed_files += 1
-            print(f"\nTotal files processed: {processed_files}/{total_files}")
-            print(f"Downloaded: {downloaded}\tFailed: {failed}\n")
+                    logger.exception(f"An error occurred while processing Protein ID {protein_id}: {str(e)}")
+                    
+                # Show stats after processing each Protein ID
+                processed_files += 1
+                print(f"\nBatch {batch_id}:")
+                print(f"Total files processed: {processed_files}/{total_files}")
+                print(f"Downloaded:{downloaded}\tFailed:{failed}\n")
 
 if __name__ == "__main__":
     main()
