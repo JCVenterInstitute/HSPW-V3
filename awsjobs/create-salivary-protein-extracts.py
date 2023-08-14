@@ -4,6 +4,7 @@ import boto3
 from botocore.exceptions import ClientError
 import logging
 import pandas as pd
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -12,38 +13,30 @@ logger = logging.getLogger(__name__)
 # S3 client
 s3_client = boto3.client('s3')
 
-# Atlas data
+# Atlas data 
+# RNA Tissue
 s3_path = "s3://proteins-reference/rna_tissue_consensus.tsv"
-df = pd.read_csv(s3_path, sep='\t', header=0)
+rna_tissue_df = pd.read_csv(s3_path, sep='\t', header=0)
+# Normal Tissue
+s3_path = "s3://proteins-reference/normal_tissue.tsv"
+normal_tissue_df = pd.read_csv(s3_path, sep='\t', header=0)
 
 # Read all protein ids from protein_id csv file
 def get_protein_ids(bucket_name, file_name):
     try:
         response = s3_client.get_object(Bucket=bucket_name, Key=file_name)
-        content = response['Body'].read().decode('utf-8')
-        protein_ids = content.split(',')
-        return protein_ids
-    except ClientError as e:
+        return response['Body'].read().decode('utf-8').split(',')
+    except (ClientError, Exception) as e:
         logger.exception(f"An error occurred while reading '{file_name}': {e}")
-        return []
-    except Exception as e:
-        logger.exception(f"An unexpected error occurred: {e}")
         return []
 
 # Read protein extract file content
 def read_extract_data(bucket_name, file_name):
     try:
         response = s3_client.get_object(Bucket=bucket_name, Key=file_name)
-        json_data = json.loads(response['Body'].read().decode('utf-8'))
-        return json_data
-    except ClientError as e:
-        if e.response['Error']['Code'] == 'NoSuchKey':
-            logger.exception(f"Uniprot file {file_name} does not exist!")
-        else:
-            logger.exception(f"An error occurred while reading the file {file_name} from location {bucket_name}/uniprot_source_files: {e}")
-        return None
-    except Exception as e:
-        logger.exception("An unexpected error occurred:", e)
+        return json.loads(response['Body'].read().decode('utf-8'))
+    except (ClientError, Exception) as e:
+        logger.exception(f"An error occurred while reading '{file_name}': {e}")
         return None
     
 # Create salivary proteins extract
@@ -95,32 +88,31 @@ def create_salivary_protein_extract(protein_extract, glycan_extract):
 
     # Add "KEYWORDS"
     # Add "IHC"
-    
-    # Add "ATLAS"
-    atlas_gene_tissues = []
     protein_ensembl_g = protein_extract["genes"]["ensembl_g"]
-    #protein_gene_name = protein_extract["genes"].get("gene_names", [])
 
     if protein_ensembl_g:
         # Filter the DataFrame based on the gene name
-        result_df = df[df['Gene'] == protein_ensembl_g]
+        ihc_level = normal_tissue_df[(normal_tissue_df['Gene'] == protein_ensembl_g) & (normal_tissue_df['Tissue'] == 'salivary gland')]['Level'].tolist()[0]
+
+    # Add "ATLAS"
+    atlas_rna_tissues_arr = []
+    protein_ensembl_g = protein_extract["genes"]["ensembl_g"]
+
+    if protein_ensembl_g:
+        # Filter the DataFrame based on the gene name
+        result_df = rna_tissue_df[rna_tissue_df['Gene'] == protein_ensembl_g]
         
         # Create the JSON object array
-        json_array = []
         for _, row in result_df.iterrows():
-            json_obj = {
+            atlas_rna_tissues_obj = {
                 "tissue": row['Tissue'],
                 "nx": str(row['nTPM']),
                 "score": "",
                 "enriched": ""
             }
-            json_array.append(json_obj)
+            atlas_rna_tissues_arr.append(atlas_rna_tissues_obj)
         
-        json_string = json.dumps(json_array)
-    
-    #if protein_ensembl_g and protein_gene_name:
-    #    atlas_ensembl_g = atlas_extract["genes"].get(protein_ensembl_g, {})
-    #    atlas_gene_tissues = atlas_ensembl_g.get(protein_gene_name[0], [])
+        #json_string = json.dumps(json_array)
     
     # Add ANNOTATIONS
     if ("comments" in protein_extract) and ("cross_references" in protein_extract) and ("features" in protein_extract):
@@ -222,8 +214,8 @@ def create_salivary_protein_extract(protein_extract, glycan_extract):
         "ev_abundance": "",
         "cites": citation_arr,
         "keywords": protein_extract["keywords"],
-        "ihc": "",
-        "atlas": json_string, #atlas_gene_tissues,
+        "ihc": ihc_level,
+        "atlas": atlas_rna_tissues_arr,
         "annotations": annotation_arr,
         "glycans": glycan_extract["glycans"]
     }
@@ -231,7 +223,7 @@ def create_salivary_protein_extract(protein_extract, glycan_extract):
     return salivary_protein_extract
     
 # Move files to completed/failed
-def move_file_to(bucket_name, source_path, sink_path, file_name):
+def move_file(bucket_name, source_path, sink_path, file_name):
     try:
         s3_client.copy_object(Bucket=bucket_name, CopySource={'Bucket': bucket_name, 'Key': f'{source_path}/{file_name}'}, Key=f'{sink_path}/{file_name}')
         s3_client.delete_object(Bucket=bucket_name, Key=f'{source_path}/{file_name}')
@@ -241,48 +233,40 @@ def move_file_to(bucket_name, source_path, sink_path, file_name):
 
 # Process salivary proteins 
 def process_salivary_protein_file(uniprot_proteins_bucket, salivary_proteins_bucket, protein_id):
-    
-    # Read protein extract
     protein_extract_name = f'protein_extract_{protein_id}.json'
-    print(f'Reading protein extract {protein_extract_name}...')
-    protein_extract = read_extract_data(uniprot_proteins_bucket, f'protein_extracts/{protein_extract_name}')
-    
-    # Read glycan extract
     glycan_extract_name = f'glycan_extract_{protein_id}.json'
-    print(f'Reading glycan extract {glycan_extract_name}...')
-    glycan_extract = read_extract_data(uniprot_proteins_bucket, f'glycan_extracts/{glycan_extract_name}')
+    salivary_protein_extract_name = f'salivary_protein_extract_{protein_id}.json'
+    salivary_protein_extract_path = f'salivary_protein_extracts/{salivary_protein_extract_name}'
     
-    if protein_extract and glycan_extract:
-        # Create salivary protein extract
-        salivary_protein_extract_name = f'salivary_protein_extract_{protein_id}.json'
-        salivary_protein_extract_path = f'salivary_protein_extracts/{salivary_protein_extract_name}'
-        
-        print(f"Creating salivary protein extract {salivary_protein_extract_name}...")
-        
-        try:
+    try:
+        # Read protein extract
+        print(f'Reading protein extract {protein_extract_name}...')
+        protein_extract = read_extract_data(uniprot_proteins_bucket, f'protein_extracts/{protein_extract_name}')
+        # Read glycan extract
+        print(f'Reading glycan extract {glycan_extract_name}...\n')
+        glycan_extract = read_extract_data(uniprot_proteins_bucket, f'glycan_extracts/{glycan_extract_name}')
+
+        if protein_extract and glycan_extract:
+            print(f"Creating salivary protein extract {salivary_protein_extract_name}...")
+            # Create salivary protein extract
             salivary_protein_extract = create_salivary_protein_extract(protein_extract, glycan_extract)
-        
+
             if salivary_protein_extract:
-                # Upload salivary protein extract to S3
-                response = s3_client.put_object(
-                    Bucket=salivary_proteins_bucket,
-                    Key=salivary_protein_extract_path,
-                    Body=json.dumps(salivary_protein_extract)
-                )
-                if response:
-                    print(f"{salivary_protein_extract_name} created successfully and saved to {salivary_proteins_bucket}#/{salivary_protein_extract_path}")
-                    move_file_to(uniprot_proteins_bucket, source_path='protein_extracts', sink_path='protein_extracts/completed', file_name=protein_extract_name)
-                    move_file_to(uniprot_proteins_bucket, source_path='glycan_extracts', sink_path='glycan_extracts/completed', file_name=glycan_extract_name)
-                    return True
-        except Exception as e:
-            logger.exception(f"An error occurred while processing file {salivary_protein_extract_name}: {e}")
-            move_file_to(uniprot_proteins_bucket, source_path='protein_extracts', sink_path='protein_extracts/failed', file_name=protein_extract_name)
-            move_file_to(uniprot_proteins_bucket, source_path='glycan_extracts', sink_path='glycan_extracts/failed', file_name=glycan_extract_name)
-    else:
-        logger.error('File not found protein_extract/glycan_extract')
-        move_file_to(uniprot_proteins_bucket, source_path='protein_extracts', sink_path='protein_extracts/failed', file_name=protein_extract_name)
-        move_file_to(uniprot_proteins_bucket, source_path='glycan_extracts', sink_path='glycan_extracts/failed', file_name=glycan_extract_name)
+                # Save to S3 bucket
+                s3_client.put_object(Bucket=salivary_proteins_bucket, Key=salivary_protein_extract_path, Body=json.dumps(salivary_protein_extract))
+                print(f"{salivary_protein_extract_name} created successfully and saved to {salivary_proteins_bucket}/{salivary_protein_extract_path}")
+                # Move protein/glycan extract to completed
+                #move_file(uniprot_proteins_bucket, 'protein_extracts', 'protein_extracts/completed', protein_extract_name)
+                #move_file(uniprot_proteins_bucket, 'glycan_extracts', 'glycan_extracts/completed', glycan_extract_name)
+                return True
+        else:
+            logger.error(f'File not found for Protein ID {protein_id}: protein_extract/glycan_extract')
+    except Exception as e:
+        logger.exception(f"An error occurred while processing file {salivary_protein_extract_name}: {e}")
         
+    # Move protein/glycan extract to failed
+    #move_file(uniprot_proteins_bucket, 'protein_extracts', 'protein_extracts/failed', protein_extract_name)
+    #move_file(uniprot_proteins_bucket, 'glycan_extracts', 'glycan_extracts/failed', glycan_extract_name)
     return False
 
 def main():
@@ -293,32 +277,33 @@ def main():
     
     # Get all protein ids
     protein_ids = get_protein_ids(proteins_reference_bucket, 'protein_ids.csv')
-    if protein_ids:
-        total_files = len(protein_ids)
-    else:
+    if not protein_ids:
         print("No protein ids found!")
         return
     
-    processed_files = 0
-    completed = 0
-    failed = 0
-    # Create salivary protein extracts
-    for protein_id in protein_ids:
-        try:
-            salivary_protein_extract = process_salivary_protein_file(uniprot_proteins_bucket, salivary_proteins_bucket, protein_id)
-            if salivary_protein_extract:
-                completed +=1
-                print(f"Processing of protein ID {protein_id} completed successfully.")
-            else:
-                failed +=1
-                print(f"Processing of protein ID {protein_id} failed.")
-        except Exception as e:
-            failed +=1
-            logger.exception(f"An error occurred while processing protein ID {protein_id}: {str(e)}")
-
-        processed_files += 1
-        print(f"\nTotal files processed: {processed_files}/{total_files}")
-        print(f"Completed: {completed}\tFailed: {failed}\n")
+    total_files = len(protein_ids)
+    processed_files = completed = failed = 0
+    # Create salivary protein extracts with multi-threading
+    with ThreadPoolExecutor() as executor:
+        future_to_id = {executor.submit(process_salivary_protein_file, uniprot_proteins_bucket, salivary_proteins_bucket, protein_id): protein_id for protein_id in protein_ids}
+        for future in as_completed(future_to_id):
+            protein_id = future_to_id[future]
+            try:
+                data = future.result()
+                if data:
+                    completed += 1
+                    print(f"Processing of Protein ID {protein_id} completed successfully.")
+                else:
+                    failed += 1
+                    print(f"Processing of Protein ID {protein_id} failed.")
+            except Exception as e:
+                failed += 1
+                logger.exception(f"An error occurred while processing Protein ID {protein_id}: {str(e)}")
+                
+            # Show stats after processing each Protein ID
+            processed_files += 1
+            print(f"\nTotal files processed: {processed_files}/{total_files}")
+            print(f"Completed:{completed}\tFailed:{failed}\n")
       
 if __name__ == "__main__":
     main()
