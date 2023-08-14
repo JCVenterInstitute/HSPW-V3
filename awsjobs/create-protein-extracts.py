@@ -1,9 +1,14 @@
 # Import libraries
+import sys
 import json
 import boto3
 import logging
 from botocore.exceptions import ClientError
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from awsglue.utils import getResolvedOptions
+
+# Get arguments from the triggered job
+args = getResolvedOptions(sys.argv,['batch_id', 'batch'])
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -16,32 +21,21 @@ s3_client = boto3.client('s3')
 def get_protein_ids(bucket_name, file_name):
     try:
         response = s3_client.get_object(Bucket=bucket_name, Key=file_name)
-        content = response['Body'].read().decode('utf-8')
-        protein_ids = content.split(',')
-        return protein_ids
-    except ClientError as e:
+        return response['Body'].read().decode('utf-8').split(',')
+    except (ClientError, Exception) as e:
         logger.exception(f"An error occurred while reading '{file_name}': {e}")
-        return []
-    except Exception as e:
-        logger.exception(f"An unexpected error occurred: {e}")
         return []
 
 # Read uniprot file content
 def read_uniprot_data(bucket_name, file_name):
     try:
         response = s3_client.get_object(Bucket=bucket_name, Key=file_name)
-        json_data = json.loads(response['Body'].read().decode('utf-8'))
-        return json_data
-    except ClientError as e:
-        if e.response['Error']['Code'] == 'NoSuchKey':
-            logger.exception(f"Uniprot file {file_name} does not exist!")
-        else:
-            logger.exception(f"An error occurred while reading the file {file_name} from location {bucket_name}/uniprot_source_files: {e}")
-        return None
-    except Exception as e:
-        logger.exception("An unexpected error occurred:", e)
+        return json.loads(response['Body'].read().decode('utf-8'))
+    except (ClientError, Exception) as e:
+        logger.exception(f"An error occurred while reading '{file_name}': {e}")
         return None
 
+# Create protein extract
 def create_protein_extract(uniprot_data):
     proteins_extract = {}
         
@@ -478,7 +472,7 @@ def create_protein_extract(uniprot_data):
     return proteins_extract
     
 # Move files to completed/failed
-def move_file_to(bucket_name, source_path, sink_path, file_name):
+def move_file(bucket_name, source_path, sink_path, file_name):
     try:
         s3_client.copy_object(Bucket=bucket_name, CopySource={'Bucket': bucket_name, 'Key': f'{source_path}/{file_name}'}, Key=f'{sink_path}/{file_name}')
         s3_client.delete_object(Bucket=bucket_name, Key=f'{source_path}/{file_name}')
@@ -503,54 +497,54 @@ def process_protein_files(uniprot_proteins_bucket, protein_id):
             protein_extract = create_protein_extract(uniprot_protein_data)
 
             if protein_extract:
-                response_put = s3_client.put_object(
-                    Bucket=uniprot_proteins_bucket,
-                    Key=protein_extract_path,
-                    Body=json.dumps(protein_extract)
-                )
-                if response_put:
-                    print(f'{protein_extract_name} created successfully and saved to {uniprot_proteins_bucket}/{protein_extract_path}')
-                    move_file_to(uniprot_proteins_bucket, source_path='uniprot_protein_files', sink_path='uniprot_protein_files/completed', file_name=uniprot_file_name)
-                    return True
+                # Save to S3 bucket
+                s3_client.put_object(Bucket=uniprot_proteins_bucket, Key=protein_extract_path, Body=json.dumps(protein_extract))
+                print(f'{protein_extract_name} created successfully and saved to {uniprot_proteins_bucket}/{protein_extract_path}')
+                # Move file to completed
+                move_file(uniprot_proteins_bucket, source_path='uniprot_protein_files', sink_path='uniprot_protein_files/completed', file_name=uniprot_file_name)
+                return True
         except Exception as e:
             logger.exception(f"An error occurred while processing file {uniprot_file_name}: {e}")
-            move_file_to(uniprot_proteins_bucket, source_path='uniprot_protein_files', sink_path='uniprot_protein_files/failed', file_name=uniprot_file_name)
+            # Move file to failed
+            move_file(uniprot_proteins_bucket, source_path='uniprot_protein_files', sink_path='uniprot_protein_files/failed', file_name=uniprot_file_name)
     
     return None
         
 def main():
     # S3 info
-    proteins_reference_bucket = 'proteins-reference'
     uniprot_proteins_bucket = 'uniprot-proteins'
 
     # Get all protein ids
-    protein_ids = get_protein_ids(proteins_reference_bucket, 'protein_ids.csv')
-    if protein_ids:
-        total_files = len(protein_ids)
-    else:
+    protein_ids = json.loads(args['batch'])
+    if not protein_ids:
         print("No protein ids found!")
         return
     
-    processed_files = 0
-    completed = 0
-    failed = 0
-    # Create protein extracts
-    for protein_id in protein_ids:
-        try:
-            protein_extract = process_protein_files(uniprot_proteins_bucket, protein_id)
-            if protein_extract:
-                completed +=1
-                print(f"Processing of Protein ID {protein_id} completed successfully.")
-            else:
+    total_files = len(protein_ids)
+    processed_files = completed = failed = 0
+    # Create protein extracts using multi-threading
+    with ThreadPoolExecutor() as executor:
+        print(f"\nBATCH {args['batch_id']} PROCESSING ... \n")
+        future_to_id = {executor.submit(process_protein_files, uniprot_proteins_bucket, protein_id): protein_id for protein_id in protein_ids}
+        for future in as_completed(future_to_id):
+            protein_id = future_to_id[future]
+            try:
+                data = future.result()
+                if data:
+                    completed += 1
+                    print(f"Processing of Protein ID {protein_id} completed successfully.")
+                else:
+                    failed +=1
+                    logger.error(f"Processing of Protein ID {protein_id} failed.")
+            except Exception as e:
                 failed +=1
-                logger.error(f"Processing of Protein ID {protein_id} failed.")
-        except Exception as e:
-            failed +=1
-            logger.exception(f"An error occurred while processing Protein ID {protein_id}: {str(e)}")
-
-        processed_files += 1
-        print(f"\nTotal files processed: {processed_files}/{total_files}")
-        print(f"Completed: {completed}\tFailed: {failed}\n")
+                logger.exception(f"An error occurred while processing Protein ID {protein_id}: {str(e)}")
+                
+            # Show stats after processing each Protein ID
+            processed_files += 1
+            print(f"\nBatch {args['batch_id']}:")
+            print(f"Total files processed: {processed_files}/{total_files}")
+            print(f"Completed:{completed}\tFailed:{failed}\n")
 
 if __name__ == "__main__":
     main()
