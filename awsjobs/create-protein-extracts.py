@@ -543,7 +543,7 @@ def main():
             # Show stats after processing each Protein ID
             processed_files += 1
             print(f"\nBatch {args['batch_id']}:")
-            print(f"Total files processed: {processed_files}/{total_files}")
+            print(f"Total files processed:{processed_files}/{total_files}")
             print(f"Completed:{completed}\tFailed:{failed}\n")
 
 if __name__ == "__main__":
