@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 s3_client = boto3.client('s3')
 
 # AWS Glue client
-glue_client = boto3.client('glue', region_name='us-east-1')
+glue_client = boto3.client('glue', region_name='us-east-2')
 
 # Function to start a Glue job with parameters
 def trigger_glue_job_with_retry(glue_job_name, job_parameters, max_retries=5, retry_interval=10):
@@ -108,7 +108,7 @@ def main():
                 # Show stats after processing each Protein ID
                 processed_files += 1
                 print(f"\nBatch {batch_id}:")
-                print(f"Total files processed: {processed_files}/{total_files}")
+                print(f"Total files processed:{processed_files}/{total_files}")
                 print(f"Downloaded:{downloaded}\tFailed:{failed}\n")
                 
             # Trigger the 'create-protein-extracts' Glue job with retry mechanism
