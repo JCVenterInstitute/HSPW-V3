@@ -98,8 +98,8 @@ def main():
                 
             # Show stats after processing each Protein ID
             processed_files += 1
-            print(f"\nTotal files downloaded: {processed_files}/{total_files}")
-            print(f"Completed: {downloaded}\tFailed: {failed}\n")
+            print(f"\nTotal files downloaded:{processed_files}/{total_files}")
+            print(f"Completed:{downloaded}\tFailed:{failed}\n")
 
 if __name__ == "__main__":
     main()
