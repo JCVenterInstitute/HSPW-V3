@@ -118,13 +118,54 @@
   margin: 0;
   padding: 0;
   width: 240px;
-  background-color: #f1f1f1;
+  background-color: #F9F8F7;
   position: absolute;
   height:800px;
   overflow-y:scroll; 
   overflow: scroll;
 }
 
+.sidebar1 {
+  margin: 0;
+  padding: 0;
+  width: 240px;
+  background-color: #F9F8F7;
+  position: absolute;
+  height:550px;
+  overflow-y:scroll; 
+  overflow: scroll;
+}
+
+.sidebar_button{
+  color: #959595;
+text-align: center;
+font-family: Montserrat;
+font-size: 16px;
+font-style: normal;
+font-weight: 600;
+line-height: normal;
+}
+
+.title{
+  color: #FFF;
+font-family: Montserrat;
+font-size: 32px;
+font-style: normal;
+font-weight: 800;
+line-height: 110%; /* 35.2px */
+text-transform: uppercase;
+}
+
+.head_text{
+  color: #FFF;
+
+/* Page Body Text */
+font-family: Lato;
+font-size: 18px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+}
 .item {
   display: block;
   color: black;
@@ -176,12 +217,25 @@
 }
 
 .charts{
-  border-style: groove;
+
   margin-left: 241px;
-  margin-top:1px;
+  margin-top:5px;
   display:flex; 
   flex-direction:row;
-  width:1150px;
+  width:600px;
+  padding:20px;
+
+}
+
+.charts1{
+
+  margin-left: 50px;
+  margin-top:5px;
+  display:flex; 
+  flex-direction:row;
+  width:645px;
+  padding:20px;
+
 }
 
 html {

@@ -1,5 +1,5 @@
 import { AppBar,Toolbar,IconButton,Typography,Stack,Button, MenuItem,Menu,Box } from "@mui/material";
-import logo from './hspw_logo.png';
+import logo from './hspwLogo.png';
 import React, { useState } from "react";
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'; 

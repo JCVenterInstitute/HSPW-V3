@@ -9,6 +9,7 @@ import { default as ReactSelect } from "react-select";
 import DonutChart_google from "../components/donutChart_google.tsx";
 import BarChart_google from "../components/barChart_google.tsx";
 import Filter from "../components/filter.js";
+import main_feature from './page_main.png'
 
 const Option = (props) => {
   return (
@@ -43,15 +44,18 @@ const Download = () => {
 
   return (
     <>
+    <div style={{height: '40%', padding:'35px',backgroundImage: `url(${main_feature})`,backgroundPosition:'center',backgroundSize:'cover'}}>
+      <h1 style={{color:'white',display:'left',marginLeft:'20px',marginBottom:'1rem'}} className="title" align="left">DATA DOWNLOAD</h1>
+      <p style={{textAlign:'left', color:'white', paddingBottom:'15px', marginLeft:'20px',marginRight:'20px'}} className="head_text">Search and Download data in Zip, MzTab and Metadata Formats. *If you cite or display any content, or reference our organization, in any format Please follow these guidelines: Include a reference to a Primary publication: The Human Salivary Proteome Wiki: A Community Driven Research Platform  OR Include a reference to our website: SalivaryProteome.org</p>
+    </div>
     <div className="rowC">
       <div className='sidebar'>
-        <div style={{backgroundColor: '#254A61'}}>
-          <h2 style={{color:'white', textAlign:'center', alignItems:'center'}}>FILTER</h2>
-        </div>
+          <h2 style={{margin:'26px',color:'#1463B9',fontFamily:'Montserrat',fontSize:'20px',fontStyle:'normal',fontWeight:'700',lineHeight:'130%', textAlign:'center', alignItems:'center'}}>FILTER</h2>
         <Filter />
       </div>
       <div className="charts">
         <BarChart_google />
+      </div><div className="charts1">
         <DonutChart_google />
       </div>
     </div>

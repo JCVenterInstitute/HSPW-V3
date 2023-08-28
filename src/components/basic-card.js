@@ -31,11 +31,12 @@ class BasicCard extends React.Component {
 			content = 
 			<a href={this.props.location}>
 				<div className='basic-card-content'>
+					<h4>{ this.props.title }</h4>
+					<p>{ this.props.blurb }</p>
 					<div className="basic-card-image-wrapper">
 						<img src={this.props.imageSrc} />
 					</div>
-					<h4>{ this.props.title }</h4>
-					<p>{ this.props.blurb }</p>
+					
 				</div>
 				</a>
 			;

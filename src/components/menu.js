@@ -39,7 +39,17 @@ export const menu = [
     ]
   },
   {
-    title: "Species",
+    title: "Sample",
+    items: [
+      {
+        title: "Homo Sapiens",
+        items: [
+        ]
+      }
+    ]
+  },
+  {
+    title: "Experiment",
     items: [
       {
         title: "Homo Sapiens",

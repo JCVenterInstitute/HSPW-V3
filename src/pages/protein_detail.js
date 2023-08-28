@@ -143,6 +143,7 @@ const Protein_Detail = (props) => {
   const [p,setP] = useState("");
   const [o,setO] = useState("");
   const [fS,setFS] = useState("");
+  const [authorName,setauthorName] = useState("");
   const [v,setV] = useState("");
   const [j,setJ] = useState("");
   const [sS,setSS] = useState("");
@@ -161,44 +162,28 @@ const Protein_Detail = (props) => {
     let volume = [];
     let line2 = [];
     
-    const pubmedLink = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id='+ids+'&retmode=json&rettype=abstract&api_key=1b7c2864fec7f4749814a17559ed02608808';
+    const pubmedLink = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id='+ids+'&retmode=xml&rettype=abstract&api_key=1b7c2864fec7f4749814a17559ed02608808';
     
     const response = await fetch(pubmedLink);
     if (!response.ok) {
         const message = `An error has occured: ${response.status}`;
-        setCError(true);
         throw new Error(message);
     }
-    
-    const temp = await response.json();
-    setData1(JSON.stringify(temp["result"]));
-        console.log(data[0]["_source"]["Salivary Proteins"]["Cites"][0].split(':')[1]);
-        console.log(data1);
-        for(let j = 0; j < data1.length;j++){
-
-            let inputString = '';
-            let inputString2 = '';
-            if(data1[data1.result.uids].authors.length === 0){
-                inputString = inputString.concat("No Author listed ");
-            }
-            else if(data1.result[data1.result.uids[j]].authors.length === 1){
-                inputString = inputString.concat(JSON.stringify(data1.result[data1.result.uids[j]].authors[0].name).replace(/\"/g, ""));
-            }
-            else if(data1.result[data1.result.uids[j]].authors.length === 2){
-                inputString = inputString.concat(JSON.stringify(data1.result[data1.result.uids[j]].authors[0].name).replace(/\"/g, "") +',' +JSON.stringify(data1.result[data1.result.uids[j]].authors[1].name).replace(/\"/g, ""));
-            }
-            else{
-                inputString = inputString.concat(JSON.stringify(data1.result[data1.result.uids[j]].authors[0].name).replace(/\"/g, "") +', et al.');
-            }
-            inputString = inputString.concat(' ('+JSON.stringify(data1.result[data1.result.uids[j]].pubdate).replace(/\"/g, "").split(" ")[0]+') ' + JSON.stringify(data1.result[data1.result.uids[j]].title).replace(/\"/g, ""));
-            line.push(inputString);
-            journal.push(JSON.stringify(data1.result[data1.result.uids[j]].source).replace(/\"/g, "")+'. ');
-            volume.push(JSON.stringify(data1.result[data1.result.uids[j]].volume).replace(/\"/g, ""));
-            inputString2 = inputString2.concat('('+JSON.stringify(data1.result[data1.result.uids[j]].issue).replace(/\"/g, "")+'):'+JSON.stringify(data1.result[data1.result.uids[j]].pages).replace(/\"/g, ""));
-            line2.push(inputString2);
-        
-        }
-        setFS(line);
+    const data = await response.text();
+    const parser = new DOMParser();
+    const xml1 = parser.parseFromString(data, 'text/xml');
+    console.log('diu:' + xml1.getElementsByTagName('LastName')[0].textContent);
+    if(xml1.getElementsByTagName('LastName').length === 1){
+        line.push(xml1.getElementsByTagName('LastName')[0].textContent+ ' ' + xml1.getElementsByTagName('Initials')[0].textContent)
+    }
+    else if(xml1.getElementsByTagName('LastName').length === 2){
+        line.push(xml1.getElementsByTagName('LastName')[0].textContent+ ' ' + xml1.getElementsByTagName('Initials')[0].textContent + ' and ' + xml1.getElementsByTagName('LastName')[1].textContent+ ' ' + xml1.getElementsByTagName('Initials')[1].textContent );
+    }
+    else if(xml1.getElementsByTagName('LastName').length >= 3){
+        line.push(xml1.getElementsByTagName('LastName')[0].textContent+ ' ' + xml1.getElementsByTagName('Initials')[0].textContent + ', et al.')
+    }
+    volume.push()
+        setauthorName(line);
         setV(volume);
         setJ(journal);
         setSS(line2);
@@ -334,26 +319,7 @@ Homo sapiens</a></TableCell>
         <Divider sx={{'marginBottom': "10px"}}/>
   */}
 
-<protvista-uniprot accession="P04908" config={{
-  "categories": [
-    {
-      "name": 'string',
-      "label": 'string',
-      "trackType": 'protvista-track|protvista-variation-graph|protvista-variation',
-      "adapter": 'protvista-feature-adapter|protvista-structure-adapter|protvista-proteomics-adapter|protvista-variation-adapter',
-      "url": 'string',
-      "tracks": [
-        {
-          "name": 'string',
-          "label": 'string',
-          "filter": 'string',
-          "trackType": "protvista-track|protvista-variation-graph|protvista-variation",
-          "tooltip": 'string'
-        }
-      ]
-    }
-  ]
-}}></protvista-uniprot>
+<protvista-uniprot accession="P04908"></protvista-uniprot>
 
 
         <h2 style={{color:'black', marginBottom:'20px', fontWeight:'bold',marginTop:'20px'}}>Glycans</h2>
@@ -465,7 +431,7 @@ Homo sapiens</a></TableCell>
         <Table sx={{minWidth:650, border: 1,width:'90%'}} aria-label="simple table">
             <TableRow sx={{border: "1px solid black"}}>
                 <TableCell sx={{'fontSize': '0.875rem'}} style={{maxWidth:'100%'}}>
-                {data[0]["_source"]["Salivary Proteins"]["Cites"].map((value,i)=>{return <><div key={value}><h3 style={{ 'display': 'inline' }}>{i + 1}. </h3><p style={{ 'display': 'inline','color':'black','font-size':'0.875rem' }}>{fS[i]}<i>{j[i]}</i><b>{v[i]}</b>{sS[i]}</p><a href={'https://pubmed.ncbi.nlm.nih.gov/' + value}>  [{value}<FontAwesome className="super-crazy-colors" name="external-link" style={{ textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)' }} />]</a></div></>})}
+                {data[0]["_source"]["Salivary Proteins"]["Cites"].map((value,i)=>{return <><div key={value}><h3 style={{ 'display': 'inline' }}>{i + 1}. </h3><p style={{ 'display': 'inline','color':'black','font-size':'0.875rem' }}><b>{authorName[i]}</b>{fS[i]}<i>{j[i]}</i><b>{v[i]}</b>{sS[i]}</p><a href={'https://pubmed.ncbi.nlm.nih.gov/' + value}>  [{value}<FontAwesome className="super-crazy-colors" name="external-link" style={{ textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)' }} />]</a></div></>})}
                 </TableCell>
             </TableRow>
         </Table>

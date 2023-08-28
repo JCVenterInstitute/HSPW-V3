@@ -6,19 +6,36 @@ import { Link } from "react-router-dom";
 
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
+import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { DATA } from "./data";
 import { ICellRendererParams } from "ag-grid-community";
+import './table.css';
+import first_pic from "./first_pic.png";
+import second_pic from "./second_pic.png";
+import third_pic from "./third_pic.png";
 
 function LinkComponent(props: ICellRendererParams) {
   return (
-    <a
+    <><a
       target="_blank"
       rel="noopener noreferrer"
       href={props.value}
     >
-      Download
-    </a>
-  );
+      <img src={first_pic} style={{marginLeft:'5px',marginRight:'5px'}}/>
+    </a><a
+      target="_blank"
+      rel="noopener noreferrer"
+      href={props.value}
+    >
+        <img src={second_pic} style={{marginLeft:'5px',marginRight:'5px'}}/>
+      </a><a
+        target="_blank"
+        rel="noopener noreferrer"
+        href={props.value}
+      >
+        <img src={third_pic} style={{marginLeft:'5px',marginRight:'5px'}}/>
+      </a></>
+);
 }
 
 function App() {
@@ -37,19 +54,25 @@ function App() {
       maxWidth:141.5,
       autoHeight: true,
       wrapText: true,
+      headerClass: ['header-border'],
+      cellClass: ['table-border'],
     },
-    { headerName: "Project", field: "project",autoHeight: true,wrapText: true,cellStyle:{'word-break': 'break-word'}},
-    { headerName: "Disease", field: "disease",maxWidth:164.8,autoHeight: true,wrapText: true, },
-    { headerName:"Institution", field:"institution",maxWidth:270,autoHeight: true,wrapText: true,},
-    { headerName:"Year", field:"year",maxWidth:95,autoHeight: true,wrapText: true,},
-    { headerName:"Download", field:"download",cellRenderer: "LinkComponent",maxWidth:125,autoHeight: true,},
+    { headerName: "Project", field: "project",autoHeight: true,wrapText: true,cellStyle:{'word-break': 'break-word'},headerClass: ['header-border'],
+    cellClass: ['table-border'],},
+    { headerName: "Disease", field: "disease",maxWidth:175.8,autoHeight: true,wrapText: true, headerClass: ['header-border'],
+    cellClass: ['table-border'],},
+    { headerName:"Institution", field:"institution",maxWidth:290,autoHeight: true,wrapText: true,headerClass: ['header-border'],
+    cellClass: ['table-border'],},
+    { headerName:"Year", field:"year",maxWidth:115,autoHeight: true,wrapText: true,headerClass: ['header-border'],
+    cellClass: ['table-border'],},
+    { headerName:"Download", field:"download",cellRenderer: "LinkComponent",maxWidth:205,autoHeight: true,headerClass: ['header-border'],
+      cellClass: ['table-border'],},
 ];
 
-  const defColumnDefs = { flex: 1, filter: true };
+  const defColumnDefs = { flex: 1, filter: true, editable:true,sortable:true };
 
   const onGridReady = (params) => {
     setGridApi(params);
-    expandFilters(params, "study");
   };
 
   const expandFilters = (params, ...filters) => {
@@ -62,9 +85,9 @@ function App() {
     gridApi.api.setQuickFilter(searchText);
   };
   return (
-    <div className="AppBox">
+    <div className="AppBox" style={{width:'76%'}}>
       
-      <div className="ag-theme-material ag-cell-wrap-text" style={{ height: 600 }}>
+      <div className="ag-theme-material ag-cell-wrap-text ag-theme-alpine" style={{ height: 600 }}>
         <AgGridReact
           rowData={rowData}
           frameworkComponents={{

@@ -13,7 +13,7 @@ import Paper from '@mui/material/Paper';
 import { translateDOMPositionXY } from 'rsuite/esm/DOMHelper';
 import { rgb } from 'd3';
 import Protein from '../components/salivary_protein_table.js';
-
+import Filter from "../components/filter.js";
 import main_feature from '../components/hero.jpeg'
 
 const mystyle = {
@@ -48,16 +48,18 @@ const Accordion = ({ title, content }) => {
   const [isActive, setIsActive] = useState(false);
 
   return (
-      <><div style={{ padding: '20px',backgroundImage: `url(${main_feature})` }}>
-        <h1 style={{color:'white',textAlign:'center',display:'left',marginLeft:'20px',marginBottom:'1rem'}} align="left">Salivary Protein</h1>
-          <p style={mystyle}>
-              Proteins listed below have been manually reviewed and annotated by <a href='https://www.uniprot.org/' className='linksa'>UniProt</a>, and have
+      <>
+      <div style={{height: '40%', padding:'35px',backgroundImage: `url(${main_feature})`,backgroundPosition:'center',backgroundSize:'cover'}}>
+      <h1 style={{color:'white',display:'left',marginLeft:'20px',marginBottom:'1rem'}} className="title" align="left">Salivary Protein</h1>
+      <p style={{textAlign:'left', color:'white', paddingBottom:'15px', marginLeft:'20px',marginRight:'20px'}} className="head_text">
+      Proteins listed below have been manually reviewed and annotated by <a href='https://www.uniprot.org/' className='linksa'>UniProt</a>, and have
               evidence of existence in human saliva through <a href='https://en.wikipedia.org/wiki/Tandem_mass_spectrometry' className='linksa'>tandem mass
                   spectrometry (MS/MS)</a> experiments using whole saliva or glandular secretion samples collected from healthy subjects.
               The list is updated automatically based on current supporting evidence derived from data uploaded to the wiki or retrieved
               from external sources, such as the <a href='https://www.proteinatlas.org/' className='linksa'>Human Protein Atlas</a>.
-          </p>
-          </div>
+      </p>
+    </div>
+    
           <div className="accordion">
               <div className="accordion-item">
                   <div
@@ -212,6 +214,12 @@ const Accordion = ({ title, content }) => {
                       </div>
                   </div>}
               </div>
+      </div>
+      <div className="rowC">
+    <div className='sidebar1'>
+          <h2 style={{margin:'26px',color:'#1463B9',fontFamily:'Montserrat',fontSize:'20px',fontStyle:'normal',fontWeight:'700',lineHeight:'130%', textAlign:'center', alignItems:'center'}}>FILTER</h2>
+        <Filter />
+      </div>
       </div><Protein /></>
   );
 };

@@ -24,6 +24,7 @@ import Signature_Detail from './pages/signature_detail';
 import Basic_Search from './pages/basic_search';
 import Experiment_Search from './pages/experiment_search';
 import Protein_Set_Search from './pages/protein_set_search';
+import Cluster_detail from './pages/cluster_detail';
 
 function App() {
   
@@ -40,6 +41,7 @@ return (
         <Route path='/protein_signature/:interproid' element={<Signature_Detail />} />
         <Route path='/protein_cluster' element={<Cluster/>} />
         <Route path='/gene/:geneid' element={<Gene_Detail />} />
+        <Route path='/protein_cluster/:clusterid' element={<Cluster_detail />} />
         <Route path='/salivary_protein' element={<Salivary_Protein />} />
         <Route path='/protein/:proteinid' element={<Protein_Detail />} />
         <Route path='/analysis' element={<Analysis/>} />

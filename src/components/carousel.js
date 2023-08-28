@@ -5,7 +5,7 @@ import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import chord from './chord-white.png';
 import { Box } from "@mui/system";
-
+import Chord from './chord.js';
 
 function Carousel() {
   const [currImg, setCurrImg] = useState(0);
@@ -25,24 +25,19 @@ function Carousel() {
         >
           <ArrowBackIosIcon style={{ fontSize: 30 }} />
         </div>
-        {images[currImg].subtitle === stringCheck &&<div>
+        {images[currImg].subtitle === stringCheck &&
+        <div>
           
 	  {images[currImg].subtitle === stringCheck &&
-	  <Box
-        	component="img"
-        	sx={{
-          	height: 320,
-          	width: 400,
-          	maxHeight: { xs: 300, md: 320 },
-          	maxWidth: { xs: 500, md: 650 },
-        	}}
-        	alt="The house from the offer."
-        	src={chord}
-          />}
+    <><div style={{float:'left',width:'20%',marginTop:'10%', display:'inline-block'}}><h1 sx="text-align:left" className="third_title">{images[currImg].title}</h1></div>
+    <div style={{width:'40%',margin:'0 auto', display:'inline-block', marginTop:'8%'}}><p className="third_paragraph">{images[currImg].subtitle}</p></div>
+    <div style={{float:'right', display:'inline-block'}}><Chord /></div></>
+    }
         </div>}
-        <div className="center">
-          <h1>{images[currImg].title}</h1>
-          <p className="first_paragraph">{images[currImg].subtitle}</p>
+        <div>
+        {images[currImg].index === 0 && <div class="first_title"><h1 sx="text-align:left">{images[currImg].title}</h1>
+        <p className="first_paragraph">{images[currImg].subtitle}</p></div>}
+        {images[currImg].index === 1 && <><div class="second_title"><h1 sx="text-align:left">{images[currImg].title}</h1></div><p className="second_paragraph">{images[currImg].subtitle}</p></>}
 	  <p>{images[currImg].subtitle1}</p>
         </div>
         <div

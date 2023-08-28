@@ -13,23 +13,35 @@ export const data = [
       calc: "stringify",
     },
   ],
-  ["Submandibular gland", 165,"light blue", null],
-  ["Sublingual gland", 155,"light blue", null],
+  ["SM gland", 165,"light blue", null],
+  ["SL gland", 155,"light blue", null],
   ["Parotid gland", 345,"light blue",  null],
-  ["Whole Saliva", 344,"light blue",null],
-  ["Blood Plasma", 50,"light blue",null],
+  ["WS", 344,"light blue",null],
+  ["Blood", 50,"light blue",null],
 ];
 
 export const options = {
-  title: "Fluid Types",
-  width: 550,
-  height: 250,
+  title: "Sample Types",
+  width: 650,
+  height: 295,
   bar: { groupWidth: "45%" },
   legend: { position: "none" },
   titlePosition:'out',
   titleTextStyle:{
-    fontSize:'18',
+    fontSize:'22',
     bold:true,
+    fontColor:'#565656',
+    fontName:'Lato'
+  },
+  vAxis : { 
+    textStyle : {
+        fontSize: 16,
+        fontColor:'#565656',
+        fontName:'Lato'
+    }
+  },
+  hAxis:{
+    ticks: [0, 50, 100, 150, 200, 250, 300, 350]
   }
 };
 

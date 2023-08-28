@@ -15,8 +15,21 @@ export const options = {
   is3D: false,
   titlePosition:'out',
   titleTextStyle:{
-    fontSize:'18',
+    fontSize:'22',
     bold:true,
+    fontColor:'#565656',
+    fontName:'Lato'
+  },
+  colors:['#C3F968','#A5F1F2','#91F7AB','#71E2E8'],
+  legend:{
+    textStyle:{
+      fontSize: 16,
+        fontColor:'#565656',
+        fontName:'Lato'
+    }
+  },
+  pieSliceTextStyle:{
+    color:'#565656'
   }
 };
 
