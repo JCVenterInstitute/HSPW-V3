@@ -76,6 +76,28 @@ app.get("/protein_cluster", (req, res) => {
   
 });
 
+async function search_clusterID(id){
+  var client = await getClient();
+
+  
+  var query = {
+    query:{
+      match: {
+        _id:{
+          query: id
+        }
+      }
+    }
+  };
+
+  var response = await client.search({
+    index: 'protein_cluster',
+    body: query
+  });
+  console.log(Object.keys(JSON.parse(JSON.stringify(response.body.hits.hits))).length);
+  return response.body.hits.hits;
+}
+
 async function search_gene() {
 
   // Initialize the client.
@@ -135,6 +157,8 @@ app.get("/genes/:id",(req,res)=>{
     res.json(result);
   });
 });
+
+
 
 
 async function search_signature() {

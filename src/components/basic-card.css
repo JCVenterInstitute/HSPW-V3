@@ -11,19 +11,21 @@
 
 .basic-card {
 	display: flex;
-	border: 1px solid #bbb;
 	margin: var(--basic-card-spacing);
 	width: calc(var(--basic-card-width) - 2 * var(--basic-card-spacing));
 	padding: var(--basic-card-spacing);
 	text-align: center;
+	border-radius: 16px;
+	background: #FFF;
+	background-color: #FFFFFF;	
 }
 .basic-card[data-destination="true"] {
 	cursor: pointer;
-	background-color: rgba(0, 0, 0, 0);
+	background-color: #FFFFFF;	
 	transition: .33s;
 }
 .basic-card[data-destination="true"]:hover {
-	background-color: rgba(0, 0, 0, .05); 
+	background-color: #FFFFFF;	
 }
 .basic-card[data-size="1"] {
 	width: calc(var(--basic-card-width) - var(--basic-card-spacing));
@@ -60,6 +62,13 @@
 .basic-card h4 {
 	font-size: 18px;
 	padding-bottom: 10px;
+	text-align: left;
+	font-family: Lato;
+	font-size: 20px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: normal;
+	text-transform: uppercase;
 }
 
 .basic-card .basic-card-image-wrapper + h4 {
@@ -70,8 +79,12 @@
 
 .basic-card p {
 	font-size: 16px;
-	color: black;
-	text-align: center;
+	color: #5A5A5A;
+	font-family: Lato;
+	font-style: normal;
+	font-weight: 500;
+	line-height: normal;
+	text-align: left;
 	padding: 0px;
 	margin-bottom: 0px;
 }

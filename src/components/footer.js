@@ -33,21 +33,20 @@ class Footer extends Component {
                     </ul>
                 </div>
                   <div id="footer-text">
-                    <ul>
-                        <li><a href="About">About HSPW</a></li>
-                        <li><a href="Accessibility">Accessibility</a></li>
-                        <li><a href="Copyrights">Copyrights</a></li>
-                        <li><a href="General_disclaimer">Disclaimers</a></li>
-                        <li className="last"><a href="Privacy_policy">Privacy Notice</a></li>
-                    </ul>
-                    <ul id="last_sentence">
+                    <ul id="last_sentence" style={{marginBottom:'45px'}}>
                         <li className="last">Project is funded by NIDCR under grant R01 DE016937-16</li>
                     </ul>
                     <ul>
-                        <li> J. Craig Venter Institute</li>
-                        <li>4120 Capricorn Lane</li>
-                        <li>La Jolla, CA 92037</li>
-                        <li className="last"><a href="mailto:help@salivaryproteome.org">Contact Us</a></li>
+                        <li><a href="About" className='first_li'>About HSPW</a></li>
+                        <li><a href="Accessibility" className='middle'>Accessibility</a></li>
+                        <li><a href="Copyrights" className='middle'>Copyrights</a></li>
+                        <li><a href="General_disclaimer" className='middle'>Disclaimers</a></li>
+                        <li className="last"><a href="Privacy_policy" className='last_li'>Privacy Notice</a></li>
+                    </ul>
+                    <hr class="solid" style={{marginTop:'35px',marginBottom:'35px'}}></hr>
+                    <ul style={{marginBottom:'30px'}}>
+                        <li className="address last">By J. Craig Venter Institute, 4120 Capricorn Lane, La Jolla, CA 92037</li>
+                        <li className="last" style={{marginLeft:'37%'}}><a href="mailto:help@salivaryproteome.org">Contact Us</a></li>
                     </ul>
                 </div>
     

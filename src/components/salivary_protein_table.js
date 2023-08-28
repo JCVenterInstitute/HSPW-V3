@@ -4,6 +4,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-enterprise";
 import { Link } from "react-router-dom";
 import { rgb } from 'd3';
+import './table.css';
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import CustomHeaderGroup from './customHeaderGroup.jsx';
@@ -105,23 +106,21 @@ const styles1 = {
     const d = props.value;
     if(d<10 || d === "low"){
         return ( 
-            <svg width={18} height={18} style={{ stroke: 'black', alignItems: 'center' }}>
-                <rect width={18} height={18} fill="rgb(180,250,180)"><title>Low</title></rect>
-            </svg>
+            <><div style={{width:'100%',height:'100%',backgroundColor:'rgb(180,250,180)',color:'#FFF',fontFamily:'Lato',fontSize:'16px',lineHeight:'24px'}}>
+
+          </div>{d}</>
         );
     }
     else if(d<100 || d === "medium"){
         return (
-            <svg width={18} height={18} style={{ stroke: 'black', alignItems: 'center' }}>
-              <rect width={18} height={18} fill="rgb(70,170,70)"><title>Medium</title></rect>
-            </svg>
+          <><div style={{width:'100%',height:'100%',backgroundColor:'rgb(70,170,70)',color:'#FFF',fontFamily:'Lato',fontSize:'16px',lineHeight:'24px'}}>{d}</div>
+            </>
         );
     }
     else if(d>100 || d === "high"){
         return(
-            <svg width={18} height={18} style={{ stroke: 'black', alignItems: 'center' }}>
-                <rect width={18} height={18} fill="rgb(0,100,0)"><title>High</title></rect>
-            </svg>
+          <><div style={{width:'100%',height:'100%',backgroundColor:'rgb(0,100,0)',color:'#FFF',fontFamily:'Lato',fontSize:'16px',lineHeight:'24px'}}>{d}</div>
+            </>
         );
     }
     else if(d==="not detected" || d === 0){
@@ -190,45 +189,77 @@ function App() {
 
   const columns = [
     {
-      headerName: "UniProt  Accession",
+      headerName: "UniProt Accession",
       field: "uniprot_accession",
       checkboxSelection: false,
       headerCheckboxSelection: false,
-      minWidth:'215',
+      minWidth:'155',
       cellStyle:{'word-break': 'break-word'}
+      ,headerClass: ['header-border'],
+    cellClass: ['table-border'],
     },
-    { headerName: "Gene Symbol",minWidth:'145', field: "gene_symbol",wrapText: true,autoHeight: true,cellStyle:{'word-break': 'break-word'}},
-    { headerName: "Protein Name",minWidth:'145', field: "protein_name",wrapText: true,autoHeight: true,cellStyle:{'word-break': 'break-word'} },
-    { headerName: "Expert Opinion",minWidth:'155', field: "expert_opinion",autoHeight: true,wrapText: true,maxWidth:'155' },
-    { headerName: "MS", headerGroupComponent: CustomHeaderGroup,
+    { headerName: "Gene Symbol",minWidth:'145', field: "gene_symbol",wrapText: true,autoHeight: true,headerClass: ['header-border'],
+    cellClass: ['table-border'],cellStyle:{'word-break': 'break-word'}},
+    { headerName: "Protein Name",minWidth:'145', field: "protein_name",wrapText: true,headerClass: ['header-border'],
+    cellClass: ['table-border'],autoHeight: true,cellStyle:{'word-break': 'break-word'} },
+    { headerName: "Expert Opinion",minWidth:'155', field: "expert_opinion",autoHeight: true,headerClass: ['header-border'],
+    cellClass: ['table-border'],wrapText: true,maxWidth:'155' },
+    { headerName: "MS", headerGroupComponent: CustomHeaderGroup,headerClass: ['header-border'],
+    cellClass: ['table-border'],
       children:[
         {
             field:'WS',
-            minWidth:'90',cellRenderer: "WSComponent"
+            minWidth:'120',cellRenderer: "WSComponent",
+            headerClass: ['header-border'],
+    cellClass: ['table-border'],
         },
         {
             field:'Par',
-            minWidth:'90',cellRenderer: "WSComponent"
+            minWidth:'120',cellRenderer: "WSComponent",
+            headerClass: ['header-border'],
+    cellClass: ['table-border'],
         },
         {
             field:'Sub',
-            minWidth:'90',cellRenderer: "WSComponent"
+            minWidth:'120',cellRenderer: "WSComponent",
+            headerClass: ['header-border'],
+    cellClass: ['table-border'],
         },
         {
             field:'B',
-            minWidth:'90',cellRenderer: "LinkComponent"
+            minWidth:'120',cellRenderer: "LinkComponent",
+            headerClass: ['header-border'],
+    cellClass: ['table-border'],
         }
       ],autoHeight: true,wrapText: true,cellStyle: {textAlign: 'center'}
       },
       {
         headerName:"IHC",
         field:"IHC",
-        minWidth:'100',autoHeight: true,wrapText: true,cellRenderer: "WSComponent"
+        minWidth:'105',autoHeight: true,wrapText: true,cellRenderer: "WSComponent",
+        headerClass: ['header-border'],
+    cellClass: ['table-border'],
       },
       {
         headerName:"mRNA",
-        field:"mRNA",
-        minWidth:'110',autoHeight: true,wrapText: true,cellRenderer: "WSComponent"
+        headerGroupComponent: CustomHeaderGroup,
+        minWidth:'110',autoHeight: true,wrapText: true,cellRenderer: "WSComponent",
+        headerClass: ['header-border'],
+    cellClass: ['table-border'],
+        children:[
+          {
+              field:'value',
+              minWidth:'130',cellRenderer: "WSComponent",
+              headerClass: ['header-border'],
+    cellClass: ['table-border'],
+          },
+          {
+              field:'specificity',
+              minWidth:'170',
+              headerClass: ['header-border'],
+    cellClass: ['table-border'],
+          }
+        ]
       }
 ];
 
@@ -254,22 +285,12 @@ function App() {
 
   const onGridReady = (params) => {
     setGridApi(params);
-    expandFilters(params, "gene");
   };
 
-  const expandFilters = (params, ...filters) => {
-    const applyFilters = filters?.length > 0 ? filters : null;
-    params.api.getToolPanelInstance("filters").expandFilters(applyFilters);
-  };
 
-  const applyQuickFilter = (e) => {
-    const searchText = e.target.value;
-    gridApi.api.setQuickFilter(searchText);
-  };
   return (
     <div className="AppBox1">
-      <h2 align="center" className="text">Salivary Protein</h2>
-      <div className="ag-theme-material ag-cell-wrap-text" style={{ height: 600 }}>
+      <div className="ag-theme-material ag-cell-wrap-text ag-theme-alpine" style={{ height: 600 }}>
         <AgGridReact
           className="ag-cell-wrap-text"
           rowData={rowData}
@@ -281,61 +302,6 @@ function App() {
           onGridReady={onGridReady}
           pagination= {true}
           paginationPageSize= {50}
-          sideBar={{
-            position: 'left',
-            toolPanels: [
-              {
-                id: "columns",
-                labelDefault: "Columns",
-                labelKey: "columns",
-                iconKey: "columns",
-                toolPanel: "agColumnsToolPanel",
-                toolPanelParams: {
-                  suppressPivotMode: true,
-                  suppressRowGroups: true,
-                  suppressValues: true,
-                  suppressColumnFilter: false,
-                  suppressColumnSelectAll: false,
-                },
-              },
-              {
-                id: "filters",
-                labelDefault: "Filters",
-                labelKey: "filters",
-                iconKey: "filter",
-                toolPanel: "agFiltersToolPanel",
-                toolPanelParams: {
-                  suppressFilterSearch: false,
-                },
-              },
-              {
-                id: "QuickSearch",
-                labelDefault: "Quick Search",
-                labelKey: "QuickSearch",
-                iconKey: "menu",
-                toolPanel: () => (
-                  <div>
-                    <h4>Global Search</h4>
-                    <input
-                      placeholder="Search..."
-                      type="search"
-                      style={{
-                        width: 190,
-                        height: 35,
-                        outline: "none",
-                        border: "none",
-                        borderBottom: `1px #181616 solid`,
-                        padding: `0 5px`,
-                      }}
-                      onChange={applyQuickFilter}
-                    />
-                  </div>
-                ),
-              },
-            ],
-            defaultToolPanel: 'filters'
-            // position: "right",
-          }}
         />
       </div>
     </div>

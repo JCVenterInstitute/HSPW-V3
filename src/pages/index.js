@@ -15,8 +15,9 @@ import protein_cluster from '../components/icon-clustering.png';
 import api from '../components/icon-api.png';
 import help from '../components/icon-help.png';
 import { Timeline } from 'react-twitter-widgets'
-import ChordDiagram from '../components/chordDiagram.js';
+import Chord from '../components/chord.js';
 import { PopupService } from 'ag-grid-community';
+
 
 
 /*
@@ -60,7 +61,7 @@ class Home extends React.Component {
           basicCards: [
             {
               imageSrc: salivary_protein,
-              title: 'Protein Search',
+              title: 'Salivary Protein',
               blurb: 'Search for specific salivary proteins found in our database.'
             },
             {
@@ -141,7 +142,7 @@ class Home extends React.Component {
         <StyledEngineProvider injectFirst>
           <div id="application" data-layout={page.layout}>
             <Carousel />
-            <ChordDiagram />
+          
             <div id="page-content">
               <div className="basic-card-container">
                 { 

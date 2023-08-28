@@ -30,6 +30,13 @@ const Citation_detail = (props) => {
     const [abstract, setAbstract] = useState("");
     const [affi,setaffi] = useState("");
     const [keyword,setKeyWord] = useState();
+    const [ISSNNum, setISSNNum] = useState();
+    const [journalTitle, setjournalTitle] = useState();
+    const [authorName, setauthorName] = useState();
+    const [year, setYear] = useState();
+    const [ta, setTA] = useState();
+    const [pgn, setPGN] = useState();
+    const [journal, setJournal] = useState();
     const [isLoadingT, setLoadingT] = useState(true);
     const fetchAbstract = async()=>{
         const response = await fetch('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id='+params['citationid']+'&retmode=xml&rettype=abstract&api_key=1b7c2864fec7f4749814a17559ed02608808')
@@ -62,6 +69,23 @@ const Citation_detail = (props) => {
                         b.push(c);
                     }
                     setKeyWord(b.toString());
+                    console.log('diu:'+xml1.getElementsByTagName('Article'));
+                    if(xml1.getElementsByTagName('LastName').length === 1){
+                        setauthorName(xml1.getElementsByTagName('LastName')[0].textContent+ ' ' + xml1.getElementsByTagName('Initials')[0].textContent)
+                    }
+                    else if(xml1.getElementsByTagName('LastName').length === 2){
+                        setauthorName(xml1.getElementsByTagName('LastName')[0].textContent+ ' ' + xml1.getElementsByTagName('Initials')[0].textContent + ' and ' + xml1.getElementsByTagName('LastName')[1].textContent+ ' ' + xml1.getElementsByTagName('Initials')[1].textContent );
+                    }
+                    else if(xml1.getElementsByTagName('LastName').length >= 3){
+                        setauthorName(xml1.getElementsByTagName('LastName')[0].textContent+ ' ' + xml1.getElementsByTagName('Initials')[0].textContent + ', et al.')
+                    }
+                    setJournal(xml1.getElementsByTagName('Volume')[0].textContent + '(' + xml1.getElementsByTagName('Issue')[0].textContent + ')')
+                    setYear(xml1.getElementsByTagName('Year')[0].textContent);
+                    setTA(xml1.getElementsByTagName('MedlineTA')[0].textContent);
+                    setPGN(xml1.getElementsByTagName('MedlinePgn')[0].textContent);
+                    setjournalTitle(xml1.getElementsByTagName('MedlineJournalInfo')[0].textContent);
+                    setISSNNum(xml1.getElementsByTagName('ISSNLinking')[0].textContent);
+
         }
         else{
             setAbstract(xml1.getElementsByTagName('AbstractText')[0].textContent);    
@@ -85,6 +109,22 @@ const Citation_detail = (props) => {
                         b.push(c);
                     }
                     setKeyWord(b.toString());
+                    console.log('diu:'+xml1.getElementsByTagName('LastName')[0].textContent);
+                    if(xml1.getElementsByTagName('LastName').length === 1){
+                        setauthorName(xml1.getElementsByTagName('LastName')[0].textContent+ ' ' + xml1.getElementsByTagName('Initials')[0].textContent)
+                    }
+                    else if(xml1.getElementsByTagName('LastName').length === 2){
+                        setauthorName(xml1.getElementsByTagName('LastName')[0].textContent+ ' ' + xml1.getElementsByTagName('Initials')[0].textContent + ' and ' + xml1.getElementsByTagName('LastName')[1].textContent+ ' ' + xml1.getElementsByTagName('Initials')[1].textContent );
+                    }
+                    else if(xml1.getElementsByTagName('LastName').length >= 3){
+                        setauthorName(xml1.getElementsByTagName('LastName')[0].textContent+ ' ' + xml1.getElementsByTagName('Initials')[0].textContent + ', et al.')
+                    }
+                    setJournal(xml1.getElementsByTagName('Volume')[0].textContent + '(' + xml1.getElementsByTagName('Issue')[0].textContent + ')')
+                    setYear(xml1.getElementsByTagName('Year')[0].textContent);
+                    setTA(xml1.getElementsByTagName('MedlineTA')[0].textContent);
+                    setPGN(xml1.getElementsByTagName('MedlinePgn')[0].textContent);
+                    setjournalTitle(xml1.getElementsByTagName('MedlineTA')[0].textContent);
+                    setISSNNum(xml1.getElementsByTagName('ISSNLinking')[0].textContent);
                     
                 
         }
@@ -114,7 +154,7 @@ const Citation_detail = (props) => {
     fetchAbstract();
     fetchSignature();
     
-  });
+  },[]);
 
   if(isLoading === true){
     return <h2>Loading</h2>
@@ -122,7 +162,8 @@ const Citation_detail = (props) => {
   return (
     <>
     <div style={{margin:'20px'}}>
-        <h2 style={{color:'black', marginBottom:'20px'}}>van Es JH, et al. (1999) Identification of APC2, a homologue of the adenomatous polyposis coli tumour suppressor. Curr. Biol. 9(2):105-8</h2>
+        <h2 style={{color:'black', marginBottom:'20px'}}>
+            {authorName} ({year}) {data[0]["_source"]["Title"]}. {journalTitle}. {journal}:{pgn}</h2>
         <TableContainer component={Paper} style={{padding:'10px'}}>
             <Table sx={{minWidth:650}} aria-label="simple table" style={{border: "1px solid black"}}>
                 <TableHead>
@@ -147,7 +188,7 @@ const Citation_detail = (props) => {
                     </TableRow>
                     <TableRow>
                         <TableCell sx={th}>Journal</TableCell>
-                        <TableCell sx={td}>Curr. Biol. (ISSN:0960-9822)</TableCell>
+                        <TableCell sx={td}>{journalTitle} (ISSN:{ISSNNum})</TableCell>
                     </TableRow>
                     <TableRow>
                         <TableCell sx={th}>Publication Date</TableCell>

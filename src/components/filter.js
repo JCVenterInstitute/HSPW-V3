@@ -6,7 +6,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Collapse from "@material-ui/core/Collapse";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { Css, Html, Javascript } from "@mui/icons-material";
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 import { menu } from "./menu";
 import { hasChildren } from "./utils";
@@ -46,8 +47,9 @@ const MultiLevel = ({ item }) => {
   return (
     <React.Fragment>
       <ListItem button onClick={handleClick} divider="true">
+      {open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
         <ListItemText primary={item.title} />
-        {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+        
       </ListItem>
       <div>
         <Collapse in={open} timeout="auto" unmountOnExit>

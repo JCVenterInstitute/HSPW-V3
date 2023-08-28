@@ -1,7 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato&family=Montserrat:wght@800&display=swap');
+
 .carousel {
     width: 100%;
-    min-height: 350px;
-    height:350px;
+    min-height: 280px;
+    height:420px;
     background-color: white;
     background-size: cover;
 	background-repeat: no-repeat;
@@ -26,7 +29,7 @@
     place-items: center;
     color: black;
     cursor: pointer;
-    margin-top:250px;
+    margin-top:200px;
 }
 
 .carouselInner .center {
@@ -39,14 +42,61 @@
 }
 
 h1 {
-    font-size: 64px;
-	margin-bottom: 3rem;
+    color: #FEFFFF;
+font-family: Montserrat;
+font-size: 36px;
+font-style: normal;
+font-weight: 800;
+line-height: 100%; /* 36px */
+text-transform: uppercase;
+text-align: left;
 }
 
 
+.first_title{
+    margin-top: 5%;
+}
+
+.first_paragraph{
+    margin-top: 65px;
+}
+
+.second_title{
+    margin-top:5%;
+    width:20%;
+}
+
+.second_paragraph{
+    margin-top: -7%;
+    margin-left:55%;
+}
+
+.third_title{
+    color: #FFF;
+font-family: Montserrat;
+font-size: 36px;
+font-style: normal;
+font-weight: 800;
+line-height: 100%; /* 36px */
+text-transform: uppercase;
+}
+
+.third_paragraph{
+    color: #FFF;
+font-family: Lato;
+font-size: 22px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+}
 
 p {
-    font-size: 24px;
+    color: #FFF;
+font-family: Lato;
+font-size: 22px;
+font-style: normal;
+font-weight: 600;
+line-height: normal;
 }
 
 
@@ -54,7 +104,6 @@ h1, p {
     position: relative;
 	z-index: 5;
 	color: white;
-	text-align: center;
 	padding: 0px;
 }
 
@@ -65,5 +114,5 @@ h1, p {
     place-items: center;
     color: black;
     cursor: pointer;
-    margin-top:250px;
+    margin-top:200px;
 }
