@@ -44,7 +44,7 @@ class Footer extends Component {
                         <li className="last"><a href="Privacy_policy" className='last_li'>Privacy Notice</a></li>
                     </ul>
                     <hr class="solid" style={{marginTop:'35px',marginBottom:'35px'}}></hr>
-                    <ul style={{marginBottom:'30px'}}>
+                    <ul>
                         <li className="address last">By J. Craig Venter Institute, 4120 Capricorn Lane, La Jolla, CA 92037</li>
                         <li className="last" style={{marginLeft:'37%'}}><a href="mailto:help@salivaryproteome.org">Contact Us</a></li>
                     </ul>

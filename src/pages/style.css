@@ -218,7 +218,6 @@ line-height: normal;
 
 .charts{
 
-  margin-left: 241px;
   margin-top:5px;
   display:flex; 
   flex-direction:row;
@@ -227,9 +226,26 @@ line-height: normal;
 
 }
 
-.charts1{
+.flex-container {
+  /* We first create a flex layout context */
+  display: flex;
+  
+  /* Then we define the flow direction 
+     and if we allow the items to wrap 
+   * Remember this is the same as:
+   * flex-direction: row;
+   * flex-wrap: wrap;
+   */
+  flex-flow: row wrap;
+  
+  /* Then we define how is distributed the remaining space */
+  justify-content: space-around;
+  margin-left: 20%;
+  padding: 0;
+  list-style: none;
+}
 
-  margin-left: 50px;
+.charts1{
   margin-top:5px;
   display:flex; 
   flex-direction:row;

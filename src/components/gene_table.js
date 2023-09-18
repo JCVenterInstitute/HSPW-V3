@@ -1,8 +1,7 @@
 import "./filter.css";
-import React, { useState, useEffect,useCallback,useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-enterprise";
-import { Link } from "react-router-dom";
 
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
@@ -13,7 +12,7 @@ function LinkComponent(props: ICellRendererParams) {
     <a
       target="_blank"
       rel="noopener noreferrer"
-      href={'http://localhost:3000/gene/'+props.value}
+      href={"http://localhost:3000/gene/" + props.value}
     >
       EntrezGene:{props.value}
     </a>
@@ -27,10 +26,9 @@ function App() {
     fetch("http://localhost:8000/genes")
       .then((res) => res.json())
       .then((data) => setMessage(data));
-
   }, []);
   let data1 = [];
-  for(let i = 0; i < message.length;i++){
+  for (let i = 0; i < message.length; i++) {
     data1.push(message[i]["_source"]);
   }
 
@@ -38,19 +36,23 @@ function App() {
   const [gridApi, setGridApi] = useState();
   const rowData = data1;
 
-
   const columns = [
     {
       headerName: "Gene",
       field: "GeneID",
       checkboxSelection: false,
       headerCheckboxSelection: false,
-      cellRenderer: "LinkComponent"
+      cellRenderer: "LinkComponent",
     },
-    { headerName: "Gene Name", field: "Gene Name",wrapText: true,autoHeight: true,cellStyle:{'word-break': 'break-word'}},
+    {
+      headerName: "Gene Name",
+      field: "Gene Name",
+      wrapText: true,
+      autoHeight: true,
+      cellStyle: { "word-break": "break-word" },
+    },
     { headerName: "Location", field: "Location" },
-
-];
+  ];
 
   const defColumnDefs = { flex: 1, filter: true };
 
@@ -80,7 +82,7 @@ function App() {
   }, []);
 
   const onPageSizeChanged = useCallback(() => {
-    var value = document.getElementById('page-size').value;
+    var value = document.getElementById("page-size").value;
     gridRef.current.api.paginationSetPageSize(Number(value));
   }, []);
 
@@ -90,16 +92,16 @@ function App() {
 
   const onFilterTextBoxChanged = useCallback(() => {
     gridRef.current.api.setQuickFilter(
-      document.getElementById('filter-text-box').value
+      document.getElementById("filter-text-box").value
     );
   }, []);
 
   const onPrintQuickFilterTexts = useCallback(() => {
     gridRef.current.api.forEachNode(function (rowNode, index) {
       console.log(
-        'Row ' +
+        "Row " +
           index +
-          ' quick filter text is ' +
+          " quick filter text is " +
           rowNode.quickFilterAggregateText
       );
     });
@@ -107,34 +109,42 @@ function App() {
 
   return (
     <div className="AppBox1">
-      <div className="example-header" style={{marginLeft:'35px'}}>
-      <label>Search: </label>
-      <input
-            type="text"
-            id="filter-text-box"
-            placeholder="Filter..."
-            onInput={onFilterTextBoxChanged}
-            style={{width:'50%',padding:'0.25rem 0.75rem'}}
-          />
-          <b style={{marginLeft:'15%'}}>Page size: </b>
-          <select onChange={onPageSizeChanged} id="page-size">
-            <option value="50" selected={true}>
-              50
-            </option>
-            <option value="100">100</option>
-            <option value="500">500</option>
-            <option value="1000">1000</option>
-          </select>
+      <div className="example-header" style={{ marginLeft: "35px" }}>
+        <label>Search: </label>
+        <input
+          type="text"
+          id="filter-text-box"
+          placeholder="Filter..."
+          onInput={onFilterTextBoxChanged}
+          style={{ width: "50%", padding: "0.25rem 0.75rem" }}
+        />
+        <b style={{ marginLeft: "15%" }}>Page size: </b>
+        <select onChange={onPageSizeChanged} id="page-size">
+          <option value="50" selected={true}>
+            50
+          </option>
+          <option value="100">100</option>
+          <option value="500">500</option>
+          <option value="1000">1000</option>
+        </select>
 
-          <button
-            onClick={onBtExport}
-            style={{ marginBottom: '5px', fontWeight: 'bold', textAlign: 'right',marginLeft:'3%' }}
-          >
-            Export to Excel
-          </button>
-        </div>
+        <button
+          onClick={onBtExport}
+          style={{
+            marginBottom: "5px",
+            fontWeight: "bold",
+            textAlign: "right",
+            marginLeft: "3%",
+          }}
+        >
+          Export to Excel
+        </button>
+      </div>
 
-      <div className="ag-theme-material ag-cell-wrap-text" style={{ height: 600 }}>
+      <div
+        className="ag-theme-material ag-cell-wrap-text"
+        style={{ height: 600 }}
+      >
         <AgGridReact
           className="ag-cell-wrap-text"
           ref={gridRef}
@@ -148,13 +158,13 @@ function App() {
             '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
           }
           onGridReady={onGridReady}
-          pagination= {true}
+          pagination={true}
           frameworkComponents={{
-            LinkComponent
+            LinkComponent,
           }}
-          paginationPageSize= {50}
+          paginationPageSize={50}
           sideBar={{
-            position: 'left',
+            position: "left",
             toolPanels: [
               {
                 id: "columns",
@@ -181,7 +191,7 @@ function App() {
                 },
               },
             ],
-            defaultToolPanel: 'filters'
+            defaultToolPanel: "filters",
             // position: "right",
           }}
         />
