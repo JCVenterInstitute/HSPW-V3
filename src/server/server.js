@@ -13,6 +13,9 @@ app.use(express.json());
 var host =
   "https://search-hspw-dev2-dmdd32xae4fmxh7t4g6skv67aa.us-east-2.es.amazonaws.com";
 
+var host1 =
+  "https://search-hspw-dev-open-crluksvxj4mvcgl5nopcl6ykte.us-east-2.es.amazonaws.com";
+
 const getClient = async () => {
   const awsCredentials = await defaultProvider()();
   const connector = createAwsOpensearchConnector({
@@ -25,6 +28,21 @@ const getClient = async () => {
   return new Client({
     ...connector,
     node: host,
+  });
+};
+
+const getClient1 = async () => {
+  const awsCredentials = await defaultProvider()();
+  const connector = createAwsOpensearchConnector({
+    credentials: awsCredentials,
+    region: process.env.AWS_REGION ?? "us-east-2",
+    getCredentials: function (cb) {
+      return cb();
+    },
+  });
+  return new Client({
+    ...connector,
+    node: host1,
   });
 };
 
@@ -335,9 +353,192 @@ app.get("/citation", (req, res) => {
   });
 });
 
+async function search_protein_count_SP() {
+  var client = await getClient();
+
+  const query =
+    "SELECT i1.accession, COUNT(i1.accession) as common_count FROM unique_protein_by_sample_type i1 WHERE i1.sample_type IN ('Parotid gland', 'Saliva') GROUP BY i1.accession HAVING COUNT(DISTINCT i1.sample_type) = 2;";
+
+  const { body } = await client.transport.request({
+    method: "POST",
+    path: "_plugins/_sql",
+    body: {
+      query: query,
+    },
+  });
+
+  return body;
+}
+
+async function search_protein_count_SB() {
+  var client = await getClient();
+
+  const query =
+    "SELECT i1.accession, COUNT(i1.accession) as common_count FROM unique_protein_by_sample_type i1 WHERE i1.sample_type IN ('Plasma', 'Saliva') GROUP BY i1.accession HAVING COUNT(DISTINCT i1.sample_type) = 2;";
+
+  const { body } = await client.transport.request({
+    method: "POST",
+    path: "_plugins/_sql",
+    body: {
+      query: query,
+    },
+  });
+
+  return body;
+}
+
+async function search_protein_count_SSS() {
+  var client = await getClient();
+
+  const query =
+    "SELECT i1.accession, COUNT(i1.accession) as common_count FROM unique_protein_by_sample_type i1 WHERE i1.sample_type IN ('Submandibular gland', 'Saliva') GROUP BY i1.accession HAVING COUNT(DISTINCT i1.sample_type) = 2;";
+
+  const { body } = await client.transport.request({
+    method: "POST",
+    path: "_plugins/_sql",
+    body: {
+      query: query,
+    },
+  });
+
+  return body;
+}
+
+async function search_count_Pa() {
+  var client = await getClient();
+
+  const query =
+    "SELECT COUNT(DISTINCT i1.accession) from unique_protein_by_sample_type i1 where i1.sample_type = 'Parotid gland';";
+
+  const { body } = await client.transport.request({
+    method: "POST",
+    path: "_plugins/_sql",
+    body: {
+      query: query,
+    },
+  });
+
+  return body;
+}
+
+async function search_count_S() {
+  var client = await getClient();
+
+  const query =
+    "SELECT COUNT(DISTINCT i1.accession) from unique_protein_by_sample_type i1 where i1.sample_type = 'Saliva';";
+
+  const { body } = await client.transport.request({
+    method: "POST",
+    path: "_plugins/_sql",
+    body: {
+      query: query,
+    },
+  });
+
+  return body;
+}
+
+async function search_count_Pl() {
+  var client = await getClient();
+
+  const query =
+    "SELECT COUNT(DISTINCT i1.accession) from unique_protein_by_sample_type i1 where i1.sample_type = 'Plasma';";
+
+  const { body } = await client.transport.request({
+    method: "POST",
+    path: "_plugins/_sql",
+    body: {
+      query: query,
+    },
+  });
+
+  return body;
+}
+
+async function search_count_SS() {
+  var client = await getClient();
+
+  const query =
+    "SELECT COUNT(DISTINCT i1.accession) from unique_protein_by_sample_type i1 where i1.sample_type = 'Submandibular gland';";
+
+  const { body } = await client.transport.request({
+    method: "POST",
+    path: "_plugins/_sql",
+    body: {
+      query: query,
+    },
+  });
+
+  return body;
+}
+
+app.get("/countProteinPa", (req, res) => {
+  let a = search_count_Pa();
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+app.get("/countProteinS", (req, res) => {
+  let a = search_count_S();
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+app.get("/countProteinPl", (req, res) => {
+  let a = search_count_Pl();
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+app.get("/countProteinSS", (req, res) => {
+  let a = search_count_SS();
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+app.get("/countSP", (req, res) => {
+  let a = search_protein_count_SP();
+  a.then(function (result) {
+    res.json(result);
+    var total = 0;
+    for (var i = 0; i < result.datarows.length; i++) {
+      total += result.datarows[i][1];
+    }
+    console.log(total);
+  });
+});
+
+app.get("/countSB", (req, res) => {
+  let a = search_protein_count_SB();
+  a.then(function (result) {
+    res.json(result);
+    var total = 0;
+    for (var i = 0; i < result.datarows.length; i++) {
+      total += result.datarows[i][1];
+    }
+    console.log(total);
+  });
+});
+
+app.get("/countSSS", (req, res) => {
+  let a = search_protein_count_SSS();
+  a.then(function (result) {
+    res.json(result);
+    var total = 0;
+    for (var i = 0; i < result.datarows.length; i++) {
+      total += result.datarows[i][1];
+    }
+    console.log(total);
+  });
+});
+
 async function search_protein() {
   // Initialize the client.
-  var client = await getClient();
+  var client = await getClient1();
 
   var query = {
     size: 10000,
@@ -347,14 +548,16 @@ async function search_protein() {
   };
 
   var response = await client.search({
-    index: "protein",
+    index: "salivary-proteins",
     body: query,
     _source: [
-      "Salivary Proteins.Uniprot Accession",
-      "Salivary Proteins.Gene Symbol",
-      "Salivary Proteins.Protein Name",
-      "Salivary Proteins.Expert Opinion",
-      "Salivary Proteins.IHC",
+      "salivary_proteins.uniprot_accession",
+      "salivary_proteins.gene_symbol",
+      "salivary_proteins.protein_name",
+      "salivary_proteins.expert_opinion",
+      "salivary_proteins.ihc",
+      "salivary_proteins.atlas",
+      "salivary_proteins.expert_opinion",
     ],
   });
   return response.body.hits.hits;

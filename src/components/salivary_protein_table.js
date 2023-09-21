@@ -212,22 +212,31 @@ function WSComponent(props: ICellRendererParams) {
   }
 }
 
+function opinionComponent(props: ICellRendererParams) {
+  const d = props.value;
+  if (d === "Confirmed") {
+    return <text>C</text>;
+  } else if (d === "Unsubstantiated") {
+    return <text>US</text>;
+  }
+}
+
 function IHCComponent(props: ICellRendererParams) {
   const d = props.value;
   console.log(d);
   if (d === "Low") {
     return (
       <svg
-        width={95}
-        height={65}
+        width={110}
+        height={78}
         style={{ stroke: "black", alignItems: "center" }}
       >
-        <rect width={95} height={65} fill="rgb(180,250,180)">
+        <rect width={110} height={78} fill="rgb(180,250,180)">
           <title>Low</title>
         </rect>
         <text
-          x="30"
-          y="37"
+          x="35"
+          y="42"
           class="heavy"
           style={{ fill: "black", stroke: "black" }}
         >
@@ -238,16 +247,16 @@ function IHCComponent(props: ICellRendererParams) {
   } else if (d === "Medium") {
     return (
       <svg
-        width={95}
-        height={65}
+        width={110}
+        height={78}
         style={{ stroke: "black", alignItems: "center" }}
       >
-        <rect width={95} height={65} fill="rgb(70,170,70)">
+        <rect width={110} height={78} fill="rgb(70,170,70)">
           <title>Medium</title>
         </rect>
         <text
-          x="16"
-          y="37"
+          x="20"
+          y="42"
           class="heavy"
           style={{ fill: "white", stroke: "white" }}
         >
@@ -258,16 +267,16 @@ function IHCComponent(props: ICellRendererParams) {
   } else if (d === "High") {
     return (
       <svg
-        width={95}
-        height={65}
+        width={110}
+        height={78}
         style={{ stroke: "black", alignItems: "center" }}
       >
-        <rect width={95} height={65} fill="rgb(0,100,0)">
+        <rect width={110} height={78} fill="rgb(0,100,0)">
           <title>High</title>
         </rect>
         <text
-          x="28"
-          y="37"
+          x="33"
+          y="42"
           class="heavy"
           style={{ fill: "white", stroke: "white" }}
         >
@@ -278,17 +287,17 @@ function IHCComponent(props: ICellRendererParams) {
   } else if (d === "Not detected") {
     return (
       <svg
-        width={95}
-        height={65}
+        width={110}
+        height={78}
         style={{ stroke: "black", alignItems: "center" }}
       >
         <g>
-          <rect width={95} height={65} fill="rgb(255,255,255)">
+          <rect width={110} height={78} fill="rgb(255,255,255)">
             <title>Not uniquely observed</title>
           </rect>
           <text
-            x="31"
-            y="37"
+            x="35"
+            y="42"
             class="heavy"
             style={{ fill: "black", stroke: "black" }}
           >
@@ -300,8 +309,8 @@ function IHCComponent(props: ICellRendererParams) {
   } else {
     return (
       <svg
-        width={95}
-        height={65}
+        width={110}
+        height={78}
         style={{ stroke: "black", alignItems: "center" }}
       >
         <defs>
@@ -329,7 +338,7 @@ function IHCComponent(props: ICellRendererParams) {
             ></rect>
           </pattern>
         </defs>
-        <rect width={95} height={65} style={{ fill: "url(#stripe2)" }}>
+        <rect width={110} height={78} style={{ fill: "url(#stripe2)" }}>
           <title>Data not available</title>
         </rect>
       </svg>
@@ -391,7 +400,7 @@ function App() {
   }, []);
   let data1 = [];
   for (let i = 0; i < message.length; i++) {
-    data1.push(message[i]["_source"]["Salivary Proteins"]);
+    data1.push(message[i]["_source"]["salivary_proteins"]);
   }
 
   const rowData = data1;
@@ -399,7 +408,7 @@ function App() {
   const columns = [
     {
       headerName: "Accession",
-      field: "Uniprot Accession",
+      field: "uniprot_accession",
       checkboxSelection: false,
       headerCheckboxSelection: false,
       width: "205",
@@ -409,8 +418,8 @@ function App() {
     },
     {
       headerName: "Gene Symbol",
-      minWidth: "135",
-      field: "Gene Symbol",
+      minWidth: "65",
+      field: "gene_symbol",
       wrapText: true,
       autoHeight: true,
       headerClass: ["header-border"],
@@ -419,9 +428,9 @@ function App() {
     },
     {
       headerName: "Protein Name",
-      minWidth: "135",
+      minWidth: "65",
       maxHeight: "5",
-      field: "Protein Name",
+      field: "protein_name",
       wrapText: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
@@ -431,8 +440,9 @@ function App() {
     {
       headerName: "Expert Opinion",
       minWidth: "65",
-      field: "Expert Opinion",
+      field: "expert_opinion",
       autoHeight: true,
+      cellRenderer: "opinionComponent",
       headerClass: ["header-border"],
       cellClass: ["table-border"],
       wrapText: true,
@@ -479,7 +489,7 @@ function App() {
     },
     {
       headerName: "IHC",
-      field: "IHC",
+      field: "ihc",
       minWidth: "105",
       autoHeight: true,
       wrapText: true,
@@ -490,7 +500,7 @@ function App() {
     {
       headerName: "mRNA",
       headerGroupComponent: CustomHeaderGroup,
-      minWidth: "90",
+      minWidth: "105",
       autoHeight: true,
       wrapText: true,
       cellRenderer: "WSComponent",
@@ -560,6 +570,7 @@ function App() {
             LinkComponent,
             WSComponent,
             IHCComponent,
+            opinionComponent,
           }}
           overlayNoRowsTemplate={
             '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
