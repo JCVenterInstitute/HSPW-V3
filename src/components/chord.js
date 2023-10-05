@@ -1,31 +1,195 @@
 import * as d3 from "d3";
 import React, { useRef, useEffect, useState } from "react";
 import "./index.css";
-import { countSaliva } from "./chord_data";
-import axios from "axios";
 // create the svg are
 
 const Chord = (props) => {
   const chartRef = useRef(null);
   const [countSaliva, setCountSaliva] = useState("");
-  useEffect(() => {
-    axios
-      .get("http://localhost:8000/countProteinS")
-      .then((response) => {
-        setCountSaliva(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
-  const data = 0;
-  useEffect(() => {
-    console.log("count");
-    renderChart(data);
-  });
+  const [countPlasma, setCountPlasma] = useState("");
+  const [countSMSL, setCountSMSL] = useState("");
+  const [countParotid, setCountParotid] = useState("");
+  const [countSalivaParotid, setSalivaParotid] = useState("");
+  const [countSalivaPlasma, setSalivaPlasma] = useState("");
+  const [countSalivaSS, setSalivaSS] = useState("");
+  const [countSSPlasma, setSSPlasma] = useState("");
+  const [countSSParotid, setSSParotid] = useState("");
+  const [countPlasmaParotid, setPlasmaParotid] = useState("");
+  const [isLoading, setLoading] = useState(true);
+  const fetchSaliva = async () => {
+    const response = await fetch("http://localhost:8000/countProteinS");
+    if (!response.ok) {
+      const message = `An error has occurred: ${response.status}`;
+      console.error(message);
+      throw new Error(message);
+    }
+    const data = await response.json();
+    setCountSaliva(data.datarows[0][0]);
+  };
 
-  const renderChart = (data) => {
-    console.log("diu123213");
+  const fetchSMSL = async () => {
+    const response = await fetch("http://localhost:8000/countProteinSS");
+    if (!response.ok) {
+      const message = `An error has occurred: ${response.status}`;
+      console.error(message);
+      throw new Error(message);
+    }
+    const data = await response.json();
+    setCountSMSL(data.datarows[0][0]);
+  };
+
+  const fetchParotid = async () => {
+    const response = await fetch("http://localhost:8000/countProteinPa");
+    if (!response.ok) {
+      const message = `An error has occurred: ${response.status}`;
+      console.error(message);
+      throw new Error(message);
+    }
+    const data = await response.json();
+    setCountParotid(data.datarows[0][0]);
+  };
+
+  const fetchPlasma = async () => {
+    const response = await fetch("http://localhost:8000/countProteinPl");
+    if (!response.ok) {
+      const message = `An error has occurred: ${response.status}`;
+      console.error(message);
+      throw new Error(message);
+    }
+    const data = await response.json();
+    setCountPlasma(data.datarows[0][0]);
+  };
+
+  const fetchSalivaParotid = async () => {
+    const response = await fetch("http://localhost:8000/countSPa");
+    if (!response.ok) {
+      const message = `An error has occurred: ${response.status}`;
+      console.error(message);
+      throw new Error(message);
+    }
+    const data = await response.json();
+    setSalivaParotid(data.datarows.length);
+  };
+
+  const fetchSalivaPlasma = async () => {
+    const response = await fetch("http://localhost:8000/countSPl");
+    if (!response.ok) {
+      const message = `An error has occurred: ${response.status}`;
+      console.error(message);
+      throw new Error(message);
+    }
+    const data = await response.json();
+
+    setSalivaPlasma(data.datarows.length);
+  };
+
+  const fetchSalivaSMSL = async () => {
+    const response = await fetch("http://localhost:8000/countSSS");
+    if (!response.ok) {
+      const message = `An error has occurred: ${response.status}`;
+      console.error(message);
+      throw new Error(message);
+    }
+    const data = await response.json();
+
+    setSalivaSS(data.datarows.length);
+  };
+
+  const fetchSMSLPlasma = async () => {
+    const response = await fetch("http://localhost:8000/countSSS");
+    if (!response.ok) {
+      const message = `An error has occurred: ${response.status}`;
+      console.error(message);
+      throw new Error(message);
+    }
+    const data = await response.json();
+
+    setSSPlasma(data.datarows.length);
+  };
+
+  const fetchSMSLParotid = async () => {
+    const response = await fetch("http://localhost:8000/countSSPa");
+    if (!response.ok) {
+      const message = `An error has occurred: ${response.status}`;
+      console.error(message);
+      throw new Error(message);
+    }
+    const data = await response.json();
+
+    setSSParotid(data.datarows.length);
+  };
+
+  const fetchParotidPlasma = async () => {
+    const response = await fetch("http://localhost:8000/countPPa");
+    if (!response.ok) {
+      const message = `An error has occurred: ${response.status}`;
+      console.error(message);
+      throw new Error(message);
+    }
+    const data = await response.json();
+
+    setPlasmaParotid(data.datarows.length);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await fetchSaliva();
+      await fetchSMSL();
+      await fetchParotid();
+      await fetchPlasma();
+      await fetchSalivaParotid();
+      await fetchSalivaPlasma();
+      await fetchSalivaSMSL();
+      await fetchSMSLPlasma();
+      await fetchSMSLParotid();
+      await fetchParotidPlasma();
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (!isLoading) {
+      renderChart(
+        countSaliva,
+        countPlasma,
+        countSMSL,
+        countParotid,
+        countSalivaParotid,
+        countSalivaPlasma,
+        countSalivaSS,
+        countSSPlasma,
+        countSSParotid,
+        countPlasmaParotid
+      );
+    }
+  }, [
+    isLoading,
+    countSaliva,
+    countPlasma,
+    countSMSL,
+    countParotid,
+    countSalivaParotid,
+    countSalivaPlasma,
+    countSalivaSS,
+    countSSPlasma,
+    countSSParotid,
+    countPlasmaParotid,
+  ]);
+
+  const renderChart = (
+    countSaliva,
+    countPlasma,
+    countSMSL,
+    countParotid,
+    countSalivaParotid,
+    countSalivaPlasma,
+    countSalivaSS,
+    countSSPlasma,
+    countSSParotid,
+    countPlasmaParotid
+  ) => {
     var windowWidth = 600;
     var windowHeight = 400;
     var margin = { top: 0, right: 0, bottom: 0, left: 0 },
@@ -51,13 +215,13 @@ const Chord = (props) => {
       "Blood plasma",
     ];
     var matrix = [
-      [0, 602, 595, 615],
-      [602, 0, 730, 776],
-      [595, 730, 1750, 1246],
-      [615, 776, 1246, 1431],
+      [0, countSSParotid, countSalivaSS, countSSPlasma],
+      [countSSParotid, 0, countSalivaParotid, countPlasmaParotid],
+      [countSalivaSS, countSalivaParotid, 1750, countSalivaPlasma],
+      [countSSPlasma, countPlasmaParotid, countSalivaPlasma, 1431],
     ];
 
-    var sizes = [757, 969, 3137, 2893];
+    var sizes = [countSMSL, countParotid, countSaliva, countPlasma];
 
     var fill = d3
       .scaleOrdinal()

@@ -115,13 +115,14 @@ function WSComponent(props: ICellRendererParams) {
             width: "100%",
             height: "100%",
             backgroundColor: "rgb(180,250,180)",
-            color: "#FFF",
+            color: "black",
             fontFamily: "Lato",
             fontSize: "16px",
             lineHeight: "24px",
           }}
-        ></div>
-        {d}
+        >
+          {d}
+        </div>
       </>
     );
   } else if (d < 100 || d === "medium") {
@@ -224,80 +225,74 @@ function opinionComponent(props: ICellRendererParams) {
 function IHCComponent(props: ICellRendererParams) {
   const d = props.value;
   console.log(d);
-  if (d === "Low") {
+  if (d === "low") {
     return (
-      <svg
-        width={110}
-        height={78}
-        style={{ stroke: "black", alignItems: "center" }}
-      >
-        <rect width={110} height={78} fill="rgb(180,250,180)">
-          <title>Low</title>
-        </rect>
-        <text
-          x="35"
-          y="42"
-          class="heavy"
-          style={{ fill: "black", stroke: "black" }}
+      <>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgb(180,250,180)",
+            color: "black",
+            fontFamily: "Lato",
+            fontSize: "16px",
+            lineHeight: "24px",
+          }}
         >
-          Low
-        </text>
-      </svg>
+          {d}
+        </div>
+      </>
     );
-  } else if (d === "Medium") {
+  } else if (d === "medium") {
     return (
-      <svg
-        width={110}
-        height={78}
-        style={{ stroke: "black", alignItems: "center" }}
-      >
-        <rect width={110} height={78} fill="rgb(70,170,70)">
-          <title>Medium</title>
-        </rect>
-        <text
-          x="20"
-          y="42"
-          class="heavy"
-          style={{ fill: "white", stroke: "white" }}
+      <>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgb(70,170,70)",
+            color: "#FFF",
+            fontFamily: "Lato",
+            fontSize: "16px",
+            lineHeight: "24px",
+          }}
         >
-          Medium
-        </text>
-      </svg>
+          {d}
+        </div>
+      </>
     );
-  } else if (d === "High") {
+  } else if (d === "high") {
     return (
-      <svg
-        width={110}
-        height={78}
-        style={{ stroke: "black", alignItems: "center" }}
-      >
-        <rect width={110} height={78} fill="rgb(0,100,0)">
-          <title>High</title>
-        </rect>
-        <text
-          x="33"
-          y="42"
-          class="heavy"
-          style={{ fill: "white", stroke: "white" }}
+      <>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgb(0,100,0)",
+            color: "#FFF",
+            fontFamily: "Lato",
+            fontSize: "16px",
+            lineHeight: "24px",
+          }}
         >
-          High
-        </text>
-      </svg>
+          {d}
+        </div>
+      </>
     );
-  } else if (d === "Not detected") {
+  } else if (d === "not detected") {
     return (
       <svg
-        width={110}
+        width={104}
         height={78}
         style={{ stroke: "black", alignItems: "center" }}
       >
         <g>
-          <rect width={110} height={78} fill="rgb(255,255,255)">
+          <rect width={104} height={78} fill="rgb(255,255,255)">
             <title>Not uniquely observed</title>
           </rect>
           <text
-            x="35"
-            y="42"
+            x="5"
+            y="20"
             class="heavy"
             style={{ fill: "black", stroke: "black" }}
           >
@@ -309,7 +304,7 @@ function IHCComponent(props: ICellRendererParams) {
   } else {
     return (
       <svg
-        width={110}
+        width={104}
         height={78}
         style={{ stroke: "black", alignItems: "center" }}
       >
@@ -338,7 +333,7 @@ function IHCComponent(props: ICellRendererParams) {
             ></rect>
           </pattern>
         </defs>
-        <rect width={110} height={78} style={{ fill: "url(#stripe2)" }}>
+        <rect width={104} height={78} style={{ fill: "url(#stripe2)" }}>
           <title>Data not available</title>
         </rect>
       </svg>
@@ -349,39 +344,94 @@ function IHCComponent(props: ICellRendererParams) {
 function LinkComponent(props: ICellRendererParams) {
   const d = props.value;
   console.log("123");
-  if (d << 10) {
+  if (d < 10 || d === "low") {
     return (
-      <svg
-        width={18}
-        height={18}
-        style={{ stroke: "black", alignItems: "center" }}
-      >
-        <rect width={18} height={18} fill="rgb(250,180,180)">
-          <title>Low</title>
-        </rect>
-      </svg>
+      <>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgb(250,180,180)",
+            color: "black",
+            fontFamily: "Lato",
+            fontSize: "16px",
+            lineHeight: "24px",
+          }}
+        >
+          {d}
+        </div>
+      </>
     );
-  } else if (d << 100) {
+  } else if (d < 100 || d === "medium") {
     return (
       <svg
-        width={18}
-        height={18}
+        width={108}
+        height={78}
         style={{ stroke: "black", alignItems: "center" }}
       >
-        <rect width={18} height={18} fill="rgb(190,70,70)">
+        <rect width={108} height={78} fill="rgb(190,70,70)">
           <title>Medium</title>
         </rect>
       </svg>
     );
-  } else if (d > 100) {
+  } else if (d > 100 || d === "high") {
+    return (
+      <svg
+        width={108}
+        height={78}
+        style={{ stroke: "black", alignItems: "center" }}
+      >
+        <rect width={108} height={78} fill="rgb(100,0,0)">
+          <title>High</title>
+        </rect>
+      </svg>
+    );
+  } else if (d === "not detected" || d === 0) {
     return (
       <svg
         width={18}
         height={18}
         style={{ stroke: "black", alignItems: "center" }}
       >
-        <rect width={18} height={18} fill="rgb(100,0,0)">
-          <title>High</title>
+        <rect width={18} height={18} fill="rgb(255,255,255)">
+          <title>Not uniquely observed</title>
+        </rect>
+      </svg>
+    );
+  } else {
+    return (
+      <svg
+        width={18}
+        height={18}
+        style={{ stroke: "black", alignItems: "center" }}
+      >
+        <defs>
+          <pattern
+            id="stripe2"
+            patternUnits="userSpaceOnUse"
+            patternTransform="rotate(45)"
+            x="0"
+            y="0"
+            width="4"
+            height="4"
+            viewBox="0 0 10 10"
+          >
+            <rect
+              width={2}
+              height={4}
+              fill={rgb(220, 220, 220)}
+              style={styles}
+            ></rect>
+            <rect
+              width={2}
+              height={4}
+              fill={rgb(255, 255, 255)}
+              style={styles1}
+            ></rect>
+          </pattern>
+        </defs>
+        <rect width={18} height={18} style={{ fill: "url(#stripe2)" }}>
+          <title>Data not available</title>
         </rect>
       </svg>
     );
@@ -394,13 +444,13 @@ function App() {
   const [message, setMessage] = useState("");
   const [number, setNumber] = useState("");
   useEffect(() => {
-    fetch("http://localhost:8000/protein")
+    fetch("http://localhost:8000/saliva_protein_table")
       .then((res) => res.json())
       .then((data) => setMessage(data));
   }, []);
   let data1 = [];
   for (let i = 0; i < message.length; i++) {
-    data1.push(message[i]["_source"]["salivary_proteins"]);
+    data1.push(message[i]["_source"]);
   }
 
   const rowData = data1;
@@ -408,7 +458,7 @@ function App() {
   const columns = [
     {
       headerName: "Accession",
-      field: "uniprot_accession",
+      field: "UniProt Accession",
       checkboxSelection: false,
       headerCheckboxSelection: false,
       width: "205",
@@ -419,7 +469,7 @@ function App() {
     {
       headerName: "Gene Symbol",
       minWidth: "65",
-      field: "gene_symbol",
+      field: "Gene Symbol",
       wrapText: true,
       autoHeight: true,
       headerClass: ["header-border"],
@@ -430,7 +480,7 @@ function App() {
       headerName: "Protein Name",
       minWidth: "65",
       maxHeight: "5",
-      field: "protein_name",
+      field: "Protein Name",
       wrapText: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
@@ -454,21 +504,24 @@ function App() {
       cellClass: ["table-border"],
       children: [
         {
-          field: "WS",
+          headerName: "WS",
+          field: "saliva_abundance",
           minWidth: "105",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
           cellClass: ["table-border"],
         },
         {
-          field: "Par",
+          headerName: "Par",
+          field: "parotid_gland_abundance",
           minWidth: "105",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
           cellClass: ["table-border"],
         },
         {
-          field: "Sub",
+          headerName: "Sub",
+          field: "sm/sl_abundance",
           minWidth: "105",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
@@ -476,7 +529,7 @@ function App() {
         },
         {
           headerName: "B",
-          field: "Plasma_abundance",
+          field: "plasma_abundance",
           minWidth: "105",
           cellRenderer: "LinkComponent",
           headerClass: ["header-border"],
@@ -489,7 +542,7 @@ function App() {
     },
     {
       headerName: "IHC",
-      field: "ihc",
+      field: "IHC",
       minWidth: "105",
       autoHeight: true,
       wrapText: true,
@@ -508,7 +561,8 @@ function App() {
       cellClass: ["table-border"],
       children: [
         {
-          field: "value",
+          headerName: "value",
+          field: "mRNA",
           minWidth: "125",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],

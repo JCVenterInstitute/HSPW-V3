@@ -391,7 +391,7 @@ async function search_protein_count_SSS() {
   var client = await getClient();
 
   const query =
-    "SELECT i1.accession, COUNT(i1.accession) as common_count FROM unique_protein_by_sample_type i1 WHERE i1.sample_type IN ('Submandibular gland', 'Saliva') GROUP BY i1.accession HAVING COUNT(DISTINCT i1.sample_type) = 2;";
+    "SELECT i1.accession, COUNT(i1.accession) as common_count FROM unique_protein_by_sample_type i1 WHERE i1.sample_type IN ('Submandibular gland', 'Saliva','Sublingual gland') GROUP BY i1.accession HAVING COUNT(DISTINCT i1.sample_type) = 2;";
 
   const { body } = await client.transport.request({
     method: "POST",
@@ -472,6 +472,78 @@ async function search_count_SS() {
   return body;
 }
 
+async function search_protein_count_SSP() {
+  var client = await getClient();
+
+  const query =
+    "SELECT i1.accession, COUNT(i1.accession) as common_count FROM unique_protein_by_sample_type i1 WHERE i1.sample_type IN ('Submandibular gland', 'Plasma','Sublingual gland') GROUP BY i1.accession HAVING COUNT(DISTINCT i1.sample_type) = 2;";
+
+  const { body } = await client.transport.request({
+    method: "POST",
+    path: "_plugins/_sql",
+    body: {
+      query: query,
+    },
+  });
+
+  return body;
+}
+
+async function search_protein_count_SSPa() {
+  var client = await getClient();
+
+  const query =
+    "SELECT i1.accession, COUNT(i1.accession) as common_count FROM unique_protein_by_sample_type i1 WHERE i1.sample_type IN ('Submandibular gland', 'Parotid gland','Sublingual gland') GROUP BY i1.accession HAVING COUNT(DISTINCT i1.sample_type) = 2;";
+
+  const { body } = await client.transport.request({
+    method: "POST",
+    path: "_plugins/_sql",
+    body: {
+      query: query,
+    },
+  });
+
+  return body;
+}
+
+async function search_protein_count_PPa() {
+  var client = await getClient();
+
+  const query =
+    "SELECT i1.accession, COUNT(i1.accession) as common_count FROM unique_protein_by_sample_type i1 WHERE i1.sample_type IN ('Plasma', 'Parotid gland') GROUP BY i1.accession HAVING COUNT(DISTINCT i1.sample_type) = 2;";
+
+  const { body } = await client.transport.request({
+    method: "POST",
+    path: "_plugins/_sql",
+    body: {
+      query: query,
+    },
+  });
+
+  return body;
+}
+
+app.get("/countPPa", (req, res) => {
+  let a = search_protein_count_PPa();
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+app.get("/countSSP", (req, res) => {
+  let a = search_protein_count_SSP();
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+app.get("/countSSPa", (req, res) => {
+  let a = search_protein_count_SSPa();
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
 app.get("/countProteinPa", (req, res) => {
   let a = search_count_Pa();
   a.then(function (result) {
@@ -500,7 +572,7 @@ app.get("/countProteinSS", (req, res) => {
   });
 });
 
-app.get("/countSP", (req, res) => {
+app.get("/countSPa", (req, res) => {
   let a = search_protein_count_SP();
   a.then(function (result) {
     res.json(result);
@@ -512,7 +584,7 @@ app.get("/countSP", (req, res) => {
   });
 });
 
-app.get("/countSB", (req, res) => {
+app.get("/countSPl", (req, res) => {
   let a = search_protein_count_SB();
   a.then(function (result) {
     res.json(result);
@@ -533,6 +605,54 @@ app.get("/countSSS", (req, res) => {
       total += result.datarows[i][1];
     }
     console.log(total);
+  });
+});
+
+async function search_saliva_abundance() {
+  // Initialize the client.
+  var client = await getClient();
+
+  var query = {
+    query: {
+      match: {
+        _id: {
+          query: id,
+        },
+      },
+    },
+  };
+
+  var response = await client.search({
+    index: "unique_protein_by_sample_type",
+    body: query,
+  });
+
+  return response.body.hits.hits;
+}
+
+async function saliva_protein_table() {
+  // Initialize the client.
+  var client = await getClient();
+
+  var query = {
+    size: 10000,
+    query: {
+      match_all: {},
+    },
+  };
+
+  var response = await client.search({
+    index: "saliva_protein_test",
+    body: query,
+  });
+  return response.body.hits.hits;
+}
+
+app.get("/saliva_protein_table", (req, res) => {
+  let a = saliva_protein_table();
+  a.then(function (result) {
+    console.log(result);
+    res.json(result);
   });
 });
 
