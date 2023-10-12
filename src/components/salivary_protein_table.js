@@ -1,14 +1,11 @@
 import "./filter.css";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-enterprise";
-import { Link } from "react-router-dom";
 import { rgb } from "d3";
 import "./table.css";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import CustomHeaderGroup from "./customHeaderGroup.jsx";
-import { TransitEnterexit, WorkRounded } from "@mui/icons-material";
 import { ICellRendererParams } from "ag-grid-community";
 
 const DATA = [
@@ -119,9 +116,11 @@ function WSComponent(props: ICellRendererParams) {
             fontFamily: "Lato",
             fontSize: "16px",
             lineHeight: "24px",
+            textAlign: "center",
+            paddingTop: "22%",
           }}
         >
-          {d}
+          {Number(d).toFixed(2)}
         </div>
       </>
     );
@@ -137,9 +136,11 @@ function WSComponent(props: ICellRendererParams) {
             fontFamily: "Lato",
             fontSize: "16px",
             lineHeight: "24px",
+            textAlign: "center",
+            paddingTop: "22%",
           }}
         >
-          {d}
+          {Number(d).toFixed(2)}
         </div>
       </>
     );
@@ -155,9 +156,11 @@ function WSComponent(props: ICellRendererParams) {
             fontFamily: "Lato",
             fontSize: "16px",
             lineHeight: "24px",
+            textAlign: "center",
+            paddingTop: "22%",
           }}
         >
-          {d}
+          {Number(d).toFixed(2)}
         </div>
       </>
     );
@@ -216,15 +219,14 @@ function WSComponent(props: ICellRendererParams) {
 function opinionComponent(props: ICellRendererParams) {
   const d = props.value;
   if (d === "Confirmed") {
-    return <text>C</text>;
+    return <span>C</span>;
   } else if (d === "Unsubstantiated") {
-    return <text>US</text>;
+    return <span>US</span>;
   }
 }
 
 function IHCComponent(props: ICellRendererParams) {
   const d = props.value;
-  console.log(d);
   if (d === "low") {
     return (
       <>
@@ -237,9 +239,11 @@ function IHCComponent(props: ICellRendererParams) {
             fontFamily: "Lato",
             fontSize: "16px",
             lineHeight: "24px",
+            textAlign: "center",
+            paddingTop: "22%",
           }}
         >
-          {d}
+          <span style={{ textAlign: "center" }}>{d}</span>
         </div>
       </>
     );
@@ -255,9 +259,11 @@ function IHCComponent(props: ICellRendererParams) {
             fontFamily: "Lato",
             fontSize: "16px",
             lineHeight: "24px",
+            textAlign: "center",
+            paddingTop: "22%",
           }}
         >
-          {d}
+          <span style={{ textAlign: "center" }}>{d}</span>
         </div>
       </>
     );
@@ -273,40 +279,43 @@ function IHCComponent(props: ICellRendererParams) {
             fontFamily: "Lato",
             fontSize: "16px",
             lineHeight: "24px",
+            textAlign: "center",
+            paddingTop: "22%",
           }}
         >
-          {d}
+          <span style={{ textAlign: "center" }}>{d}</span>
         </div>
       </>
     );
   } else if (d === "not detected") {
     return (
-      <svg
-        width={104}
-        height={78}
-        style={{ stroke: "black", alignItems: "center" }}
-      >
-        <g>
-          <rect width={104} height={78} fill="rgb(255,255,255)">
-            <title>Not uniquely observed</title>
-          </rect>
-          <text
-            x="5"
-            y="20"
-            class="heavy"
-            style={{ fill: "black", stroke: "black" }}
-          >
-            N/A
-          </text>
-        </g>
-      </svg>
+      <>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgb(250,250,250)",
+            color: "black",
+            fontFamily: "Lato",
+            fontSize: "16px",
+            lineHeight: "24px",
+            textAlign: "center",
+            paddingTop: "25%",
+          }}
+        >
+          N/A
+        </div>
+      </>
     );
   } else {
     return (
       <svg
-        width={104}
-        height={78}
-        style={{ stroke: "black", alignItems: "center" }}
+        style={{
+          stroke: "black",
+          alignItems: "center",
+          width: "100%",
+          height: "100%",
+        }}
       >
         <defs>
           <pattern
@@ -333,7 +342,7 @@ function IHCComponent(props: ICellRendererParams) {
             ></rect>
           </pattern>
         </defs>
-        <rect width={104} height={78} style={{ fill: "url(#stripe2)" }}>
+        <rect style={{ fill: "url(#stripe2)", width: "100%", height: "100%" }}>
           <title>Data not available</title>
         </rect>
       </svg>
@@ -343,7 +352,7 @@ function IHCComponent(props: ICellRendererParams) {
 
 function LinkComponent(props: ICellRendererParams) {
   const d = props.value;
-  console.log("123");
+
   if (d < 10 || d === "low") {
     return (
       <>
@@ -440,19 +449,32 @@ function LinkComponent(props: ICellRendererParams) {
 
 function App() {
   const [gridApi, setGridApi] = useState();
-
+  const [pageSize, setPageSize] = useState(50);
+  const [pageNum, setPageNum] = useState(1);
   const [message, setMessage] = useState("");
+  const [message1, setMessage1] = useState("");
   const [number, setNumber] = useState("");
+  const [isLoading, setisLoading] = useState(true);
+  const [selectedValue, setSelectedValue] = useState(50);
+  const [count, setCount] = useState(2);
+  const [docCount, setDocCount] = useState(0);
+
   useEffect(() => {
-    fetch("http://localhost:8000/saliva_protein_table")
+    fetch(
+      "http://localhost:8000/saliva_protein_table/" + pageSize + "/" + pageNum
+    )
       .then((res) => res.json())
       .then((data) => setMessage(data));
-  }, []);
+    fetch("http://localhost:8000/saliva_protein_count/")
+      .then((res) => res.json())
+      .then((data) => setDocCount(data.count));
+  }, [pageSize, pageNum]);
+  console.log(docCount);
   let data1 = [];
   for (let i = 0; i < message.length; i++) {
     data1.push(message[i]["_source"]);
   }
-
+  console.log(data1);
   const rowData = data1;
   console.log(rowData);
   const columns = [
@@ -577,7 +599,45 @@ function App() {
       ],
     },
   ];
+  const gridRef = useRef();
 
+  const paginationNumberFormatter = useCallback((params) => {
+    return params.value.toLocaleString();
+  }, []);
+
+  const onFirstDataRendered = useCallback((params) => {
+    gridRef.current.api.paginationGoToPage(0);
+  }, []);
+
+  const onPageSizeChanged = (event) => {
+    var value = document.getElementById("page-size").value;
+    gridRef.current.api.paginationSetPageSize(Number(value));
+    setPageSize(value);
+  };
+
+  const onBtExport = useCallback(() => {
+    gridRef.current.api.exportDataAsExcel();
+  }, []);
+
+  const onFilterTextBoxChanged = useCallback(() => {
+    gridRef.current.api.setQuickFilter(
+      document.getElementById("filter-text-box").value
+    );
+  }, []);
+  const onBtNext = (event) => {
+    if (count < docCount / pageSize) {
+      var x = gridRef.current.api.paginationGetCurrentPage();
+      setPageNum(x + count);
+      setCount(count + 1);
+      console.log(count);
+    }
+  };
+
+  const onBtPrevious = useCallback(() => {
+    if (count !== 1) {
+      setPageNum(gridRef.current.api.paginationGetCurrentPage() - 1);
+    }
+  }, []);
   const defColumnDefs = {
     flex: 1,
     filter: true,
@@ -611,6 +671,39 @@ function App() {
   const rowHeight = 20;
   return (
     <div className="AppBox1">
+      <div className="example-header" style={{ marginLeft: "35px" }}>
+        <div style={{ marginBottom: "10px" }}>
+          <button onClick={onBtPrevious}>To Previous</button>
+          <button onClick={onBtNext}>To Next</button>
+        </div>
+        <label>Search: </label>
+        <input
+          type="text"
+          id="filter-text-box"
+          placeholder="Filter..."
+          onInput={onFilterTextBoxChanged}
+          style={{ width: "50%", padding: "0.25rem 0.75rem" }}
+        />
+        <b style={{ marginLeft: "15%" }}>Page size: </b>
+        <select onChange={onPageSizeChanged} value={pageSize} id="page-size">
+          <option value="50">50</option>
+          <option value="100">100</option>
+          <option value="500">500</option>
+          <option value="1000">1000</option>
+        </select>
+
+        <button
+          onClick={onBtExport}
+          style={{
+            marginBottom: "5px",
+            fontWeight: "bold",
+            textAlign: "right",
+            marginLeft: "3%",
+          }}
+        >
+          Export to Excel
+        </button>
+      </div>
       <div
         className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
         style={{ height: 600 }}
@@ -619,6 +712,7 @@ function App() {
           className="ag-cell-wrap-text"
           rowData={rowData}
           columnDefs={columns}
+          ref={gridRef}
           defaultColDef={defColumnDefs}
           frameworkComponents={{
             LinkComponent,
@@ -633,6 +727,7 @@ function App() {
           pagination={true}
           paginationPageSize={50}
           rowHeight={rowHeight}
+          suppressPaginationPanel={true}
         />
       </div>
     </div>

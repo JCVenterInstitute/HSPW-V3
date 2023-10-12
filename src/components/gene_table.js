@@ -66,11 +66,6 @@ function App() {
     params.api.getToolPanelInstance("filters").expandFilters(applyFilters);
   };
 
-  const applyQuickFilter = (e) => {
-    const searchText = e.target.value;
-    gridApi.api.setQuickFilter(searchText);
-  };
-
   const gridRef = useRef();
 
   const paginationNumberFormatter = useCallback((params) => {
@@ -94,17 +89,6 @@ function App() {
     gridRef.current.api.setQuickFilter(
       document.getElementById("filter-text-box").value
     );
-  }, []);
-
-  const onPrintQuickFilterTexts = useCallback(() => {
-    gridRef.current.api.forEachNode(function (rowNode, index) {
-      console.log(
-        "Row " +
-          index +
-          " quick filter text is " +
-          rowNode.quickFilterAggregateText
-      );
-    });
   }, []);
 
   return (

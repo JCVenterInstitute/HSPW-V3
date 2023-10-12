@@ -630,12 +630,36 @@ async function search_saliva_abundance() {
   return response.body.hits.hits;
 }
 
-async function saliva_protein_table() {
+async function saliva_protein_count() {
+  // Initialize the client.
+  var client = await getClient();
+
+  var response = await client.count({
+    // required index
+    index: "saliva_protein_test",
+    body: {
+      // you can count based on specific query or remove body at all
+      query: { match_all: {} },
+    },
+  });
+
+  return response.body;
+}
+
+app.get("/saliva_protein_count/", (req, res) => {
+  let a = saliva_protein_count();
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+async function saliva_protein_table(size, from) {
   // Initialize the client.
   var client = await getClient();
 
   var query = {
-    size: 10000,
+    size: size,
+    from: from,
     query: {
       match_all: {},
     },
@@ -648,8 +672,8 @@ async function saliva_protein_table() {
   return response.body.hits.hits;
 }
 
-app.get("/saliva_protein_table", (req, res) => {
-  let a = saliva_protein_table();
+app.get("/saliva_protein_table/:size/:from", (req, res) => {
+  let a = saliva_protein_table(req.params.size, req.params.from);
   a.then(function (result) {
     console.log(result);
     res.json(result);
