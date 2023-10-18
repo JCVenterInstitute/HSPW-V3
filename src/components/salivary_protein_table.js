@@ -1,99 +1,25 @@
 import "./filter.css";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import Collapse from "@material-ui/core/Collapse";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { rgb } from "d3";
 import "./table.css";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 import CustomHeaderGroup from "./customHeaderGroup.jsx";
+import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { ICellRendererParams } from "ag-grid-community";
-
-const DATA = [
-  {
-    uniprot_accession: "P02814",
-    gene_symbol: "SMR3B",
-    protein_name: "Submaxillary gland androgen-regulated protein 3B",
-    expert_opinion: "",
-    WS: 4034.84,
-    Par: 1934.69,
-    Sub: 6954.67,
-    B: "",
-    IHC: "?",
-    mRNA: 217144.9,
-  },
-  {
-    uniprot_accession: "P15516",
-    gene_symbol: "HTN3",
-    protein_name: "Histatin-3",
-    expert_opinion: "",
-    WS: 63.53,
-    Par: 35.53,
-    Sub: 90.41,
-    B: "",
-    IHC: "high",
-    mRNA: 136053.4,
-  },
-  {
-    uniprot_accession: "Q96DA0",
-    gene_symbol: "ZG16B",
-    protein_name: "Zymogen granule protein 16 homolog B",
-    expert_opinion: "",
-    WS: 2147.86,
-    Par: 91,
-    Sub: 606.94,
-    B: "",
-    IHC: "high",
-    mRNA: 63926.2,
-  },
-  {
-    uniprot_accession: "P15515",
-    gene_symbol: "HTN1",
-    protein_name: "Histatin-1",
-    expert_opinion: "",
-    WS: 158.21,
-    Par: 199.13,
-    Sub: 689.49,
-    B: "",
-    IHC: "not detected",
-    mRNA: 48372.4,
-  },
-  {
-    uniprot_accession: "P01036",
-    gene_symbol: "CST4",
-    protein_name: "Cystatin-S",
-    expert_opinion: "",
-    WS: 15114.49,
-    Par: 231.75,
-    Sub: 8950.85,
-    B: "",
-    IHC: "high",
-    mRNA: 29036.2,
-  },
-  {
-    uniprot_accession: "P01037",
-    gene_symbol: "CST1",
-    protein_name: "Cystatin-SN",
-    expert_opinion: "",
-    WS: 9660.64,
-    Par: 142.14,
-    Sub: 7420.58,
-    B: "",
-    IHC: "medium",
-    mRNA: 28401.8,
-  },
-  {
-    uniprot_accession: "Q8TAX7",
-    gene_symbol: "MUC7",
-    protein_name: "Mucin-7",
-    expert_opinion: "",
-    WS: 156.08,
-    Par: 25.28,
-    Sub: 465.28,
-    B: "",
-    IHC: "high",
-    mRNA: 26019.1,
-  },
-];
+import { ReactComponent as Download_Logo } from "./table_icon/download.svg";
+import { ReactComponent as Left_Arrow } from "./table_icon/left_arrow.svg";
+import { ReactComponent as Right_Arrow } from "./table_icon/right_arrow.svg";
+import { ReactComponent as Search } from "./table_icon/search.svg";
 
 const styles = {
   transform: "translate(0, 0)",
@@ -365,35 +291,53 @@ function LinkComponent(props: ICellRendererParams) {
             fontFamily: "Lato",
             fontSize: "16px",
             lineHeight: "24px",
+            textAlign: "center",
+            paddingTop: "22%",
           }}
         >
-          {d}
+          {Number(d).toFixed(2)}
         </div>
       </>
     );
   } else if (d < 100 || d === "medium") {
     return (
-      <svg
-        width={108}
-        height={78}
-        style={{ stroke: "black", alignItems: "center" }}
-      >
-        <rect width={108} height={78} fill="rgb(190,70,70)">
-          <title>Medium</title>
-        </rect>
-      </svg>
+      <>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgb(190,70,70)",
+            color: "black",
+            fontFamily: "Lato",
+            fontSize: "16px",
+            lineHeight: "24px",
+            textAlign: "center",
+            paddingTop: "22%",
+          }}
+        >
+          {Number(d).toFixed(2)}
+        </div>
+      </>
     );
   } else if (d > 100 || d === "high") {
     return (
-      <svg
-        width={108}
-        height={78}
-        style={{ stroke: "black", alignItems: "center" }}
-      >
-        <rect width={108} height={78} fill="rgb(100,0,0)">
-          <title>High</title>
-        </rect>
-      </svg>
+      <>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgb(100,0,0)",
+            color: "black",
+            fontFamily: "Lato",
+            fontSize: "16px",
+            lineHeight: "24px",
+            textAlign: "center",
+            paddingTop: "22%",
+          }}
+        >
+          {Number(d).toFixed(2)}
+        </div>
+      </>
     );
   } else if (d === "not detected" || d === 0) {
     return (
@@ -452,45 +396,118 @@ function App() {
   const [pageSize, setPageSize] = useState(50);
   const [pageNum, setPageNum] = useState(1);
   const [message, setMessage] = useState("");
-  const [message1, setMessage1] = useState("");
-  const [number, setNumber] = useState("");
-  const [isLoading, setisLoading] = useState(true);
-  const [selectedValue, setSelectedValue] = useState(50);
   const [count, setCount] = useState(2);
   const [docCount, setDocCount] = useState(0);
+  const [pageNumArr, setPageNumArr] = useState([1]);
+  const [accessionC, setAccessionC] = useState(false);
+  const [geneC, setGeneC] = useState(false);
+  const [nameC, setNameC] = useState(false);
+  const [open, setOpen] = useState([false, false]);
+  const [open1, setOpen1] = useState(false);
+  const [open2, setOpen2] = useState(false);
+  const [open3, setOpen3] = useState(false);
+  const [open4, setOpen4] = useState(false);
+  const [open5, setOpen5] = useState(false);
+  const [open6, setOpen6] = useState(false);
+  const [open7, setOpen7] = useState(false);
+  const [open8, setOpen8] = useState(false);
+  const [open9, setOpen9] = useState(false);
+  const [open10, setOpen10] = useState(false);
+  const [prefix, setPrefix] = useState("");
+  const [genePrefix, setGenePrefix] = useState("");
+  const [namePrefix, setNamePrefix] = useState("");
+  const [opCount, setOpCount] = useState([]);
+  const [IHCCount, setIHCCount] = useState([]);
+  const [rowData, setRowData] = useState([]);
 
   useEffect(() => {
     fetch(
       "http://localhost:8000/saliva_protein_table/" + pageSize + "/" + pageNum
     )
       .then((res) => res.json())
-      .then((data) => setMessage(data));
+      .then((data) => {
+        setMessage(data);
+        let data1 = [];
+        for (let i = 0; i < message.length; i++) {
+          data1.push(message[i]["_source"]);
+        }
+
+        setRowData(data1);
+      });
+
+    fetch("http://localhost:8000/opCount")
+      .then((res) => res.json())
+      .then((data) => {
+        setOpCount(data);
+      });
+    /*
+    fetch("http://localhost:8000/IHCCount")
+      .then((res) => res.json())
+      .then((data) => {
+        setIHCCount(data);
+      });
+
     fetch("http://localhost:8000/saliva_protein_count/")
       .then((res) => res.json())
       .then((data) => setDocCount(data.count));
-  }, [pageSize, pageNum]);
-  console.log(docCount);
-  let data1 = [];
-  for (let i = 0; i < message.length; i++) {
-    data1.push(message[i]["_source"]);
-  }
-  console.log(data1);
-  const rowData = data1;
-  console.log(rowData);
+    const newOptions = [];
+    for (let i = 1; i <= Math.round(docCount / pageSize); i++) {
+      newOptions.push(
+        <option key={i} value={i}>
+          {i}
+        </option>
+      );
+    }
+    setPageNumArr(newOptions);
+    if (accessionC && prefix.trim() !== "") {
+      fetch(
+        "http://localhost:8000/filter_search/saliva_protein_test/uniprot_accession/" +
+          prefix +
+          "/" +
+          pageSize +
+          "/" +
+          pageNum
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          setMessage(data.hits);
+          setDocCount(data.total.value - 1);
+        });
+      let data1 = [];
+      for (let i = 0; i < message.length; i++) {
+        data1.push(message[i]["_source"]);
+      }
+      setRowData(data1);
+    }
+    */
+  }, [
+    IHCCount,
+    pageNumArr,
+    pageSize,
+    pageNum,
+    docCount,
+    opCount,
+    accessionC,
+    prefix,
+    rowData,
+  ]);
+
   const columns = [
     {
       headerName: "Accession",
       field: "UniProt Accession",
       checkboxSelection: false,
       headerCheckboxSelection: false,
-      width: "205",
+      minWidth: "135",
+      wordWrap: true,
+      autoHeight: true,
       cellStyle: { "word-break": "break-word" },
       headerClass: ["header-border"],
       cellClass: ["table-border"],
     },
     {
       headerName: "Gene Symbol",
-      minWidth: "65",
+      minWidth: "120",
       field: "Gene Symbol",
       wrapText: true,
       autoHeight: true,
@@ -500,7 +517,7 @@ function App() {
     },
     {
       headerName: "Protein Name",
-      minWidth: "65",
+      minWidth: "115",
       maxHeight: "5",
       field: "Protein Name",
       wrapText: true,
@@ -511,7 +528,7 @@ function App() {
     },
     {
       headerName: "Expert Opinion",
-      minWidth: "65",
+      minWidth: "120",
       field: "expert_opinion",
       autoHeight: true,
       cellRenderer: "opinionComponent",
@@ -528,7 +545,7 @@ function App() {
         {
           headerName: "WS",
           field: "saliva_abundance",
-          minWidth: "105",
+          minWidth: "95",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
           cellClass: ["table-border"],
@@ -536,7 +553,7 @@ function App() {
         {
           headerName: "Par",
           field: "parotid_gland_abundance",
-          minWidth: "105",
+          minWidth: "95",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
           cellClass: ["table-border"],
@@ -544,7 +561,7 @@ function App() {
         {
           headerName: "Sub",
           field: "sm/sl_abundance",
-          minWidth: "105",
+          minWidth: "95",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
           cellClass: ["table-border"],
@@ -552,7 +569,7 @@ function App() {
         {
           headerName: "B",
           field: "plasma_abundance",
-          minWidth: "105",
+          minWidth: "95",
           cellRenderer: "LinkComponent",
           headerClass: ["header-border"],
           cellClass: ["table-border"],
@@ -565,7 +582,7 @@ function App() {
     {
       headerName: "IHC",
       field: "IHC",
-      minWidth: "105",
+      minWidth: "95",
       autoHeight: true,
       wrapText: true,
       cellRenderer: "IHCComponent",
@@ -585,14 +602,20 @@ function App() {
         {
           headerName: "value",
           field: "mRNA",
-          minWidth: "125",
+          minWidth: "95",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
           cellClass: ["table-border"],
         },
         {
           field: "specificity",
-          minWidth: "170",
+          minWidth: "105",
+          headerClass: ["header-border"],
+          cellClass: ["table-border"],
+        },
+        {
+          field: "specificity score",
+          minWidth: "105",
           headerClass: ["header-border"],
           cellClass: ["table-border"],
         },
@@ -600,6 +623,18 @@ function App() {
     },
   ];
   const gridRef = useRef();
+
+  const searchAccession = () => {
+    setAccessionC(true);
+  };
+
+  const searchGene = () => {
+    setGeneC(true);
+  };
+
+  const searchName = () => {
+    setNameC(true);
+  };
 
   const paginationNumberFormatter = useCallback((params) => {
     return params.value.toLocaleString();
@@ -613,6 +648,11 @@ function App() {
     var value = document.getElementById("page-size").value;
     gridRef.current.api.paginationSetPageSize(Number(value));
     setPageSize(value);
+  };
+
+  const onPageNumChanged = (event) => {
+    var value = document.getElementById("page-num").value;
+    setPageNum(value);
   };
 
   const onBtExport = useCallback(() => {
@@ -629,15 +669,16 @@ function App() {
       var x = gridRef.current.api.paginationGetCurrentPage();
       setPageNum(x + count);
       setCount(count + 1);
-      console.log(count);
     }
   };
 
-  const onBtPrevious = useCallback(() => {
-    if (count !== 1) {
-      setPageNum(gridRef.current.api.paginationGetCurrentPage() - 1);
+  const onBtPrevious = (event) => {
+    if (pageNum !== 1) {
+      var x = pageNum;
+      setPageNum(x - 1);
+      setCount(count - 1);
     }
-  }, []);
+  };
   const defColumnDefs = {
     flex: 1,
     filter: true,
@@ -668,69 +709,273 @@ function App() {
     setGridApi(params);
   };
 
+  const handleClick1 = () => {
+    setOpen1((prev) => !prev);
+  };
+
+  const handleClick2 = () => {
+    setOpen2((prev) => !prev);
+  };
+
+  const handleClick3 = () => {
+    setOpen3((prev) => !prev);
+  };
+  const handleClick4 = () => {
+    setOpen4((prev) => !prev);
+  };
+  const handleClick5 = () => {
+    setOpen5((prev) => !prev);
+  };
+  const handleClick6 = () => {
+    setOpen6((prev) => !prev);
+  };
+  const handleClick7 = () => {
+    setOpen7((prev) => !prev);
+  };
+  const handleClick8 = () => {
+    setOpen8((prev) => !prev);
+  };
+  const handleClick9 = () => {
+    setOpen9((prev) => !prev);
+  };
+  const handleClick10 = () => {
+    setOpen10((prev) => !prev);
+  };
+
+  const handleAccessionChange = (e) => {
+    setPrefix(e.target.value);
+  };
+
+  const handleGeneChange = (e) => {
+    setGenePrefix(e.target.value);
+  };
+
+  const handleNameChange = (e) => {
+    setNamePrefix(e.target.value);
+  };
+
   const rowHeight = 20;
   return (
-    <div className="AppBox1">
-      <div className="example-header" style={{ marginLeft: "35px" }}>
-        <div style={{ marginBottom: "10px" }}>
-          <button onClick={onBtPrevious}>To Previous</button>
-          <button onClick={onBtNext}>To Next</button>
+    <>
+      <div className="rowC">
+        <div className="sidebar1">
+          <h2
+            style={{
+              margin: "26px",
+              color: "#1463B9",
+              fontFamily: "Montserrat",
+              fontSize: "20px",
+              fontStyle: "normal",
+              fontWeight: "700",
+              lineHeight: "130%",
+              textAlign: "center",
+              alignItems: "center",
+            }}
+          >
+            FILTER
+          </h2>
+          <ListItem button onClick={handleClick1} divider="true">
+            {open1 ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
+            <ListItemText primary={"Uniprot Accession"} />
+          </ListItem>
+          <div>
+            <Collapse in={open1} timeout="auto" unmountOnExit>
+              <List
+                component="div"
+                disablePadding
+                sx={{ border: "1px groove" }}
+              >
+                <input
+                  type="text"
+                  id="filter-accession-box"
+                  placeholder="Search..."
+                  onChange={handleAccessionChange}
+                  style={{
+                    width: "70%",
+                    marginLeft: "10px",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "10px 0 0 10px",
+                    borderColor: "#1463B9",
+                    display: "inline",
+                    position: "relative",
+                  }}
+                  value={prefix}
+                />
+                <button
+                  type="submit"
+                  onClick={searchAccession}
+                  style={{
+                    display: "inline",
+                    position: "relative",
+                    top: "0.3em",
+                    backgroundColor: "#1463B9",
+                    borderColor: "#1463B9",
+                    cursor: "pointer",
+                    width: "15%",
+                    borderRadius: "0 10px 10px 0",
+                  }}
+                >
+                  <Search />
+                </button>
+              </List>
+            </Collapse>
+          </div>
         </div>
-        <label>Search: </label>
-        <input
-          type="text"
-          id="filter-text-box"
-          placeholder="Filter..."
-          onInput={onFilterTextBoxChanged}
-          style={{ width: "50%", padding: "0.25rem 0.75rem" }}
-        />
-        <b style={{ marginLeft: "15%" }}>Page size: </b>
-        <select onChange={onPageSizeChanged} value={pageSize} id="page-size">
-          <option value="50">50</option>
-          <option value="100">100</option>
-          <option value="500">500</option>
-          <option value="1000">1000</option>
-        </select>
-
+      </div>
+      <div className="AppBox1">
+        <div className="example-header" style={{ marginLeft: "35px" }}>
+          <form
+            onSubmit={onFilterTextBoxChanged}
+            style={{ display: "inline", position: "relative" }}
+          >
+            <input
+              type="text"
+              id="filter-text-box"
+              placeholder="Search..."
+              onInput={onFilterTextBoxChanged}
+              style={{
+                width: "30%",
+                padding: "0.25rem 0.75rem",
+                borderRadius: "10px 0 0 10px",
+                borderColor: "#1463B9",
+                display: "inline",
+                position: "relative",
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                display: "inline",
+                position: "relative",
+                top: "0.3em",
+                backgroundColor: "#1463B9",
+                borderColor: "#1463B9",
+                cursor: "pointer",
+                width: "5%",
+                borderRadius: "0 10px 10px 0",
+              }}
+            >
+              <Search />
+            </button>
+          </form>
+          <text style={{ marginLeft: "5%" }}>Records Per Page</text>
+          <select onChange={onPageSizeChanged} value={pageSize} id="page-size">
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="500">500</option>
+            <option value="1000">1000</option>
+          </select>
+          <text style={{ marginLeft: "5%" }}>Page</text>
+          <select onChange={onPageNumChanged} value={pageNum} id="page-num">
+            {pageNumArr}
+          </select>
+          <text style={{ marginLeft: "1%" }}>
+            out of {Math.round(docCount / pageSize)}
+          </text>
+          <button
+            onClick={onBtPrevious}
+            style={{
+              marginLeft: "5%",
+              fontWeight: "bold",
+              marginLeft: "3%",
+              marginTop: "10px",
+              color: "#F6921E",
+              background: "white",
+              fontSize: "20",
+              padding: ".3em 2em",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            <Left_Arrow
+              style={{
+                marginRight: "10px",
+                paddingTop: "5px",
+                display: "inline",
+                position: "relative",
+                top: "0.15em",
+              }}
+            />
+            prev
+          </button>
+          <button
+            onClick={onBtNext}
+            style={{
+              fontWeight: "bold",
+              marginTop: "10px",
+              marginLeft: "1%",
+              color: "#F6921E",
+              background: "white",
+              fontSize: "20",
+              padding: "2em .3em ",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            next
+            <Right_Arrow
+              style={{
+                marginLeft: "10px",
+                paddingTop: "5px",
+                display: "inline",
+                position: "relative",
+                top: "0.15em",
+              }}
+            />
+          </button>
+        </div>
+        <div
+          className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
+          style={{ height: 600 }}
+        >
+          <AgGridReact
+            className="ag-cell-wrap-text"
+            rowData={rowData}
+            columnDefs={columns}
+            ref={gridRef}
+            defaultColDef={defColumnDefs}
+            frameworkComponents={{
+              LinkComponent,
+              WSComponent,
+              IHCComponent,
+              opinionComponent,
+            }}
+            overlayNoRowsTemplate={
+              '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
+            }
+            onGridReady={onGridReady}
+            pagination={true}
+            paginationPageSize={50}
+            rowHeight={rowHeight}
+            suppressPaginationPanel={true}
+          />
+        </div>
         <button
           onClick={onBtExport}
           style={{
-            marginBottom: "5px",
             fontWeight: "bold",
-            textAlign: "right",
-            marginLeft: "3%",
+            textAlign: "center",
+            marginTop: "10px",
+            color: "#F6921E",
+            background: "white",
+            fontSize: "20",
+            border: "none",
+            cursor: "pointer",
           }}
         >
-          Export to Excel
+          <Download_Logo
+            style={{
+              marginRight: "10px",
+              paddingTop: "5px",
+              display: "inline",
+              position: "relative",
+              top: "0.15em",
+            }}
+          />
+          Download Spreadsheet
         </button>
       </div>
-      <div
-        className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
-        style={{ height: 600 }}
-      >
-        <AgGridReact
-          className="ag-cell-wrap-text"
-          rowData={rowData}
-          columnDefs={columns}
-          ref={gridRef}
-          defaultColDef={defColumnDefs}
-          frameworkComponents={{
-            LinkComponent,
-            WSComponent,
-            IHCComponent,
-            opinionComponent,
-          }}
-          overlayNoRowsTemplate={
-            '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
-          }
-          onGridReady={onGridReady}
-          pagination={true}
-          paginationPageSize={50}
-          rowHeight={rowHeight}
-          suppressPaginationPanel={true}
-        />
-      </div>
-    </div>
+    </>
   );
 }
 

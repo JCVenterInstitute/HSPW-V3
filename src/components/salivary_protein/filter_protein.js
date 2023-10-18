@@ -11,6 +11,7 @@ import { hasChildren } from "../utils";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import { ReactComponent as Search } from "../table_icon/search.svg";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -25,9 +26,116 @@ const MenuItem = ({ item }) => {
 
 const SingleLevel = ({ item }) => {
   return (
-    <ListItem button>
-      <ListItemText primary={item.title} />
-    </ListItem>
+    <>
+      <ListItem button>
+        <ListItemText primary={item.title} />
+      </ListItem>
+      <div>
+        {item.title == "Uniprot Accession" && (
+          <form style={{ display: "inline", position: "relative" }}>
+            <input
+              type="text"
+              id="filter-text-box"
+              placeholder="Search..."
+              style={{
+                width: "70%",
+                marginLeft: "10px",
+                padding: "0.25rem 0.75rem",
+                borderRadius: "10px 0 0 10px",
+                borderColor: "#1463B9",
+                display: "inline",
+                position: "relative",
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                display: "inline",
+                position: "relative",
+                top: "0.3em",
+                backgroundColor: "#1463B9",
+                borderColor: "#1463B9",
+                cursor: "pointer",
+                width: "15%",
+                borderRadius: "0 10px 10px 0",
+              }}
+            >
+              <Search />
+            </button>
+          </form>
+        )}
+      </div>
+      <div>
+        {item.title == "Gene Symbol" && (
+          <form style={{ display: "inline", position: "relative" }}>
+            <input
+              type="text"
+              id="filter-text-box"
+              placeholder="Search..."
+              style={{
+                width: "70%",
+                marginLeft: "10px",
+                padding: "0.25rem 0.75rem",
+                borderRadius: "10px 0 0 10px",
+                borderColor: "#1463B9",
+                display: "inline",
+                position: "relative",
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                display: "inline",
+                position: "relative",
+                top: "0.3em",
+                backgroundColor: "#1463B9",
+                borderColor: "#1463B9",
+                cursor: "pointer",
+                width: "15%",
+                borderRadius: "0 10px 10px 0",
+              }}
+            >
+              <Search />
+            </button>
+          </form>
+        )}
+      </div>
+      <div>
+        {item.title == "Protein Name" && (
+          <form style={{ display: "inline", position: "relative" }}>
+            <input
+              type="text"
+              id="filter-text-box"
+              placeholder="Search..."
+              style={{
+                width: "70%",
+                marginLeft: "10px",
+                padding: "0.25rem 0.75rem",
+                borderRadius: "10px 0 0 10px",
+                borderColor: "#1463B9",
+                display: "inline",
+                position: "relative",
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                display: "inline",
+                position: "relative",
+                top: "0.3em",
+                backgroundColor: "#1463B9",
+                borderColor: "#1463B9",
+                cursor: "pointer",
+                width: "15%",
+                borderRadius: "0 10px 10px 0",
+              }}
+            >
+              <Search />
+            </button>
+          </form>
+        )}
+      </div>
+    </>
   );
 };
 

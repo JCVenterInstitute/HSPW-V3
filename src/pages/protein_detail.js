@@ -14,7 +14,6 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import FontAwesome from "react-fontawesome";
 import "font-awesome/css/font-awesome.min.css";
 import useExternalScripts from "./useExternalScripts";
-import ProtvistaStructure from "protvista-structure";
 import { useParams } from "react-router";
 import ProtvistaUniprot from "protvista-uniprot";
 import BChart from "../components/TwoSidedBarChart";
@@ -41,6 +40,7 @@ ChartJS.register(
 );
 let i = 0;
 
+window.customElements.define("protvista-uniprot", ProtvistaUniprot);
 export const options = {
   indexAxis: "y",
   responsive: true,
@@ -986,5 +986,3 @@ export default Protein_Detail;
   <script src="https://d3js.org/d3.v4.min.js" charset="utf-8" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/protvista-uniprot@latest/dist/protvista-uniprot.js"></script>
 </>;
-window.customElements.define("protvista-uniprot", ProtvistaUniprot);
-window.customElements.define("protvista-structure", ProtvistaStructure);

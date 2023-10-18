@@ -16,27 +16,35 @@
 .ag-theme-alpine .ag-header {
   color: #fff;
   font-family: Montserrat;
-  font-size: 14px;
+  font-size: 10px;
   font-style: normal;
-  font-weight: 700;
-  line-height: 130%; /* 20.8px */
+
+  border-radius: 10px 10px 0 0;
+  justify-content: center !important;
+  text-align: center !important;
 }
 .ag-theme-alpine .ag-header-group-cell {
   font-weight: normal;
-  font-size: 22px;
+  font-size: 14px;
   --ag-grid-size: 3px;
+  justify-content: center !important;
+  text-align: center !important;
   --ag-list-item-height: 20px;
 }
 .ag-theme-alpine .ag-header-cell {
-  font-size: 14px;
-  word-break: break-word;
+  font-size: 12px;
   --ag-grid-size: 3px;
   --ag-list-item-height: 20px;
+  display: flex;
+  justify-content: center; /* align horizontal */
+  align-items: center;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .ag-theme-material .ag-cell-value {
   --ag-header-column-separator-display: block;
-  --ag-header-column-separator-height: 100%;
+
   --ag-header-column-separator-width: 2px;
   --ag-header-column-separator-color: #3592e4;
   line-height: 24px !important;
@@ -55,7 +63,6 @@
 
 .header-border {
   border: 1px solid #3592e4;
-  padding: 0px !important;
   --ag-header-size: 3px;
   --ag-list-item-height: 20px;
 }

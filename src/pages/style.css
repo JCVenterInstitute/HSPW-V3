@@ -1,39 +1,39 @@
 .custom-tooltip {
-    /* background-image: linear-gradient(to right, red, yellow); */
-    /* color: red; */
-    background-color: rgba(20, 20, 20, 0.8);
-    border-radius: 5px;
-    position: relative;
-  }
-  .custom-tooltip:before {
-    /* background-image: linear-gradient(to right, red, yellow); */
-    position: absolute;
-    top: -10px;
-    left: 5px;
-    content: "";
-    width: 0px;
-    height: 0px;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-bottom: 10px solid rgba(20, 20, 20, 0.8);
-  }
-  
-  #conicValue {
-    /* background: conic-gradient(yellow, orange); */
-    background: conic-gradient(
-      from 90deg,
-      violet,
-      indigo,
-      blue,
-      green,
-      yellow,
-      orange,
-      red,
-      violet
-    );
-  }
-  
-  /* .conic {
+  /* background-image: linear-gradient(to right, red, yellow); */
+  /* color: red; */
+  background-color: rgba(20, 20, 20, 0.8);
+  border-radius: 5px;
+  position: relative;
+}
+.custom-tooltip:before {
+  /* background-image: linear-gradient(to right, red, yellow); */
+  position: absolute;
+  top: -10px;
+  left: 5px;
+  content: "";
+  width: 0px;
+  height: 0px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 10px solid rgba(20, 20, 20, 0.8);
+}
+
+#conicValue {
+  /* background: conic-gradient(yellow, orange); */
+  background: conic-gradient(
+    from 90deg,
+    violet,
+    indigo,
+    blue,
+    green,
+    yellow,
+    orange,
+    red,
+    violet
+  );
+}
+
+/* .conic {
      background: conic-gradient(yellow, orange);
     background: conic-gradient(
       from 90deg,
@@ -48,54 +48,52 @@
     );
   } */
 
-  .App {
-    font-family: sans-serif;
-    text-align: center;
-    width:45%;
-    float: right;
-  }
+.App {
+  font-family: sans-serif;
+  text-align: center;
+  width: 45%;
+  float: right;
+}
 
-  
-  
-  #coneG {
-    background: conic-gradient(
-      from 90deg,
-      violet,
-      indigo,
-      blue,
-      green,
-      yellow,
-      orange,
-      red,
-      violet
-    );
-  }
-  .label,
-  .desc {
-    color: white;
-  }
-  
-  .gradient {
-    background-image: linear-gradient(
-      to right,
-      red,
-      yellow
-    ); /* Standard syntax (must be last) */
-  }
-  
-  .a123 {
-    background-image: linear-gradient(
-      to right,
-      red,
-      yellow
-    ); /* Standard syntax (must be last) */
-  }
-  
-  .column__left,
+#coneG {
+  background: conic-gradient(
+    from 90deg,
+    violet,
+    indigo,
+    blue,
+    green,
+    yellow,
+    orange,
+    red,
+    violet
+  );
+}
+.label,
+.desc {
+  color: white;
+}
+
+.gradient {
+  background-image: linear-gradient(
+    to right,
+    red,
+    yellow
+  ); /* Standard syntax (must be last) */
+}
+
+.a123 {
+  background-image: linear-gradient(
+    to right,
+    red,
+    yellow
+  ); /* Standard syntax (must be last) */
+}
+
+.column__left,
 .column__right {
   display: flex;
   flex-basis: auto;
-/*   border: 1px solid red; */
+  /*   border: 1px solid red; */
 }
 
 .column__right {
@@ -103,7 +101,7 @@
   flex-grow: 1;
 }
 
-@media(min-width: 670px) {
+@media (min-width: 670px) {
   .column__left {
     flex-direction: column;
     width: 100px;
@@ -118,10 +116,10 @@
   margin: 0;
   padding: 0;
   width: 240px;
-  background-color: #F9F8F7;
+  background-color: #f9f8f7;
   position: absolute;
-  height:800px;
-  overflow-y:scroll; 
+  height: 800px;
+  overflow-y: scroll;
   overflow: scroll;
 }
 
@@ -129,42 +127,42 @@
   margin: 0;
   padding: 0;
   width: 240px;
-  background-color: #F9F8F7;
+  background-color: #f9f8f7;
   position: absolute;
-  height:550px;
-  overflow-y:scroll; 
+  height: 550px;
+  overflow-y: scroll;
   overflow: scroll;
 }
 
-.sidebar_button{
+.sidebar_button {
   color: #959595;
-text-align: center;
-font-family: Montserrat;
-font-size: 16px;
-font-style: normal;
-font-weight: 600;
-line-height: normal;
+  text-align: center;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
 }
 
-.title{
-  color: #FFF;
-font-family: Montserrat;
-font-size: 32px;
-font-style: normal;
-font-weight: 800;
-line-height: 110%; /* 35.2px */
-text-transform: uppercase;
+.title {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 110%; /* 35.2px */
+  text-transform: uppercase;
 }
 
-.head_text{
-  color: #FFF;
+.head_text {
+  color: #fff;
 
-/* Page Body Text */
-font-family: Lato;
-font-size: 18px;
-font-style: normal;
-font-weight: 400;
-line-height: normal;
+  /* Page Body Text */
+  font-family: Lato;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 }
 .item {
   display: block;
@@ -212,24 +210,24 @@ line-height: normal;
   cursor: pointer;
 }
 
-.rowC{
-  display:flex; flex-direction:row; position:relative;
+.rowC {
+  display: flex;
+  flex-direction: row;
+  position: relative;
 }
 
-.charts{
-
-  margin-top:5px;
-  display:flex; 
-  flex-direction:row;
-  width:600px;
-  padding:20px;
-
+.charts {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: row;
+  width: 600px;
+  padding: 20px;
 }
 
 .flex-container {
   /* We first create a flex layout context */
   display: flex;
-  
+
   /* Then we define the flow direction 
      and if we allow the items to wrap 
    * Remember this is the same as:
@@ -237,7 +235,7 @@ line-height: normal;
    * flex-wrap: wrap;
    */
   flex-flow: row wrap;
-  
+
   /* Then we define how is distributed the remaining space */
   justify-content: space-around;
   margin-left: 20%;
@@ -245,13 +243,12 @@ line-height: normal;
   list-style: none;
 }
 
-.charts1{
-  margin-top:5px;
-  display:flex; 
-  flex-direction:row;
-  width:645px;
-  padding:20px;
-
+.charts1 {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: row;
+  width: 645px;
+  padding: 20px;
 }
 
 html {
@@ -277,12 +274,15 @@ body {
 }
 
 .accordion-title:hover {
-
 }
 
 .accordion-title,
 .accordion-content {
   padding: 1rem;
+}
+
+.accordion-content {
+  background-color: #f8f8f8;
 }
 
 /* unvisited link */
@@ -301,6 +301,19 @@ body {
   background-color: #f1f1f1;
 }
 
+.table-cell {
+  stroke: black;
+  display: inline;
+  position: relative;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.svg-text {
+  position: relative;
+  display: inline-block;
+  margin-left: 5px;
+}
 /* Style the buttons inside the tab */
 .tab button {
   background-color: inherit;
@@ -331,6 +344,6 @@ body {
   border-top: none;
 }
 
-a .download-link{
-  display:none;
+a .download-link {
+  display: none;
 }

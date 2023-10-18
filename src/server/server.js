@@ -355,136 +355,189 @@ app.get("/citation", (req, res) => {
 
 async function search_protein_count_SP() {
   var client = await getClient();
-
-  const query =
-    "SELECT i1.accession, COUNT(i1.accession) as common_count FROM unique_protein_by_sample_type i1 WHERE i1.sample_type IN ('Parotid gland', 'Saliva') GROUP BY i1.accession HAVING COUNT(DISTINCT i1.sample_type) = 2;";
-
-  const { body } = await client.transport.request({
-    method: "POST",
-    path: "_plugins/_sql",
+  const response = await client.search({
+    index: "saliva_protein_test", // Replace with your index name
     body: {
-      query: query,
+      size: 0,
+      aggs: {
+        filter_ws_par: {
+          filter: {
+            bool: {
+              must: [
+                { range: { saliva_abundance: { gt: 0 } } },
+                { range: { parotid_gland_abundance: { gt: 0 } } },
+              ],
+            },
+          },
+        },
+      },
     },
   });
-
-  return body;
+  console.log(response.body.aggregations);
+  return response.body.aggregations;
 }
 
 async function search_protein_count_SB() {
   var client = await getClient();
 
-  const query =
-    "SELECT i1.accession, COUNT(i1.accession) as common_count FROM unique_protein_by_sample_type i1 WHERE i1.sample_type IN ('Plasma', 'Saliva') GROUP BY i1.accession HAVING COUNT(DISTINCT i1.sample_type) = 2;";
-
-  const { body } = await client.transport.request({
-    method: "POST",
-    path: "_plugins/_sql",
+  const response = await client.search({
+    index: "saliva_protein_test", // Replace with your index name
     body: {
-      query: query,
+      size: 0,
+      aggs: {
+        filter_ws_p: {
+          filter: {
+            bool: {
+              must: [
+                { range: { saliva_abundance: { gt: 0 } } },
+                { range: { plasma_abundance: { gt: 0 } } },
+              ],
+            },
+          },
+        },
+      },
     },
   });
 
-  return body;
+  return response.body.aggregations;
 }
 
 async function search_protein_count_SSS() {
   var client = await getClient();
 
-  const query =
-    "SELECT i1.accession, COUNT(i1.accession) as common_count FROM unique_protein_by_sample_type i1 WHERE i1.sample_type IN ('Submandibular gland', 'Saliva','Sublingual gland') GROUP BY i1.accession HAVING COUNT(DISTINCT i1.sample_type) = 2;";
-
-  const { body } = await client.transport.request({
-    method: "POST",
-    path: "_plugins/_sql",
+  const response = await client.search({
+    index: "saliva_protein_test", // Replace with your index name
     body: {
-      query: query,
+      size: 0,
+      aggs: {
+        filter_ss_ws: {
+          filter: {
+            bool: {
+              must: [
+                { range: { saliva_abundance: { gt: 0 } } },
+                { range: { "sm/sl_abundance": { gt: 0 } } },
+              ],
+            },
+          },
+        },
+      },
     },
   });
 
-  return body;
+  return response.body.aggregations;
 }
 
 async function search_count_Pa() {
   var client = await getClient();
 
-  const query =
-    "SELECT COUNT(DISTINCT i1.accession) from unique_protein_by_sample_type i1 where i1.sample_type = 'Parotid gland';";
-
-  const { body } = await client.transport.request({
-    method: "POST",
-    path: "_plugins/_sql",
+  const response = await client.search({
+    index: "saliva_protein_test", // Replace with your index name
     body: {
-      query: query,
+      size: 0,
+      aggs: {
+        filter_par: {
+          filter: {
+            bool: {
+              must: [{ range: { parotid_gland_abundance: { gt: 0 } } }],
+            },
+          },
+        },
+      },
     },
   });
 
-  return body;
+  return response.body.aggregations;
 }
 
 async function search_count_S() {
   var client = await getClient();
 
-  const query =
-    "SELECT COUNT(DISTINCT i1.accession) from unique_protein_by_sample_type i1 where i1.sample_type = 'Saliva';";
-
-  const { body } = await client.transport.request({
-    method: "POST",
-    path: "_plugins/_sql",
+  const response = await client.search({
+    index: "saliva_protein_test", // Replace with your index name
     body: {
-      query: query,
+      size: 0,
+      aggs: {
+        filter_ws: {
+          filter: {
+            bool: {
+              must: [{ range: { saliva_abundance: { gt: 0 } } }],
+            },
+          },
+        },
+      },
     },
   });
 
-  return body;
+  return response.body.aggregations;
 }
 
 async function search_count_Pl() {
   var client = await getClient();
 
-  const query =
-    "SELECT COUNT(DISTINCT i1.accession) from unique_protein_by_sample_type i1 where i1.sample_type = 'Plasma';";
-
-  const { body } = await client.transport.request({
-    method: "POST",
-    path: "_plugins/_sql",
+  const response = await client.search({
+    index: "saliva_protein_test", // Replace with your index name
     body: {
-      query: query,
+      size: 0,
+      aggs: {
+        filter_p: {
+          filter: {
+            bool: {
+              must: [{ range: { plasma_abundance: { gt: 0 } } }],
+            },
+          },
+        },
+      },
     },
   });
 
-  return body;
+  return response.body.aggregations;
 }
 
 async function search_count_SS() {
   var client = await getClient();
 
-  const query =
-    "SELECT COUNT(DISTINCT i1.accession) from unique_protein_by_sample_type i1 where i1.sample_type = 'Submandibular gland';";
-
-  const { body } = await client.transport.request({
-    method: "POST",
-    path: "_plugins/_sql",
+  const response = await client.search({
+    index: "saliva_protein_test", // Replace with your index name
     body: {
-      query: query,
+      size: 0,
+      aggs: {
+        filter_ss: {
+          filter: {
+            bool: {
+              must: [{ range: { "sm/sl_abundance": { gt: 0 } } }],
+            },
+          },
+        },
+      },
     },
   });
 
-  return body;
+  return response.body.aggregations;
 }
 
 async function search_protein_count_SSP() {
   var client = await getClient();
 
-  const query =
-    "SELECT i1.accession, COUNT(i1.accession) as common_count FROM unique_protein_by_sample_type i1 WHERE i1.sample_type IN ('Submandibular gland', 'Plasma','Sublingual gland') GROUP BY i1.accession HAVING COUNT(DISTINCT i1.sample_type) = 2;";
-
-  const { body } = await client.transport.request({
-    method: "POST",
-    path: "_plugins/_sql",
+  const response = await client.search({
+    index: "saliva_protein_test", // Replace with your index name
     body: {
-      query: query,
+      size: 0,
+      aggs: {
+        filter_ss_p: {
+          filter: {
+            bool: {
+              must: [
+                { range: { plasma_abundance: { gt: 0 } } },
+                { range: { "sm/sl_abundance": { gt: 0 } } },
+              ],
+            },
+          },
+        },
+      },
     },
   });
+
+  return response.body.aggregations;
 
   return body;
 }
@@ -492,35 +545,51 @@ async function search_protein_count_SSP() {
 async function search_protein_count_SSPa() {
   var client = await getClient();
 
-  const query =
-    "SELECT i1.accession, COUNT(i1.accession) as common_count FROM unique_protein_by_sample_type i1 WHERE i1.sample_type IN ('Submandibular gland', 'Parotid gland','Sublingual gland') GROUP BY i1.accession HAVING COUNT(DISTINCT i1.sample_type) = 2;";
-
-  const { body } = await client.transport.request({
-    method: "POST",
-    path: "_plugins/_sql",
+  const response = await client.search({
+    index: "saliva_protein_test", // Replace with your index name
     body: {
-      query: query,
+      size: 0,
+      aggs: {
+        filter_ss_par: {
+          filter: {
+            bool: {
+              must: [
+                { range: { parotid_abundance: { gt: 0 } } },
+                { range: { "sm/sl_abundance": { gt: 0 } } },
+              ],
+            },
+          },
+        },
+      },
     },
   });
 
-  return body;
+  return response.body.aggregations;
 }
 
 async function search_protein_count_PPa() {
   var client = await getClient();
 
-  const query =
-    "SELECT i1.accession, COUNT(i1.accession) as common_count FROM unique_protein_by_sample_type i1 WHERE i1.sample_type IN ('Plasma', 'Parotid gland') GROUP BY i1.accession HAVING COUNT(DISTINCT i1.sample_type) = 2;";
-
-  const { body } = await client.transport.request({
-    method: "POST",
-    path: "_plugins/_sql",
+  const response = await client.search({
+    index: "saliva_protein_test", // Replace with your index name
     body: {
-      query: query,
+      size: 0,
+      aggs: {
+        filter_p_par: {
+          filter: {
+            bool: {
+              must: [
+                { range: { plasma_abundance: { gt: 0 } } },
+                { range: { parotid_abundance: { gt: 0 } } },
+              ],
+            },
+          },
+        },
+      },
     },
   });
 
-  return body;
+  return response.body.aggregations;
 }
 
 app.get("/countPPa", (req, res) => {
@@ -576,11 +645,6 @@ app.get("/countSPa", (req, res) => {
   let a = search_protein_count_SP();
   a.then(function (result) {
     res.json(result);
-    var total = 0;
-    for (var i = 0; i < result.datarows.length; i++) {
-      total += result.datarows[i][1];
-    }
-    console.log(total);
   });
 });
 
@@ -588,11 +652,6 @@ app.get("/countSPl", (req, res) => {
   let a = search_protein_count_SB();
   a.then(function (result) {
     res.json(result);
-    var total = 0;
-    for (var i = 0; i < result.datarows.length; i++) {
-      total += result.datarows[i][1];
-    }
-    console.log(total);
   });
 });
 
@@ -600,11 +659,6 @@ app.get("/countSSS", (req, res) => {
   let a = search_protein_count_SSS();
   a.then(function (result) {
     res.json(result);
-    var total = 0;
-    for (var i = 0; i < result.datarows.length; i++) {
-      total += result.datarows[i][1];
-    }
-    console.log(total);
   });
 });
 
@@ -672,10 +726,153 @@ async function saliva_protein_table(size, from) {
   return response.body.hits.hits;
 }
 
-app.get("/saliva_protein_table/:size/:from", (req, res) => {
+app.get("/saliva_protein_table/:size/:from/", (req, res) => {
   let a = saliva_protein_table(req.params.size, req.params.from);
   a.then(function (result) {
-    console.log(result);
+    res.json(result);
+  });
+});
+
+async function opCount() {
+  var client = await getClient();
+
+  const response = await client.search({
+    index: "saliva_protein_test", // Replace with your index name
+    body: {
+      size: 0,
+      aggs: {
+        langs: {
+          terms: {
+            field: "expert_opinion.keyword",
+          },
+        },
+      },
+    },
+  });
+
+  return response.body.aggregations.langs.buckets;
+}
+
+app.get("/opCount", (req, res) => {
+  let a = opCount();
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+async function searchOp(size, from, text) {
+  // Initialize the client.
+  var client = await getClient();
+
+  var query = {
+    size: size,
+    from: from,
+    query: {
+      match: {
+        expert_opinion: text,
+      },
+    },
+  };
+
+  var response = await client.search({
+    index: "saliva_protein_test",
+    body: query,
+  });
+
+  return response.body.hits.hits;
+}
+
+app.get("/searchOp/:size/:from/:text", (req, res) => {
+  let a = searchOp(req.params.size, req.params.from, req.params.text);
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+async function IHCCount() {
+  var client = await getClient();
+
+  const response = await client.search({
+    index: "saliva_protein_test", // Replace with your index name
+    body: {
+      size: 0,
+      aggs: {
+        langs: {
+          terms: {
+            field: "IHC.keyword",
+          },
+        },
+      },
+    },
+  });
+
+  return response.body.aggregations.langs.buckets;
+}
+
+app.get("/IHCCount", (req, res) => {
+  let a = IHCCount();
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+async function WSVal() {
+  var client = await getClient();
+
+  const response = await client.search({
+    index: "saliva_protein_test", // Replace with your index name
+    body: {
+      query: {
+        range: {
+          saliva_abundance: {
+            gte: 0,
+            lte: 10,
+          },
+        },
+      },
+    },
+  });
+
+  return response.body;
+}
+
+app.get("/WSVal", (req, res) => {
+  let a = WSVal();
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+async function filter_search(indexName, field, prefix, size, from) {
+  var client = await getClient();
+
+  const response = await client.search({
+    index: indexName, // Replace with your index name
+    body: {
+      size: size,
+      from: from,
+      query: {
+        match_phrase_prefix: {
+          [field]: {
+            query: prefix,
+          },
+        },
+      },
+    },
+  });
+
+  return response.body.hits;
+}
+
+app.get("/filter_search/:indexName/:field/:prefix/:size/:from", (req, res) => {
+  let a = filter_search(
+    req.params.indexName,
+    req.params.field,
+    req.params.prefix,
+    req.params.size,
+    req.params.from
+  );
+  a.then(function (result) {
     res.json(result);
   });
 });
@@ -710,7 +907,6 @@ async function search_protein() {
 app.get("/protein", (req, res) => {
   let a = search_protein();
   a.then(function (result) {
-    console.log(result);
     res.json(result);
   });
 });

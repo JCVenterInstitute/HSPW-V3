@@ -7,6 +7,7 @@ import React from "react";
 export const menu = [
   {
     title: "Uniprot Accession",
+    items: [],
   },
   {
     title: "Gene Symbol",

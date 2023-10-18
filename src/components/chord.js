@@ -24,7 +24,7 @@ const Chord = (props) => {
       throw new Error(message);
     }
     const data = await response.json();
-    setCountSaliva(data.datarows[0][0]);
+    setCountSaliva(data.filter_ws.doc_count);
   };
 
   const fetchSMSL = async () => {
@@ -35,7 +35,7 @@ const Chord = (props) => {
       throw new Error(message);
     }
     const data = await response.json();
-    setCountSMSL(data.datarows[0][0]);
+    setCountSMSL(data.filter_ss.doc_count);
   };
 
   const fetchParotid = async () => {
@@ -46,7 +46,7 @@ const Chord = (props) => {
       throw new Error(message);
     }
     const data = await response.json();
-    setCountParotid(data.datarows[0][0]);
+    setCountParotid(data.filter_par.doc_count);
   };
 
   const fetchPlasma = async () => {
@@ -57,7 +57,7 @@ const Chord = (props) => {
       throw new Error(message);
     }
     const data = await response.json();
-    setCountPlasma(data.datarows[0][0]);
+    setCountPlasma(data.filter_p.doc_count);
   };
 
   const fetchSalivaParotid = async () => {
@@ -68,7 +68,7 @@ const Chord = (props) => {
       throw new Error(message);
     }
     const data = await response.json();
-    setSalivaParotid(data.datarows.length);
+    setSalivaParotid(data.filter_ws_par.doc_count);
   };
 
   const fetchSalivaPlasma = async () => {
@@ -80,7 +80,7 @@ const Chord = (props) => {
     }
     const data = await response.json();
 
-    setSalivaPlasma(data.datarows.length);
+    setSalivaPlasma(data.filter_ws_p.doc_count);
   };
 
   const fetchSalivaSMSL = async () => {
@@ -92,11 +92,11 @@ const Chord = (props) => {
     }
     const data = await response.json();
 
-    setSalivaSS(data.datarows.length);
+    setSalivaSS(data.filter_ss_ws.doc_count);
   };
 
   const fetchSMSLPlasma = async () => {
-    const response = await fetch("http://localhost:8000/countSSS");
+    const response = await fetch("http://localhost:8000/countSSP");
     if (!response.ok) {
       const message = `An error has occurred: ${response.status}`;
       console.error(message);
@@ -104,7 +104,7 @@ const Chord = (props) => {
     }
     const data = await response.json();
 
-    setSSPlasma(data.datarows.length);
+    setSSPlasma(data.filter_ss_p.doc_count);
   };
 
   const fetchSMSLParotid = async () => {
@@ -116,7 +116,7 @@ const Chord = (props) => {
     }
     const data = await response.json();
 
-    setSSParotid(data.datarows.length);
+    setSSParotid(data.filter_ss_par.doc_count);
   };
 
   const fetchParotidPlasma = async () => {
@@ -128,7 +128,7 @@ const Chord = (props) => {
     }
     const data = await response.json();
 
-    setPlasmaParotid(data.datarows.length);
+    setPlasmaParotid(data.filter_p_par.doc_count);
   };
 
   useEffect(() => {
