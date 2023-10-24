@@ -12,9 +12,15 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CustomHeaderGroup from "./customHeaderGroup.jsx";
-import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import Switch from "@mui/material/Switch";
+import Stack from "@mui/material/Stack";
+
 import { ICellRendererParams } from "ag-grid-community";
 import { ReactComponent as Download_Logo } from "./table_icon/download.svg";
 import { ReactComponent as Left_Arrow } from "./table_icon/left_arrow.svg";
@@ -402,95 +408,322 @@ function App() {
   const [accessionC, setAccessionC] = useState(false);
   const [geneC, setGeneC] = useState(false);
   const [nameC, setNameC] = useState(false);
-  const [open, setOpen] = useState([false, false]);
-  const [open1, setOpen1] = useState(false);
-  const [open2, setOpen2] = useState(false);
-  const [open3, setOpen3] = useState(false);
-  const [open4, setOpen4] = useState(false);
-  const [open5, setOpen5] = useState(false);
-  const [open6, setOpen6] = useState(false);
-  const [open7, setOpen7] = useState(false);
-  const [open8, setOpen8] = useState(false);
-  const [open9, setOpen9] = useState(false);
-  const [open10, setOpen10] = useState(false);
+  const [eoC, seteoC] = useState(false);
+  const [ihcC, setihcC] = useState(false);
+  const [msWSC, setmsWSC] = useState(false);
+  const [wsC, setwsC] = useState(false);
   const [prefix, setPrefix] = useState("");
   const [genePrefix, setGenePrefix] = useState("");
   const [namePrefix, setNamePrefix] = useState("");
   const [opCount, setOpCount] = useState([]);
   const [IHCCount, setIHCCount] = useState([]);
   const [rowData, setRowData] = useState([]);
+  const [opinionVal, setopinionVal] = useState("");
+  const [IHCVal, setIHCVal] = useState("*");
+  const [wsArr, setwsArr] = useState(["0", "20000"]);
+  const [parArr, setparArr] = useState([0, 20000]);
+  const [ssArr, setssArr] = useState([0, 20000]);
+  const [pArr, setpArr] = useState([0, 20000]);
+  const [mRNAArr, setmRNAArr] = useState([0, 20000]);
+  const [opArr, setOpArr] = useState([false, false]);
+  const [IHCArr, setIHCArr] = useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
 
   useEffect(() => {
-    fetch(
-      "http://localhost:8000/saliva_protein_table/" + pageSize + "/" + pageNum
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setMessage(data);
-        let data1 = [];
-        for (let i = 0; i < message.length; i++) {
-          data1.push(message[i]["_source"]);
-        }
+    const fetchOpCount = async () => {
+      const data = await fetch("http://localhost:8000/opCount");
+      const json = data.json();
+      return json;
+    };
+    const countOpResult = fetchOpCount().catch(console.errror);
+    countOpResult.then((value) => {
+      if (value) {
+        setOpCount(value);
+      }
+    });
 
-        setRowData(data1);
-      });
-
-    fetch("http://localhost:8000/opCount")
-      .then((res) => res.json())
-      .then((data) => {
-        setOpCount(data);
-      });
-    /*
-    fetch("http://localhost:8000/IHCCount")
-      .then((res) => res.json())
-      .then((data) => {
-        setIHCCount(data);
-      });
+    const fetchIHCCount = async () => {
+      const data = await fetch("http://localhost:8000/IHCCount");
+      const json = data.json();
+      return json;
+    };
+    const countIHCResult = fetchIHCCount().catch(console.errror);
+    countIHCResult.then((value) => {
+      if (value) {
+        setIHCCount(value);
+        console.log(IHCCount);
+      }
+    });
 
     fetch("http://localhost:8000/saliva_protein_count/")
       .then((res) => res.json())
-      .then((data) => setDocCount(data.count));
-    const newOptions = [];
-    for (let i = 1; i <= Math.round(docCount / pageSize); i++) {
-      newOptions.push(
-        <option key={i} value={i}>
-          {i}
-        </option>
+      .then((data) => {
+        setDocCount(data.count);
+        const newOptions = [];
+        for (let i = 1; i <= Math.round(data.count / pageSize); i++) {
+          newOptions.push(
+            <option key={i} value={i}>
+              {i}
+            </option>
+          );
+        }
+        setPageNumArr(newOptions);
+      });
+  }, []);
+  console.log("a:" + wsArr[0] + wsArr[1]);
+  useEffect(() => {
+    const fetchAndData = async () => {
+      console.log("a:" + wsArr[0] + wsArr[1]);
+      const data = await fetch(
+        "http://localhost:8000/and_search/" +
+          prefix +
+          "*/" +
+          genePrefix +
+          "*/" +
+          namePrefix +
+          "*/" +
+          opinionVal +
+          "*/" +
+          wsArr[0] +
+          "/" +
+          wsArr[1] +
+          "/" +
+          parArr[0] +
+          "/" +
+          parArr[1] +
+          "/" +
+          pArr[0] +
+          "/" +
+          pArr[1] +
+          "/" +
+          ssArr[0] +
+          "/" +
+          ssArr[1] +
+          "/" +
+          mRNAArr[0] +
+          "/" +
+          mRNAArr[1] +
+          "," +
+          IHCVal
       );
+      const json = data.json();
+      return json;
+    };
+    if (
+      accessionC === true ||
+      geneC === true ||
+      nameC === true ||
+      eoC === true ||
+      ihcC === true ||
+      wsC === true
+    ) {
+      console.log(wsArr[1]);
+      console.log(
+        "http://localhost:8000/and_search/" +
+          prefix +
+          "*/" +
+          genePrefix +
+          "*/" +
+          namePrefix +
+          "*/" +
+          opinionVal +
+          "*/" +
+          wsArr[0] +
+          "/" +
+          wsArr[1] +
+          "/" +
+          parArr[0] +
+          "/" +
+          parArr[1] +
+          "/" +
+          pArr[0] +
+          "/" +
+          pArr[1] +
+          "/" +
+          ssArr[0] +
+          "/" +
+          ssArr[1] +
+          "/" +
+          mRNAArr[0] +
+          "/" +
+          mRNAArr[1] +
+          "," +
+          IHCVal
+      );
+      const result = fetchAndData().catch(console.errror);
+      result.then((value) => {
+        if (value.hits.hits) {
+          console.log(value);
+          let data1 = [];
+          for (let i = 0; i < value.hits.hits.length; i++) {
+            data1.push(value.hits.hits[i]["_source"]);
+          }
+          console.log(data1);
+          setRowData(data1);
+        }
+        setDocCount(value.hits.total.value);
+        const newOptions = [];
+        for (
+          let i = 1;
+          i <= Math.round(value.hits.total.value / pageSize);
+          i++
+        ) {
+          newOptions.push(
+            <option key={i} value={i}>
+              {i}
+            </option>
+          );
+        }
+        setPageNum(1);
+        setPageNumArr(newOptions);
+        setCount(2);
+        setOpCount(value.aggregations.expert_opinion.buckets);
+        setIHCCount(value.aggregations.IHC.buckets);
+      });
+    } else {
+      const fetchData = async () => {
+        const data = await fetch(
+          "http://localhost:8000/saliva_protein_table/" +
+            pageSize +
+            "/" +
+            pageNum
+        );
+        const json = data.json();
+        return json;
+      };
+      const result = fetchData().catch(console.errror);
+      result.then((value) => {
+        if (value.hits.hits) {
+          console.log(value);
+          let data1 = [];
+          for (let i = 0; i < value.hits.hits.length; i++) {
+            data1.push(value.hits.hits[i]["_source"]);
+          }
+          console.log(data1);
+          setRowData(data1);
+        }
+        setDocCount(value.hits.total.value);
+        const newOptions = [];
+        for (
+          let i = 1;
+          i <= Math.round(value.hits.total.value / pageSize);
+          i++
+        ) {
+          newOptions.push(
+            <option key={i} value={i}>
+              {i}
+            </option>
+          );
+        }
+        setPageNum(1);
+        setPageNumArr(newOptions);
+        setCount(2);
+        setOpCount(value.aggregations.expert_opinion.buckets);
+        setIHCCount(value.aggregations.IHC.buckets);
+      });
+
+      const fetchOpCount = async () => {
+        const data = await fetch("http://localhost:8000/opCount");
+        const json = data.json();
+        return json;
+      };
+      const countOpResult = fetchOpCount().catch(console.errror);
+      countOpResult.then((value) => {
+        if (value) {
+          setOpCount(value);
+        }
+      });
+
+      const fetchIHCCount = async () => {
+        const data = await fetch("http://localhost:8000/IHCCount");
+        const json = data.json();
+        return json;
+      };
+      const countIHCResult = fetchIHCCount().catch(console.errror);
+      countIHCResult.then((value) => {
+        if (value) {
+          setIHCCount(value);
+          console.log(IHCCount);
+        }
+      });
     }
-    setPageNumArr(newOptions);
-    if (accessionC && prefix.trim() !== "") {
-      fetch(
+
+    const fetchAccessionData = async () => {
+      const data = await fetch(
         "http://localhost:8000/filter_search/saliva_protein_test/uniprot_accession/" +
           prefix +
           "/" +
           pageSize +
           "/" +
           pageNum
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          setMessage(data.hits);
-          setDocCount(data.total.value - 1);
-        });
-      let data1 = [];
-      for (let i = 0; i < message.length; i++) {
-        data1.push(message[i]["_source"]);
+      );
+      const json = data.json();
+      return json;
+    };
+
+    const fetchGeneData = async () => {
+      const data = await fetch(
+        "http://localhost:8000/filter_search/saliva_protein_test/Gene Symbol/" +
+          genePrefix +
+          "/" +
+          pageSize +
+          "/" +
+          pageNum
+      );
+      const json = data.json();
+      return json;
+    };
+
+    const fetchOpUSData = async () => {
+      const data = await fetch(
+        "http://localhost:8000/search_opinion/Unsubstantiated/" +
+          pageSize +
+          "/" +
+          pageNum
+      );
+      const json = data.json();
+      return json;
+    };
+
+    const fetchOpCData = async () => {
+      const data = await fetch(
+        "http://localhost:8000/search_opinion/Confirmed/" +
+          pageSize +
+          "/" +
+          pageNum
+      );
+      const json = data.json();
+      return json;
+    };
+  }, [prefix, genePrefix, namePrefix, opArr, IHCArr, wsArr]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetch(
+        "http://localhost:8000/saliva_protein_table/" + pageSize + "/" + pageNum
+      );
+      const json = data.json();
+      return json;
+    };
+    const result = fetchData().catch(console.errror);
+    result.then((value) => {
+      if (value.hits.hits) {
+        console.log(value);
+        let data1 = [];
+        for (let i = 0; i < value.hits.hits.length; i++) {
+          data1.push(value.hits.hits[i]["_source"]);
+        }
+        console.log(data1);
+        setRowData(data1);
       }
-      setRowData(data1);
-    }
-    */
-  }, [
-    IHCCount,
-    pageNumArr,
-    pageSize,
-    pageNum,
-    docCount,
-    opCount,
-    accessionC,
-    prefix,
-    rowData,
-  ]);
+    });
+  }, [pageSize, pageNum]);
 
   const columns = [
     {
@@ -602,20 +835,20 @@ function App() {
         {
           headerName: "value",
           field: "mRNA",
-          minWidth: "95",
+          minWidth: "105",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
           cellClass: ["table-border"],
         },
         {
           field: "specificity",
-          minWidth: "105",
+          minWidth: "140",
           headerClass: ["header-border"],
           cellClass: ["table-border"],
         },
         {
           field: "specificity score",
-          minWidth: "105",
+          minWidth: "140",
           headerClass: ["header-border"],
           cellClass: ["table-border"],
         },
@@ -630,6 +863,8 @@ function App() {
 
   const searchGene = () => {
     setGeneC(true);
+
+    console.log(geneC + genePrefix);
   };
 
   const searchName = () => {
@@ -709,49 +944,220 @@ function App() {
     setGridApi(params);
   };
 
-  const handleClick1 = () => {
-    setOpen1((prev) => !prev);
-  };
-
-  const handleClick2 = () => {
-    setOpen2((prev) => !prev);
-  };
-
-  const handleClick3 = () => {
-    setOpen3((prev) => !prev);
-  };
-  const handleClick4 = () => {
-    setOpen4((prev) => !prev);
-  };
-  const handleClick5 = () => {
-    setOpen5((prev) => !prev);
-  };
-  const handleClick6 = () => {
-    setOpen6((prev) => !prev);
-  };
-  const handleClick7 = () => {
-    setOpen7((prev) => !prev);
-  };
-  const handleClick8 = () => {
-    setOpen8((prev) => !prev);
-  };
-  const handleClick9 = () => {
-    setOpen9((prev) => !prev);
-  };
-  const handleClick10 = () => {
-    setOpen10((prev) => !prev);
-  };
-
   const handleAccessionChange = (e) => {
+    if (e.target.value === "") {
+      setAccessionC(false);
+    } else {
+      setAccessionC(true);
+    }
     setPrefix(e.target.value);
   };
 
   const handleGeneChange = (e) => {
+    if (e.target.value === "") {
+      console.log("wt");
+      setGeneC(false);
+    } else if (e.target.value !== "") {
+      setGeneC(true);
+    }
     setGenePrefix(e.target.value);
   };
 
   const handleNameChange = (e) => {
+    if (e.target.value === "") {
+      console.log("wt");
+      setNameC(false);
+    } else if (e.target.value !== "") {
+      setNameC(true);
+    }
     setNamePrefix(e.target.value);
+  };
+
+  const handlestartWSChange = (e) => {
+    if (e.target.value !== "") {
+      setwsArr(e.target.value, "20000");
+      setwsC(true);
+    }
+  };
+  const handleendWSChange = (e) => {
+    if (e.target.value !== "") {
+      setwsArr(wsArr[0], e.target.value);
+      setwsC(true);
+    }
+  };
+  const handlestartParChange = (e) => {};
+  const handleendParChange = (e) => {};
+  const handlestartSubChange = (e) => {};
+  const handleendSubChange = (e) => {};
+  const handlestartBChange = (e) => {};
+  const handleendBChange = (e) => {};
+  const handlestartmRNAChange = (e) => {};
+  const handleendmRNAChange = (e) => {};
+
+  const filterOpUS = (event) => {
+    setOpArr((prevOpArr) => {
+      const updatedOpArr = [!prevOpArr[0], prevOpArr[1]];
+
+      if (updatedOpArr[0] === true) {
+        seteoC(true);
+        setopinionVal("Unsubstantiated");
+        console.log("diu:" + eoC + opinionVal);
+      } else if (updatedOpArr[0] === false && updatedOpArr[1] === false) {
+        seteoC(false);
+        setopinionVal("");
+      } else if (updatedOpArr[0] === false) {
+        setopinionVal("");
+      }
+
+      return updatedOpArr;
+    });
+  };
+
+  const filterOpC = (event) => {
+    setOpArr((prevOpArr) => {
+      const updatedOpArr = [prevOpArr[0], !prevOpArr[1]];
+
+      if (updatedOpArr[1] === true) {
+        seteoC(true);
+        setopinionVal("Confirmed");
+        console.log("diu:" + eoC + opinionVal);
+      } else if (updatedOpArr[0] === false && updatedOpArr[1] === false) {
+        seteoC(false);
+        setopinionVal("");
+      } else if (updatedOpArr[1] === false) {
+        setopinionVal("");
+      }
+
+      return updatedOpArr;
+    });
+  };
+
+  const filterIHC = (event) => {
+    console.log(typeof event.target.value);
+    if (event.target.value === "medium") {
+      setIHCArr((prevIHCArr) => {
+        const updatedIHCArr = [
+          !prevIHCArr[0],
+          prevIHCArr[1],
+          prevIHCArr[2],
+          prevIHCArr[3],
+          prevIHCArr[4],
+          prevIHCArr[5],
+        ];
+        if (updatedIHCArr[0] === true) {
+          setihcC(true);
+          setIHCVal("medium*");
+        } else if (
+          updatedIHCArr[0] === false &&
+          updatedIHCArr[1] === false &&
+          updatedIHCArr[2] === false &&
+          updatedIHCArr[3] === false &&
+          updatedIHCArr[4] === false &&
+          updatedIHCArr[5] === false
+        ) {
+          setihcC(false);
+          setIHCVal("*");
+        }
+        return updatedIHCArr;
+      });
+      console.log("diu:" + IHCArr);
+    } else if (event.target.value === "not detected") {
+      setIHCArr((prevIHCArr) => {
+        const updatedIHCArr = [
+          prevIHCArr[0],
+          !prevIHCArr[1],
+          prevIHCArr[2],
+          prevIHCArr[3],
+          prevIHCArr[4],
+        ];
+        if (updatedIHCArr[1] === true) {
+          setihcC(true);
+          setIHCVal("not_detected*");
+        } else if (
+          updatedIHCArr[0] === false &&
+          updatedIHCArr[1] === false &&
+          updatedIHCArr[2] === false &&
+          updatedIHCArr[3] === false &&
+          updatedIHCArr[4] === false
+        ) {
+          setihcC(false);
+          setIHCVal("*");
+        }
+        return updatedIHCArr;
+      });
+    } else if (event.target.value === "low") {
+      setIHCArr((prevIHCArr) => {
+        const updatedIHCArr = [
+          prevIHCArr[0],
+          prevIHCArr[1],
+          !prevIHCArr[2],
+          prevIHCArr[3],
+          prevIHCArr[4],
+        ];
+        if (updatedIHCArr[2] === true) {
+          setihcC(true);
+          setIHCVal("low*");
+        } else if (
+          updatedIHCArr[0] === false &&
+          updatedIHCArr[1] === false &&
+          updatedIHCArr[2] === false &&
+          updatedIHCArr[3] === false &&
+          updatedIHCArr[4] === false
+        ) {
+          setihcC(false);
+          setIHCVal("*");
+        }
+        return updatedIHCArr;
+      });
+    } else if (event.target.value === "n/a") {
+      setIHCArr((prevIHCArr) => {
+        const updatedIHCArr = [
+          prevIHCArr[0],
+          prevIHCArr[1],
+          prevIHCArr[2],
+          !prevIHCArr[3],
+          prevIHCArr[4],
+        ];
+        if (updatedIHCArr[3] === true) {
+          setihcC(true);
+          setIHCVal("n_a*");
+        } else if (
+          updatedIHCArr[0] === false &&
+          updatedIHCArr[1] === false &&
+          updatedIHCArr[2] === false &&
+          updatedIHCArr[3] === false &&
+          updatedIHCArr[4] === false
+        ) {
+          setihcC(false);
+          setIHCVal("*");
+        }
+        return updatedIHCArr;
+      });
+    } else if (event.target.value === "high") {
+      setIHCArr((prevIHCArr) => {
+        const updatedIHCArr = [
+          prevIHCArr[0],
+          prevIHCArr[1],
+          prevIHCArr[2],
+          prevIHCArr[3],
+          !prevIHCArr[4],
+        ];
+        if (updatedIHCArr[4] === true) {
+          setihcC(true);
+          setIHCVal("high*");
+        } else if (
+          updatedIHCArr[0] === false &&
+          updatedIHCArr[1] === false &&
+          updatedIHCArr[2] === false &&
+          updatedIHCArr[3] === false &&
+          updatedIHCArr[4] === false
+        ) {
+          setihcC(false);
+          setIHCVal("*");
+        }
+        return updatedIHCArr;
+      });
+    }
   };
 
   const rowHeight = 20;
@@ -774,51 +1180,374 @@ function App() {
           >
             FILTER
           </h2>
-          <ListItem button onClick={handleClick1} divider="true">
-            {open1 ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
-            <ListItemText primary={"Uniprot Accession"} />
-          </ListItem>
+          <FormGroup style={{ marginLeft: "18%" }}>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Typography color="common.black">And</Typography>
+              <Switch inputProps={{ "aria-label": "ant design" }} />
+              <Typography color="common.black">Or</Typography>
+            </Stack>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Typography color="common.black">Not</Typography>
+              <Switch inputProps={{ "aria-label": "ant design" }} />
+              <Typography color="common.black">Exclude</Typography>
+            </Stack>
+          </FormGroup>
           <div>
-            <Collapse in={open1} timeout="auto" unmountOnExit>
-              <List
-                component="div"
-                disablePadding
-                sx={{ border: "1px groove" }}
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
               >
+                <Typography variant="h6">Accession</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
                 <input
                   type="text"
                   id="filter-accession-box"
                   placeholder="Search..."
                   onChange={handleAccessionChange}
                   style={{
-                    width: "70%",
+                    width: "80%",
                     marginLeft: "10px",
                     padding: "0.25rem 0.75rem",
-                    borderRadius: "10px 0 0 10px",
+                    borderRadius: "10px",
                     borderColor: "#1463B9",
                     display: "inline",
                     position: "relative",
                   }}
                   value={prefix}
                 />
-                <button
-                  type="submit"
-                  onClick={searchAccession}
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography variant="h6">Gene Symbol</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <input
+                  type="text"
+                  id="filter-gene-box"
+                  placeholder="Search..."
+                  onChange={handleGeneChange}
                   style={{
+                    width: "80%",
+                    marginLeft: "10px",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "10px",
+                    borderColor: "#1463B9",
                     display: "inline",
                     position: "relative",
-                    top: "0.3em",
-                    backgroundColor: "#1463B9",
-                    borderColor: "#1463B9",
-                    cursor: "pointer",
-                    width: "15%",
-                    borderRadius: "0 10px 10px 0",
                   }}
-                >
-                  <Search />
-                </button>
+                  value={genePrefix}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography variant="h6">Protein Name</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <input
+                  type="text"
+                  id="filter-protein-name-box"
+                  placeholder="Search..."
+                  onChange={handleNameChange}
+                  style={{
+                    width: "80%",
+                    marginLeft: "10px",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "10px",
+                    borderColor: "#1463B9",
+                    display: "inline",
+                    position: "relative",
+                  }}
+                  value={namePrefix}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography variant="h6">Expert Opinion</Typography>
+              </AccordionSummary>
+              <List
+                component="div"
+                disablePadding
+                sx={{ border: "1px groove" }}
+              >
+                {opCount.map((child, key) =>
+                  child.key !== "" &&
+                  child.key !== "D.D.S." &&
+                  child.key != "Unknown" ? (
+                    <FormGroup sx={{ ml: "10px" }}>
+                      {child.key === "Unsubstantiated" ? (
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={opArr[0]}
+                              onChange={filterOpUS}
+                            />
+                          }
+                          label={"US (" + child.doc_count + ")"}
+                        />
+                      ) : (
+                        <FormControlLabel
+                          control={
+                            <Checkbox checked={opArr[1]} onChange={filterOpC} />
+                          }
+                          label={"C (" + (child.doc_count - 1) + ")"}
+                        />
+                      )}
+                    </FormGroup>
+                  ) : null
+                )}
               </List>
-            </Collapse>
+              <AccordionDetails></AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography variant="h6">IHC</Typography>
+              </AccordionSummary>
+              <List
+                component="div"
+                disablePadding
+                sx={{ border: "1px groove" }}
+              >
+                {IHCCount.map((child, i) =>
+                  child.key !== "?" ? (
+                    <FormGroup sx={{ ml: "10px" }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={IHCArr[i]}
+                            onChange={filterIHC}
+                            value={child.key}
+                          />
+                        }
+                        label={child.key + " (" + (child.doc_count - 1) + ")"}
+                      />
+                    </FormGroup>
+                  ) : null
+                )}
+              </List>
+              <AccordionDetails></AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography variant="h6">MS WS</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <input
+                  type="text"
+                  id="filter-gene-box"
+                  placeholder="Start"
+                  onChange={handlestartWSChange}
+                  style={{
+                    width: "40%",
+                    marginLeft: "10px",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "10px",
+                    borderColor: "#1463B9",
+                    display: "inline",
+                    position: "relative",
+                  }}
+                />
+                <Typography variant="p"> to</Typography>
+                <input
+                  type="text"
+                  id="filter-gene-box"
+                  placeholder="End"
+                  onChange={handleendWSChange}
+                  style={{
+                    width: "40%",
+                    marginLeft: "10px",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "10px",
+                    borderColor: "#1463B9",
+                    display: "inline",
+                    position: "relative",
+                  }}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography variant="h6">MS Par</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <input
+                  type="text"
+                  id="filter-gene-box"
+                  placeholder="Start"
+                  onChange={handlestartParChange}
+                  style={{
+                    width: "40%",
+                    marginLeft: "10px",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "10px",
+                    borderColor: "#1463B9",
+                    display: "inline",
+                    position: "relative",
+                  }}
+                />
+                <Typography variant="p"> to</Typography>
+                <input
+                  type="text"
+                  id="filter-gene-box"
+                  placeholder="End"
+                  onChange={handleendParChange}
+                  style={{
+                    width: "40%",
+                    marginLeft: "10px",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "10px",
+                    borderColor: "#1463B9",
+                    display: "inline",
+                    position: "relative",
+                  }}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography variant="h6">MS Sub</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <input
+                  type="text"
+                  id="filter-gene-box"
+                  placeholder="Start"
+                  onChange={handlestartSubChange}
+                  style={{
+                    width: "40%",
+                    marginLeft: "10px",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "10px",
+                    borderColor: "#1463B9",
+                    display: "inline",
+                    position: "relative",
+                  }}
+                />
+                <Typography variant="p"> to</Typography>
+                <input
+                  type="text"
+                  id="filter-gene-box"
+                  placeholder="End"
+                  onChange={handleendSubChange}
+                  style={{
+                    width: "40%",
+                    marginLeft: "10px",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "10px",
+                    borderColor: "#1463B9",
+                    display: "inline",
+                    position: "relative",
+                  }}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography variant="h6">MS Blood</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <input
+                  type="text"
+                  id="filter-gene-box"
+                  placeholder="Start"
+                  onChange={handlestartBChange}
+                  style={{
+                    width: "40%",
+                    marginLeft: "10px",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "10px",
+                    borderColor: "#1463B9",
+                    display: "inline",
+                    position: "relative",
+                  }}
+                />
+                <Typography variant="p"> to</Typography>
+                <input
+                  type="text"
+                  id="filter-gene-box"
+                  placeholder="End"
+                  onChange={handleendBChange}
+                  style={{
+                    width: "40%",
+                    marginLeft: "10px",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "10px",
+                    borderColor: "#1463B9",
+                    display: "inline",
+                    position: "relative",
+                  }}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography variant="h6">mRNA Val</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <input
+                  type="text"
+                  id="filter-gene-box"
+                  placeholder="Start"
+                  onChange={handlestartmRNAChange}
+                  style={{
+                    width: "40%",
+                    marginLeft: "10px",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "10px",
+                    borderColor: "#1463B9",
+                    display: "inline",
+                    position: "relative",
+                  }}
+                />
+                <Typography variant="p"> to</Typography>
+                <input
+                  type="text"
+                  id="filter-gene-box"
+                  placeholder="End"
+                  onChange={handleendmRNAChange}
+                  style={{
+                    width: "40%",
+                    marginLeft: "10px",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "10px",
+                    borderColor: "#1463B9",
+                    display: "inline",
+                    position: "relative",
+                  }}
+                />
+              </AccordionDetails>
+            </Accordion>
           </div>
         </div>
       </div>
