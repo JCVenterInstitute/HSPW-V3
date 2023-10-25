@@ -855,7 +855,9 @@ app.get("/WSVal", (req, res) => {
   });
 });
 
-async function and_search(
+async function and_search_exclude(
+  size,
+  from,
   accesion,
   gene_symbol,
   protein_name,
@@ -881,8 +883,141 @@ async function and_search(
   const response = await client.search({
     index: "saliva_protein_test",
     body: {
-      size: 50,
-      from: 1,
+      size: size,
+      from: from,
+      aggs: {
+        IHC: {
+          terms: {
+            field: "IHC.keyword",
+          },
+        },
+        expert_opinion: {
+          terms: {
+            field: "expert_opinion.keyword",
+          },
+        },
+      },
+      query: {
+        bool: {
+          must: [
+            { range: { saliva_abundance: { gte: start_ws, lte: end_ws } } },
+            {
+              range: {
+                parotid_gland_abundance: { gte: start_par, lte: end_par },
+              },
+            },
+            { range: { "sm/sl_abundance": { gte: start_ss, lte: end_ss } } },
+            { range: { mRNA: { gte: start_mRNA, lte: end_mRNA } } },
+          ],
+          must_not: [
+            { range: { plasma_abundance: { gte: start_p, lte: end_p } } },
+          ],
+          filter: [
+            {
+              wildcard: {
+                "UniProt Accession": {
+                  value: accesion,
+                  case_insensitive: true,
+                },
+              },
+            },
+            {
+              wildcard: {
+                "Gene Symbol": {
+                  value: gene_symbol,
+                  case_insensitive: true,
+                },
+              },
+            },
+            {
+              wildcard: {
+                "Protein Name": {
+                  value: protein_name,
+                  case_insensitive: true,
+                },
+              },
+            },
+            {
+              wildcard: {
+                expert_opinion: {
+                  value: expert_opinion,
+                  case_insensitive: true,
+                },
+              },
+            },
+            {
+              query_string: {
+                fields: ["IHC.keyword"],
+                query: IHC,
+                analyzer: "keyword",
+              },
+            },
+          ],
+        },
+      },
+    },
+  });
+  return response.body;
+}
+
+app.get(
+  "/and_search_exclude/:size/:from/:accession/:gene_symbol/:protein_name/:expert_opinion/:start_ws/:end_ws/:start_par/:end_par/:start_p/:end_p/:start_ss/:end_ss/:start_mRNA/:end_mRNA,:IHC",
+  (req, res) => {
+    let a = and_search_exclude(
+      req.params.size,
+      req.params.from,
+      req.params.accession,
+      req.params.gene_symbol,
+      req.params.protein_name,
+      req.params.expert_opinion,
+      req.params.start_ws,
+      req.params.end_ws,
+      req.params.start_par,
+      req.params.end_par,
+      req.params.start_p,
+      req.params.end_p,
+      req.params.start_ss,
+      req.params.end_ss,
+      req.params.start_mRNA,
+      req.params.end_mRNA,
+      req.params.IHC
+    );
+    a.then(function (result) {
+      res.json(result);
+    });
+  }
+);
+
+async function and_search(
+  size,
+  from,
+  accesion,
+  gene_symbol,
+  protein_name,
+  expert_opinion,
+  start_ws,
+  end_ws,
+  start_par,
+  end_par,
+  start_p,
+  end_p,
+  start_ss,
+  end_ss,
+  start_mRNA,
+  end_mRNA,
+  IHC
+) {
+  if (IHC === "not_detected*") {
+    IHC = "not\\ detected*";
+  } else if (IHC === "n_a*") {
+    IHC = "n\\/a*";
+  }
+  var client = await getClient();
+  const response = await client.search({
+    index: "saliva_protein_test",
+    body: {
+      size: size,
+      from: from,
       aggs: {
         IHC: {
           terms: {
@@ -957,9 +1092,11 @@ async function and_search(
 }
 
 app.get(
-  "/and_search/:accession/:gene_symbol/:protein_name/:expert_opinion/:start_ws/:end_ws/:start_par/:end_par/:start_p/:end_p/:start_ss/:end_ss/:start_mRNA/:end_mRNA,:IHC",
+  "/and_search/:size/:from/:accession/:gene_symbol/:protein_name/:expert_opinion/:start_ws/:end_ws/:start_par/:end_par/:start_p/:end_p/:start_ss/:end_ss/:start_mRNA/:end_mRNA,:IHC",
   (req, res) => {
     let a = and_search(
+      req.params.size,
+      req.params.from,
       req.params.accession,
       req.params.gene_symbol,
       req.params.protein_name,
@@ -981,6 +1118,463 @@ app.get(
     });
   }
 );
+
+async function or_search_exclude(
+  size,
+  from,
+  accesion,
+  gene_symbol,
+  protein_name,
+  expert_opinion,
+  start_ws,
+  end_ws,
+  start_par,
+  end_par,
+  start_p,
+  end_p,
+  start_ss,
+  end_ss,
+  start_mRNA,
+  end_mRNA,
+  IHC
+) {
+  if (IHC === "not_detected*") {
+    IHC = "not\\ detected*";
+  } else if (IHC === "n_a*") {
+    IHC = "n\\/a*";
+  }
+  var client = await getClient();
+  const response = await client.search({
+    index: "saliva_protein_test",
+    body: {
+      size: size,
+      from: from,
+      aggs: {
+        IHC: {
+          terms: {
+            field: "IHC.keyword",
+          },
+        },
+        expert_opinion: {
+          terms: {
+            field: "expert_opinion.keyword",
+          },
+        },
+      },
+      query: {
+        bool: {
+          should: [
+            {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    wildcard: {
+                      "UniProt Accession": {
+                        value: accesion,
+                        case_insensitive: true,
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    wildcard: {
+                      "Gene Symbol": {
+                        value: gene_symbol,
+                        case_insensitive: true,
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    wildcard: {
+                      "Protein Name": {
+                        value: protein_name,
+                        case_insensitive: true,
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    wildcard: {
+                      expert_opinion: {
+                        value: expert_opinion,
+                        case_insensitive: true,
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    query_string: {
+                      fields: ["IHC.keyword"],
+                      query: IHC,
+                      analyzer: "keyword",
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              bool: {
+                must: [
+                  {
+                    range: { saliva_abundance: { gte: start_ws, lte: end_ws } },
+                  },
+                ],
+                must_not: [],
+                filter: [],
+              },
+            },
+            {
+              bool: {
+                must: [
+                  {
+                    range: {
+                      parotid_gland_abundance: { gte: start_par, lte: end_par },
+                    },
+                  },
+                ],
+                must_not: [],
+                filter: [],
+              },
+            },
+            {
+              bool: {
+                must: [],
+                must_not: [
+                  { range: { plasma_abundance: { gte: start_p, lte: end_p } } },
+                ],
+                filter: [],
+              },
+            },
+            {
+              bool: {
+                must: [
+                  {
+                    range: {
+                      "sm/sl_abundance": { gte: start_ss, lte: end_ss },
+                    },
+                  },
+                ],
+                must_not: [],
+                filter: [],
+              },
+            },
+            {
+              bool: {
+                must: [{ range: { mRNA: { gte: start_mRNA, lte: end_mRNA } } }],
+                must_not: [],
+                filter: [],
+              },
+            },
+          ],
+        },
+      },
+    },
+  });
+  return response.body;
+}
+
+app.get(
+  "/or_search_exclude/:size/:from/:accession/:gene_symbol/:protein_name/:expert_opinion/:start_ws/:end_ws/:start_par/:end_par/:start_p/:end_p/:start_ss/:end_ss/:start_mRNA/:end_mRNA,:IHC",
+  (req, res) => {
+    let a = or_search_exclude(
+      req.params.size,
+      req.params.from,
+      req.params.accession,
+      req.params.gene_symbol,
+      req.params.protein_name,
+      req.params.expert_opinion,
+      req.params.start_ws,
+      req.params.end_ws,
+      req.params.start_par,
+      req.params.end_par,
+      req.params.start_p,
+      req.params.end_p,
+      req.params.start_ss,
+      req.params.end_ss,
+      req.params.start_mRNA,
+      req.params.end_mRNA,
+      req.params.IHC
+    );
+    a.then(function (result) {
+      res.json(result);
+    });
+  }
+);
+
+async function or_search(
+  size,
+  from,
+  accesion,
+  gene_symbol,
+  protein_name,
+  expert_opinion,
+  start_ws,
+  end_ws,
+  start_par,
+  end_par,
+  start_p,
+  end_p,
+  start_ss,
+  end_ss,
+  start_mRNA,
+  end_mRNA,
+  IHC
+) {
+  if (IHC === "not_detected*") {
+    IHC = "not\\ detected*";
+  } else if (IHC === "n_a*") {
+    IHC = "n\\/a*";
+  }
+  var client = await getClient();
+  const response = await client.search({
+    index: "saliva_protein_test",
+    body: {
+      size: size,
+      from: from,
+      aggs: {
+        IHC: {
+          terms: {
+            field: "IHC.keyword",
+          },
+        },
+        expert_opinion: {
+          terms: {
+            field: "expert_opinion.keyword",
+          },
+        },
+      },
+      query: {
+        bool: {
+          should: [
+            {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    wildcard: {
+                      "UniProt Accession": {
+                        value: accesion,
+                        case_insensitive: true,
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    wildcard: {
+                      "Gene Symbol": {
+                        value: gene_symbol,
+                        case_insensitive: true,
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    wildcard: {
+                      "Protein Name": {
+                        value: protein_name,
+                        case_insensitive: true,
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    wildcard: {
+                      expert_opinion: {
+                        value: expert_opinion,
+                        case_insensitive: true,
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    query_string: {
+                      fields: ["IHC.keyword"],
+                      query: IHC,
+                      analyzer: "keyword",
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              bool: {
+                must: [
+                  {
+                    range: { saliva_abundance: { gte: start_ws, lte: end_ws } },
+                  },
+                ],
+                must_not: [],
+                filter: [],
+              },
+            },
+            {
+              bool: {
+                must: [
+                  {
+                    range: {
+                      parotid_gland_abundance: { gte: start_par, lte: end_par },
+                    },
+                  },
+                ],
+                must_not: [],
+                filter: [],
+              },
+            },
+            {
+              bool: {
+                must: [
+                  { range: { plasma_abundance: { gte: start_p, lte: end_p } } },
+                ],
+                must_not: [],
+                filter: [],
+              },
+            },
+            {
+              bool: {
+                must: [
+                  {
+                    range: {
+                      "sm/sl_abundance": { gte: start_ss, lte: end_ss },
+                    },
+                  },
+                ],
+                must_not: [],
+                filter: [],
+              },
+            },
+            {
+              bool: {
+                must: [{ range: { mRNA: { gte: start_mRNA, lte: end_mRNA } } }],
+                must_not: [],
+                filter: [],
+              },
+            },
+          ],
+        },
+      },
+    },
+  });
+  return response.body;
+}
+
+app.get(
+  "/or_search/:size/:from/:accession/:gene_symbol/:protein_name/:expert_opinion/:start_ws/:end_ws/:start_par/:end_par/:start_p/:end_p/:start_ss/:end_ss/:start_mRNA/:end_mRNA,:IHC",
+  (req, res) => {
+    let a = or_search(
+      req.params.size,
+      req.params.from,
+      req.params.accession,
+      req.params.gene_symbol,
+      req.params.protein_name,
+      req.params.expert_opinion,
+      req.params.start_ws,
+      req.params.end_ws,
+      req.params.start_par,
+      req.params.end_par,
+      req.params.start_p,
+      req.params.end_p,
+      req.params.start_ss,
+      req.params.end_ss,
+      req.params.start_mRNA,
+      req.params.end_mRNA,
+      req.params.IHC
+    );
+    a.then(function (result) {
+      res.json(result);
+    });
+  }
+);
+
+app.get("/and_search/:size/:from/:wildCardArr", (req, res) => {
+  let a = or_search(req.params.size, req.params.from, req.params.wildCardArr);
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+async function signature_type_counts() {
+  var client = await getClient();
+
+  const response = await client.search({
+    index: "protein_signature",
+    body: {
+      size: 0,
+      aggs: {
+        langs: {
+          terms: { field: "Type.keyword", size: 500 },
+        },
+      },
+    },
+  });
+  return response.body.aggregations.langs.buckets;
+}
+
+app.get("/signature_type_counts/", (req, res) => {
+  let a = signature_type_counts();
+  a.then(function (result) {
+    res.json(result);
+  });
+});
 
 async function search_opinion(opinion, size, from) {
   var client = await getClient();

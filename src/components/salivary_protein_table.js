@@ -410,8 +410,11 @@ function App() {
   const [nameC, setNameC] = useState(false);
   const [eoC, seteoC] = useState(false);
   const [ihcC, setihcC] = useState(false);
-  const [msWSC, setmsWSC] = useState(false);
   const [wsC, setwsC] = useState(false);
+  const [parC, setparC] = useState(false);
+  const [subC, setsubC] = useState(false);
+  const [plasmaC, setplasmaC] = useState(false);
+  const [mRNAC, setmRNAC] = useState(false);
   const [prefix, setPrefix] = useState("");
   const [genePrefix, setGenePrefix] = useState("");
   const [namePrefix, setNamePrefix] = useState("");
@@ -421,11 +424,23 @@ function App() {
   const [opinionVal, setopinionVal] = useState("");
   const [IHCVal, setIHCVal] = useState("*");
   const [wsArr, setwsArr] = useState(["0", "20000"]);
+  const [parStart, setparStart] = useState("0");
+  const [parEnd, setparEnd] = useState("20000");
+  const [subStart, setsubStart] = useState("0");
+  const [subEnd, setsubEnd] = useState("20000");
+  const [pStart, setpStart] = useState("0");
+  const [pEnd, setpEnd] = useState("10");
+  const [wsStart, setwsStart] = useState("0");
+  const [wsEnd, setwsEnd] = useState("20000");
+  const [mRNAStart, setmRNAStart] = useState("0");
+  const [mRNAEnd, setmRNAEnd] = useState("20000");
   const [parArr, setparArr] = useState([0, 20000]);
   const [ssArr, setssArr] = useState([0, 20000]);
   const [pArr, setpArr] = useState([0, 20000]);
   const [mRNAArr, setmRNAArr] = useState([0, 20000]);
   const [opArr, setOpArr] = useState([false, false]);
+  const [orChecked, setorChecked] = useState(false);
+  const [exclude, setExclude] = useState(false);
   const [IHCArr, setIHCArr] = useState([
     false,
     false,
@@ -476,12 +491,16 @@ function App() {
         setPageNumArr(newOptions);
       });
   }, []);
-  console.log("a:" + wsArr[0] + wsArr[1]);
+
   useEffect(() => {
     const fetchAndData = async () => {
-      console.log("a:" + wsArr[0] + wsArr[1]);
+      console.log("a:" + wsStart + wsEnd);
       const data = await fetch(
         "http://localhost:8000/and_search/" +
+          pageSize +
+          "/" +
+          pageNum +
+          "/" +
           prefix +
           "*/" +
           genePrefix +
@@ -490,25 +509,148 @@ function App() {
           "*/" +
           opinionVal +
           "*/" +
-          wsArr[0] +
+          wsStart +
           "/" +
-          wsArr[1] +
+          wsEnd +
           "/" +
-          parArr[0] +
+          parStart +
           "/" +
-          parArr[1] +
+          parEnd +
           "/" +
-          pArr[0] +
+          pStart +
           "/" +
-          pArr[1] +
+          pEnd +
           "/" +
-          ssArr[0] +
+          subStart +
           "/" +
-          ssArr[1] +
+          subEnd +
           "/" +
-          mRNAArr[0] +
+          mRNAStart +
           "/" +
-          mRNAArr[1] +
+          mRNAEnd +
+          "," +
+          IHCVal
+      );
+      const json = data.json();
+      return json;
+    };
+    const fetchOrData = async () => {
+      console.log("a:" + wsStart + wsEnd);
+      const data = await fetch(
+        "http://localhost:8000/or_search/" +
+          pageSize +
+          "/" +
+          pageNum +
+          "/" +
+          prefix +
+          "*/" +
+          genePrefix +
+          "*/" +
+          namePrefix +
+          "*/" +
+          opinionVal +
+          "*/" +
+          wsStart +
+          "/" +
+          wsEnd +
+          "/" +
+          parStart +
+          "/" +
+          parEnd +
+          "/" +
+          pStart +
+          "/" +
+          pEnd +
+          "/" +
+          subStart +
+          "/" +
+          subEnd +
+          "/" +
+          mRNAStart +
+          "/" +
+          mRNAEnd +
+          "," +
+          IHCVal
+      );
+      const json = data.json();
+      return json;
+    };
+    const fetchAndExcludeData = async () => {
+      console.log("a:" + wsStart + wsEnd);
+      const data = await fetch(
+        "http://localhost:8000/and_search_exclude/" +
+          pageSize +
+          "/" +
+          pageNum +
+          "/" +
+          prefix +
+          "*/" +
+          genePrefix +
+          "*/" +
+          namePrefix +
+          "*/" +
+          opinionVal +
+          "*/" +
+          wsStart +
+          "/" +
+          wsEnd +
+          "/" +
+          parStart +
+          "/" +
+          parEnd +
+          "/" +
+          pStart +
+          "/" +
+          pEnd +
+          "/" +
+          subStart +
+          "/" +
+          subEnd +
+          "/" +
+          mRNAStart +
+          "/" +
+          mRNAEnd +
+          "," +
+          IHCVal
+      );
+      const json = data.json();
+      return json;
+    };
+    const fetchOrExcludeData = async () => {
+      console.log("a:" + wsStart + wsEnd);
+      const data = await fetch(
+        "http://localhost:8000/or_search_exclude/" +
+          pageSize +
+          "/" +
+          pageNum +
+          "/" +
+          prefix +
+          "*/" +
+          genePrefix +
+          "*/" +
+          namePrefix +
+          "*/" +
+          opinionVal +
+          "*/" +
+          wsStart +
+          "/" +
+          wsEnd +
+          "/" +
+          parStart +
+          "/" +
+          parEnd +
+          "/" +
+          pStart +
+          "/" +
+          pEnd +
+          "/" +
+          subStart +
+          "/" +
+          subEnd +
+          "/" +
+          mRNAStart +
+          "/" +
+          mRNAEnd +
           "," +
           IHCVal
       );
@@ -516,16 +658,69 @@ function App() {
       return json;
     };
     if (
-      accessionC === true ||
-      geneC === true ||
-      nameC === true ||
-      eoC === true ||
-      ihcC === true ||
-      wsC === true
+      (accessionC === true ||
+        geneC === true ||
+        nameC === true ||
+        eoC === true ||
+        ihcC === true ||
+        wsC === true ||
+        parC === true ||
+        subC === true ||
+        plasmaC === true ||
+        mRNAC === true) &&
+      orChecked === false &&
+      exclude === false
     ) {
-      console.log(wsArr[1]);
+      const result = fetchAndData().catch(console.errror);
+      result.then((value) => {
+        if (value.hits.hits) {
+          console.log(value);
+          let data1 = [];
+          for (let i = 0; i < value.hits.hits.length; i++) {
+            data1.push(value.hits.hits[i]["_source"]);
+          }
+          console.log(data1);
+          setRowData(data1);
+        }
+        setDocCount(value.hits.total.value);
+        const newOptions = [];
+        for (
+          let i = 1;
+          i <= Math.round(value.hits.total.value / pageSize);
+          i++
+        ) {
+          newOptions.push(
+            <option key={i} value={i}>
+              {i}
+            </option>
+          );
+        }
+        setPageNum(1);
+        setPageNumArr(newOptions);
+        setCount(2);
+        setOpCount(value.aggregations.expert_opinion.buckets);
+        setIHCCount(value.aggregations.IHC.buckets);
+      });
+    } else if (
+      (accessionC === true ||
+        geneC === true ||
+        nameC === true ||
+        eoC === true ||
+        ihcC === true ||
+        wsC === true ||
+        parC === true ||
+        subC === true ||
+        plasmaC === true ||
+        mRNAC === true) &&
+      orChecked === true &&
+      exclude === false
+    ) {
       console.log(
-        "http://localhost:8000/and_search/" +
+        "http://localhost:8000/or_search/" +
+          pageSize +
+          "/" +
+          pageNum +
+          "/" +
           prefix +
           "*/" +
           genePrefix +
@@ -534,29 +729,189 @@ function App() {
           "*/" +
           opinionVal +
           "*/" +
-          wsArr[0] +
+          wsStart +
           "/" +
-          wsArr[1] +
+          wsEnd +
           "/" +
-          parArr[0] +
+          parStart +
           "/" +
-          parArr[1] +
+          parEnd +
           "/" +
-          pArr[0] +
+          pStart +
           "/" +
-          pArr[1] +
+          pEnd +
           "/" +
-          ssArr[0] +
+          subStart +
           "/" +
-          ssArr[1] +
+          subEnd +
           "/" +
-          mRNAArr[0] +
+          mRNAStart +
           "/" +
-          mRNAArr[1] +
+          mRNAEnd +
           "," +
           IHCVal
       );
-      const result = fetchAndData().catch(console.errror);
+      const result = fetchOrData().catch(console.errror);
+      result.then((value) => {
+        if (value.hits.hits) {
+          console.log(value);
+          let data1 = [];
+          for (let i = 0; i < value.hits.hits.length; i++) {
+            data1.push(value.hits.hits[i]["_source"]);
+          }
+          console.log(data1);
+          setRowData(data1);
+        }
+        setDocCount(value.hits.total.value);
+        const newOptions = [];
+        for (
+          let i = 1;
+          i <= Math.round(value.hits.total.value / pageSize);
+          i++
+        ) {
+          newOptions.push(
+            <option key={i} value={i}>
+              {i}
+            </option>
+          );
+        }
+        setPageNum(1);
+        setPageNumArr(newOptions);
+        setCount(2);
+        setOpCount(value.aggregations.expert_opinion.buckets);
+        setIHCCount(value.aggregations.IHC.buckets);
+      });
+    } else if (
+      (accessionC === true ||
+        geneC === true ||
+        nameC === true ||
+        eoC === true ||
+        ihcC === true ||
+        wsC === true ||
+        parC === true ||
+        subC === true ||
+        plasmaC === true ||
+        mRNAC === true) &&
+      orChecked === false &&
+      exclude === true
+    ) {
+      console.log(
+        "http://localhost:8000/and_search_exclude/" +
+          pageSize +
+          "/" +
+          pageNum +
+          "/" +
+          prefix +
+          "*/" +
+          genePrefix +
+          "*/" +
+          namePrefix +
+          "*/" +
+          opinionVal +
+          "*/" +
+          wsStart +
+          "/" +
+          wsEnd +
+          "/" +
+          parStart +
+          "/" +
+          parEnd +
+          "/" +
+          pStart +
+          "/" +
+          pEnd +
+          "/" +
+          subStart +
+          "/" +
+          subEnd +
+          "/" +
+          mRNAStart +
+          "/" +
+          mRNAEnd +
+          "," +
+          IHCVal
+      );
+      const result = fetchAndExcludeData().catch(console.errror);
+      result.then((value) => {
+        if (value.hits.hits) {
+          console.log(value);
+          let data1 = [];
+          for (let i = 0; i < value.hits.hits.length; i++) {
+            data1.push(value.hits.hits[i]["_source"]);
+          }
+          console.log(data1);
+          setRowData(data1);
+        }
+        setDocCount(value.hits.total.value);
+        const newOptions = [];
+        for (
+          let i = 1;
+          i <= Math.round(value.hits.total.value / pageSize);
+          i++
+        ) {
+          newOptions.push(
+            <option key={i} value={i}>
+              {i}
+            </option>
+          );
+        }
+        setPageNum(1);
+        setPageNumArr(newOptions);
+        setCount(2);
+        setOpCount(value.aggregations.expert_opinion.buckets);
+        setIHCCount(value.aggregations.IHC.buckets);
+      });
+    } else if (
+      (accessionC === true ||
+        geneC === true ||
+        nameC === true ||
+        eoC === true ||
+        ihcC === true ||
+        wsC === true ||
+        parC === true ||
+        subC === true ||
+        plasmaC === true ||
+        mRNAC === true) &&
+      orChecked === true &&
+      exclude === true
+    ) {
+      console.log(
+        "http://localhost:8000/or_search_exclude/" +
+          pageSize +
+          "/" +
+          pageNum +
+          "/" +
+          prefix +
+          "*/" +
+          genePrefix +
+          "*/" +
+          namePrefix +
+          "*/" +
+          opinionVal +
+          "*/" +
+          wsStart +
+          "/" +
+          wsEnd +
+          "/" +
+          parStart +
+          "/" +
+          parEnd +
+          "/" +
+          pStart +
+          "/" +
+          pEnd +
+          "/" +
+          subStart +
+          "/" +
+          subEnd +
+          "/" +
+          mRNAStart +
+          "/" +
+          mRNAEnd +
+          "," +
+          IHCVal
+      );
+      const result = fetchOrExcludeData().catch(console.errror);
       result.then((value) => {
         if (value.hits.hits) {
           console.log(value);
@@ -605,7 +960,7 @@ function App() {
           for (let i = 0; i < value.hits.hits.length; i++) {
             data1.push(value.hits.hits[i]["_source"]);
           }
-          console.log(data1);
+
           setRowData(data1);
         }
         setDocCount(value.hits.total.value);
@@ -701,7 +1056,23 @@ function App() {
       const json = data.json();
       return json;
     };
-  }, [prefix, genePrefix, namePrefix, opArr, IHCArr, wsArr]);
+  }, [
+    prefix,
+    genePrefix,
+    namePrefix,
+    opArr,
+    IHCArr,
+    wsStart,
+    wsEnd,
+    parStart,
+    parEnd,
+    subStart,
+    subEnd,
+    pStart,
+    pEnd,
+    mRNAStart,
+    mRNAEnd,
+  ]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -974,25 +1345,86 @@ function App() {
   };
 
   const handlestartWSChange = (e) => {
-    if (e.target.value !== "") {
-      setwsArr(e.target.value, "20000");
+    if (e.target.value === "") {
+      setwsC(false);
+    } else if (e.target.value !== "") {
       setwsC(true);
     }
+    setwsStart(e.target.value);
   };
   const handleendWSChange = (e) => {
-    if (e.target.value !== "") {
-      setwsArr(wsArr[0], e.target.value);
+    if (e.target.value === "") {
+      setwsC(false);
+    } else if (e.target.value !== "") {
       setwsC(true);
     }
+    setwsEnd(e.target.value);
   };
-  const handlestartParChange = (e) => {};
-  const handleendParChange = (e) => {};
-  const handlestartSubChange = (e) => {};
-  const handleendSubChange = (e) => {};
-  const handlestartBChange = (e) => {};
-  const handleendBChange = (e) => {};
-  const handlestartmRNAChange = (e) => {};
-  const handleendmRNAChange = (e) => {};
+
+  const handlestartParChange = (e) => {
+    if (e.target.value === "") {
+      setparC(false);
+    } else if (e.target.value !== "") {
+      setparC(true);
+    }
+    setparStart(e.target.value);
+  };
+  const handleendParChange = (e) => {
+    if (e.target.value === "") {
+      setparC(false);
+    } else if (e.target.value !== "") {
+      setparC(true);
+    }
+    setparEnd(e.target.value);
+  };
+  const handlestartSubChange = (e) => {
+    if (e.target.value === "") {
+      setsubC(false);
+    } else if (e.target.value !== "") {
+      setsubC(true);
+    }
+    setsubStart(e.target.value);
+  };
+  const handleendSubChange = (e) => {
+    if (e.target.value === "") {
+      setsubC(false);
+    } else if (e.target.value !== "") {
+      setsubC(true);
+    }
+    setsubEnd(e.target.value);
+  };
+  const handlestartBChange = (e) => {
+    if (e.target.value === "") {
+      setplasmaC(false);
+    } else if (e.target.value !== "") {
+      setplasmaC(true);
+    }
+    setpStart(e.target.value);
+  };
+  const handleendBChange = (e) => {
+    if (e.target.value === "") {
+      setplasmaC(false);
+    } else if (e.target.value !== "") {
+      setplasmaC(true);
+    }
+    setpEnd(e.target.value);
+  };
+  const handlestartmRNAChange = (e) => {
+    if (e.target.value === "") {
+      setmRNAC(false);
+    } else if (e.target.value !== "") {
+      setmRNAC(true);
+    }
+    setmRNAStart(e.target.value);
+  };
+  const handleendmRNAChange = (e) => {
+    if (e.target.value === "") {
+      setmRNAC(false);
+    } else if (e.target.value !== "") {
+      setmRNAC(true);
+    }
+    setmRNAEnd(e.target.value);
+  };
 
   const filterOpUS = (event) => {
     setOpArr((prevOpArr) => {
@@ -1183,13 +1615,12 @@ function App() {
           <FormGroup style={{ marginLeft: "18%" }}>
             <Stack direction="row" spacing={1} alignItems="center">
               <Typography color="common.black">And</Typography>
-              <Switch inputProps={{ "aria-label": "ant design" }} />
+              <Switch
+                checked={orChecked}
+                inputProps={{ "aria-label": "ant design" }}
+                onChange={(event) => setorChecked(event.target.checked)}
+              />
               <Typography color="common.black">Or</Typography>
-            </Stack>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Typography color="common.black">Not</Typography>
-              <Switch inputProps={{ "aria-label": "ant design" }} />
-              <Typography color="common.black">Exclude</Typography>
             </Stack>
           </FormGroup>
           <div>
@@ -1319,29 +1750,31 @@ function App() {
               >
                 <Typography variant="h6">IHC</Typography>
               </AccordionSummary>
-              <List
-                component="div"
-                disablePadding
-                sx={{ border: "1px groove" }}
-              >
-                {IHCCount.map((child, i) =>
-                  child.key !== "?" ? (
-                    <FormGroup sx={{ ml: "10px" }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={IHCArr[i]}
-                            onChange={filterIHC}
-                            value={child.key}
-                          />
-                        }
-                        label={child.key + " (" + (child.doc_count - 1) + ")"}
-                      />
-                    </FormGroup>
-                  ) : null
-                )}
-              </List>
-              <AccordionDetails></AccordionDetails>
+
+              <AccordionDetails>
+                <List
+                  component="div"
+                  disablePadding
+                  sx={{ border: "1px groove" }}
+                >
+                  {IHCCount.map((child, i) =>
+                    child.key !== "?" ? (
+                      <FormGroup sx={{ ml: "10px" }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={IHCArr[i]}
+                              onChange={filterIHC}
+                              value={child.key}
+                            />
+                          }
+                          label={child.key + " (" + (child.doc_count - 1) + ")"}
+                        />
+                      </FormGroup>
+                    ) : null
+                  )}
+                </List>
+              </AccordionDetails>
             </Accordion>
             <Accordion>
               <AccordionSummary
@@ -1353,7 +1786,7 @@ function App() {
               <AccordionDetails>
                 <input
                   type="text"
-                  id="filter-gene-box"
+                  id="filter-startws-box"
                   placeholder="Start"
                   onChange={handlestartWSChange}
                   style={{
@@ -1365,11 +1798,12 @@ function App() {
                     display: "inline",
                     position: "relative",
                   }}
+                  value={wsStart}
                 />
                 <Typography variant="p"> to</Typography>
                 <input
                   type="text"
-                  id="filter-gene-box"
+                  id="filter-endws-box"
                   placeholder="End"
                   onChange={handleendWSChange}
                   style={{
@@ -1381,6 +1815,7 @@ function App() {
                     display: "inline",
                     position: "relative",
                   }}
+                  value={wsEnd}
                 />
               </AccordionDetails>
             </Accordion>
@@ -1406,6 +1841,7 @@ function App() {
                     display: "inline",
                     position: "relative",
                   }}
+                  value={parStart}
                 />
                 <Typography variant="p"> to</Typography>
                 <input
@@ -1422,6 +1858,7 @@ function App() {
                     display: "inline",
                     position: "relative",
                   }}
+                  value={parEnd}
                 />
               </AccordionDetails>
             </Accordion>
@@ -1447,6 +1884,7 @@ function App() {
                     display: "inline",
                     position: "relative",
                   }}
+                  value={subStart}
                 />
                 <Typography variant="p"> to</Typography>
                 <input
@@ -1463,6 +1901,7 @@ function App() {
                     display: "inline",
                     position: "relative",
                   }}
+                  value={subEnd}
                 />
               </AccordionDetails>
             </Accordion>
@@ -1474,6 +1913,17 @@ function App() {
                 <Typography variant="h6">MS Blood</Typography>
               </AccordionSummary>
               <AccordionDetails>
+                <FormGroup style={{ marginLeft: "18%" }}>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Typography color="common.black">Not</Typography>
+                    <Switch
+                      checked={exclude}
+                      inputProps={{ "aria-label": "ant design" }}
+                      onChange={(event) => setExclude(event.target.checked)}
+                    />
+                    <Typography color="common.black">Exclude</Typography>
+                  </Stack>
+                </FormGroup>
                 <input
                   type="text"
                   id="filter-gene-box"
@@ -1488,6 +1938,7 @@ function App() {
                     display: "inline",
                     position: "relative",
                   }}
+                  value={pStart}
                 />
                 <Typography variant="p"> to</Typography>
                 <input
@@ -1504,6 +1955,7 @@ function App() {
                     display: "inline",
                     position: "relative",
                   }}
+                  value={pEnd}
                 />
               </AccordionDetails>
             </Accordion>
@@ -1529,6 +1981,7 @@ function App() {
                     display: "inline",
                     position: "relative",
                   }}
+                  value={mRNAStart}
                 />
                 <Typography variant="p"> to</Typography>
                 <input
@@ -1545,6 +1998,7 @@ function App() {
                     display: "inline",
                     position: "relative",
                   }}
+                  value={mRNAEnd}
                 />
               </AccordionDetails>
             </Accordion>
