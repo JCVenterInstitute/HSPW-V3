@@ -13,11 +13,13 @@ import {
   Button,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import QueryString from "qs";
 
 const SequenceParameters = () => {
   const [loading, setLoading] = useState(false);
   const [parameterDetails, setParameterDetails] = useState([]);
   const [email, setEmail] = useState("");
+  const [title, setTitle] = useState("");
   const [parameterValue, setParameterValue] = useState({});
   const [sequence, setSequence] = useState("");
 
@@ -57,6 +59,21 @@ const SequenceParameters = () => {
     fetchOptions();
   }, []);
 
+  const handleSubmit = async () => {
+    const data = {
+      email: email,
+      sequence: sequence,
+    };
+    const payload = {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      data: QueryString.stringify(data),
+      url: "https://www.ebi.ac.uk/Tools/services/rest/clustalo/run",
+    };
+    const jobId = await axios(payload).then((res) => res.data);
+    console.log(jobId);
+  };
+
   return (
     <>
       {!loading ? (
@@ -75,7 +92,7 @@ const SequenceParameters = () => {
               setEmail(event.target.value);
             }}
           />
-          <Accordion sx={{ boxShadow: 4 }}>
+          <Accordion sx={{ boxShadow: 2 }}>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
               aria-controls="panel1a-content"
@@ -86,6 +103,18 @@ const SequenceParameters = () => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
+              <Typography sx={{ fontWeight: "bold", ml: 1, color: "black" }}>
+                Title:
+              </Typography>
+              <TextField
+                id="title"
+                size="small"
+                sx={{ width: "300px", mb: 2 }}
+                value={title}
+                onChange={(event) => {
+                  setTitle(event.target.value);
+                }}
+              />
               <Grid container spacing={1}>
                 {parameterDetails.map((detail, index) => {
                   if (detail.name !== "Sequence") {
@@ -93,7 +122,9 @@ const SequenceParameters = () => {
                       <Grid item xs={4} key={index}>
                         <Grid container spacing={1}>
                           <Grid item xs={12}>
-                            <Typography sx={{ ml: 1, color: "black" }}>
+                            <Typography
+                              sx={{ fontWeight: "bold", ml: 1, color: "black" }}
+                            >
                               {detail.name}:
                             </Typography>
                           </Grid>
@@ -147,7 +178,9 @@ const SequenceParameters = () => {
             }}
           />
           <Stack direction="row" spacing={2}>
-            <Button variant="contained">Submit</Button>
+            <Button variant="contained" onClick={handleSubmit}>
+              Submit
+            </Button>
             <Button variant="outlined">Reset</Button>
           </Stack>
         </>
