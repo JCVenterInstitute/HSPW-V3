@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
-import main_feature from "../components/hero.jpeg";
-import { Typography, Container, TextField, MenuItem } from "@mui/material";
-
-import SequenceParameters from "../components/MultipleSequenceAlignment/SequenceParameters";
+import React from "react";
+import main_feature from "../../components/hero.jpeg";
+import { Typography, Container } from "@mui/material";
+import SequenceParameters from "../../components/MultipleSequenceAlignment/SequenceParameters";
 
 const MultipleSequenceAlignment = () => {
   return (

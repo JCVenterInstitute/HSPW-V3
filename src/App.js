@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import Navbar from "./components/index";
+import Header from "./components/index";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages";
 import Download from "./pages/download";
@@ -23,12 +23,13 @@ import Basic_Search from "./pages/basic_search";
 import Experiment_Search from "./pages/experiment_search";
 import Protein_Set_Search from "./pages/protein_set_search";
 import Cluster_detail from "./pages/cluster_detail";
-import MultipleSequenceAlignment from "./pages/MultipleSequenceAlignment";
+import MultipleSequenceAlignment from "./pages/Analyze/MultipleSequenceAlignment";
+import MultipleSequenceAlignmentResults from "./pages/Analyze/MultipleSequenceAlignementResults";
 
 function App() {
   return (
     <Router>
-      <Navbar />
+      <Header />
       <Routes>
         <Route exact path="/" element={<Home />} />
         <Route path="/download" element={<Download />} />
@@ -49,6 +50,10 @@ function App() {
         <Route path="/salivary_protein" element={<Salivary_Protein />} />
         <Route path="/protein/:proteinid" element={<Protein_Detail />} />
         <Route path="/analysis" element={<Analysis />} />
+        <Route
+          path="/clustal-w/results/:jobId"
+          element={<MultipleSequenceAlignmentResults />}
+        />
         <Route path="/clustal-w" element={<MultipleSequenceAlignment />} />
         <Route path="/Blast" element={<Blast />} />
         <Route path="/citation" element={<Citation />} />

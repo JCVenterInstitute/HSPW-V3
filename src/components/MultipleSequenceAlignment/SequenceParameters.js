@@ -14,8 +14,11 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import QueryString from "qs";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const SequenceParameters = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [parameterDetails, setParameterDetails] = useState([]);
   const [email, setEmail] = useState("");
@@ -45,6 +48,7 @@ const SequenceParameters = () => {
             ? parameterDetail.values.values[0].value
             : null;
       }
+      console.log(defaultValue);
       setParameterValue(defaultValue);
       setParameterDetails([...parameterDetailArray]);
     } catch (err) {
@@ -59,6 +63,10 @@ const SequenceParameters = () => {
   }, []);
 
   const handleSubmit = async () => {
+    Swal.fire({
+      title: "Submitting the job, please wait...",
+    });
+    Swal.showLoading();
     const data = {
       email: email,
       sequence: sequence,
@@ -69,8 +77,12 @@ const SequenceParameters = () => {
       data: QueryString.stringify(data),
       url: "https://www.ebi.ac.uk/Tools/services/rest/clustalo/run",
     };
-    const jobId = await axios(payload).then((res) => res.data);
-    console.log(jobId);
+    const jobId = await axios(payload)
+      .then((res) => res.data)
+      .finally(() => {
+        Swal.close();
+      });
+    navigate(`/clustal-w/results/${jobId}`);
   };
 
   return (
