@@ -21,9 +21,9 @@ const SequenceParameters = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [parameterDetails, setParameterDetails] = useState([]);
+  const [parameterValue, setParameterValue] = useState({});
   const [email, setEmail] = useState("");
   const [title, setTitle] = useState("");
-  const [parameterValue, setParameterValue] = useState({});
   const [sequence, setSequence] = useState("");
 
   const fetchOptions = async () => {
@@ -43,10 +43,13 @@ const SequenceParameters = () => {
           )
           .then((res) => res.data);
         parameterDetailArray.push(parameterDetail);
-        defaultValue[parameterDetail.name] =
-          parameterDetail.values !== null
-            ? parameterDetail.values.values[0].value
-            : null;
+        defaultValue[parameterDetail.name] = {
+          name: parameter,
+          value:
+            parameterDetail.values !== null
+              ? parameterDetail.values.values[0].value
+              : null,
+        };
       }
       console.log(defaultValue);
       setParameterValue(defaultValue);
@@ -69,8 +72,15 @@ const SequenceParameters = () => {
     Swal.showLoading();
     const data = {
       email: email,
+      title: title,
       sequence: sequence,
     };
+    for (const key of Object.keys(parameterValue)) {
+      const option = parameterValue[key];
+      if (option.name !== "sequence") {
+        data[option.name] = option.value;
+      }
+    }
     const payload = {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded" },
@@ -144,12 +154,16 @@ const SequenceParameters = () => {
                               select
                               size="small"
                               sx={{ width: "300px" }}
-                              value={parameterValue[detail.name]}
+                              value={parameterValue[detail.name].value}
                               onChange={(event) => {
                                 const newValue = {
                                   ...parameterValue, // Create a copy of the existing state
-                                  [detail.name]: event.target.value, // Update the specific property
+                                  [detail.name]: {
+                                    ...parameterValue[detail.name], // Create a shallow copy of the nested object
+                                    value: event.target.value, // Update the 'value' property of the nested object
+                                  },
                                 };
+                                console.log(newValue);
                                 setParameterValue(newValue);
                               }}
                             >
