@@ -46,7 +46,6 @@ const SequenceParameters = () => {
             : null;
       }
       setParameterValue(defaultValue);
-      console.log(parameterDetailArray);
       setParameterDetails([...parameterDetailArray]);
     } catch (err) {
       console.log(err);
@@ -139,7 +138,6 @@ const SequenceParameters = () => {
                                   ...parameterValue, // Create a copy of the existing state
                                   [detail.name]: event.target.value, // Update the specific property
                                 };
-                                console.log(newValue);
                                 setParameterValue(newValue);
                               }}
                             >
