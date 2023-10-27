@@ -8,22 +8,37 @@ const MultipleSequenceAlignment = () => {
   return (
     <>
       <div style={{ backgroundImage: `url(${main_feature})` }}>
-        <Typography
-          variant="h3"
-          sx={{ pt: 3, pb: 2, color: "white", textAlign: "center" }}
+        <h1
+          style={{
+            color: "white",
+            display: "left",
+            marginLeft: "20px",
+            marginBottom: "1rem",
+            paddingTop: "25px",
+            paddingLeft: "40px",
+          }}
         >
           Multiple Sequence Alignment
-        </Typography>
-        <Container>
-          <Typography variant="body1" sx={{ pb: 3, color: "white" }}>
-            ClustalW is a general purpose multiple sequence alignment program
-            for DNA or proteins. It produces biologically meaningful multiple
-            sequence alignments of divergent sequences. It calculates the best
-            match for the selected sequences, and lines them up so that the
-            identities, similarities and differences can be seen. This service
-            is provided by the European Bioinformatics Institute (EBI).
-          </Typography>
-        </Container>
+        </h1>
+        <p
+          style={{
+            textAlign: "left",
+            color: "white",
+            fontSize: "18px",
+            paddingBottom: "25px",
+            marginLeft: "20px",
+            marginRight: "20px",
+            paddingLeft: "40px",
+            paddingRight: "40px",
+          }}
+        >
+          ClustalW is a general purpose multiple sequence alignment program for
+          DNA or proteins. It produces biologically meaningful multiple sequence
+          alignments of divergent sequences. It calculates the best match for
+          the selected sequences, and lines them up so that the identities,
+          similarities and differences can be seen. This service is provided by
+          the European Bioinformatics Institute (EBI).
+        </p>
       </div>
       <Container>
         <Typography
