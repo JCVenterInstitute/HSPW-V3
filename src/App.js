@@ -17,14 +17,15 @@ import Analysis from "./pages/analysis";
 import Blast from "./pages/blast";
 import Citation from "./pages/citation";
 import Citation_Detail from "./pages/citation_detail";
-import InterProScan from "./pages/interproscan.js";
 import Signature_Detail from "./pages/signature_detail";
 import Basic_Search from "./pages/basic_search";
 import Experiment_Search from "./pages/experiment_search";
 import Protein_Set_Search from "./pages/protein_set_search";
 import Cluster_detail from "./pages/cluster_detail";
-import MultipleSequenceAlignment from "./pages/Analyze/MultipleSequenceAlignment";
-import MultipleSequenceAlignmentResults from "./pages/Analyze/MultipleSequenceAlignementResults";
+import ClustalOmegaResults from "./pages/Analyze/ClustalOmegaResults";
+import ClustalOmega from "./pages/Analyze/ClustalOmega";
+import InterProScanResults from "./pages/Analyze/InterProScanResults";
+import InterProScan from "./pages/Analyze/InterProScan";
 
 function App() {
   return (
@@ -51,14 +52,18 @@ function App() {
         <Route path="/protein/:proteinid" element={<Protein_Detail />} />
         <Route path="/analysis" element={<Analysis />} />
         <Route
-          path="/clustal-w/results/:jobId"
-          element={<MultipleSequenceAlignmentResults />}
+          path="/clustalo/results/:jobId"
+          element={<ClustalOmegaResults />}
         />
-        <Route path="/clustal-w" element={<MultipleSequenceAlignment />} />
+        <Route path="/clustalo" element={<ClustalOmega />} />
+        <Route
+          path="/iprscan5/results/:jobId"
+          element={<InterProScanResults />}
+        />
+        <Route path="/iprscan5" element={<InterProScan />} />
         <Route path="/Blast" element={<Blast />} />
         <Route path="/citation" element={<Citation />} />
         <Route path="/citation/:citationid" element={<Citation_Detail />} />
-        <Route path="/InterProScan" element={<InterProScan />} />
         <Route path="/Basic_Search" element={<Basic_Search />} />
         <Route path="/Experiment_Search" element={<Experiment_Search />} />
         <Route path="/Protein_Set_Search" element={<Protein_Set_Search />} />

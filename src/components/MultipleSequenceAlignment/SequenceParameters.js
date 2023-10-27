@@ -91,7 +91,7 @@ const SequenceParameters = ({ url }) => {
       .finally(() => {
         Swal.close();
       });
-    navigate(`/clustal-w/results/${jobId}`);
+    navigate(`/${url}/results/${jobId}`);
   };
 
   return (
