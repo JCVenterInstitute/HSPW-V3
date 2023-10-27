@@ -17,7 +17,7 @@ import QueryString from "qs";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
-const SequenceParameters = () => {
+const SequenceParameters = ({ url }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [parameterDetails, setParameterDetails] = useState([]);
@@ -33,13 +33,13 @@ const SequenceParameters = () => {
     setLoading(true);
     try {
       const parameters = await axios
-        .get("https://www.ebi.ac.uk/Tools/services/rest/clustalo/parameters")
+        .get(`https://www.ebi.ac.uk/Tools/services/rest/${url}/parameters`)
         .then((res) => res.data.parameters);
 
       for (const parameter of parameters) {
         const parameterDetail = await axios
           .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/parameterdetails/${parameter}`
+            `https://www.ebi.ac.uk/Tools/services/rest/${url}/parameterdetails/${parameter}`
           )
           .then((res) => res.data);
         parameterDetailArray.push(parameterDetail);
@@ -51,7 +51,6 @@ const SequenceParameters = () => {
               : null,
         };
       }
-      console.log(defaultValue);
       setParameterValue(defaultValue);
       setParameterDetails([...parameterDetailArray]);
     } catch (err) {
@@ -85,7 +84,7 @@ const SequenceParameters = () => {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded" },
       data: QueryString.stringify(data),
-      url: "https://www.ebi.ac.uk/Tools/services/rest/clustalo/run",
+      url: `https://www.ebi.ac.uk/Tools/services/rest/${url}/run`,
     };
     const jobId = await axios(payload)
       .then((res) => res.data)

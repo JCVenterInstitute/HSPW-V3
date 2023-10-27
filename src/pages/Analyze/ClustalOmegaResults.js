@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
-const MultipleSequenceAlignmentResults = () => {
+const ClustalOmegaResults = () => {
   const { jobId } = useParams();
   const [isFinished, setIsFinished] = useState(false);
 
@@ -122,4 +122,4 @@ const MultipleSequenceAlignmentResults = () => {
     </>
   );
 };
-export default MultipleSequenceAlignmentResults;
+export default ClustalOmegaResults;

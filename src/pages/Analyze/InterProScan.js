@@ -3,7 +3,7 @@ import main_feature from "../../components/hero.jpeg";
 import { Typography, Container } from "@mui/material";
 import SequenceParameters from "../../components/MultipleSequenceAlignment/SequenceParameters";
 
-const MultipleSequenceAlignment = () => {
+const InterProScan = () => {
   return (
     <>
       <div style={{ backgroundImage: `url(${main_feature})` }}>
@@ -17,7 +17,7 @@ const MultipleSequenceAlignment = () => {
             paddingLeft: "40px",
           }}
         >
-          Multiple Sequence Alignment
+          InterProScan 5
         </h1>
         <p
           style={{
@@ -31,12 +31,10 @@ const MultipleSequenceAlignment = () => {
             paddingRight: "40px",
           }}
         >
-          ClustalW is a general purpose multiple sequence alignment program for
-          DNA or proteins. It produces biologically meaningful multiple sequence
-          alignments of divergent sequences. It calculates the best match for
-          the selected sequences, and lines them up so that the identities,
-          similarities and differences can be seen. This service is provided by
-          the European Bioinformatics Institute (EBI).
+          InterProScan is a tool that combines different protein signature
+          recognition methods into one resource. The number of signature
+          databases and their associated scanning tools, as well as the further
+          refinement procedures, increases the complexity of the problem.
         </p>
       </div>
       <Container>
@@ -48,10 +46,10 @@ const MultipleSequenceAlignment = () => {
         </Typography>
       </Container>
       <Container sx={{ mt: 3 }}>
-        <SequenceParameters />
+        <SequenceParameters url="iprscan5" />
       </Container>
     </>
   );
 };
 
-export default MultipleSequenceAlignment;
+export default InterProScan;
