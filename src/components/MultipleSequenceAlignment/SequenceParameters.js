@@ -11,6 +11,7 @@ import {
   LinearProgress,
   Stack,
   Button,
+  Box,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import QueryString from "qs";
@@ -22,6 +23,7 @@ const SequenceParameters = ({ url }) => {
   const [loading, setLoading] = useState(false);
   const [parameterDetails, setParameterDetails] = useState([]);
   const [parameterValue, setParameterValue] = useState({});
+  const [resetValue, setResetValue] = useState({});
   const [email, setEmail] = useState("");
   const [title, setTitle] = useState("");
   const [sequence, setSequence] = useState("");
@@ -52,6 +54,7 @@ const SequenceParameters = ({ url }) => {
         };
       }
       setParameterValue(defaultValue);
+      setResetValue(defaultValue);
       setParameterDetails([...parameterDetailArray]);
     } catch (err) {
       console.log(err);
@@ -94,118 +97,187 @@ const SequenceParameters = ({ url }) => {
     navigate(`/${url}/results/${jobId}`);
   };
 
+  const handleReset = () => {
+    setEmail("");
+    setTitle("");
+    setSequence("");
+    setParameterValue(resetValue);
+  };
+
   return (
     <>
       {!loading ? (
         <>
-          <Typography sx={{ fontWeight: "bold", ml: 1, color: "black" }}>
-            Email:
-          </Typography>
-          <TextField
-            required
-            id="email"
-            label="(required)"
-            size="small"
-            sx={{ width: "300px", mb: 2 }}
-            value={email}
-            onChange={(event) => {
-              setEmail(event.target.value);
-            }}
-          />
-          <Accordion sx={{ boxShadow: 2 }}>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
+          <Box component="fieldset" sx={{ p: 2, mb: 2 }}>
+            <legend
+              style={{
+                fontSize: "100%",
+                backgroundColor: "#e5e5e5",
+                color: "#222",
+                padding: "0.1em 0.5em",
+                border: "2px solid #d8d8d8",
+              }}
             >
-              <Typography variant="subtitle1" sx={{ color: "black" }}>
-                Optional Parameters
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography sx={{ fontWeight: "bold", ml: 1, color: "black" }}>
-                Title:
-              </Typography>
-              <TextField
-                id="title"
-                size="small"
-                sx={{ width: "300px", mb: 2 }}
-                value={title}
-                onChange={(event) => {
-                  setTitle(event.target.value);
-                }}
-              />
-              <Grid container spacing={1}>
-                {parameterDetails.map((detail, index) => {
-                  if (detail.name !== "Sequence") {
-                    return (
-                      <Grid item xs={4} key={index}>
-                        <Grid container spacing={1}>
-                          <Grid item xs={12}>
-                            <Typography
-                              sx={{ fontWeight: "bold", ml: 1, color: "black" }}
-                            >
-                              {detail.name}:
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={12}>
-                            <TextField
-                              select
-                              size="small"
-                              sx={{ width: "300px" }}
-                              value={parameterValue[detail.name].value}
-                              onChange={(event) => {
-                                const newValue = {
-                                  ...parameterValue, // Create a copy of the existing state
-                                  [detail.name]: {
-                                    ...parameterValue[detail.name], // Create a shallow copy of the nested object
-                                    value: event.target.value, // Update the 'value' property of the nested object
-                                  },
-                                };
-                                console.log(newValue);
-                                setParameterValue(newValue);
-                              }}
-                            >
-                              {detail.values.values.map((option) => (
-                                <MenuItem
-                                  key={option.value}
-                                  value={option.value}
-                                >
-                                  {option.label}
-                                </MenuItem>
-                              ))}
-                            </TextField>
+              STEP 1 - Enter your input sequences
+            </legend>
+            <Typography sx={{ mt: 1, color: "black" }}>
+              Enter or paste a set of sequences in any supported format:
+            </Typography>
+            <TextField
+              required
+              fullWidth
+              multiline
+              rows={12}
+              id="sequence"
+              label="(required)"
+              sx={{ mt: 1, mb: 2 }}
+              value={sequence}
+              onChange={(event) => {
+                setSequence(event.target.value);
+              }}
+            />
+            <Typography sx={{ mb: 2, color: "black" }}>
+              Or, upload a file:
+              <Button sx={{ ml: 1 }} variant="contained" component="label">
+                Upload File
+                <input type="file" hidden />
+              </Button>
+            </Typography>
+          </Box>
+          <Box component="fieldset" sx={{ p: 2, mb: 2 }}>
+            <legend
+              style={{
+                fontSize: "100%",
+                backgroundColor: "#e5e5e5",
+                color: "#222",
+                padding: "0.1em 0.5em",
+                border: "2px solid #d8d8d8",
+              }}
+            >
+              STEP 2 - Set your parameters
+            </legend>
+            <Accordion sx={{ boxShadow: 2, mb: 2 }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
+                <Typography variant="subtitle1" sx={{ color: "black" }}>
+                  Optional Parameters
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Grid container spacing={1}>
+                  {parameterDetails.map((detail, index) => {
+                    if (detail.name !== "Sequence") {
+                      return (
+                        <Grid item xs={4} key={index}>
+                          <Grid container spacing={1}>
+                            <Grid item xs={12}>
+                              <Typography
+                                sx={{
+                                  fontWeight: "bold",
+                                  ml: 1,
+                                  color: "black",
+                                }}
+                              >
+                                {detail.name}:
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                              <TextField
+                                select
+                                size="small"
+                                sx={{ width: "300px" }}
+                                value={parameterValue[detail.name].value}
+                                onChange={(event) => {
+                                  const newValue = {
+                                    ...parameterValue, // Create a copy of the existing state
+                                    [detail.name]: {
+                                      ...parameterValue[detail.name], // Create a shallow copy of the nested object
+                                      value: event.target.value, // Update the 'value' property of the nested object
+                                    },
+                                  };
+                                  setParameterValue(newValue);
+                                }}
+                              >
+                                {detail.values.values.map((option) => (
+                                  <MenuItem
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </MenuItem>
+                                ))}
+                              </TextField>
+                            </Grid>
                           </Grid>
                         </Grid>
-                      </Grid>
-                    );
-                  }
-                })}
-              </Grid>
-            </AccordionDetails>
-          </Accordion>
-          <Typography sx={{ fontWeight: "bold", mt: 2, ml: 1, color: "black" }}>
-            Sequence:
-          </Typography>
-          <TextField
-            required
-            fullWidth
-            multiline
-            rows={12}
-            id="sequence"
-            label="(required)"
-            sx={{ mt: 1, mb: 2 }}
-            value={sequence}
-            onChange={(event) => {
-              setSequence(event.target.value);
-            }}
-          />
-          <Stack direction="row" spacing={2}>
-            <Button variant="contained" onClick={handleSubmit}>
-              Submit
-            </Button>
-            <Button variant="outlined">Reset</Button>
-          </Stack>
+                      );
+                    }
+                  })}
+                </Grid>
+              </AccordionDetails>
+            </Accordion>
+          </Box>
+          <Box component="fieldset" sx={{ p: 2, mb: 2 }}>
+            <legend
+              style={{
+                fontSize: "100%",
+                backgroundColor: "#e5e5e5",
+                color: "#222",
+                padding: "0.1em 0.5em",
+                border: "2px solid #d8d8d8",
+              }}
+            >
+              STEP 3 - Submit your job
+            </legend>
+            <Typography sx={{ mt: 1, mb: 2, color: "black" }}>
+              If you want to be notified by email when the results are
+              available, enter the email and title below:
+            </Typography>
+            <Typography sx={{ fontWeight: "bold", ml: 1, color: "black" }}>
+              Email:
+            </Typography>
+            <TextField
+              id="email"
+              size="small"
+              sx={{ width: "300px", mb: 2 }}
+              value={email}
+              onChange={(event) => {
+                setEmail(event.target.value);
+              }}
+            />
+            <Typography sx={{ fontWeight: "bold", ml: 1, color: "black" }}>
+              Title:
+            </Typography>
+            <TextField
+              id="title"
+              size="small"
+              sx={{ width: "300px", mb: 1 }}
+              value={title}
+              onChange={(event) => {
+                setTitle(event.target.value);
+              }}
+            />
+            <Typography
+              variant="caption"
+              display="block"
+              sx={{ ml: 1, mb: 2, color: "black", fontStyle: "italic" }}
+            >
+              If available, the title will be included in the subject of the
+              notification email and can be used as a way to identify your
+              analysis
+            </Typography>
+            <Stack direction="row" spacing={2}>
+              <Button variant="contained" onClick={handleSubmit}>
+                Submit
+              </Button>
+              <Button variant="outlined" onClick={handleReset}>
+                Reset
+              </Button>
+            </Stack>
+          </Box>
         </>
       ) : (
         <LinearProgress />
