@@ -55,20 +55,23 @@ const ClustalOmegaResults = () => {
   };
 
   const getResults = async () => {
-    // const resultTypes = await axios
-    //   .get(
-    //     `https://www.ebi.ac.uk/Tools/services/rest/clustalo/resulttypes/${jobId}`
-    //   )
-    //   .then((res) => res.data.types);
-    // console.log(resultTypes);
-    // for (const resultType of resultTypes) {
-    //   const result = await axios
-    //     .get(
-    //       `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/${resultType.identifier}`
-    //     )
-    //     .then((res) => res.data);
-    //   console.log(result);
-    // }
+    let type = "aln-clustal";
+    const resultTypes = await axios
+      .get(
+        `https://www.ebi.ac.uk/Tools/services/rest/clustalo/resulttypes/${jobId}`
+      )
+      .then((res) => res.data.types);
+    for (const resultType of resultTypes) {
+      if (resultType === "aln-clustal_num") {
+        type = "aln-clustal_num";
+      }
+      // const result = await axios
+      //   .get(
+      //     `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/${resultType.identifier}`
+      //   )
+      //   .then((res) => res.data);
+      // console.log(result);
+    }
     const [inputSequence, output, alignmentResult, submissionDetail] =
       await Promise.all([
         axios
@@ -83,7 +86,7 @@ const ClustalOmegaResults = () => {
           .then((res) => res.data),
         axios
           .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/aln-clustal_num`
+            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/${type}`
           )
           .then((res) => res.data),
         axios
@@ -111,7 +114,6 @@ const ClustalOmegaResults = () => {
     if (!isFinished) {
       checkStatus();
     } else {
-      console.log(parameterDetail);
       getResults();
     }
   }, [jobId, isFinished]);

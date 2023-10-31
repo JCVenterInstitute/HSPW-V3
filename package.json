@@ -66,7 +66,7 @@
     "react-router-dom": "^6.6.1",
     "react-scripts": "5.0.1",
     "react-select": "^5.7.3",
-    "react-tabs": "^6.0.0",
+    "react-tabs": "^6.0.2",
     "react-twitter-widgets": "^1.11.0",
     "react-xml-parser": "^1.1.8",
     "recharts": "^2.4.3",

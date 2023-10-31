@@ -5281,7 +5281,7 @@
   "resolved" "https://registry.npmjs.org/clone/-/clone-1.0.4.tgz"
   "version" "1.0.4"
 
-"clsx@^1.0.4", "clsx@^1.1.0", "clsx@^1.1.1":
+"clsx@^1.0.4", "clsx@^1.1.1":
   "integrity" "sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg=="
   "resolved" "https://registry.npmjs.org/clsx/-/clsx-1.2.1.tgz"
   "version" "1.2.1"
@@ -12822,12 +12822,12 @@
     "loader-utils" "^1.2.3"
     "react-svg-core" "^3.0.3"
 
-"react-tabs@^6.0.0":
-  "integrity" "sha512-8jKLKrlwxmn5/+xsa76yi27ZdB8E/WhlhQZw739O5UlOeUGtVoVeWnpqIewv/KbjTw7gQf/uA51zWUNt4IVygQ=="
-  "resolved" "https://registry.npmjs.org/react-tabs/-/react-tabs-6.0.0.tgz"
-  "version" "6.0.0"
+"react-tabs@^6.0.2":
+  "integrity" "sha512-aQXTKolnM28k3KguGDBSAbJvcowOQr23A+CUJdzJtOSDOtTwzEaJA+1U4KwhNL9+Obe+jFS7geuvA7ICQPXOnQ=="
+  "resolved" "https://registry.npmjs.org/react-tabs/-/react-tabs-6.0.2.tgz"
+  "version" "6.0.2"
   dependencies:
-    "clsx" "^1.1.0"
+    "clsx" "^2.0.0"
     "prop-types" "^15.5.0"
 
 "react-transition-group@^4.3.0", "react-transition-group@^4.4.0", "react-transition-group@^4.4.1", "react-transition-group@^4.4.5":

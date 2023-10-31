@@ -28,6 +28,18 @@ const SequenceParameters = ({ url }) => {
   const [title, setTitle] = useState("");
   const [sequence, setSequence] = useState("");
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]; // Get the selected file
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const content = event.target.result;
+        setSequence(content); // Set the file content to state
+      };
+      reader.readAsText(file); // Read the file as text
+    }
+  };
+
   const fetchOptions = async () => {
     const parameterDetailArray = [];
     const defaultValue = {};
@@ -52,6 +64,20 @@ const SequenceParameters = ({ url }) => {
               ? parameterDetail.values.values[0].value
               : null,
         };
+      }
+      if (defaultValue["Output alignment format"]) {
+        defaultValue["Output alignment format"].value = "clustal";
+        const index = parameterDetailArray.findIndex(
+          (object) => object.name === "Output alignment format"
+        );
+        // Swap the options so that the default value becomes clustalW
+        [
+          parameterDetailArray[index].values.values[0],
+          parameterDetailArray[index].values.values[1],
+        ] = [
+          parameterDetailArray[index].values.values[1],
+          parameterDetailArray[index].values.values[0],
+        ];
       }
       setParameterValue(defaultValue);
       setResetValue(defaultValue);
@@ -140,7 +166,7 @@ const SequenceParameters = ({ url }) => {
               Or, upload a file:
               <Button sx={{ ml: 1 }} variant="contained" component="label">
                 Upload File
-                <input type="file" hidden />
+                <input type="file" onChange={handleFileChange} hidden />
               </Button>
             </Typography>
           </Box>
