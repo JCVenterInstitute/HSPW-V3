@@ -1,18 +1,50 @@
 import React, { useEffect, useState } from "react";
 import main_feature from "../../components/hero.jpeg";
-import { Typography, Container, Button } from "@mui/material";
+import {
+  Typography,
+  Container,
+  Paper,
+  Box,
+  List,
+  ListItem,
+  ListItemText,
+  CircularProgress,
+} from "@mui/material";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import "react-tabs/style/react-tabs.css";
+import XMLParser from "react-xml-parser";
 
 const ClustalOmegaResults = () => {
   const { jobId } = useParams();
   const [isFinished, setIsFinished] = useState(false);
+  const [inputSequence, setInputSequence] = useState("");
+  const [output, setOutput] = useState("");
+  const [sequenceCount, setSequenceCount] = useState(0);
+  const [alignment, setAlignment] = useState("");
+  const [submissionDetail, setSubmissionDetail] = useState(null);
+  const [parameterDetail, setParameterDetail] = useState([]);
 
   const checkStatus = async () => {
+    const parameterDetailArray = [];
     const status = await axios
       .get(`https://www.ebi.ac.uk/Tools/services/rest/clustalo/status/${jobId}`)
       .then((res) => res.data);
+
+    const parameters = await axios
+      .get(`https://www.ebi.ac.uk/Tools/services/rest/clustalo/parameters`)
+      .then((res) => res.data.parameters);
+
+    for (const parameter of parameters) {
+      const parameterDetail = await axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/clustalo/parameterdetails/${parameter}`
+        )
+        .then((res) => res.data);
+      parameterDetailArray.push(parameterDetail);
+    }
+    setParameterDetail([...parameterDetailArray]);
 
     if (status === "FINISHED") {
       setIsFinished(true);
@@ -22,26 +54,67 @@ const ClustalOmegaResults = () => {
     }
   };
 
-  // const getResultTypes = async () => {
-  //   const resultTypes = await axios.get(
-  //     `https://www.ebi.ac.uk/Tools/services/rest/clustalo/resulttypes/${jobId}`
-  //   );
-  //   console.log(resultTypes);
-  //   return resultTypes;
-  // };
+  const getResults = async () => {
+    // const resultTypes = await axios
+    //   .get(
+    //     `https://www.ebi.ac.uk/Tools/services/rest/clustalo/resulttypes/${jobId}`
+    //   )
+    //   .then((res) => res.data.types);
+    // console.log(resultTypes);
+    // for (const resultType of resultTypes) {
+    //   const result = await axios
+    //     .get(
+    //       `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/${resultType.identifier}`
+    //     )
+    //     .then((res) => res.data);
+    //   console.log(result);
+    // }
+    const [inputSequence, output, alignmentResult, submissionDetail] =
+      await Promise.all([
+        axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/sequence`
+          )
+          .then((res) => res.data),
+        axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/out`
+          )
+          .then((res) => res.data),
+        axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/aln-clustal_num`
+          )
+          .then((res) => res.data),
+        axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/submission`
+          )
+          .then((res) => res.data),
+      ]);
+
+    const sequenceMatch = output.match(/Read (\d+) sequences/);
+    const numberOfSequences = parseInt(sequenceMatch[1], 10);
+
+    const submissionDetailJson = new XMLParser().parseFromString(
+      submissionDetail
+    );
+
+    setInputSequence(inputSequence);
+    setOutput(output);
+    setSequenceCount(numberOfSequences);
+    setAlignment(alignmentResult);
+    setSubmissionDetail(submissionDetailJson);
+  };
 
   useEffect(() => {
     if (!isFinished) {
       checkStatus();
+    } else {
+      console.log(parameterDetail);
+      getResults();
     }
-    // getResultTypes();
   }, [jobId, isFinished]);
-
-  const handleRedirect = () => {
-    window.open(
-      `https://www.ebi.ac.uk/Tools/services/web/toolresult.ebi?jobId=${jobId}&showColors=true&tool=clustalo`
-    );
-  };
 
   return (
     <>
@@ -79,17 +152,8 @@ const ClustalOmegaResults = () => {
         </p>
       </div>
       <Container>
-        <Typography
-          variant="h5"
-          sx={{ fontWeight: "bold", mt: 3, color: "black" }}
-        >
-          Sequence Alignment Results:
-        </Typography>
-        <Typography
-          variant="h6"
-          sx={{ fontWeight: "bold", mt: 3, color: "black" }}
-        >
-          Job ID: {jobId}
+        <Typography variant="h5" sx={{ mt: 3, mb: 2, color: "black" }}>
+          Results for job {jobId}
         </Typography>
       </Container>
       {!isFinished ? (
@@ -104,19 +168,258 @@ const ClustalOmegaResults = () => {
         </Container>
       ) : (
         <Container>
-          <Typography
-            variant="h5"
-            sx={{ fontWeight: "bold", mt: 3, mb: 2, color: "blue" }}
-          >
-            Your job is now finished.
-          </Typography>
-          <Button
-            variant="contained"
-            endIcon={<ExitToAppIcon />}
-            onClick={handleRedirect}
-          >
-            Redirect
-          </Button>
+          <Tabs>
+            <TabList>
+              <Tab>Alignments</Tab>
+              <Tab>Submission Details</Tab>
+            </TabList>
+            <TabPanel>
+              {alignment ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    minHeight: "60vh",
+                  }}
+                >
+                  <pre style={{ whiteSpace: "pre-wrap" }}>{alignment}</pre>
+                </Box>
+              ) : (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "50vh",
+                  }}
+                >
+                  <CircularProgress />
+                </Box>
+              )}
+            </TabPanel>
+            <TabPanel>
+              {submissionDetail ? (
+                <>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      "& > :not(style)": {
+                        m: 1,
+                        minWidth: 128,
+                      },
+                    }}
+                  >
+                    <Paper elevation={4}>
+                      <List>
+                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
+                          <ListItemText
+                            primary={
+                              <Typography
+                                sx={{ color: "black", fontWeight: "bold" }}
+                              >
+                                Program
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
+                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
+                          <ListItemText
+                            primary={
+                              submissionDetail.children[1].children[0]
+                                .children[1].value
+                            }
+                          />
+                        </ListItem>
+                      </List>
+                    </Paper>
+                    <Paper elevation={4}>
+                      <List>
+                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
+                          <ListItemText
+                            primary={
+                              <Typography
+                                sx={{ color: "black", fontWeight: "bold" }}
+                              >
+                                Version
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
+                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
+                          <ListItemText
+                            primary={
+                              submissionDetail.children[1].children[1]
+                                .children[1].value
+                            }
+                          />
+                        </ListItem>
+                      </List>
+                    </Paper>
+                    <Paper elevation={4}>
+                      <List>
+                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
+                          <ListItemText
+                            primary={
+                              <Typography
+                                sx={{ color: "black", fontWeight: "bold" }}
+                              >
+                                Number of Sequences
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
+                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
+                          <ListItemText primary={sequenceCount} />
+                        </ListItem>
+                      </List>
+                    </Paper>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      "& > :not(style)": {
+                        m: 1,
+                        minWidth: 128,
+                      },
+                    }}
+                  >
+                    <Paper elevation={4}>
+                      <List>
+                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
+                          <ListItemText
+                            primary={
+                              <Typography
+                                sx={{ color: "black", fontWeight: "bold" }}
+                              >
+                                Input Sequences
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
+                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
+                          <ListItemText
+                            primary={
+                              <pre style={{ whiteSpace: "pre-wrap" }}>
+                                {inputSequence}
+                              </pre>
+                            }
+                          />
+                        </ListItem>
+                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
+                          <ListItemText
+                            primary={
+                              <Typography
+                                sx={{ color: "black", fontWeight: "bold" }}
+                              >
+                                Output Result
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
+                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
+                          <ListItemText
+                            primary={
+                              <pre style={{ whiteSpace: "pre-wrap" }}>
+                                {output}
+                              </pre>
+                            }
+                          />
+                        </ListItem>
+                      </List>
+                    </Paper>
+                  </Box>
+                  <Typography
+                    variant="h4"
+                    sx={{ ml: 1, mt: 2, color: "black" }}
+                  >
+                    Command
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      "& > :not(style)": {
+                        m: 1,
+                        minWidth: 128,
+                      },
+                    }}
+                  >
+                    <Paper elevation={4}>
+                      <List>
+                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
+                          <ListItemText
+                            primary={submissionDetail.children[0].value}
+                          />
+                        </ListItem>
+                      </List>
+                    </Paper>
+                  </Box>
+                  <Typography
+                    variant="h4"
+                    sx={{ ml: 1, mt: 2, color: "black" }}
+                  >
+                    Input Parameters
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      "& > :not(style)": {
+                        m: 1,
+                        minWidth: 128,
+                      },
+                    }}
+                  >
+                    <Paper elevation={4}>
+                      <List>
+                        {parameterDetail
+                          .slice(0, -1)
+                          .map((parameter, index) => (
+                            <React.Fragment key={index}>
+                              <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
+                                <ListItemText
+                                  primary={
+                                    <Typography
+                                      sx={{
+                                        color: "black",
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      {parameter.name}
+                                    </Typography>
+                                  }
+                                />
+                              </ListItem>
+                              <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
+                                <ListItemText
+                                  primary={
+                                    submissionDetail.children[1].children[
+                                      index + 2
+                                    ].children[1].value
+                                  }
+                                />
+                              </ListItem>
+                            </React.Fragment>
+                          ))}
+                      </List>
+                    </Paper>
+                  </Box>
+                </>
+              ) : (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "50vh",
+                  }}
+                >
+                  <CircularProgress />
+                </Box>
+              )}
+            </TabPanel>
+          </Tabs>
         </Container>
       )}
     </>
