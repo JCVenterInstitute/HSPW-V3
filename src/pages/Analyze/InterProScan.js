@@ -1,7 +1,7 @@
 import React from "react";
 import main_feature from "../../components/hero.jpeg";
 import { Typography, Container } from "@mui/material";
-import SequenceParameters from "../../components/MultipleSequenceAlignment/SequenceParameters";
+import InterProScanSequenceParameters from "../../components/MultipleSequenceAlignment/InterProScanSequenceParameters";
 
 const InterProScan = () => {
   return (
@@ -46,7 +46,7 @@ const InterProScan = () => {
         </Typography>
       </Container>
       <Container sx={{ mt: 3 }}>
-        <SequenceParameters url="iprscan5" />
+        <InterProScanSequenceParameters url="iprscan5" />
       </Container>
     </>
   );
