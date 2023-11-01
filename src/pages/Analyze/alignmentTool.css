@@ -1,0 +1,7 @@
+h1,
+p {
+  position: relative;
+  z-index: 5;
+  color: black;
+  padding: 0px;
+}

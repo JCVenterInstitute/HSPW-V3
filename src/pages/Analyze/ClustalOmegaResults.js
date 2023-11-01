@@ -15,6 +15,8 @@ import axios from "axios";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import XMLParser from "react-xml-parser";
+import { MSAView, MSAModel } from "react-msaview";
+import "./alignmentTool.css";
 
 const ClustalOmegaResults = () => {
   const { jobId } = useParams();
@@ -25,6 +27,7 @@ const ClustalOmegaResults = () => {
   const [alignment, setAlignment] = useState("");
   const [submissionDetail, setSubmissionDetail] = useState(null);
   const [parameterDetail, setParameterDetail] = useState([]);
+  const [model, setModel] = useState(null);
 
   const checkStatus = async () => {
     const parameterDetailArray = [];
@@ -103,6 +106,14 @@ const ClustalOmegaResults = () => {
       submissionDetail
     );
 
+    const model = MSAModel.create({
+      id: `${Math.random()}`,
+      type: "MsaView",
+      data: { msa: inputSequence },
+    });
+    model.setWidth("1150");
+
+    setModel(model);
     setInputSequence(inputSequence);
     setOutput(output);
     setSequenceCount(numberOfSequences);
@@ -181,9 +192,11 @@ const ClustalOmegaResults = () => {
                   sx={{
                     display: "flex",
                     minHeight: "60vh",
+                    mb: 2,
                   }}
                 >
-                  <pre style={{ whiteSpace: "pre-wrap" }}>{alignment}</pre>
+                  {/* <pre style={{ whiteSpace: "pre-wrap" }}>{alignment}</pre> */}
+                  {model && <MSAView model={model} />}
                 </Box>
               ) : (
                 <Box
