@@ -18,7 +18,7 @@ import QueryString from "qs";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
-const SequenceParameters = ({ url }) => {
+const ClustalOmegaSequenceParameters = ({ url }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [parameterDetails, setParameterDetails] = useState([]);
@@ -312,4 +312,4 @@ const SequenceParameters = ({ url }) => {
   );
 };
 
-export default SequenceParameters;
+export default ClustalOmegaSequenceParameters;

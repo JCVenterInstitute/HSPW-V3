@@ -1,7 +1,7 @@
 import React from "react";
 import main_feature from "../../components/hero.jpeg";
 import { Typography, Container } from "@mui/material";
-import SequenceParameters from "../../components/MultipleSequenceAlignment/SequenceParameters";
+import ClustalOmegaSequenceParameters from "../../components/MultipleSequenceAlignment/ClustalOmegaSequenceParameters";
 
 const ClustalOmega = () => {
   return (
@@ -46,7 +46,7 @@ const ClustalOmega = () => {
         </Typography>
       </Container>
       <Container sx={{ mt: 3 }}>
-        <SequenceParameters url="clustalo" />
+        <ClustalOmegaSequenceParameters url="clustalo" />
       </Container>
     </>
   );
