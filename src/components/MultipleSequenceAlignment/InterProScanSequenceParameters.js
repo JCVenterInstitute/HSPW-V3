@@ -12,6 +12,8 @@ import {
   Stack,
   Button,
   Box,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import QueryString from "qs";
@@ -27,6 +29,7 @@ const InterProScanSequenceParameters = ({ url }) => {
   const [email, setEmail] = useState("");
   const [title, setTitle] = useState("");
   const [sequence, setSequence] = useState("");
+  const [checked, setChecked] = useState([]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0]; // Get the selected file
@@ -65,9 +68,11 @@ const InterProScanSequenceParameters = ({ url }) => {
               : null,
         };
       }
+      console.log("parameterDetailArray>>>", parameterDetailArray);
       setParameterValue(defaultValue);
       setResetValue(defaultValue);
       setParameterDetails([...parameterDetailArray]);
+      setChecked(parameterDetailArray[3].values.values.map(() => true));
     } catch (err) {
       console.log(err);
     } finally {
@@ -114,6 +119,12 @@ const InterProScanSequenceParameters = ({ url }) => {
     setTitle("");
     setSequence("");
     setParameterValue(resetValue);
+  };
+
+  const handleChange = (index) => (event) => {
+    const newChecked = [...checked];
+    newChecked[index] = event.target.checked;
+    setChecked(newChecked);
   };
 
   return (
@@ -166,7 +177,7 @@ const InterProScanSequenceParameters = ({ url }) => {
                 border: "2px solid #d8d8d8",
               }}
             >
-              STEP 2 - Set your parameters
+              STEP 2 - Set your parameters and select the applications to run
             </legend>
             <Accordion sx={{ boxShadow: 2, mb: 2 }}>
               <AccordionSummary
@@ -180,8 +191,11 @@ const InterProScanSequenceParameters = ({ url }) => {
               </AccordionSummary>
               <AccordionDetails>
                 <Grid container spacing={1}>
-                  {parameterDetails.slice(0, -1).map((detail, index) => {
-                    if (detail.name !== "Sequence") {
+                  {parameterDetails.map((detail, index) => {
+                    if (
+                      detail.name !== "Sequence" &&
+                      detail.name !== "Applications"
+                    ) {
                       return (
                         <Grid item xs={4} key={index}>
                           <Grid container spacing={1}>
@@ -231,6 +245,48 @@ const InterProScanSequenceParameters = ({ url }) => {
                 </Grid>
               </AccordionDetails>
             </Accordion>
+            <Box component="fieldset" sx={{ pl: 2, borderBottom: "none" }}>
+              <FormControlLabel
+                label="SELECT ALL"
+                control={
+                  <Checkbox
+                    checked={checked.every((value) => value)}
+                    indeterminate={
+                      checked.some((value) => value) &&
+                      !checked.every((value) => value)
+                    }
+                    onChange={() => {
+                      const allChecked = checked.every((value) => value);
+                      setChecked(
+                        parameterDetails[3] &&
+                          parameterDetails[3].values.values.map(
+                            () => !allChecked
+                          )
+                      );
+                    }}
+                  />
+                }
+              />
+            </Box>
+            <Box component="fieldset" sx={{ p: 2 }}>
+              <Grid container>
+                {parameterDetails[3] &&
+                  parameterDetails[3].values.values.map((item, index) => (
+                    <Grid item xs={4} key={item.value}>
+                      <FormControlLabel
+                        label={item.label}
+                        control={
+                          <Checkbox
+                            checked={checked[index]}
+                            onChange={handleChange(index)}
+                            size="small"
+                          />
+                        }
+                      />
+                    </Grid>
+                  ))}
+              </Grid>
+            </Box>
           </Box>
           <Box component="fieldset" sx={{ p: 2, mb: 2 }}>
             <legend

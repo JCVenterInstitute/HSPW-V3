@@ -1,9 +1,9 @@
 import React from "react";
 import main_feature from "../../components/hero.jpeg";
 import { Typography, Container } from "@mui/material";
-import InterProScanSequenceParameters from "../../components/MultipleSequenceAlignment/InterProScanSequenceParameters";
+import SequenceParameters from "../../components/MultipleSequenceAlignment/ClustalOmegaSequenceParameters";
 
-const InterProScan = () => {
+const PSIBlast = () => {
   return (
     <>
       <div style={{ backgroundImage: `url(${main_feature})` }}>
@@ -17,7 +17,7 @@ const InterProScan = () => {
             paddingLeft: "40px",
           }}
         >
-          InterProScan 5
+          PSI-BLAST
         </h1>
         <p
           style={{
@@ -31,10 +31,16 @@ const InterProScan = () => {
             paddingRight: "40px",
           }}
         >
-          InterProScan is a tool that combines different protein signature
-          recognition methods into one resource. The number of signature
-          databases and their associated scanning tools, as well as the further
-          refinement procedures, increases the complexity of the problem.
+          BLAST stands for Basic Local Alignment Search Tool.The emphasis of
+          this tool is to find regions of sequence similarity, which will yield
+          functional and evolutionary clues about the structure and function of
+          your novel sequence. Position specific iterative BLAST (PSI-BLAST)
+          refers to a feature of BLAST 2.0 in which a profile is automatically
+          constructed from the first set of BLAST alignments. PSI-BLAST is
+          similar to NCBI BLAST2 except that it uses position-specific scoring
+          matrices derived during the search, this tool is used to detect
+          distant evolutionary relationships. PHI-BLAST functionality is
+          available to use patterns to restrict search results.
         </p>
       </div>
       <Container>
@@ -42,14 +48,14 @@ const InterProScan = () => {
           variant="h5"
           sx={{ fontWeight: "bold", mt: 3, color: "black" }}
         >
-          Sequence Search:
+          Sequence Alignment Options:
         </Typography>
       </Container>
       <Container sx={{ mt: 3 }}>
-        <InterProScanSequenceParameters url="iprscan5" />
+        <SequenceParameters url="psiblast" />
       </Container>
     </>
   );
 };
 
-export default InterProScan;
+export default PSIBlast;
