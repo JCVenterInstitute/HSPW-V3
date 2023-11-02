@@ -141,7 +141,7 @@ const ClustalOmegaResults = () => {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `alignment_result.${fileInfo.fileSuffix}`;
+    a.download = `${jobId}.${fileInfo.fileSuffix}`;
     a.click();
     window.URL.revokeObjectURL(url);
   };
@@ -194,9 +194,12 @@ const ClustalOmegaResults = () => {
             Your job is now queued and will be running shortly... please be
             patient!
           </Typography>
+          <Typography variant="h6" sx={{ mt: 3, color: "black" }}>
+            Your result of your job will appear in this browser window.
+          </Typography>
         </Container>
       ) : (
-        <Container>
+        <Container sx={{ minHeight: "60vh" }}>
           <Tabs>
             <TabList>
               <Tab>Alignments</Tab>
@@ -205,7 +208,11 @@ const ClustalOmegaResults = () => {
             <TabPanel>
               {alignment ? (
                 <>
-                  <Button variant="outlined" onClick={handleDownload}>
+                  <Button
+                    variant="outlined"
+                    sx={{ textTransform: "none", mr: 1 }}
+                    onClick={handleDownload}
+                  >
                     Download Alignment File
                   </Button>
                   <Box

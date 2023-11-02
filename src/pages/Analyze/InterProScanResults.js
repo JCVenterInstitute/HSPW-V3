@@ -9,6 +9,7 @@ import {
   ListItem,
   ListItemText,
   CircularProgress,
+  Button,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -21,7 +22,10 @@ const InterProScan = () => {
   const [isFinished, setIsFinished] = useState(false);
   const [inputSequence, setInputSequence] = useState("");
   const [output, setOutput] = useState("");
-  const [toolOutput, setToolOutput] = useState("");
+  const [xmlOutput, setXmlOutput] = useState("");
+  const [tsvOutput, setTsvOutput] = useState("");
+  const [gffOutput, setGffOutput] = useState("");
+  const [jsonOutput, setJsonOutput] = useState({});
   const [submissionDetail, setSubmissionDetail] = useState(null);
   const [parameterDetail, setParameterDetail] = useState([]);
 
@@ -54,7 +58,6 @@ const InterProScan = () => {
   };
 
   const getResults = async () => {
-    let type = "aln-clustal";
     const resultTypes = await axios
       .get(
         `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/resulttypes/${jobId}`
@@ -62,9 +65,6 @@ const InterProScan = () => {
       .then((res) => res.data.types);
     console.log(resultTypes);
     for (const resultType of resultTypes) {
-      if (resultType === "aln-clustal_num") {
-        type = "aln-clustal_num";
-      }
       const result = await axios
         .get(
           `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/${resultType.identifier}`
@@ -72,37 +72,62 @@ const InterProScan = () => {
         .then((res) => res.data);
       console.log(result);
     }
-    const [inputSequence, output, toolOutput, submissionDetail] =
-      await Promise.all([
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/sequence`
-          )
-          .then((res) => res.data),
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/log`
-          )
-          .then((res) => res.data),
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/tsv`
-          )
-          .then((res) => res.data),
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/submission`
-          )
-          .then((res) => res.data),
-      ]);
+    const [
+      inputSequence,
+      log,
+      xmlOutput,
+      tsvOutput,
+      gffOutput,
+      jsonOutput,
+      submissionDetail,
+    ] = await Promise.all([
+      axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/sequence`
+        )
+        .then((res) => res.data),
+      axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/log`
+        )
+        .then((res) => res.data),
+      axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/xml`
+        )
+        .then((res) => res.data),
+      axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/tsv`
+        )
+        .then((res) => res.data),
+      axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/gff`
+        )
+        .then((res) => res.data),
+      axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/json`
+        )
+        .then((res) => res.data),
+      axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/submission`
+        )
+        .then((res) => res.data),
+    ]);
 
     const submissionDetailJson = new XMLParser().parseFromString(
       submissionDetail
     );
     console.log(submissionDetailJson);
     setInputSequence(inputSequence);
-    setOutput(output);
-    setToolOutput(toolOutput);
+    setOutput(log);
+    setXmlOutput(xmlOutput ? xmlOutput : "No Output");
+    setTsvOutput(tsvOutput ? tsvOutput : "No Output");
+    setGffOutput(gffOutput ? gffOutput : "No Output");
+    setJsonOutput(jsonOutput ? { ...jsonOutput } : "No Output");
     setSubmissionDetail(submissionDetailJson);
   };
 
@@ -113,6 +138,32 @@ const InterProScan = () => {
       getResults();
     }
   }, [jobId, isFinished]);
+
+  const handleDownload = (fileSuffix) => {
+    const fileInfo = {
+      fileSuffix: fileSuffix, // Replace with your desired file extension
+      content:
+        fileSuffix === "xml"
+          ? xmlOutput
+          : fileSuffix === "tsv"
+          ? tsvOutput
+          : fileSuffix === "gff3"
+          ? gffOutput
+          : fileSuffix === "json"
+          ? JSON.stringify(jsonOutput)
+          : "",
+    };
+
+    const blob = new Blob([fileInfo.content], {
+      type: fileSuffix === "json" ? "application/json" : "text/plain",
+    });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${jobId}.${fileInfo.fileSuffix}`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
 
   return (
     <>
@@ -153,13 +204,16 @@ const InterProScan = () => {
         </Typography>
       </Container>
       {!isFinished ? (
-        <Container>
+        <Container sx={{ minHeight: "60vh" }}>
           <Typography
             variant="h3"
             sx={{ fontWeight: "bold", mt: 3, color: "blue" }}
           >
             Your job is now queued and will be running shortly... please be
             patient!
+          </Typography>
+          <Typography variant="h6" sx={{ mt: 3, color: "black" }}>
+            Your result of your job will appear in this browser window.
           </Typography>
         </Container>
       ) : (
@@ -170,24 +224,55 @@ const InterProScan = () => {
               <Tab>Submission Details</Tab>
             </TabList>
             <TabPanel>
-              {toolOutput ? (
-                <Box
-                  sx={{
-                    display: "flex",
-                    minHeight: "60vh",
-                    overflow: "auto", // Allow horizontal scrolling
-                  }}
-                >
-                  <div
-                    style={{
-                      whiteSpace: "pre-wrap",
-                      overflow: "auto", // Allow horizontal scrolling within the div
-                      width: "100%", // Make the div take full width
+              {tsvOutput ? (
+                <>
+                  <Button
+                    variant="outlined"
+                    sx={{ textTransform: "none", mr: 1 }}
+                    onClick={() => handleDownload("xml")}
+                  >
+                    Download in XML format
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{ textTransform: "none", mr: 1 }}
+                    onClick={() => handleDownload("tsv")}
+                  >
+                    Download in TSV format
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{ textTransform: "none", mr: 1 }}
+                    onClick={() => handleDownload("gff3")}
+                  >
+                    Download in GFF3 format
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{ textTransform: "none", mr: 1 }}
+                    onClick={() => handleDownload("json")}
+                  >
+                    Download in JSON format
+                  </Button>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      minHeight: "60vh",
+                      overflow: "auto", // Allow horizontal scrolling
+                      mt: 2,
                     }}
                   >
-                    <pre>{toolOutput}</pre>
-                  </div>
-                </Box>
+                    <div
+                      style={{
+                        whiteSpace: "pre-wrap",
+                        overflow: "auto", // Allow horizontal scrolling within the div
+                        width: "100%", // Make the div take full width
+                      }}
+                    >
+                      <pre>{tsvOutput}</pre>
+                    </div>
+                  </Box>
+                </>
               ) : (
                 <Box
                   sx={{
