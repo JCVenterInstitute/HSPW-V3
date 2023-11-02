@@ -52,8 +52,8 @@ const InterProScan = () => {
     if (status === "FINISHED") {
       setIsFinished(true);
     } else {
-      // Continue checking after 3 seconds
-      setTimeout(checkStatus, 3000);
+      // Continue checking after 5 seconds
+      setTimeout(checkStatus, 5000);
     }
   };
 
@@ -178,7 +178,7 @@ const InterProScan = () => {
             paddingLeft: "40px",
           }}
         >
-          InterProScan 5
+          Protein Signature Search
         </h1>
         <p
           style={{

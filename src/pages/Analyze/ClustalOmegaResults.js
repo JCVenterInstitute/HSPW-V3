@@ -53,8 +53,8 @@ const ClustalOmegaResults = () => {
     if (status === "FINISHED") {
       setIsFinished(true);
     } else {
-      // Continue checking after 3 seconds
-      setTimeout(checkStatus, 3000);
+      // Continue checking after 5 seconds
+      setTimeout(checkStatus, 5000);
     }
   };
 
@@ -177,7 +177,8 @@ const ClustalOmegaResults = () => {
           DNA or proteins. It produces biologically meaningful multiple sequence
           alignments of divergent sequences. It calculates the best match for
           the selected sequences, and lines them up so that the identities,
-          similarities and differences can be seen.
+          similarities and differences can be seen. This service is provided by
+          the European Bioinformatics Institute (EBI).
         </p>
       </div>
       <Container>

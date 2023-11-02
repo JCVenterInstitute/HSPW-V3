@@ -17,7 +17,7 @@ const ClustalOmega = () => {
             paddingLeft: "40px",
           }}
         >
-          Clustal Omega
+          Multiple Sequence Alignment
         </h1>
         <p
           style={{
@@ -31,10 +31,12 @@ const ClustalOmega = () => {
             paddingRight: "40px",
           }}
         >
-          Clustal Omega is a multiple sequence alignment program. It produces
-          biologically meaningful multiple sequence alignments of divergent
-          sequences. Evolutionary relationships can be seen via viewing
-          Cladograms or Phylograms.
+          ClustalW is a general purpose multiple sequence alignment program for
+          DNA or proteins. It produces biologically meaningful multiple sequence
+          alignments of divergent sequences. It calculates the best match for
+          the selected sequences, and lines them up so that the identities,
+          similarities and differences can be seen. This service is provided by
+          the European Bioinformatics Institute (EBI).
         </p>
       </div>
       <Container>

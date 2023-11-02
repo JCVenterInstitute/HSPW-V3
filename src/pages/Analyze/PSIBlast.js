@@ -1,7 +1,7 @@
 import React from "react";
 import main_feature from "../../components/hero.jpeg";
 import { Typography, Container } from "@mui/material";
-import SequenceParameters from "../../components/MultipleSequenceAlignment/ClustalOmegaSequenceParameters";
+import PsiBlastSequenceParameters from "../../components/MultipleSequenceAlignment/PsiBlastSequenceParameters";
 
 const PSIBlast = () => {
   return (
@@ -17,7 +17,7 @@ const PSIBlast = () => {
             paddingLeft: "40px",
           }}
         >
-          PSI-BLAST
+          Protein Similarity Search
         </h1>
         <p
           style={{
@@ -52,7 +52,7 @@ const PSIBlast = () => {
         </Typography>
       </Container>
       <Container sx={{ mt: 3 }}>
-        <SequenceParameters url="psiblast" />
+        <PsiBlastSequenceParameters url="psiblast" />
       </Container>
     </>
   );

@@ -29,17 +29,17 @@ const PSIBlastResults = () => {
   const checkStatus = async () => {
     const parameterDetailArray = [];
     const status = await axios
-      .get(`https://www.ebi.ac.uk/Tools/services/rest/iprscan5/status/${jobId}`)
+      .get(`https://www.ebi.ac.uk/Tools/services/rest/psiblast/status/${jobId}`)
       .then((res) => res.data);
 
     const parameters = await axios
-      .get(`https://www.ebi.ac.uk/Tools/services/rest/iprscan5/parameters`)
+      .get(`https://www.ebi.ac.uk/Tools/services/rest/psiblast/parameters`)
       .then((res) => res.data.parameters);
 
     for (const parameter of parameters) {
       const parameterDetail = await axios
         .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/parameterdetails/${parameter}`
+          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/parameterdetails/${parameter}`
         )
         .then((res) => res.data);
       parameterDetailArray.push(parameterDetail);
@@ -49,8 +49,8 @@ const PSIBlastResults = () => {
     if (status === "FINISHED") {
       setIsFinished(true);
     } else {
-      // Continue checking after 3 seconds
-      setTimeout(checkStatus, 3000);
+      // Continue checking after 5 seconds
+      setTimeout(checkStatus, 5000);
     }
   };
 
@@ -109,7 +109,7 @@ const PSIBlastResults = () => {
             paddingLeft: "40px",
           }}
         >
-          InterProScan 5
+          Protein Similarity Search
         </h1>
         <p
           style={{
@@ -123,10 +123,16 @@ const PSIBlastResults = () => {
             paddingRight: "40px",
           }}
         >
-          InterProScan is a tool that combines different protein signature
-          recognition methods into one resource. The number of signature
-          databases and their associated scanning tools, as well as the further
-          refinement procedures, increases the complexity of the problem.
+          BLAST stands for Basic Local Alignment Search Tool.The emphasis of
+          this tool is to find regions of sequence similarity, which will yield
+          functional and evolutionary clues about the structure and function of
+          your novel sequence. Position specific iterative BLAST (PSI-BLAST)
+          refers to a feature of BLAST 2.0 in which a profile is automatically
+          constructed from the first set of BLAST alignments. PSI-BLAST is
+          similar to NCBI BLAST2 except that it uses position-specific scoring
+          matrices derived during the search, this tool is used to detect
+          distant evolutionary relationships. PHI-BLAST functionality is
+          available to use patterns to restrict search results.
         </p>
       </div>
       <Container>

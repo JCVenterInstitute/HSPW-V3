@@ -17,7 +17,7 @@ const InterProScan = () => {
             paddingLeft: "40px",
           }}
         >
-          InterProScan 5
+          Protein Signature Search
         </h1>
         <p
           style={{

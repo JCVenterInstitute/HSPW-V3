@@ -12,14 +12,13 @@ import {
   Stack,
   Button,
   Box,
-  FormControlLabel,
-  Checkbox,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import QueryString from "qs";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
-const InterProScanSequenceParameters = ({ url }) => {
+const PsiBlastSequenceParameters = ({ url }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [parameterDetails, setParameterDetails] = useState([]);
@@ -28,7 +27,6 @@ const InterProScanSequenceParameters = ({ url }) => {
   const [email, setEmail] = useState("");
   const [title, setTitle] = useState("");
   const [sequence, setSequence] = useState("");
-  const [checked, setChecked] = useState([]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0]; // Get the selected file
@@ -63,14 +61,22 @@ const InterProScanSequenceParameters = ({ url }) => {
           name: parameter,
           value:
             parameterDetail.values !== null
-              ? parameterDetail.values.values[0].value
+              ? parameterDetail.values.values
+                  .filter((option) => option.defaultValue === true)
+                  .map((option) => option.value)
               : null,
         };
+        if (parameterDetail.name === "Database") {
+          defaultValue[parameterDetail.name].value =
+            parameterDetail.values.values[13].value;
+        }
       }
+
+      console.log("defaultValue: ", defaultValue);
+      console.log("parameterDetailArray: ", parameterDetailArray);
       setParameterValue(defaultValue);
       setResetValue(defaultValue);
       setParameterDetails([...parameterDetailArray]);
-      setChecked(parameterDetailArray[3].values.values.map(() => true));
     } catch (err) {
       console.log(err);
     } finally {
@@ -87,27 +93,21 @@ const InterProScanSequenceParameters = ({ url }) => {
       title: "Submitting the job, please wait...",
     });
     Swal.showLoading();
-    const data = new URLSearchParams();
-    data.append("email", email);
-    data.append("title", title);
-    data.append("sequence", sequence);
-
+    const data = {
+      email: email,
+      title: title,
+      sequence: sequence,
+    };
     for (const key of Object.keys(parameterValue)) {
       const option = parameterValue[key];
-      if (option.name !== "sequence" && option.name !== "appl") {
-        data.append(option.name, option.value);
+      if (option.name !== "sequence") {
+        data[option.name] = option.value;
       }
     }
-    checked.map((bool, index) => {
-      if (bool) {
-        data.append("appl", parameterDetails[3].values.values[index].value);
-      }
-    });
-
     const payload = {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded" },
-      data: data.toString(),
+      data: QueryString.stringify(data),
       url: `https://www.ebi.ac.uk/Tools/services/rest/${url}/run`,
     };
     const jobId = await axios(payload)
@@ -125,12 +125,6 @@ const InterProScanSequenceParameters = ({ url }) => {
     setParameterValue(resetValue);
   };
 
-  const handleChange = (index) => (event) => {
-    const newChecked = [...checked];
-    newChecked[index] = event.target.checked;
-    setChecked(newChecked);
-  };
-
   return (
     <>
       {!loading ? (
@@ -145,7 +139,47 @@ const InterProScanSequenceParameters = ({ url }) => {
                 border: "2px solid #d8d8d8",
               }}
             >
-              STEP 1 - Enter your input sequences
+              STEP 1 - Select your database
+            </legend>
+            <Typography sx={{ mt: 1, color: "black" }}>
+              Protein Databases:
+            </Typography>
+            {parameterDetails.length !== 0 && parameterValue && (
+              <TextField
+                select
+                size="small"
+                sx={{ width: "850px" }}
+                value={parameterValue["Database"].value}
+                onChange={(event) => {
+                  const newValue = {
+                    ...parameterValue, // Create a copy of the existing state
+                    ["Database"]: {
+                      ...parameterValue["Database"], // Create a shallow copy of the nested object
+                      value: event.target.value, // Update the 'value' property of the nested object
+                    },
+                  };
+                  setParameterValue(newValue);
+                }}
+              >
+                {parameterDetails[13].values.values.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            )}
+          </Box>
+          <Box component="fieldset" sx={{ p: 2, mb: 2 }}>
+            <legend
+              style={{
+                fontSize: "100%",
+                backgroundColor: "#e5e5e5",
+                color: "#222",
+                padding: "0.1em 0.5em",
+                border: "2px solid #d8d8d8",
+              }}
+            >
+              STEP 2 - Enter your input sequences
             </legend>
             <Typography sx={{ mt: 1, color: "black" }}>
               Enter or paste a set of sequences in any supported format:
@@ -181,7 +215,7 @@ const InterProScanSequenceParameters = ({ url }) => {
                 border: "2px solid #d8d8d8",
               }}
             >
-              STEP 2 - Set your parameters and select the applications to run
+              STEP 3 - Set your parameters
             </legend>
             <Accordion sx={{ boxShadow: 2, mb: 2 }}>
               <AccordionSummary
@@ -198,7 +232,11 @@ const InterProScanSequenceParameters = ({ url }) => {
                   {parameterDetails.map((detail, index) => {
                     if (
                       detail.name !== "Sequence" &&
-                      detail.name !== "Applications"
+                      detail.name !== "Checkpoint File" &&
+                      detail.name !== "Pattern File" &&
+                      detail.name !== "Previous Iteration Job Id" &&
+                      detail.name !== "Selected Hits" &&
+                      detail.name !== "Database"
                     ) {
                       return (
                         <Grid item xs={4} key={index}>
@@ -249,51 +287,6 @@ const InterProScanSequenceParameters = ({ url }) => {
                 </Grid>
               </AccordionDetails>
             </Accordion>
-            <Box
-              component="fieldset"
-              sx={{ pl: 2, mt: 2, borderBottom: "none" }}
-            >
-              <FormControlLabel
-                label="SELECT ALL"
-                control={
-                  <Checkbox
-                    checked={checked.every((value) => value)}
-                    indeterminate={
-                      checked.some((value) => value) &&
-                      !checked.every((value) => value)
-                    }
-                    onChange={() => {
-                      const allChecked = checked.every((value) => value);
-                      setChecked(
-                        parameterDetails[3] &&
-                          parameterDetails[3].values.values.map(
-                            () => !allChecked
-                          )
-                      );
-                    }}
-                  />
-                }
-              />
-            </Box>
-            <Box component="fieldset" sx={{ p: 2 }}>
-              <Grid container>
-                {parameterDetails[3] &&
-                  parameterDetails[3].values.values.map((item, index) => (
-                    <Grid item xs={4} key={item.value}>
-                      <FormControlLabel
-                        label={item.label}
-                        control={
-                          <Checkbox
-                            checked={checked[index]}
-                            onChange={handleChange(index)}
-                            size="small"
-                          />
-                        }
-                      />
-                    </Grid>
-                  ))}
-              </Grid>
-            </Box>
           </Box>
           <Box component="fieldset" sx={{ p: 2, mb: 2 }}>
             <legend
@@ -305,7 +298,7 @@ const InterProScanSequenceParameters = ({ url }) => {
                 border: "2px solid #d8d8d8",
               }}
             >
-              STEP 3 - Submit your job
+              STEP 4 - Submit your job
             </legend>
             <Typography sx={{ mt: 1, mb: 2, color: "black" }}>
               If you want to be notified by email when the results are
@@ -361,4 +354,4 @@ const InterProScanSequenceParameters = ({ url }) => {
   );
 };
 
-export default InterProScanSequenceParameters;
+export default PsiBlastSequenceParameters;
