@@ -21,8 +21,7 @@ const InterProScan = () => {
   const [isFinished, setIsFinished] = useState(false);
   const [inputSequence, setInputSequence] = useState("");
   const [output, setOutput] = useState("");
-  const [sequenceCount, setSequenceCount] = useState(0);
-  const [alignment, setAlignment] = useState("");
+  const [toolOutput, setToolOutput] = useState("");
   const [submissionDetail, setSubmissionDetail] = useState(null);
   const [parameterDetail, setParameterDetail] = useState([]);
 
@@ -73,18 +72,37 @@ const InterProScan = () => {
         .then((res) => res.data);
       console.log(result);
     }
-    const [submissionDetail] = await Promise.all([
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/submission`
-        )
-        .then((res) => res.data),
-    ]);
+    const [inputSequence, output, toolOutput, submissionDetail] =
+      await Promise.all([
+        axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/sequence`
+          )
+          .then((res) => res.data),
+        axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/log`
+          )
+          .then((res) => res.data),
+        axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/tsv`
+          )
+          .then((res) => res.data),
+        axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/submission`
+          )
+          .then((res) => res.data),
+      ]);
 
     const submissionDetailJson = new XMLParser().parseFromString(
       submissionDetail
     );
     console.log(submissionDetailJson);
+    setInputSequence(inputSequence);
+    setOutput(output);
+    setToolOutput(toolOutput);
     setSubmissionDetail(submissionDetailJson);
   };
 
@@ -148,18 +166,27 @@ const InterProScan = () => {
         <Container>
           <Tabs>
             <TabList>
-              <Tab>Alignments</Tab>
+              <Tab>Tool Output</Tab>
               <Tab>Submission Details</Tab>
             </TabList>
             <TabPanel>
-              {alignment ? (
+              {toolOutput ? (
                 <Box
                   sx={{
                     display: "flex",
                     minHeight: "60vh",
+                    overflow: "auto", // Allow horizontal scrolling
                   }}
                 >
-                  <pre style={{ whiteSpace: "pre-wrap" }}>{alignment}</pre>
+                  <div
+                    style={{
+                      whiteSpace: "pre-wrap",
+                      overflow: "auto", // Allow horizontal scrolling within the div
+                      width: "100%", // Make the div take full width
+                    }}
+                  >
+                    <pre>{toolOutput}</pre>
+                  </div>
                 </Box>
               ) : (
                 <Box
@@ -295,7 +322,7 @@ const InterProScan = () => {
                               <Typography
                                 sx={{ color: "black", fontWeight: "bold" }}
                               >
-                                Output Result
+                                Output Result log
                               </Typography>
                             }
                           />
@@ -328,11 +355,20 @@ const InterProScan = () => {
                       },
                     }}
                   >
-                    <Paper elevation={4}>
+                    <Paper elevation={4} sx={{ overflow: "auto" }}>
                       <List>
                         <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
                           <ListItemText
-                            primary={submissionDetail.children[0].value}
+                            primary={
+                              <pre
+                                style={{
+                                  whiteSpace: "pre-wrap",
+                                  wordWrap: "break-word",
+                                }}
+                              >
+                                {submissionDetail.children[0].value}
+                              </pre>
+                            }
                           />
                         </ListItem>
                       </List>

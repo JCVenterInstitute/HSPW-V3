@@ -68,7 +68,6 @@ const InterProScanSequenceParameters = ({ url }) => {
               : null,
         };
       }
-      console.log("parameterDetailArray>>>", parameterDetailArray);
       setParameterValue(defaultValue);
       setResetValue(defaultValue);
       setParameterDetails([...parameterDetailArray]);
@@ -89,21 +88,27 @@ const InterProScanSequenceParameters = ({ url }) => {
       title: "Submitting the job, please wait...",
     });
     Swal.showLoading();
-    const data = {
-      email: email,
-      title: title,
-      sequence: sequence,
-    };
+    const data = new URLSearchParams();
+    data.append("email", email);
+    data.append("title", title);
+    data.append("sequence", sequence);
+
     for (const key of Object.keys(parameterValue)) {
       const option = parameterValue[key];
-      if (option.name !== "sequence") {
-        data[option.name] = option.value;
+      if (option.name !== "sequence" && option.name !== "appl") {
+        data.append(option.name, option.value);
       }
     }
+    checked.map((bool, index) => {
+      if (bool) {
+        data.append("appl", parameterDetails[3].values.values[index].value);
+      }
+    });
+
     const payload = {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded" },
-      data: QueryString.stringify(data),
+      data: data.toString(),
       url: `https://www.ebi.ac.uk/Tools/services/rest/${url}/run`,
     };
     const jobId = await axios(payload)
@@ -245,7 +250,10 @@ const InterProScanSequenceParameters = ({ url }) => {
                 </Grid>
               </AccordionDetails>
             </Accordion>
-            <Box component="fieldset" sx={{ pl: 2, borderBottom: "none" }}>
+            <Box
+              component="fieldset"
+              sx={{ pl: 2, mt: 2, borderBottom: "none" }}
+            >
               <FormControlLabel
                 label="SELECT ALL"
                 control={

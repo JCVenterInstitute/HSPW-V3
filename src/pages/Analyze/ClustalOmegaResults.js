@@ -9,6 +9,7 @@ import {
   ListItem,
   ListItemText,
   CircularProgress,
+  Button,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -64,6 +65,7 @@ const ClustalOmegaResults = () => {
         `https://www.ebi.ac.uk/Tools/services/rest/clustalo/resulttypes/${jobId}`
       )
       .then((res) => res.data.types);
+    console.log("> Result Types", resultTypes);
     for (const resultType of resultTypes) {
       if (resultType === "aln-clustal_num") {
         type = "aln-clustal_num";
@@ -129,6 +131,21 @@ const ClustalOmegaResults = () => {
     }
   }, [jobId, isFinished]);
 
+  const handleDownload = () => {
+    const fileInfo = {
+      fileSuffix: "txt", // Replace with your desired file extension
+      content: alignment,
+    };
+
+    const blob = new Blob([fileInfo.content], { type: "text/plain" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `alignment_result.${fileInfo.fileSuffix}`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <>
       <div style={{ backgroundImage: `url(${main_feature})` }}>
@@ -187,16 +204,21 @@ const ClustalOmegaResults = () => {
             </TabList>
             <TabPanel>
               {alignment ? (
-                <Box
-                  sx={{
-                    display: "flex",
-                    minHeight: "60vh",
-                    mb: 2,
-                  }}
-                >
-                  {/* <pre style={{ whiteSpace: "pre-wrap" }}>{alignment}</pre> */}
-                  {model && <MSAView model={model} />}
-                </Box>
+                <>
+                  <Button variant="outlined" onClick={handleDownload}>
+                    Download Alignment File
+                  </Button>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      minHeight: "60vh",
+                      mb: 2,
+                    }}
+                  >
+                    {/* <pre style={{ whiteSpace: "pre-wrap" }}>{alignment}</pre> */}
+                    {model && <MSAView model={model} />}
+                  </Box>
+                </>
               ) : (
                 <Box
                   sx={{
@@ -363,7 +385,16 @@ const ClustalOmegaResults = () => {
                       <List>
                         <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
                           <ListItemText
-                            primary={submissionDetail.children[0].value}
+                            primary={
+                              <pre
+                                style={{
+                                  whiteSpace: "pre-wrap",
+                                  wordWrap: "break-word",
+                                }}
+                              >
+                                {submissionDetail.children[0].value}
+                              </pre>
+                            }
                           />
                         </ListItem>
                       </List>
