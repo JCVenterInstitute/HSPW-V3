@@ -300,7 +300,7 @@ const PSIBlastResults = () => {
                             }
                           />
                         </ListItem>
-                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
+                        <ListItem sx={{ pl: 1, pt: 0, pb: 0, mt: 2 }} divider>
                           <ListItemText
                             primary={
                               <Typography
@@ -390,7 +390,7 @@ const PSIBlastResults = () => {
                                   }
                                 />
                               </ListItem>
-                              <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
+                              <ListItem sx={{ pl: 1, pt: 0, pb: 0, mb: 1 }}>
                                 <ListItemText
                                   primary={
                                     submissionDetail.children[1].children[

@@ -406,7 +406,7 @@ const InterProScan = () => {
                             }
                           />
                         </ListItem>
-                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
+                        <ListItem sx={{ mt: 2, pl: 1, pt: 0, pb: 0 }} divider>
                           <ListItemText
                             primary={
                               <Typography
@@ -505,7 +505,7 @@ const InterProScan = () => {
                                   }
                                 />
                               </ListItem>
-                              <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
+                              <ListItem sx={{ pl: 1, pt: 0, pb: 0, mb: 1 }}>
                                 <ListItemText
                                   primary={
                                     submissionDetail.children[1].children[
