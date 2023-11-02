@@ -306,7 +306,7 @@ const ClustalOmegaSequenceParameters = ({ url }) => {
           </Box>
         </>
       ) : (
-        <LinearProgress />
+        <LinearProgress sx={{ mb: "500px" }} />
       )}
     </>
   );
