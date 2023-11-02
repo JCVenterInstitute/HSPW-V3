@@ -228,28 +228,28 @@ const InterProScan = () => {
                 <>
                   <Button
                     variant="outlined"
-                    sx={{ textTransform: "none", mr: 1 }}
+                    sx={{ textTransform: "none", m: 1 }}
                     onClick={() => handleDownload("xml")}
                   >
                     Download in XML format
                   </Button>
                   <Button
                     variant="outlined"
-                    sx={{ textTransform: "none", mr: 1 }}
+                    sx={{ textTransform: "none", m: 1 }}
                     onClick={() => handleDownload("tsv")}
                   >
                     Download in TSV format
                   </Button>
                   <Button
                     variant="outlined"
-                    sx={{ textTransform: "none", mr: 1 }}
+                    sx={{ textTransform: "none", m: 1 }}
                     onClick={() => handleDownload("gff3")}
                   >
                     Download in GFF3 format
                   </Button>
                   <Button
                     variant="outlined"
-                    sx={{ textTransform: "none", mr: 1 }}
+                    sx={{ textTransform: "none", m: 1 }}
                     onClick={() => handleDownload("json")}
                   >
                     Download in JSON format
@@ -395,7 +395,12 @@ const InterProScan = () => {
                         <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
                           <ListItemText
                             primary={
-                              <pre style={{ whiteSpace: "pre-wrap" }}>
+                              <pre
+                                style={{
+                                  whiteSpace: "pre-wrap",
+                                  wordWrap: "break-word",
+                                }}
+                              >
                                 {inputSequence}
                               </pre>
                             }
@@ -415,7 +420,12 @@ const InterProScan = () => {
                         <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
                           <ListItemText
                             primary={
-                              <pre style={{ whiteSpace: "pre-wrap" }}>
+                              <pre
+                                style={{
+                                  whiteSpace: "pre-wrap",
+                                  wordWrap: "break-word",
+                                }}
+                              >
                                 {output}
                               </pre>
                             }

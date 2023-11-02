@@ -289,7 +289,12 @@ const PSIBlastResults = () => {
                         <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
                           <ListItemText
                             primary={
-                              <pre style={{ whiteSpace: "pre-wrap" }}>
+                              <pre
+                                style={{
+                                  whiteSpace: "pre-wrap",
+                                  wordWrap: "break-word",
+                                }}
+                              >
                                 {inputSequence}
                               </pre>
                             }
@@ -309,7 +314,12 @@ const PSIBlastResults = () => {
                         <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
                           <ListItemText
                             primary={
-                              <pre style={{ whiteSpace: "pre-wrap" }}>
+                              <pre
+                                style={{
+                                  whiteSpace: "pre-wrap",
+                                  wordWrap: "break-word",
+                                }}
+                              >
                                 {output}
                               </pre>
                             }
