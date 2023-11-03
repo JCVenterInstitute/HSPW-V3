@@ -9,6 +9,7 @@ import {
   ListItem,
   ListItemText,
   CircularProgress,
+  Button,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -16,13 +17,16 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import XMLParser from "react-xml-parser";
 
-const PSIBlastResults = () => {
+const PsiBlastResults = () => {
   const { jobId } = useParams();
   const [isFinished, setIsFinished] = useState(false);
   const [inputSequence, setInputSequence] = useState("");
+  const [toolOutput, setToolOutput] = useState("");
   const [output, setOutput] = useState("");
-  const [sequenceCount, setSequenceCount] = useState(0);
-  const [alignment, setAlignment] = useState("");
+  const [xmlOutput, setXmlOutput] = useState("");
+  const [visualSvgOutput, setVisualSvgOutput] = useState(null);
+  const [visualPngOutput, setVisualPngOutput] = useState(null);
+  const [outputDetail, setOutputDetail] = useState({});
   const [submissionDetail, setSubmissionDetail] = useState(null);
   const [parameterDetail, setParameterDetail] = useState([]);
 
@@ -55,28 +59,71 @@ const PSIBlastResults = () => {
   };
 
   const getResults = async () => {
-    let type = "aln-clustal";
     const resultTypes = await axios
       .get(
-        `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/resulttypes/${jobId}`
+        `https://www.ebi.ac.uk/Tools/services/rest/psiblast/resulttypes/${jobId}`
       )
       .then((res) => res.data.types);
     console.log(resultTypes);
-    for (const resultType of resultTypes) {
-      if (resultType === "aln-clustal_num") {
-        type = "aln-clustal_num";
-      }
-      const result = await axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/${resultType.identifier}`
-        )
-        .then((res) => res.data);
-      console.log(result);
-    }
-    const [submissionDetail] = await Promise.all([
+    // for (const resultType of resultTypes) {
+    //   if (resultType.identifier === "visual-jpg") {
+    //     continue;
+    //   }
+    //   const result = await axios
+    //     .get(
+    //       `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/${resultType.identifier}`
+    //     )
+    //     .then((res) => res.data);
+    //   console.log(result);
+    // }
+    const [
+      inputSequence,
+      toolOutput,
+      output,
+      xmlOutput,
+      visualSvgOutput,
+      visualPngOutput,
+      outputDetail,
+      submissionDetail,
+    ] = await Promise.all([
       axios
         .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/submission`
+          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/sequence`
+        )
+        .then((res) => res.data),
+      axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/out`
+        )
+        .then((res) => res.data),
+      axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/wrapper_out`
+        )
+        .then((res) => res.data),
+      axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/xml`
+        )
+        .then((res) => res.data),
+      axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/visual-svg`
+        )
+        .then((res) => res.data),
+      axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/visual-png`
+        )
+        .then((res) => res.data),
+      axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/json`
+        )
+        .then((res) => res.data),
+      axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/submission`
         )
         .then((res) => res.data),
     ]);
@@ -84,7 +131,14 @@ const PSIBlastResults = () => {
     const submissionDetailJson = new XMLParser().parseFromString(
       submissionDetail
     );
-    console.log(submissionDetailJson);
+    // console.log(submissionDetailJson);
+    setInputSequence(inputSequence);
+    setToolOutput(toolOutput);
+    setOutput(output);
+    setXmlOutput(xmlOutput);
+    setVisualSvgOutput(visualSvgOutput);
+    setVisualPngOutput(visualPngOutput);
+    setOutputDetail(outputDetail);
     setSubmissionDetail(submissionDetailJson);
   };
 
@@ -95,6 +149,29 @@ const PSIBlastResults = () => {
       getResults();
     }
   }, [jobId, isFinished]);
+
+  const handleDownload = (fileSuffix) => {
+    const fileInfo = {
+      fileSuffix: fileSuffix, // Replace with your desired file extension
+      content:
+        fileSuffix === "txt"
+          ? toolOutput
+          : fileSuffix === "xml"
+          ? xmlOutput
+          : fileSuffix === "svg"
+          ? visualSvgOutput
+          : "",
+    };
+    const blob = new Blob([fileInfo.content], {
+      type: "text/plain",
+    });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${jobId}.${fileInfo.fileSuffix}`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
 
   return (
     <>
@@ -141,7 +218,7 @@ const PSIBlastResults = () => {
         </Typography>
       </Container>
       {!isFinished ? (
-        <Container>
+        <Container sx={{ minHeight: "60vh" }}>
           <Typography
             variant="h3"
             sx={{ fontWeight: "bold", mt: 3, color: "blue" }}
@@ -149,24 +226,104 @@ const PSIBlastResults = () => {
             Your job is now queued and will be running shortly... please be
             patient!
           </Typography>
+          <Typography variant="h6" sx={{ mt: 3, color: "black" }}>
+            Your result of your job will appear in this browser window.
+          </Typography>
         </Container>
       ) : (
         <Container>
           <Tabs>
             <TabList>
-              <Tab>Alignments</Tab>
+              <Tab>Tool Output</Tab>
+              <Tab>Visual Output</Tab>
               <Tab>Submission Details</Tab>
             </TabList>
             <TabPanel>
-              {alignment ? (
+              {toolOutput ? (
+                <>
+                  <Button
+                    variant="outlined"
+                    sx={{ textTransform: "none", m: 1 }}
+                    onClick={() => handleDownload("txt")}
+                  >
+                    Download in TXT format
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{ textTransform: "none", m: 1 }}
+                    onClick={() => handleDownload("xml")}
+                  >
+                    Download in XML format
+                  </Button>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      minHeight: "60vh",
+                      overflow: "auto", // Allow horizontal scrolling
+                      mt: 2,
+                    }}
+                  >
+                    <div
+                      style={{
+                        whiteSpace: "pre-wrap",
+                        overflow: "auto", // Allow horizontal scrolling within the div
+                        width: "100%", // Make the div take full width
+                      }}
+                    >
+                      <pre>{toolOutput}</pre>
+                    </div>
+                  </Box>
+                </>
+              ) : (
                 <Box
                   sx={{
                     display: "flex",
-                    minHeight: "60vh",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "50vh",
                   }}
                 >
-                  <pre style={{ whiteSpace: "pre-wrap" }}>{alignment}</pre>
+                  <CircularProgress />
                 </Box>
+              )}
+            </TabPanel>
+            <TabPanel>
+              {visualSvgOutput ? (
+                <>
+                  <Button
+                    variant="outlined"
+                    sx={{ textTransform: "none", m: 1 }}
+                    onClick={() => handleDownload("svg")}
+                  >
+                    Download in SVG format
+                  </Button>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      minHeight: "80vh",
+                      overflow: "auto", // Allow horizontal scrolling
+                      mt: 2,
+                    }}
+                  >
+                    <div
+                      style={{
+                        whiteSpace: "pre-wrap",
+                        overflow: "auto", // Allow horizontal scrolling within the div
+                        width: "100%", // Make the div take full width
+                      }}
+                    >
+                      {/* <div
+                      dangerouslySetInnerHTML={{ __html: visualSvgOutput }}
+                    ></div> */}
+                      <div>
+                        <img
+                          src={`https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/visual-png`}
+                          alt="PNG Image"
+                        />
+                      </div>
+                    </div>
+                  </Box>
+                </>
               ) : (
                 <Box
                   sx={{
@@ -230,12 +387,7 @@ const PSIBlastResults = () => {
                           />
                         </ListItem>
                         <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
-                          <ListItemText
-                            primary={
-                              submissionDetail.children[1].children[1]
-                                .children[1].value
-                            }
-                          />
+                          <ListItemText primary={outputDetail.version} />
                         </ListItem>
                       </List>
                     </Paper>
@@ -247,18 +399,13 @@ const PSIBlastResults = () => {
                               <Typography
                                 sx={{ color: "black", fontWeight: "bold" }}
                               >
-                                Number of Sequences
+                                Database
                               </Typography>
                             }
                           />
                         </ListItem>
                         <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
-                          <ListItemText
-                            primary={
-                              submissionDetail.children[1].children[2]
-                                .children[1].value
-                            }
-                          />
+                          <ListItemText primary={outputDetail.dbs[0].name} />
                         </ListItem>
                       </List>
                     </Paper>
@@ -300,13 +447,13 @@ const PSIBlastResults = () => {
                             }
                           />
                         </ListItem>
-                        <ListItem sx={{ pl: 1, pt: 0, pb: 0, mt: 2 }} divider>
+                        <ListItem sx={{ mt: 2, pl: 1, pt: 0, pb: 0 }} divider>
                           <ListItemText
                             primary={
                               <Typography
                                 sx={{ color: "black", fontWeight: "bold" }}
                               >
-                                Output Result
+                                Output Result log
                               </Typography>
                             }
                           />
@@ -344,11 +491,20 @@ const PSIBlastResults = () => {
                       },
                     }}
                   >
-                    <Paper elevation={4}>
+                    <Paper elevation={4} sx={{ overflow: "auto" }}>
                       <List>
                         <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
                           <ListItemText
-                            primary={submissionDetail.children[0].value}
+                            primary={
+                              <pre
+                                style={{
+                                  whiteSpace: "pre-wrap",
+                                  wordWrap: "break-word",
+                                }}
+                              >
+                                {submissionDetail.children[0].value}
+                              </pre>
+                            }
                           />
                         </ListItem>
                       </List>
@@ -373,7 +529,7 @@ const PSIBlastResults = () => {
                     <Paper elevation={4}>
                       <List>
                         {parameterDetail
-                          .slice(0, -2)
+                          .slice(0, -6)
                           .map((parameter, index) => (
                             <React.Fragment key={index}>
                               <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
@@ -394,7 +550,7 @@ const PSIBlastResults = () => {
                                 <ListItemText
                                   primary={
                                     submissionDetail.children[1].children[
-                                      index + 3
+                                      index + 1
                                     ].children[1].value
                                   }
                                 />
@@ -424,4 +580,4 @@ const PSIBlastResults = () => {
     </>
   );
 };
-export default PSIBlastResults;
+export default PsiBlastResults;

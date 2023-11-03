@@ -17,7 +17,7 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import XMLParser from "react-xml-parser";
 
-const InterProScan = () => {
+const InterProScanResults = () => {
   const { jobId } = useParams();
   const [isFinished, setIsFinished] = useState(false);
   const [inputSequence, setInputSequence] = useState("");
@@ -64,14 +64,14 @@ const InterProScan = () => {
       )
       .then((res) => res.data.types);
     console.log(resultTypes);
-    for (const resultType of resultTypes) {
-      const result = await axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/${resultType.identifier}`
-        )
-        .then((res) => res.data);
-      console.log(result);
-    }
+    // for (const resultType of resultTypes) {
+    //   const result = await axios
+    //     .get(
+    //       `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/${resultType.identifier}`
+    //     )
+    //     .then((res) => res.data);
+    //   console.log(result);
+    // }
     const [
       inputSequence,
       log,
@@ -121,7 +121,7 @@ const InterProScan = () => {
     const submissionDetailJson = new XMLParser().parseFromString(
       submissionDetail
     );
-    console.log(submissionDetailJson);
+    // console.log(submissionDetailJson);
     setInputSequence(inputSequence);
     setOutput(log);
     setXmlOutput(xmlOutput ? xmlOutput : "No Output");
@@ -539,4 +539,4 @@ const InterProScan = () => {
     </>
   );
 };
-export default InterProScan;
+export default InterProScanResults;
