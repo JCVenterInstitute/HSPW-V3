@@ -62,9 +62,9 @@ const PsiBlastSequenceParameters = ({ url }) => {
           name: parameter,
           value:
             parameterDetail.values !== null
-              ? parameterDetail.values.values
-                  .filter((option) => option.defaultValue === true)
-                  .map((option) => option.value)
+              ? parameterDetail.values.values.find(
+                  (option) => option.defaultValue === true
+                )?.value
               : null,
         };
         if (parameterDetail.name === "Database") {
@@ -102,7 +102,13 @@ const PsiBlastSequenceParameters = ({ url }) => {
       };
       for (const key of Object.keys(parameterValue)) {
         const option = parameterValue[key];
-        if (option.name !== "sequence") {
+        if (
+          option.name !== "sequence" &&
+          option.name !== "cpfile" &&
+          option.name !== "patfile" &&
+          option.name !== "previousjobid" &&
+          option.name !== "selectedHits"
+        ) {
           data[option.name] = option.value;
         }
       }
@@ -151,9 +157,7 @@ const PsiBlastSequenceParameters = ({ url }) => {
             >
               STEP 1 - Select your database
             </legend>
-            <Typography sx={{ mt: 1, color: "black" }}>
-              Protein Databases:
-            </Typography>
+            <Typography sx={{ color: "black" }}>Protein Databases:</Typography>
             {parameterDetails.length !== 0 && parameterValue && (
               <TextField
                 select

@@ -64,7 +64,7 @@ const PsiBlastResults = () => {
         `https://www.ebi.ac.uk/Tools/services/rest/psiblast/resulttypes/${jobId}`
       )
       .then((res) => res.data.types);
-    console.log(resultTypes);
+    console.log("> Result Types", resultTypes);
     // for (const resultType of resultTypes) {
     //   if (resultType.identifier === "visual-jpg") {
     //     continue;

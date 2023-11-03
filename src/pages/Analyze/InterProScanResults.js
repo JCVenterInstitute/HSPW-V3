@@ -63,7 +63,7 @@ const InterProScanResults = () => {
         `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/resulttypes/${jobId}`
       )
       .then((res) => res.data.types);
-    console.log(resultTypes);
+    console.log("> Result Types", resultTypes);
     // for (const resultType of resultTypes) {
     //   const result = await axios
     //     .get(
