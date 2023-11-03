@@ -28,6 +28,12 @@ const PsiBlastSequenceParameters = ({ url }) => {
   const [email, setEmail] = useState("");
   const [title, setTitle] = useState("");
   const [sequence, setSequence] = useState("");
+  const [fieldValues, setFieldValues] = useState({
+    "Checkpoint File": "",
+    "Pattern File": "",
+    "Selected Hits": "",
+    "Previous Iteration Job Id": "",
+  });
 
   const handleFileChange = (e) => {
     const file = e.target.files[0]; // Get the selected file
@@ -38,6 +44,22 @@ const PsiBlastSequenceParameters = ({ url }) => {
         setSequence(content); // Set the file content to state
       };
       reader.readAsText(file); // Read the file as text
+    }
+  };
+
+  const handleFieldChange = (fieldName, value) => {
+    if (fieldName === "Previous Iteration Job Id") {
+      setFieldValues({ ...fieldValues, [fieldName]: value });
+    } else {
+      const file = value.target.files[0]; // Get the selected file
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const content = event.target.result;
+          setFieldValues({ ...fieldValues, [fieldName]: content });
+        };
+        reader.readAsText(file); // Read the file as text
+      }
     }
   };
 
@@ -72,9 +94,6 @@ const PsiBlastSequenceParameters = ({ url }) => {
             parameterDetail.values.values[13].value;
         }
       }
-
-      console.log("defaultValue: ", defaultValue);
-      console.log("parameterDetailArray: ", parameterDetailArray);
       setParameterValue(defaultValue);
       setResetValue(defaultValue);
       setParameterDetails([...parameterDetailArray]);
@@ -99,6 +118,18 @@ const PsiBlastSequenceParameters = ({ url }) => {
         email: email,
         title: title,
         sequence: sequence,
+        ...(fieldValues["Checkpoint File"] !== "" && {
+          cpfile: fieldValues["Checkpoint File"],
+        }),
+        ...(fieldValues["Pattern File"] !== "" && {
+          patfile: fieldValues["Pattern File"],
+        }),
+        ...(fieldValues["Previous Iteration Job Id"] !== "" && {
+          previousjobid: fieldValues["Previous Iteration Job Id"],
+        }),
+        ...(fieldValues["Selected Hits"] !== "" && {
+          selectedHits: fieldValues["Selected Hits"],
+        }),
       };
       for (const key of Object.keys(parameterValue)) {
         const option = parameterValue[key];
@@ -292,6 +323,69 @@ const PsiBlastSequenceParameters = ({ url }) => {
                                   </MenuItem>
                                 ))}
                               </TextField>
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      );
+                    }
+                  })}
+                  {parameterDetails.map((detail, index) => {
+                    if (
+                      detail.name === "Checkpoint File" ||
+                      detail.name === "Pattern File" ||
+                      detail.name === "Selected Hits"
+                    ) {
+                      return (
+                        <Grid item xs={4} key={index}>
+                          <Grid container spacing={1}>
+                            <Grid item xs={12}>
+                              <Typography
+                                sx={{
+                                  fontWeight: "bold",
+                                  ml: 1,
+                                  color: "black",
+                                }}
+                              >
+                                {detail.name}:
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                              <TextField
+                                size="small"
+                                sx={{ width: "300px" }}
+                                type="file"
+                                id="file-input"
+                                onChange={(e) =>
+                                  handleFieldChange(detail.name, e)
+                                }
+                              />
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      );
+                    } else if (detail.name === "Previous Iteration Job Id") {
+                      return (
+                        <Grid item xs={4} key={index}>
+                          <Grid container spacing={1}>
+                            <Grid item xs={12}>
+                              <Typography
+                                sx={{
+                                  fontWeight: "bold",
+                                  ml: 1,
+                                  color: "black",
+                                }}
+                              >
+                                {detail.name}:
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                              <TextField
+                                size="small"
+                                sx={{ width: "300px" }}
+                                onChange={(e) =>
+                                  handleFieldChange(detail.name, e.target.value)
+                                }
+                              ></TextField>
                             </Grid>
                           </Grid>
                         </Grid>
