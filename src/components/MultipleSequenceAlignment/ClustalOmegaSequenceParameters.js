@@ -17,6 +17,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import QueryString from "qs";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import XMLParser from "react-xml-parser";
 
 const ClustalOmegaSequenceParameters = ({ url }) => {
   const navigate = useNavigate();
@@ -98,29 +99,38 @@ const ClustalOmegaSequenceParameters = ({ url }) => {
       title: "Submitting the job, please wait...",
     });
     Swal.showLoading();
-    const data = {
-      email: email,
-      title: title,
-      sequence: sequence,
-    };
-    for (const key of Object.keys(parameterValue)) {
-      const option = parameterValue[key];
-      if (option.name !== "sequence") {
-        data[option.name] = option.value;
+    try {
+      const data = {
+        email: email,
+        title: title,
+        sequence: sequence,
+      };
+      for (const key of Object.keys(parameterValue)) {
+        const option = parameterValue[key];
+        if (option.name !== "sequence") {
+          data[option.name] = option.value;
+        }
       }
-    }
-    const payload = {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      data: QueryString.stringify(data),
-      url: `https://www.ebi.ac.uk/Tools/services/rest/${url}/run`,
-    };
-    const jobId = await axios(payload)
-      .then((res) => res.data)
-      .finally(() => {
-        Swal.close();
+      const payload = {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        data: QueryString.stringify(data),
+        url: `https://www.ebi.ac.uk/Tools/services/rest/${url}/run`,
+      };
+      const jobId = await axios(payload)
+        .then((res) => res.data)
+        .finally(() => {
+          Swal.close();
+        });
+      navigate(`/${url}/results/${jobId}`);
+    } catch (err) {
+      const errorMessage = new XMLParser().parseFromString(err.response.data);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: errorMessage.children[0].value,
       });
-    navigate(`/${url}/results/${jobId}`);
+    }
   };
 
   const handleReset = () => {

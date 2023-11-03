@@ -18,6 +18,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import XMLParser from "react-xml-parser";
 
 const InterProScanSequenceParameters = ({ url }) => {
   const navigate = useNavigate();
@@ -87,35 +88,44 @@ const InterProScanSequenceParameters = ({ url }) => {
       title: "Submitting the job, please wait...",
     });
     Swal.showLoading();
-    const data = new URLSearchParams();
-    data.append("email", email);
-    data.append("title", title);
-    data.append("sequence", sequence);
+    try {
+      const data = new URLSearchParams();
+      data.append("email", email);
+      data.append("title", title);
+      data.append("sequence", sequence);
 
-    for (const key of Object.keys(parameterValue)) {
-      const option = parameterValue[key];
-      if (option.name !== "sequence" && option.name !== "appl") {
-        data.append(option.name, option.value);
+      for (const key of Object.keys(parameterValue)) {
+        const option = parameterValue[key];
+        if (option.name !== "sequence" && option.name !== "appl") {
+          data.append(option.name, option.value);
+        }
       }
-    }
-    checked.map((bool, index) => {
-      if (bool) {
-        data.append("appl", parameterDetails[3].values.values[index].value);
-      }
-    });
-
-    const payload = {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      data: data.toString(),
-      url: `https://www.ebi.ac.uk/Tools/services/rest/${url}/run`,
-    };
-    const jobId = await axios(payload)
-      .then((res) => res.data)
-      .finally(() => {
-        Swal.close();
+      checked.map((bool, index) => {
+        if (bool) {
+          data.append("appl", parameterDetails[3].values.values[index].value);
+        }
       });
-    navigate(`/${url}/results/${jobId}`);
+
+      const payload = {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        data: data.toString(),
+        url: `https://www.ebi.ac.uk/Tools/services/rest/${url}/run`,
+      };
+      const jobId = await axios(payload)
+        .then((res) => res.data)
+        .finally(() => {
+          Swal.close();
+        });
+      navigate(`/${url}/results/${jobId}`);
+    } catch (err) {
+      const errorMessage = new XMLParser().parseFromString(err.response.data);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: errorMessage.children[0].value,
+      });
+    }
   };
 
   const handleReset = () => {
