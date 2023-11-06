@@ -14,7 +14,6 @@ import Gene_Detail from "./pages/gene_detail";
 import Salivary_Protein from "./pages/salivary_protein";
 import Protein_Detail from "./pages/protein_detail";
 import Analysis from "./pages/analysis";
-import Blast from "./pages/blast";
 import Citation from "./pages/citation";
 import Citation_Detail from "./pages/citation_detail";
 import Signature_Detail from "./pages/signature_detail";
@@ -26,6 +25,8 @@ import ClustalOmegaResults from "./pages/Analyze/ClustalOmegaResults";
 import ClustalOmega from "./pages/Analyze/ClustalOmega";
 import InterProScanResults from "./pages/Analyze/InterProScanResults";
 import InterProScan from "./pages/Analyze/InterProScan";
+import PSIBlastResults from "./pages/Analyze/PSIBlastResults";
+import PSIBlast from "./pages/Analyze/PSIBlast";
 
 function App() {
   return (
@@ -61,7 +62,8 @@ function App() {
           element={<InterProScanResults />}
         />
         <Route path="/iprscan5" element={<InterProScan />} />
-        <Route path="/Blast" element={<Blast />} />
+        <Route path="/psiblast/results/:jobId" element={<PSIBlastResults />} />
+        <Route path="/psiblast" element={<PSIBlast />} />
         <Route path="/citation" element={<Citation />} />
         <Route path="/citation/:citationid" element={<Citation_Detail />} />
         <Route path="/Basic_Search" element={<Basic_Search />} />
