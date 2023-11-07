@@ -1,9 +1,13 @@
 import "./filter.css";
-import React, { useState, useEffect,useCallback,useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-enterprise";
-import { Link } from "react-router-dom";
 
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { DATA } from "./data_citations";
@@ -13,7 +17,7 @@ function LinkComponent(props: ICellRendererParams) {
     <a
       target="_blank"
       rel="noopener noreferrer"
-      href={'http://localhost:3000/citation/'+props.value}
+      href={"http://localhost:3000/citation/" + props.value}
     >
       {props.value}
     </a>
@@ -26,10 +30,9 @@ function App() {
     fetch("http://localhost:8000/citation")
       .then((res) => res.json())
       .then((data) => setMessage(data));
-
   }, []);
   let data1 = [];
-  for(let i = 0; i < message.length;i++){
+  for (let i = 0; i < message.length; i++) {
     data1.push(message[i]["_source"]);
   }
 
@@ -43,32 +46,48 @@ function App() {
       cellRenderer: "LinkComponent",
       checkboxSelection: false,
       headerCheckboxSelection: false,
-      minWidth:185,
-      wrapText: true
+      minWidth: 185,
+      wrapText: true,
     },
-    { headerName: "Date of Publication", field: "Date of Publication",maxWidth:205, sortable: true,wrapText: true,suppressSizeToFit: true, sortable: true,sort: 'asc' },
-    { headerName: "Title", field: "Title",wrapText: true,autoHeight: true,cellStyle:{'word-break': 'break-word'}, sortable: true },
-    { headerName: "Journal", field: "Journal",wrapText: true,maxWidth:145,maxWidth:145, sortable: true },
+    {
+      headerName: "Date of Publication",
+      field: "Date of Publication",
+      maxWidth: 205,
+      sortable: true,
+      wrapText: true,
+      suppressSizeToFit: true,
+      sortable: true,
+      sort: "asc",
+    },
+    {
+      headerName: "Title",
+      field: "Title",
+      wrapText: true,
+      autoHeight: true,
+      cellStyle: { "word-break": "break-word" },
+      sortable: true,
+    },
+    {
+      headerName: "Journal",
+      field: "Journal",
+      wrapText: true,
+      maxWidth: 145,
+      maxWidth: 145,
+      sortable: true,
+    },
+  ];
 
-];
-
-  const defColumnDefs = { flex: 1, filter: true,wrapHeaderText: true,
-    autoHeaderHeight: true, };
+  const defColumnDefs = {
+    flex: 1,
+    filter: true,
+    wrapHeaderText: true,
+    autoHeaderHeight: true,
+  };
 
   const onGridReady = (params) => {
     setGridApi(params);
-    expandFilters(params, "Cluster");
   };
 
-  const expandFilters = (params, ...filters) => {
-    const applyFilters = filters?.length > 0 ? filters : null;
-    params.api.getToolPanelInstance("filters").expandFilters(applyFilters);
-  };
-
-  const applyQuickFilter = (e) => {
-    const searchText = e.target.value;
-    gridApi.api.setQuickFilter(searchText);
-  };
   const gridRef = useRef();
 
   const paginationNumberFormatter = useCallback((params) => {
@@ -80,7 +99,7 @@ function App() {
   }, []);
 
   const onPageSizeChanged = useCallback(() => {
-    var value = document.getElementById('page-size').value;
+    var value = document.getElementById("page-size").value;
     gridRef.current.api.paginationSetPageSize(Number(value));
   }, []);
 
@@ -90,33 +109,142 @@ function App() {
 
   const onFilterTextBoxChanged = useCallback(() => {
     gridRef.current.api.setQuickFilter(
-      document.getElementById('filter-text-box').value
+      document.getElementById("filter-text-box").value
     );
   }, []);
 
-  const onPrintQuickFilterTexts = useCallback(() => {
-    gridRef.current.api.forEachNode(function (rowNode, index) {
-      console.log(
-        'Row ' +
-          index +
-          ' quick filter text is ' +
-          rowNode.quickFilterAggregateText
-      );
-    });
-  }, []);
-
   return (
-    <div className="AppBox1">
-      <div className="example-header" style={{marginLeft:'35px'}}>
-      <label>Search: </label>
-      <input
+    <>
+      <div className="rowC">
+        <div className="sidebar1">
+          <h2
+            style={{
+              margin: "26px",
+              color: "#1463B9",
+              fontFamily: "Montserrat",
+              fontSize: "20px",
+              fontStyle: "normal",
+              fontWeight: "700",
+              lineHeight: "130%",
+              textAlign: "center",
+              alignItems: "center",
+            }}
+          >
+            FILTER
+          </h2>
+
+          <div>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography variant="h6">Citation ID</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <input
+                  type="text"
+                  id="filter-id-box"
+                  placeholder="Search..."
+                  style={{
+                    width: "80%",
+                    marginLeft: "10px",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "10px",
+                    borderColor: "#1463B9",
+                    display: "inline",
+                    position: "relative",
+                  }}
+                />
+              </AccordionDetails>
+            </Accordion>
+
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography variant="h6">Date of Publication</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <input
+                  type="text"
+                  id="filter-name-box"
+                  placeholder="Search..."
+                  style={{
+                    width: "80%",
+                    marginLeft: "10px",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "10px",
+                    borderColor: "#1463B9",
+                    display: "inline",
+                    position: "relative",
+                  }}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography variant="h6">Title</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <input
+                  type="text"
+                  id="filter-location-box"
+                  placeholder="Search"
+                  style={{
+                    width: "80%",
+                    marginLeft: "10px",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "10px",
+                    borderColor: "#1463B9",
+                    display: "inline",
+                    position: "relative",
+                  }}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography variant="h6">Journal</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <input
+                  type="text"
+                  id="filter-location-box"
+                  placeholder="Search"
+                  style={{
+                    width: "80%",
+                    marginLeft: "10px",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "10px",
+                    borderColor: "#1463B9",
+                    display: "inline",
+                    position: "relative",
+                  }}
+                />
+              </AccordionDetails>
+            </Accordion>
+          </div>
+        </div>
+      </div>
+      <div className="AppBox1">
+        <div className="example-header" style={{ marginLeft: "35px" }}>
+          <label>Search: </label>
+          <input
             type="text"
             id="filter-text-box"
             placeholder="Filter..."
             onInput={onFilterTextBoxChanged}
-            style={{width:'50%',padding:'0.25rem 0.75rem'}}
+            style={{ width: "50%", padding: "0.25rem 0.75rem" }}
           />
-          <b style={{marginLeft:'15%'}}>Page size: </b>
+          <b style={{ marginLeft: "15%" }}>Page size: </b>
           <select onChange={onPageSizeChanged} id="page-size">
             <option value="50" selected={true}>
               50
@@ -128,67 +256,45 @@ function App() {
 
           <button
             onClick={onBtExport}
-            style={{ marginBottom: '5px', fontWeight: 'bold', textAlign: 'right',marginLeft:'3%' }}
+            style={{
+              marginBottom: "5px",
+              fontWeight: "bold",
+              textAlign: "right",
+              marginLeft: "3%",
+            }}
           >
             Export to Excel
           </button>
         </div>
-      <div className="ag-theme-material ag-cell-wrap-text ag-theme-alpine" style={{ height: 600 }}>
-        <AgGridReact
-          className="ag-cell-wrap-text"
-          ref={gridRef}
-          cacheQuickFilter={true}
-          paginationNumberFormatter={paginationNumberFormatter}
-          onFirstDataRendered={onFirstDataRendered}
-          rowData={rowData}
-          overlayLoadingTemplate={
-            '<span class="ag-overlay-loading-center">Please wait while your rows are loading</span>'
-          }
-          overlayNoRowsTemplate={
-            '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
-          }
-          columnDefs={columns}
-          frameworkComponents={{
-            LinkComponent
-          }}
-          defaultColDef={defColumnDefs}
-          onGridReady={onGridReady}
-          pagination= {true}
-          paginationPageSize= {50}
-          sideBar={{
-            position: 'left',
-            toolPanels: [
-              {
-                id: "columns",
-                labelDefault: "Columns",
-                labelKey: "columns",
-                iconKey: "columns",
-                toolPanel: "agColumnsToolPanel",
-                toolPanelParams: {
-                  suppressPivotMode: true,
-                  suppressRowGroups: true,
-                  suppressValues: true,
-                  suppressColumnFilter: false,
-                  suppressColumnSelectAll: false,
-                },
-              },
-              {
-                id: "filters",
-                labelDefault: "Filters",
-                labelKey: "filters",
-                iconKey: "filter",
-                toolPanel: "agFiltersToolPanel",
-                toolPanelParams: {
-                  suppressFilterSearch: false,
-                },
-              },
-            ],
-            defaultToolPanel: 'filters'
-            // position: "right",
-          }}
-        />
+        <div
+          className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
+          style={{ height: 600 }}
+        >
+          <AgGridReact
+            className="ag-cell-wrap-text"
+            ref={gridRef}
+            cacheQuickFilter={true}
+            paginationNumberFormatter={paginationNumberFormatter}
+            onFirstDataRendered={onFirstDataRendered}
+            rowData={rowData}
+            overlayLoadingTemplate={
+              '<span class="ag-overlay-loading-center">Please wait while your rows are loading</span>'
+            }
+            overlayNoRowsTemplate={
+              '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
+            }
+            columnDefs={columns}
+            frameworkComponents={{
+              LinkComponent,
+            }}
+            defaultColDef={defColumnDefs}
+            onGridReady={onGridReady}
+            pagination={true}
+            paginationPageSize={50}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

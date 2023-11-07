@@ -68,6 +68,13 @@
     violet
   );
 }
+
+div p {
+  color: black;
+  font: Lato;
+  font-size: 18px;
+}
+
 .label,
 .desc {
   color: white;
@@ -154,6 +161,20 @@
   text-transform: uppercase;
 }
 
+.head_background {
+  height: 40%;
+  padding: 35px;
+  background-position: center;
+  background-size: cover;
+}
+
+.head_title {
+  color: white;
+  display: left;
+  margin-left: 20px;
+  margin-bottom: 1rem;
+}
+
 .head_text {
   color: #fff;
 
@@ -163,7 +184,34 @@
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  text-align: left;
+  padding-bottom: 15px;
+  margin-left: 20px;
+  margin-right: 20px;
 }
+
+#hero-section {
+  background-color: #f9f8f7;
+  height: 3em;
+  display: flex;
+  justify-content: space-between;
+}
+
+#hero-text {
+  font-weight: 600;
+  font-family: Lato;
+  font-size: 17px;
+  margin-left: 5%;
+  padding-right: 5%;
+}
+
+.hero-link {
+  font-family: Montserrat;
+  font-size: 18px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
 .item {
   display: block;
   color: black;

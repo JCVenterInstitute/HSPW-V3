@@ -55,35 +55,14 @@ const Accordion = ({ title, content }) => {
     <>
       <div
         style={{
-          height: "40%",
-          padding: "35px",
           backgroundImage: `url(${main_feature})`,
-          backgroundPosition: "center",
-          backgroundSize: "cover",
         }}
+        className="head_background"
       >
-        <h1
-          style={{
-            color: "white",
-            display: "left",
-            marginLeft: "20px",
-            marginBottom: "1rem",
-          }}
-          className="title"
-          align="left"
-        >
+        <h1 className="head_title" align="left">
           Salivary Protein
         </h1>
-        <p
-          style={{
-            textAlign: "left",
-            color: "white",
-            paddingBottom: "15px",
-            marginLeft: "20px",
-            marginRight: "20px",
-          }}
-          className="head_text"
-        >
+        <p className="head_text">
           Proteins listed below have been manually reviewed and annotated by{" "}
           <a href="https://www.uniprot.org/" className="linksa">
             UniProt
@@ -189,13 +168,15 @@ const Accordion = ({ title, content }) => {
                               color: "rgb(100,0,0)",
                             }}
                           >
-                            &gt; 100
+                            &gt; 2.1
                           </span>
                         </TableCell>
                         <TableCell>High</TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell>
+                        <TableCell
+                          style={{ paddingRight: "5px", marginLeft: "35px" }}
+                        >
                           <svg width={18} height={18} class="table-cell">
                             <rect width={18} height={18} fill="rgb(70,170,70)">
                               <title>Medium</title>
@@ -210,7 +191,9 @@ const Accordion = ({ title, content }) => {
                             11 - 100
                           </span>
                         </TableCell>
-                        <TableCell>
+                        <TableCell
+                          style={{ paddingRight: "5px", marginLeft: "35px" }}
+                        >
                           <svg width={18} height={18} class="table-cell">
                             <rect width={18} height={18} fill="rgb(190,70,70)">
                               <title>Medium</title>
@@ -222,13 +205,15 @@ const Accordion = ({ title, content }) => {
                               color: "rgb(190,70,70)",
                             }}
                           >
-                            11 - 100
+                            0.8 - 2
                           </span>
                         </TableCell>
                         <TableCell>Medium</TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell>
+                        <TableCell
+                          style={{ paddingRight: "5px", marginLeft: "35px" }}
+                        >
                           <svg width={18} height={18} class="table-cell">
                             <rect
                               width={18}
@@ -247,7 +232,9 @@ const Accordion = ({ title, content }) => {
                             &lt; 10
                           </span>
                         </TableCell>
-                        <TableCell>
+                        <TableCell
+                          style={{ paddingRight: "5px", marginLeft: "35px" }}
+                        >
                           <svg width={18} height={18} class="table-cell">
                             <rect
                               width={18}
@@ -263,7 +250,7 @@ const Accordion = ({ title, content }) => {
                               color: "rgb(250,180,180)",
                             }}
                           >
-                            &lt; 10
+                            &lt; 0.79
                           </span>
                         </TableCell>
                         <TableCell>Low</TableCell>

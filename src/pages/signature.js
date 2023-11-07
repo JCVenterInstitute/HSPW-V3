@@ -1,6 +1,6 @@
 import React from "react";
 import Signature from "../components/signature_table";
-
+import "./style.css";
 import { Chart } from "react-google-charts";
 import { useState, useEffect, useCallback, useRef } from "react";
 import main_feature from "../components/hero.jpeg";
@@ -29,7 +29,7 @@ export const options = {
     15: { offset: 0.5 },
   },
   backgroundColor: "transparent",
-  colors: ["#567189", "#7B8FA1", "#CFB997", "#FAD6A5"],
+  colors: ["#3182BD", "#6BAED6", "#9ECAE1", "#C6DBEF"],
   legend: {
     textStyle: {
       color: "black",
@@ -65,34 +65,31 @@ const Protein_Signature = () => {
         for (let i = 0; i < 4; i++) {
           data1.push([data[i].key, data[i].doc_count]);
         }
+        console.log(data1);
         setMessage(data1);
       });
   }, [message]);
-  console.log(message);
+
   return (
     <>
-      <div style={{ height: "30%", backgroundImage: `url(${main_feature})` }}>
-        <h1
-          style={{
-            color: "white",
-            textAlign: "center",
-            display: "left",
-            marginLeft: "20px",
-            marginBottom: "1rem",
-          }}
-          align="left"
-        >
+      <div
+        style={{
+          backgroundImage: `url(${main_feature})`,
+        }}
+        className="head_background"
+      >
+        <h1 className="head_title" align="left">
           Protein Signature
         </h1>
         <p
           style={{
             textAlign: "left",
             color: "white",
-            fontSize: "25px",
             paddingBottom: "15px",
             marginLeft: "20px",
             marginRight: "20px",
           }}
+          className="head_text"
         >
           InterPro is a searchable database providing information on sequence
           function and annotation. Sequences InterPro is a searchable database

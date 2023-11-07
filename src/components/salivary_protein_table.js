@@ -261,13 +261,13 @@ function IHCComponent(props: ICellRendererParams) {
             viewBox="0 0 10 10"
           >
             <rect
-              width={2}
+              width="100%"
               height={4}
               fill={rgb(220, 220, 220)}
               style={styles}
             ></rect>
             <rect
-              width={2}
+              width="100%"
               height={4}
               fill={rgb(255, 255, 255)}
               style={styles1}
@@ -282,10 +282,22 @@ function IHCComponent(props: ICellRendererParams) {
   }
 }
 
+function proteinLinkComponent(props: ICellRendererParams) {
+  return (
+    <a
+      target="_blank"
+      rel="noopener noreferrer"
+      href={"http://localhost:3000/protein/" + props.value}
+    >
+      {props.value}
+    </a>
+  );
+}
+
 function LinkComponent(props: ICellRendererParams) {
   const d = props.value;
 
-  if (d < 10 || d === "low") {
+  if ((d < 0.79 && d > -0.18) || d === "low") {
     return (
       <>
         <div
@@ -305,7 +317,7 @@ function LinkComponent(props: ICellRendererParams) {
         </div>
       </>
     );
-  } else if (d < 100 || d === "medium") {
+  } else if ((d < 2 && d > 0.8) || d === "medium") {
     return (
       <>
         <div
@@ -325,7 +337,7 @@ function LinkComponent(props: ICellRendererParams) {
         </div>
       </>
     );
-  } else if (d > 100 || d === "high") {
+  } else if ((d > 2.1 && d < 4.3) || d === "high") {
     return (
       <>
         <div
@@ -333,7 +345,7 @@ function LinkComponent(props: ICellRendererParams) {
             width: "100%",
             height: "100%",
             backgroundColor: "rgb(100,0,0)",
-            color: "black",
+            color: "white",
             fontFamily: "Lato",
             fontSize: "16px",
             lineHeight: "24px",
@@ -347,22 +359,33 @@ function LinkComponent(props: ICellRendererParams) {
     );
   } else if (d === "not detected" || d === 0) {
     return (
-      <svg
-        width={18}
-        height={18}
-        style={{ stroke: "black", alignItems: "center" }}
-      >
-        <rect width={18} height={18} fill="rgb(255,255,255)">
-          <title>Not uniquely observed</title>
-        </rect>
-      </svg>
+      <>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgb(250,250,250)",
+            color: "black",
+            fontFamily: "Lato",
+            fontSize: "16px",
+            lineHeight: "24px",
+            textAlign: "center",
+            paddingTop: "25%",
+          }}
+        >
+          N/A
+        </div>
+      </>
     );
   } else {
     return (
       <svg
-        width={18}
-        height={18}
-        style={{ stroke: "black", alignItems: "center" }}
+        style={{
+          stroke: "black",
+          alignItems: "center",
+          width: "100%",
+          height: "100%",
+        }}
       >
         <defs>
           <pattern
@@ -389,7 +412,7 @@ function LinkComponent(props: ICellRendererParams) {
             ></rect>
           </pattern>
         </defs>
-        <rect width={18} height={18} style={{ fill: "url(#stripe2)" }}>
+        <rect style={{ fill: "url(#stripe2)", width: "100%", height: "100%" }}>
           <title>Data not available</title>
         </rect>
       </svg>
@@ -449,6 +472,7 @@ function App() {
     false,
     false,
   ]);
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     const fetchOpCount = async () => {
@@ -493,6 +517,14 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const globalSearch = async () => {
+      const data = await fetch(
+        `http://localhost:8000/multi_search/saliva_protein_test/${searchText}`
+      );
+      const json = data.json();
+      return json;
+    };
+
     const fetchAndData = async () => {
       console.log("a:" + wsStart + wsEnd);
       const data = await fetch(
@@ -671,6 +703,7 @@ function App() {
       orChecked === false &&
       exclude === false
     ) {
+      console.log("1");
       const result = fetchAndData().catch(console.errror);
       result.then((value) => {
         if (value.hits.hits) {
@@ -715,42 +748,7 @@ function App() {
       orChecked === true &&
       exclude === false
     ) {
-      console.log(
-        "http://localhost:8000/or_search/" +
-          pageSize +
-          "/" +
-          pageNum +
-          "/" +
-          prefix +
-          "*/" +
-          genePrefix +
-          "*/" +
-          namePrefix +
-          "*/" +
-          opinionVal +
-          "*/" +
-          wsStart +
-          "/" +
-          wsEnd +
-          "/" +
-          parStart +
-          "/" +
-          parEnd +
-          "/" +
-          pStart +
-          "/" +
-          pEnd +
-          "/" +
-          subStart +
-          "/" +
-          subEnd +
-          "/" +
-          mRNAStart +
-          "/" +
-          mRNAEnd +
-          "," +
-          IHCVal
-      );
+      console.log("3");
       const result = fetchOrData().catch(console.errror);
       result.then((value) => {
         if (value.hits.hits) {
@@ -795,42 +793,6 @@ function App() {
       orChecked === false &&
       exclude === true
     ) {
-      console.log(
-        "http://localhost:8000/and_search_exclude/" +
-          pageSize +
-          "/" +
-          pageNum +
-          "/" +
-          prefix +
-          "*/" +
-          genePrefix +
-          "*/" +
-          namePrefix +
-          "*/" +
-          opinionVal +
-          "*/" +
-          wsStart +
-          "/" +
-          wsEnd +
-          "/" +
-          parStart +
-          "/" +
-          parEnd +
-          "/" +
-          pStart +
-          "/" +
-          pEnd +
-          "/" +
-          subStart +
-          "/" +
-          subEnd +
-          "/" +
-          mRNAStart +
-          "/" +
-          mRNAEnd +
-          "," +
-          IHCVal
-      );
       const result = fetchAndExcludeData().catch(console.errror);
       result.then((value) => {
         if (value.hits.hits) {
@@ -875,42 +837,7 @@ function App() {
       orChecked === true &&
       exclude === true
     ) {
-      console.log(
-        "http://localhost:8000/or_search_exclude/" +
-          pageSize +
-          "/" +
-          pageNum +
-          "/" +
-          prefix +
-          "*/" +
-          genePrefix +
-          "*/" +
-          namePrefix +
-          "*/" +
-          opinionVal +
-          "*/" +
-          wsStart +
-          "/" +
-          wsEnd +
-          "/" +
-          parStart +
-          "/" +
-          parEnd +
-          "/" +
-          pStart +
-          "/" +
-          pEnd +
-          "/" +
-          subStart +
-          "/" +
-          subEnd +
-          "/" +
-          mRNAStart +
-          "/" +
-          mRNAEnd +
-          "," +
-          IHCVal
-      );
+      console.log("4");
       const result = fetchOrExcludeData().catch(console.errror);
       result.then((value) => {
         if (value.hits.hits) {
@@ -941,7 +868,37 @@ function App() {
         setOpCount(value.aggregations.expert_opinion.buckets);
         setIHCCount(value.aggregations.IHC.buckets);
       });
+    } else if (searchText !== "") {
+      const result = globalSearch().catch(console.errror);
+      result.then((value) => {
+        if (value.hits.hits) {
+          console.log(value);
+          let data1 = [];
+          for (let i = 0; i < value.hits.hits.length; i++) {
+            data1.push(value.hits.hits[i]["_source"]);
+          }
+          console.log(data1);
+          setRowData(data1);
+        }
+        setDocCount(value.hits.total.value);
+        const newOptions = [];
+        for (
+          let i = 1;
+          i <= Math.round(value.hits.total.value / pageSize);
+          i++
+        ) {
+          newOptions.push(
+            <option key={i} value={i}>
+              {i}
+            </option>
+          );
+        }
+        setPageNum(1);
+        setPageNumArr(newOptions);
+        setCount(2);
+      });
     } else {
+      console.log("2");
       const fetchData = async () => {
         const data = await fetch(
           "http://localhost:8000/saliva_protein_table/" +
@@ -955,7 +912,6 @@ function App() {
       const result = fetchData().catch(console.errror);
       result.then((value) => {
         if (value.hits.hits) {
-          console.log(value);
           let data1 = [];
           for (let i = 0; i < value.hits.hits.length; i++) {
             data1.push(value.hits.hits[i]["_source"]);
@@ -976,9 +932,9 @@ function App() {
             </option>
           );
         }
-        setPageNum(1);
+        setPageNum(0);
         setPageNumArr(newOptions);
-        setCount(2);
+        setCount(1);
         setOpCount(value.aggregations.expert_opinion.buckets);
         setIHCCount(value.aggregations.IHC.buckets);
       });
@@ -1004,58 +960,9 @@ function App() {
       countIHCResult.then((value) => {
         if (value) {
           setIHCCount(value);
-          console.log(IHCCount);
         }
       });
     }
-
-    const fetchAccessionData = async () => {
-      const data = await fetch(
-        "http://localhost:8000/filter_search/saliva_protein_test/uniprot_accession/" +
-          prefix +
-          "/" +
-          pageSize +
-          "/" +
-          pageNum
-      );
-      const json = data.json();
-      return json;
-    };
-
-    const fetchGeneData = async () => {
-      const data = await fetch(
-        "http://localhost:8000/filter_search/saliva_protein_test/Gene Symbol/" +
-          genePrefix +
-          "/" +
-          pageSize +
-          "/" +
-          pageNum
-      );
-      const json = data.json();
-      return json;
-    };
-
-    const fetchOpUSData = async () => {
-      const data = await fetch(
-        "http://localhost:8000/search_opinion/Unsubstantiated/" +
-          pageSize +
-          "/" +
-          pageNum
-      );
-      const json = data.json();
-      return json;
-    };
-
-    const fetchOpCData = async () => {
-      const data = await fetch(
-        "http://localhost:8000/search_opinion/Confirmed/" +
-          pageSize +
-          "/" +
-          pageNum
-      );
-      const json = data.json();
-      return json;
-    };
   }, [
     prefix,
     genePrefix,
@@ -1072,10 +979,14 @@ function App() {
     pEnd,
     mRNAStart,
     mRNAEnd,
+    pageSize,
+    pageNum,
+    searchText,
   ]);
 
   useEffect(() => {
     const fetchData = async () => {
+      console.log("5");
       const data = await fetch(
         "http://localhost:8000/saliva_protein_table/" + pageSize + "/" + pageNum
       );
@@ -1094,7 +1005,7 @@ function App() {
         setRowData(data1);
       }
     });
-  }, [pageSize, pageNum]);
+  }, []);
 
   const columns = [
     {
@@ -1108,6 +1019,7 @@ function App() {
       cellStyle: { "word-break": "break-word" },
       headerClass: ["header-border"],
       cellClass: ["table-border"],
+      cellRenderer: "proteinLinkComponent",
     },
     {
       headerName: "Gene Symbol",
@@ -1212,13 +1124,15 @@ function App() {
           cellClass: ["table-border"],
         },
         {
-          field: "specificity",
+          headerName: "specificity",
+          field: "Specificity",
           minWidth: "140",
           headerClass: ["header-border"],
           cellClass: ["table-border"],
         },
         {
-          field: "specificity score",
+          headerName: "Specificity Score",
+          field: "Specificity_Score",
           minWidth: "140",
           headerClass: ["header-border"],
           cellClass: ["table-border"],
@@ -1265,11 +1179,14 @@ function App() {
     gridRef.current.api.exportDataAsExcel();
   }, []);
 
-  const onFilterTextBoxChanged = useCallback(() => {
-    gridRef.current.api.setQuickFilter(
-      document.getElementById("filter-text-box").value
-    );
-  }, []);
+  const onFilterTextBoxChanged = (e) => {
+    const inputValue = e.target.value;
+    if (inputValue !== "") {
+      setSearchText(inputValue);
+    } else {
+      setSearchText("");
+    }
+  };
   const onBtNext = (event) => {
     if (count < docCount / pageSize) {
       var x = gridRef.current.api.paginationGetCurrentPage();
@@ -1910,7 +1827,7 @@ function App() {
                 expandIcon={<ExpandMoreIcon />}
                 style={{ flexDirection: "row-reverse" }}
               >
-                <Typography variant="h6">MS Blood</Typography>
+                <Typography variant="h6">MS B</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <FormGroup style={{ marginLeft: "18%" }}>
@@ -2122,12 +2039,14 @@ function App() {
               WSComponent,
               IHCComponent,
               opinionComponent,
+              proteinLinkComponent,
             }}
             overlayNoRowsTemplate={
               '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
             }
             onGridReady={onGridReady}
             pagination={true}
+            enableCellTextSelection={true}
             paginationPageSize={50}
             rowHeight={rowHeight}
             suppressPaginationPanel={true}

@@ -48,7 +48,7 @@ function App() {
 
   const columns = [
     {
-      headerName: "Study",
+      headerName: "Study #",
       field: "study",
       checkboxSelection: false,
       headerCheckboxSelection: false,
@@ -60,7 +60,7 @@ function App() {
       cellClass: ["table-border"],
     },
     {
-      headerName: "Project",
+      headerName: "Study Name",
       field: "project",
       autoHeight: true,
       wrapText: true,
@@ -117,45 +117,8 @@ function App() {
     setGridApi(params);
   };
 
-  const expandFilters = (params, ...filters) => {
-    const applyFilters = filters?.length > 0 ? filters : null;
-    params.api.getToolPanelInstance("filters").expandFilters(applyFilters);
-  };
-
-  const applyQuickFilter = (e) => {
-    const searchText = e.target.value;
-    gridApi.api.setQuickFilter(searchText);
-  };
   return (
     <>
-      <div className="rowC">
-        <div className="sidebar">
-          <h2
-            style={{
-              margin: "26px",
-              color: "#1463B9",
-              fontFamily: "Montserrat",
-              fontSize: "20px",
-              fontStyle: "normal",
-              fontWeight: "700",
-              lineHeight: "130%",
-              textAlign: "center",
-              alignItems: "center",
-            }}
-          >
-            FILTER
-          </h2>
-          <Filter />
-        </div>
-        <div className="flex-container">
-          <div className="charts">
-            <BarChart_google />
-          </div>
-          <div className="charts1">
-            <DonutChart_google />
-          </div>
-        </div>
-      </div>
       <div className="AppBox" style={{ width: "76%" }}>
         <div
           className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"

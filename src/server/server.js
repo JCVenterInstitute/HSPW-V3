@@ -131,12 +131,13 @@ app.get("/protein_cluster/:id", (req, res) => {
   });
 });
 
-async function search_gene() {
+async function search_gene(size, from) {
   // Initialize the client.
   var client = await getClient();
 
   var query = {
-    size: 10000,
+    size: size,
+    from: from,
     query: {
       match_all: {},
     },
@@ -145,12 +146,13 @@ async function search_gene() {
   var response = await client.search({
     index: "genes",
     body: query,
+    _source: ["GeneID", "Gene Name", "Location"],
   });
-  return response.body.hits.hits;
+  return response.body.hits;
 }
 
-app.get("/genes", (req, res) => {
-  let a = search_gene();
+app.get("/genes/:size/:from", (req, res) => {
+  let a = search_gene(req.params.size, req.params.from);
   a.then(function (result) {
     console.log(result);
     res.json(result);
@@ -158,7 +160,7 @@ app.get("/genes", (req, res) => {
 });
 
 async function search_proteinID(id) {
-  var client = await getClient();
+  var client = await getClient1();
 
   var query = {
     query: {
@@ -171,7 +173,7 @@ async function search_proteinID(id) {
   };
 
   var response = await client.search({
-    index: "protein",
+    index: "salivary-proteins-102023",
     body: query,
   });
   console.log(
@@ -212,12 +214,13 @@ app.get("/genes/:id", (req, res) => {
   });
 });
 
-async function search_signature() {
+async function search_signature(size, from) {
   // Initialize the client.
   var client = await getClient();
 
   var query = {
-    size: 10000,
+    size: size,
+    from: from,
     query: {
       match_all: {},
     },
@@ -226,18 +229,120 @@ async function search_signature() {
   var response = await client.search({
     index: "protein_signature",
     body: query,
+    _source: ["InterPro ID", "Type", "Name", "# of Members"],
   });
-  console.log(
-    Object.keys(JSON.parse(JSON.stringify(response.body.hits.hits))).length
-  );
-  console.log(
-    JSON.stringify(response.body.hits.hits[0]["_source"]["InterPro ID"])
-  );
-  return response.body.hits.hits;
+  return response.body.hits;
 }
 
-app.get("/protein_signature", (req, res) => {
-  let a = search_signature();
+app.get("/protein_signature/:size/:from", (req, res) => {
+  let a = search_signature(req.params.size, req.params.from);
+  a.then(function (result) {
+    console.log(result);
+    res.json(result);
+  });
+});
+
+async function and_search_signature(size, from, wildQuery, scriptQuery) {
+  var client = await getClient();
+  console.log(wildQuery);
+  wildQuery = JSON.parse(wildQuery);
+  scriptQuery = JSON.parse(scriptQuery);
+
+  var query = {
+    size: size,
+    from: from,
+    aggs: {
+      Type: {
+        terms: {
+          field: "Type.keyword",
+        },
+      },
+    },
+    query: {
+      bool: {
+        filter: wildQuery,
+      },
+    },
+  };
+
+  var response = await client.search({
+    index: "protein_signature",
+    body: query,
+  });
+
+  return response.body;
+}
+
+app.get("/signature_search/:size/:from/:query/:script", (req, res) => {
+  const query = JSON.parse(req.params.query);
+
+  let a = and_search_signature(
+    req.params.size,
+    req.params.from,
+    req.params.query,
+    req.params.script
+  );
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+async function and_search_gene(size, from, wildQuery) {
+  var client = await getClient();
+
+  var query = {
+    size: size,
+    from: from,
+    query: {
+      bool: {
+        filter: wildQuery,
+      },
+    },
+  };
+
+  var response = await client.search({
+    index: "genes",
+    body: query,
+  });
+
+  return response.body;
+}
+
+app.post("/genes_search/:size/:from/", (req, res) => {
+  console.log("315" + JSON.stringify(req.body));
+  let a = and_search_gene(req.params.size, req.params.from, req.body);
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+async function multi_search(index, text) {
+  var client = await getClient();
+  var query;
+  console.log(index);
+  if (index === "saliva_protein_test") {
+    query = {
+      query: {
+        query_string: {
+          query: text,
+          fields: ["UniProt Accession", "Gene Symbol", "Protein Name"],
+        },
+      },
+    };
+  }
+
+  var response = await client.search({
+    index: index,
+    body: query,
+  });
+
+  return response.body;
+}
+
+app.get("/multi_search/:index/:text", (req, res) => {
+  console.log(543);
+  let a = multi_search(req.params.index, req.params.text);
+  console.log(234);
   a.then(function (result) {
     console.log(result);
     res.json(result);
@@ -1042,6 +1147,11 @@ async function and_search(
             { range: { plasma_abundance: { gte: start_p, lte: end_p } } },
             { range: { "sm/sl_abundance": { gte: start_ss, lte: end_ss } } },
             { range: { mRNA: { gte: start_mRNA, lte: end_mRNA } } },
+            {
+              match: {
+                Specificity: 2,
+              },
+            },
           ],
           filter: [
             {
@@ -1571,6 +1681,365 @@ async function signature_type_counts() {
 
 app.get("/signature_type_counts/", (req, res) => {
   let a = signature_type_counts();
+  console.log(1);
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+async function gene_location_counts() {
+  var client = await getClient();
+
+  const response = await client.search({
+    index: "genes",
+    body: {
+      size: 0,
+      aggs: {
+        1: {
+          filter: {
+            regexp: {
+              Location: "1[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        2: {
+          filter: {
+            regexp: {
+              Location: "2[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        3: {
+          filter: {
+            regexp: {
+              Location: "3[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        4: {
+          filter: {
+            regexp: {
+              Location: "4[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        5: {
+          filter: {
+            regexp: {
+              Location: "5[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        6: {
+          filter: {
+            regexp: {
+              Location: "6[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        7: {
+          filter: {
+            regexp: {
+              Location: "7[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        8: {
+          filter: {
+            regexp: {
+              Location: "8[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        9: {
+          filter: {
+            regexp: {
+              Location: "9[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        10: {
+          filter: {
+            regexp: {
+              Location: "10[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        11: {
+          filter: {
+            regexp: {
+              Location: "11[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        12: {
+          filter: {
+            regexp: {
+              Location: "12[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        13: {
+          filter: {
+            regexp: {
+              Location: "13[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        14: {
+          filter: {
+            regexp: {
+              Location: "14[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        15: {
+          filter: {
+            regexp: {
+              Location: "15[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        16: {
+          filter: {
+            regexp: {
+              Location: "16[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        17: {
+          filter: {
+            regexp: {
+              Location: "17[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        18: {
+          filter: {
+            regexp: {
+              Location: "18[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        19: {
+          filter: {
+            regexp: {
+              Location: "19[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        20: {
+          filter: {
+            regexp: {
+              Location: "20[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        21: {
+          filter: {
+            regexp: {
+              Location: "21[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        22: {
+          filter: {
+            regexp: {
+              Location: "22[qp].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        X: {
+          filter: {
+            regexp: {
+              Location: "x[pq].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+        Y: {
+          filter: {
+            regexp: {
+              Location: "y[pq].*",
+            },
+          },
+          aggs: {
+            doc_count: {
+              value_count: {
+                field: "_id",
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+  return response.body.aggregations;
+}
+
+app.get("/gene_location_counts/", (req, res) => {
+  let a = gene_location_counts();
+  console.log(1);
   a.then(function (result) {
     res.json(result);
   });
