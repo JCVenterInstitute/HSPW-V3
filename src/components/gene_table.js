@@ -302,10 +302,9 @@ function App() {
   const onBtNext = (event) => {
     if (count < docCount / pageSize) {
       var x = gridRef.current.api.paginationGetCurrentPage();
-      console.log("count2:" + count);
-      console.log("page num:" + pageNum);
+
       setPageNum(pageNum + 1);
-      console.log("page num2:" + pageNum);
+
       setCount(count + 1);
     }
   };
@@ -314,7 +313,6 @@ function App() {
     var value = document.getElementById("page-num").value;
     setPageNum(value);
     setCount(value);
-    console.log("count1:" + count);
   };
 
   const onBtPrevious = (event) => {
@@ -545,6 +543,7 @@ function App() {
             columnDefs={columns}
             ref={gridRef}
             defaultColDef={defColumnDefs}
+            enableCellTextSelection={true}
             overlayNoRowsTemplate={
               '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
             }

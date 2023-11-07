@@ -277,6 +277,7 @@ function App() {
             paginationNumberFormatter={paginationNumberFormatter}
             onFirstDataRendered={onFirstDataRendered}
             rowData={rowData}
+            enableCellTextSelection={true}
             overlayLoadingTemplate={
               '<span class="ag-overlay-loading-center">Please wait while your rows are loading</span>'
             }

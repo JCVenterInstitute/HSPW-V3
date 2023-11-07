@@ -156,11 +156,22 @@ function App() {
   }, [pageSize, pageNum, queryArr, typeArr, name, startMember]);
 
   const [gridApi, setGridApi] = useState();
-
+  function LinkComponent(props: ICellRendererParams) {
+    return (
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href={"http://localhost:3000/protein_signature/" + props.value}
+      >
+        {props.value}
+      </a>
+    );
+  }
   const columns = [
     {
       headerName: "InterPro_ID",
       field: "InterPro ID",
+      cellRenderer: "LinkComponent",
       maxWidth: 320,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
@@ -791,10 +802,14 @@ function App() {
         >
           <AgGridReact
             className="ag-cell-wrap-text"
+            enableCellTextSelection={true}
             rowData={rowData}
             columnDefs={columns}
             ref={gridRef}
             defaultColDef={defColumnDefs}
+            frameworkComponents={{
+              LinkComponent,
+            }}
             overlayNoRowsTemplate={
               '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
             }

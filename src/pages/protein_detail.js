@@ -145,6 +145,7 @@ const Protein_Detail = (props) => {
   const [checkData, setCheckData] = useState(false);
 
   const fetchProtein = async () => {
+    console.log(url);
     const response = await axios.get(url);
     console.log(response);
 
@@ -157,17 +158,18 @@ const Protein_Detail = (props) => {
 
     if (proteinResult) {
       setData(proteinResult);
+      console.log(proteinResult);
+      if (proteinResult[0]._source.salivary_proteins) {
+        const cites = proteinResult[0]._source.salivary_proteins.cites;
+        const promises = [];
 
-      const cites = proteinResult[0]._source.salivary_proteins.cites;
-      const promises = [];
+        for (let i = 0; i < cites.length; i++) {
+          const id = cites[i].split(":")[1];
+          promises.push(fetchPubMed(id));
+        }
 
-      for (let i = 0; i < cites.length; i++) {
-        const id = cites[i].split(":")[1];
-        promises.push(fetchPubMed(id));
+        await Promise.all(promises);
       }
-
-      await Promise.all(promises);
-
       setLoading(false);
       setCheckData(true);
     }
@@ -677,7 +679,197 @@ const Protein_Detail = (props) => {
                 textAlign: "left",
               }}
             >
-              There are currently no glycans associated with the protein.
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ border: "1px solid black" }}>
+                    <TableCell
+                      sx={th}
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        border: "1px solid #3592E4",
+                      }}
+                    >
+                      Accession
+                    </TableCell>
+                    <TableCell
+                      sx={th}
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        border: "1px solid #3592E4",
+                      }}
+                    >
+                      Image
+                    </TableCell>
+                    <TableCell
+                      sx={th}
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        border: "1px solid #3592E4",
+                      }}
+                    >
+                      Type
+                    </TableCell>
+                    <TableCell
+                      sx={th}
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        border: "1px solid #3592E4",
+                      }}
+                    >
+                      Mass
+                    </TableCell>
+                    <TableCell
+                      sx={th}
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        border: "1px solid #3592E4",
+                      }}
+                    >
+                      Source
+                    </TableCell>
+                  </TableRow>
+                  {data[0]["_source"]["salivary_proteins"]["glycans"].map(
+                    (value, i, arr) => {
+                      return (
+                        <TableRow
+                          style={{
+                            border: "1px solid #CACACA",
+                            borderRadius: "1em 0 0 1em",
+                          }}
+                        >
+                          <TableCell
+                            style={{
+                              border: "1px solid #CACACA",
+                              borderRadius: "1em 0 0 1em",
+                            }}
+                          >
+                            {value.glytoucan_accession}
+                          </TableCell>
+                          <TableCell style={{ border: "1px solid #CACACA" }}>
+                            <img
+                              src={value.image}
+                              alt="Glygen"
+                              width="150"
+                              height="100"
+                            />
+                          </TableCell>
+
+                          <TableCell style={{ border: "1px solid #CACACA" }}>
+                            {value.type}
+                          </TableCell>
+                          <TableCell style={{ border: "1px solid #CACACA" }}>
+                            {value.mass}
+                          </TableCell>
+                          <TableCell style={{ border: "1px solid #CACACA" }}>
+                            <Table>
+                              <TableHead>
+                                <TableRow>
+                                  <TableCell
+                                    sx={th}
+                                    style={{
+                                      backgroundColor: "#1463B9",
+                                      color: "white",
+                                      fontFamily: "Montserrat",
+                                      fontSize: "17px",
+                                      fontWeight: "bold",
+                                      border: "1px solid #3592E4",
+                                    }}
+                                  >
+                                    id
+                                  </TableCell>
+                                  <TableCell
+                                    sx={th}
+                                    style={{
+                                      backgroundColor: "#1463B9",
+                                      color: "white",
+                                      fontFamily: "Montserrat",
+                                      fontSize: "17px",
+                                      fontWeight: "bold",
+                                      border: "1px solid #3592E4",
+                                    }}
+                                  >
+                                    Database
+                                  </TableCell>
+                                  <TableCell
+                                    sx={th}
+                                    style={{
+                                      backgroundColor: "#1463B9",
+                                      color: "white",
+                                      fontFamily: "Montserrat",
+                                      fontSize: "17px",
+                                      fontWeight: "bold",
+                                      border: "1px solid #3592E4",
+                                    }}
+                                  >
+                                    url
+                                  </TableCell>
+                                </TableRow>
+                                {value.source.map((val, j, arr) => {
+                                  return (
+                                    <>
+                                      <TableRow>
+                                        <TableCell
+                                          style={{
+                                            border: "1px solid #CACACA",
+                                          }}
+                                        >
+                                          {val.id}
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            border: "1px solid #CACACA",
+                                          }}
+                                        >
+                                          {val.database}
+                                        </TableCell>
+                                        {val.url ? (
+                                          <TableCell
+                                            style={{
+                                              border: "1px solid #CACACA",
+                                            }}
+                                          >
+                                            <a href={val.url}>{val.url}</a>
+                                          </TableCell>
+                                        ) : (
+                                          <TableCell
+                                            style={{
+                                              border: "1px solid #CACACA",
+                                            }}
+                                          ></TableCell>
+                                        )}
+                                      </TableRow>
+                                    </>
+                                  );
+                                })}
+                              </TableHead>
+                            </Table>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    }
+                  )}
+                </TableHead>
+              </Table>
             </p>
             <Divider sx={{ marginBottom: "10px", borderColor: "#1463B9" }} />
             <h2

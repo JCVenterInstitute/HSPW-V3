@@ -37,7 +37,11 @@ const Signature_detail = (props) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");
   const [pfam, setpFam] = useState("");
+  const [PRINTS, setPRINTS] = useState("");
   const [abstract, setAbstract] = useState("");
+  const [PROFILE, setPROFILE] = useState("");
+  const [SMART, setSMART] = useState("");
+  const [reference1, setReference] = useState("");
   let gene_id = 0;
   let interpro_link = "https://www.ebi.ac.uk/interpro/entry/InterPro/";
   console.log(url);
@@ -56,7 +60,23 @@ const Signature_detail = (props) => {
         for (let i = 0; i < signature[0]["_source"]["Signature"].length; i++) {
           if (signature[0]["_source"]["Signature"][i].includes("PFAM")) {
             setpFam(signature[0]["_source"]["Signature"][i]);
+          } else if (
+            signature[0]["_source"]["Signature"][i].includes("PRINTS")
+          ) {
+            console.log("123");
+            setPRINTS(signature[0]["_source"]["Signature"][i]);
+          } else if (
+            signature[0]["_source"]["Signature"][i].includes("PROFILE")
+          ) {
+            setPROFILE(signature[0]["_source"]["Signature"][i]);
+          } else if (
+            signature[0]["_source"]["Signature"][i].includes("SMART")
+          ) {
+            setSMART(signature[0]["_source"]["Signature"][i]);
           }
+        }
+        if (signature[0]["_source"]["ReferencesID"] != "") {
+          setReference(signature[0]["_source"]["ReferencesID"].split(","));
         }
         setAbstract(signature[0]["_source"]["Abstract"]);
         setLoading(false);
@@ -105,7 +125,7 @@ const Signature_detail = (props) => {
                 sx={td}
                 style={{ fontFamily: "Lato", fontSize: "17px" }}
               >
-                <div>
+                <div style={{ paddingLeft: "2.5%" }}>
                   <span style={{ color: "black" }}>
                     {parse(parse(abstract))}
                   </span>
@@ -130,21 +150,172 @@ const Signature_detail = (props) => {
                 sx={td}
                 style={{ fontFamily: "Lato", fontSize: "17px" }}
               >
-                {setpFam ? (
-                  <>
-                    <h2>Pfam:</h2>
-                    <a
-                      href={
-                        "http://pfam-legacy.xfam.org/family/" +
-                        pfam.split(":")[1]
-                      }
-                    >
-                      {pfam}
-                    </a>
-                  </>
-                ) : (
-                  <></>
-                )}
+                <Table>
+                  <TableHead>
+                    <TableRow style={{ border: "1px solid white" }}>
+                      <TableCell
+                        style={{
+                          backgroundColor: "#1463B9",
+                          color: "white",
+                          fontFamily: "Montserrat",
+                          fontSize: "17px",
+                          fontWeight: "bold",
+                          border: "1px solid white",
+                        }}
+                      >
+                        Pfam
+                      </TableCell>
+                      {PRINTS ? (
+                        <>
+                          <TableCell
+                            style={{
+                              backgroundColor: "#1463B9",
+                              color: "white",
+                              fontFamily: "Montserrat",
+                              fontSize: "17px",
+                              fontWeight: "bold",
+                              border: "1px solid white",
+                            }}
+                          >
+                            PRINTS
+                          </TableCell>
+                        </>
+                      ) : (
+                        <></>
+                      )}
+
+                      {PROFILE ? (
+                        <>
+                          <TableCell
+                            style={{
+                              backgroundColor: "#1463B9",
+                              color: "white",
+                              fontFamily: "Montserrat",
+                              fontSize: "17px",
+                              fontWeight: "bold",
+                              border: "1px solid white",
+                            }}
+                          >
+                            Profile
+                          </TableCell>
+                        </>
+                      ) : (
+                        <></>
+                      )}
+
+                      {SMART ? (
+                        <>
+                          <TableCell
+                            style={{
+                              backgroundColor: "#1463B9",
+                              color: "white",
+                              fontFamily: "Montserrat",
+                              fontSize: "17px",
+                              fontWeight: "bold",
+                              border: "1px solid white",
+                            }}
+                          >
+                            SMART
+                          </TableCell>
+                        </>
+                      ) : (
+                        <></>
+                      )}
+                    </TableRow>
+
+                    <TableRow style={{ border: "1px solid white" }}>
+                      <TableCell
+                        style={{
+                          borderRight: "1px solid grey",
+                          borderBottom: "1px solid grey",
+                          width: "15%",
+                        }}
+                      >
+                        {pfam ? (
+                          <>
+                            <a
+                              href={
+                                "https://www.ebi.ac.uk/interpro/entry/pfam/" +
+                                pfam.split(":")[1]
+                              }
+                            >
+                              {pfam}
+                            </a>
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                      </TableCell>
+
+                      {PRINTS ? (
+                        <>
+                          <TableCell
+                            style={{
+                              border: "1px solid grey",
+                              width: "20%",
+                            }}
+                          >
+                            <a
+                              href={
+                                "https://www.ebi.ac.uk/interpro/entry/prints/" +
+                                PRINTS.split(":")[1]
+                              }
+                            >
+                              {PRINTS}
+                            </a>
+                          </TableCell>
+                        </>
+                      ) : (
+                        <></>
+                      )}
+
+                      <TableCell
+                        style={{
+                          borderLeft: "1px solid grey",
+                          borderBottom: "1px solid grey",
+                          width: "15%",
+                        }}
+                      >
+                        {PROFILE ? (
+                          <>
+                            <a
+                              href={
+                                "https://prosite.expasy.org/" +
+                                PROFILE.split(":")[1]
+                              }
+                            >
+                              {PROFILE}
+                            </a>
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                      </TableCell>
+                      {SMART ? (
+                        <>
+                          <TableCell
+                            style={{
+                              border: "1px solid grey",
+                              width: "20%",
+                            }}
+                          >
+                            <a
+                              href={
+                                "http://smart.embl-heidelberg.de/smart/do_annotation.pl?ACC=" +
+                                SMART.split(":")[1] +
+                                "&BLAST=DUMMY"
+                              }
+                            >
+                              {SMART}
+                            </a>
+                          </TableCell>
+                        </>
+                      ) : (
+                        <></>
+                      )}
+                    </TableRow>
+                  </TableHead>
+                </Table>
               </TableCell>
             </TableRow>
 
@@ -165,7 +336,50 @@ const Signature_detail = (props) => {
                 sx={td}
                 style={{ fontFamily: "Lato", fontSize: "17px" }}
               >
-                {data[0]["_source"]["GO Annotations"]}
+                <Table>
+                  <TableHead>
+                    <TableRow sx={{ border: "1px solid black" }}>
+                      <TableCell
+                        sx={th}
+                        style={{
+                          backgroundColor: "#1463B9",
+                          color: "white",
+                          fontFamily: "Montserrat",
+                          fontSize: "17px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Functions
+                      </TableCell>
+                      <TableCell
+                        sx={td}
+                        style={{ fontFamily: "Lato", fontSize: "17px" }}
+                      >
+                        {data[0]["_source"]["GO Annotations"].split(",")[0]}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow sx={{ border: "1px solid black" }}>
+                      <TableCell
+                        sx={th}
+                        style={{
+                          backgroundColor: "#1463B9",
+                          color: "white",
+                          fontFamily: "Montserrat",
+                          fontSize: "17px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Processes
+                      </TableCell>
+                      <TableCell
+                        sx={td}
+                        style={{ fontFamily: "Lato", fontSize: "17px" }}
+                      >
+                        {data[0]["_source"]["GO Annotations"].split(",")[1]}
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                </Table>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -185,7 +399,14 @@ const Signature_detail = (props) => {
                 sx={td}
                 style={{ fontFamily: "Lato", fontSize: "17px" }}
               >
-                {data[0]["_source"]["ReferencesID"]}
+                {reference1.map((val, j, arr) => {
+                  return (
+                    <>
+                      {j + 1}. {val}
+                      <br></br>
+                    </>
+                  );
+                })}
               </TableCell>
             </TableRow>
             <TableRow>

@@ -239,7 +239,11 @@ const Citation_detail = (props) => {
                 </TableCell>
                 <TableCell
                   sx={td}
-                  style={{ fontFamily: "Lato", fontSize: "18px" }}
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "18px",
+                    border: "1px solid #CACACA",
+                  }}
                 >
                   {data[0]["_source"]["Title"]}
                 </TableCell>
@@ -262,7 +266,11 @@ const Citation_detail = (props) => {
                 {abstract ? (
                   <TableCell
                     sx={td}
-                    style={{ fontFamily: "Lato", fontSize: "18px" }}
+                    style={{
+                      fontFamily: "Lato",
+                      fontSize: "18px",
+                      border: "1px solid #CACACA",
+                    }}
                   >
                     {abstract}
                   </TableCell>
@@ -286,7 +294,11 @@ const Citation_detail = (props) => {
                 </TableCell>
                 <TableCell
                   sx={td}
-                  style={{ fontFamily: "Lato", fontSize: "18px" }}
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "18px",
+                    border: "1px solid #CACACA",
+                  }}
                 >
                   {data[0]["_source"]["Authors"]}
                 </TableCell>
@@ -307,7 +319,11 @@ const Citation_detail = (props) => {
                 </TableCell>
                 <TableCell
                   sx={td}
-                  style={{ fontFamily: "Lato", fontSize: "18px" }}
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "18px",
+                    border: "1px solid #CACACA",
+                  }}
                 >
                   {affi}
                 </TableCell>
@@ -328,7 +344,11 @@ const Citation_detail = (props) => {
                 </TableCell>
                 <TableCell
                   sx={td}
-                  style={{ fontFamily: "Lato", fontSize: "18px" }}
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "18px",
+                    border: "1px solid #CACACA",
+                  }}
                 >
                   {journalTitle} (ISSN:{ISSNNum})
                 </TableCell>
@@ -349,7 +369,11 @@ const Citation_detail = (props) => {
                 </TableCell>
                 <TableCell
                   sx={td}
-                  style={{ fontFamily: "Lato", fontSize: "18px" }}
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "18px",
+                    border: "1px solid #CACACA",
+                  }}
                 >
                   {data[0]["_source"]["Date of Publication"]}
                 </TableCell>
@@ -370,7 +394,11 @@ const Citation_detail = (props) => {
                 </TableCell>
                 <TableCell
                   sx={td}
-                  style={{ fontFamily: "Lato", fontSize: "18px" }}
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "18px",
+                    border: "1px solid #CACACA",
+                  }}
                 >
                   {keyword}
                 </TableCell>
@@ -390,8 +418,12 @@ const Citation_detail = (props) => {
                   Link
                 </TableCell>
                 <TableCell
-                  style={td}
-                  style={{ fontFamily: "Lato", fontSize: "18px" }}
+                  sx={td}
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "18px",
+                    border: "1px solid #CACACA",
+                  }}
                 >
                   <a href={interpro_link + data[0]["_source"]["CitationID"]}>
                     PubMed

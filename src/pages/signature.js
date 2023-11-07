@@ -65,10 +65,10 @@ const Protein_Signature = () => {
         for (let i = 0; i < 4; i++) {
           data1.push([data[i].key, data[i].doc_count]);
         }
-        console.log(data1);
+
         setMessage(data1);
       });
-  }, [message]);
+  }, []);
 
   return (
     <>
