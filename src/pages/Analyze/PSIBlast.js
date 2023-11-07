@@ -48,7 +48,7 @@ const PSIBlast = () => {
           variant="h5"
           sx={{ fontWeight: "bold", mt: 3, color: "black" }}
         >
-          Sequence Alignment Options:
+          Sequence Search:
         </Typography>
       </Container>
       <Container sx={{ mt: 3 }}>
