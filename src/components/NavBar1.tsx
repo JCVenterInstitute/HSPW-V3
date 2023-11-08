@@ -204,16 +204,28 @@ export const MuiDrawer = () => {
                     3D Structure Prediction
                   </MenuItem>
                   <MenuItem onClick={handleClose2}>Annotation report</MenuItem>
-                  <MenuItem onClick={handleClose2}>
+                  <MenuItem
+                    onClick={handleClose2}
+                    component="a"
+                    href="/clustalo"
+                  >
                     Multiple sequence alignment
                   </MenuItem>
                   <MenuItem onClick={handleClose2}>
                     Differential Expression Analysis
                   </MenuItem>
-                  <MenuItem onClick={handleClose2}>
+                  <MenuItem
+                    onClick={handleClose2}
+                    component="a"
+                    href="/iprscan5"
+                  >
                     Protein signature search
                   </MenuItem>
-                  <MenuItem onClick={handleClose2}>
+                  <MenuItem
+                    onClick={handleClose2}
+                    component="a"
+                    href="/psiblast"
+                  >
                     Protein similarity search (BLAST)
                   </MenuItem>
                 </Menu>
