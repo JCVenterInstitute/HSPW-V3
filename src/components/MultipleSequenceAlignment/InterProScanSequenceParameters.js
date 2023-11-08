@@ -16,12 +16,10 @@ import {
   Checkbox,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import XMLParser from "react-xml-parser";
 
 const InterProScanSequenceParameters = ({ url }) => {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [parameterDetails, setParameterDetails] = useState([]);
   const [parameterValue, setParameterValue] = useState({});
@@ -117,7 +115,7 @@ const InterProScanSequenceParameters = ({ url }) => {
         .finally(() => {
           Swal.close();
         });
-      navigate(`/${url}/results/${jobId}`);
+      window.location.href = `/${url}/results/${jobId}`;
     } catch (err) {
       const errorMessage = new XMLParser().parseFromString(err.response.data);
       Swal.fire({
