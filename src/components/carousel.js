@@ -68,16 +68,30 @@ function Carousel() {
         <div>
           {images[currImg].index === 0 && (
             <div class="first_title">
-              <h1 sx="text-align:left">{images[currImg].title}</h1>
-              <p className="first_paragraph">{images[currImg].subtitle}</p>
+              <h1 style={{ color: "white", textAlign: "left" }}>
+                {images[currImg].title}
+              </h1>
+              <p
+                className="first_paragraph"
+                style={{ color: "white", textAlign: "left" }}
+              >
+                {images[currImg].subtitle}
+              </p>
             </div>
           )}
           {images[currImg].index === 1 && (
             <>
               <div class="second_title">
-                <h1 sx="text-align:left">{images[currImg].title}</h1>
+                <h1 style={{ color: "white", textAlign: "left" }}>
+                  {images[currImg].title}
+                </h1>
               </div>
-              <p className="second_paragraph">{images[currImg].subtitle}</p>
+              <p
+                className="second_paragraph"
+                style={{ color: "white", textAlign: "left" }}
+              >
+                {images[currImg].subtitle}
+              </p>
             </>
           )}
           <p>{images[currImg].subtitle1}</p>
