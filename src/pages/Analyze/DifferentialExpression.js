@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useRef } from "react";
 import main_feature from "../../components/hero.jpeg";
 import { Container, TextField, Box, MenuItem } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -10,6 +10,9 @@ import Typography from "@mui/material/Typography";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { AgGridReact } from "ag-grid-react";
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-material.css";
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -60,6 +63,32 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 const DifferentialExpression = () => {
   const [expanded, setExpanded] = useState("");
   const [totalPageNumber, setTotalPageNumber] = useState(100);
+  const [rowData, setRowData] = useState([
+    {
+      group_a: "A",
+      group_b: "B",
+      experiment_title: "20140214_Sjogrens_WS1",
+      tissue_type: "saliva",
+      institution: "J. Craig Venter Institute",
+      disease: "Sjogren's Syndrome",
+      protein_count: 529,
+    },
+    {
+      group_a: "A",
+      group_b: "B",
+      experiment_title: "	20140227_Sjogrens_WS3",
+      tissue_type: "saliva",
+      institution: "J. Craig Venter Institute",
+      disease: "Sjogren's Syndrome",
+      protein_count: 597,
+    },
+  ]);
+  const [gridApi, setGridApi] = useState();
+
+  const gridRef = useRef();
+  const onGridReady = (params) => {
+    setGridApi(params);
+  };
 
   const filterList = [
     "Experiment Title",
@@ -87,6 +116,99 @@ const DifferentialExpression = () => {
       label: 1000,
     },
   ];
+
+  const columns = [
+    {
+      headerName: "Group A",
+      field: "group_a",
+      maxWidth: "130",
+      autoHeight: true,
+      cellStyle: { "word-break": "break-word" },
+      headerClass: ["header-border"],
+      cellClass: ["table-border"],
+      cellRenderer: "proteinLinkComponent",
+    },
+    {
+      headerName: "Group B",
+      field: "group_b",
+      maxWidth: "130",
+      autoHeight: true,
+      headerClass: ["header-border"],
+      cellClass: ["table-border"],
+      cellStyle: { "word-break": "break-word" },
+    },
+    {
+      headerName: "Experiment Title",
+      field: "experiment_title",
+      wrapText: true,
+      headerClass: ["header-border"],
+      cellClass: ["table-border"],
+      autoHeight: true,
+      cellStyle: { "word-break": "break-word" },
+    },
+    {
+      headerName: "Tissue Type",
+      field: "tissue_type",
+      wrapText: true,
+      headerClass: ["header-border"],
+      cellClass: ["table-border"],
+      autoHeight: true,
+      cellStyle: { "word-break": "break-word" },
+    },
+    {
+      headerName: "Institution",
+      field: "institution",
+      wrapText: true,
+      headerClass: ["header-border"],
+      cellClass: ["table-border"],
+      autoHeight: true,
+      cellStyle: { "word-break": "break-word" },
+    },
+    {
+      headerName: "Disease",
+      field: "disease",
+      wrapText: true,
+      headerClass: ["header-border"],
+      cellClass: ["table-border"],
+      autoHeight: true,
+      cellStyle: { "word-break": "break-word" },
+    },
+    {
+      headerName: "Protein Count",
+      field: "protein_count",
+      wrapText: true,
+      headerClass: ["header-border"],
+      cellClass: ["table-border"],
+      autoHeight: true,
+      cellStyle: { "word-break": "break-word" },
+    },
+  ];
+
+  const defColumnDefs = {
+    flex: 1,
+    filter: true,
+    resizable: true,
+    wrapHeaderText: true,
+    wrapText: true,
+    autoHeaderHeight: true,
+    autoHeight: true,
+    headerStyle: { "word-break": "break-word" },
+    initialWidth: 200,
+    headerComponentParams: {
+      template:
+        '<div class="ag-cell-label-container" role="presentation">' +
+        '  <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button"></span>' +
+        '  <div ref="eLabel" class="ag-header-cell-label" role="presentation">' +
+        '    <span ref="eSortOrder" class="ag-header-icon ag-sort-order"></span>' +
+        '    <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon"></span>' +
+        '    <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon"></span>' +
+        '    <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon"></span>' +
+        '    <span ref="eText" class="ag-header-cell-text" role="columnheader" style="white-space: normal;"></span>' +
+        '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
+        "  </div>" +
+        "</div>",
+    },
+  };
 
   const handleChange = (panel) => (event, newExpanded) => {
     setExpanded(newExpanded ? panel : false);
@@ -345,6 +467,26 @@ const DifferentialExpression = () => {
                 />
               </button>
             </Box>
+          </Box>
+          <Box sx={{ marginTop: "20px" }}>
+            <div
+              className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
+              style={{ height: 600 }}
+            >
+              <AgGridReact
+                className="ag-cell-wrap-text"
+                rowData={rowData}
+                columnDefs={columns}
+                ref={gridRef}
+                defaultColDef={defColumnDefs}
+                onGridReady={onGridReady}
+                pagination={true}
+                enableCellTextSelection={true}
+                paginationPageSize={50}
+                rowHeight={20}
+                suppressPaginationPanel={true}
+              ></AgGridReact>
+            </div>
           </Box>
         </Container>
       </Container>
