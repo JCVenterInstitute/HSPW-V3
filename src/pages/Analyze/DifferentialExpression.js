@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import main_feature from "../../components/hero.jpeg";
-import { Container, TextField, Box } from "@mui/material";
+import { Container, TextField, Box, MenuItem } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import MuiAccordion from "@mui/material/Accordion";
@@ -67,6 +67,25 @@ const DifferentialExpression = () => {
     "Institution",
     "Disease",
     "Protein Count",
+  ];
+
+  const recordsPerPage = [
+    {
+      value: 50,
+      label: 50,
+    },
+    {
+      value: 100,
+      label: 100,
+    },
+    {
+      value: 500,
+      label: 500,
+    },
+    {
+      value: 1000,
+      label: 1000,
+    },
   ];
 
   const handleChange = (panel) => (event, newExpanded) => {
@@ -215,6 +234,23 @@ const DifferentialExpression = () => {
               >
                 Records Per Page
               </Typography>
+              <TextField
+                select
+                size="small"
+                InputProps={{
+                  style: {
+                    borderRadius: "10px",
+                  },
+                }}
+                defaultValue={50}
+                sx={{ marginLeft: "10px", marginRight: "30px" }}
+              >
+                {recordsPerPage.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
               <Typography
                 display="inline"
                 sx={{
@@ -225,12 +261,30 @@ const DifferentialExpression = () => {
               >
                 Page
               </Typography>
+              <TextField
+                select
+                size="small"
+                InputProps={{
+                  style: {
+                    borderRadius: "10px",
+                  },
+                }}
+                defaultValue={50}
+                sx={{ marginLeft: "10px", marginRight: "10px" }}
+              >
+                {recordsPerPage.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
               <Typography
                 display="inline"
                 sx={{
                   fontFamily: "Lato",
                   fontSize: "18px",
                   color: "#464646",
+                  marginRight: "30px",
                 }}
               >
                 out of {totalPageNumber}
@@ -244,6 +298,7 @@ const DifferentialExpression = () => {
                   cursor: "pointer",
                   transition: "background 0.3s",
                   borderRadius: "5px",
+                  marginRight: "15px",
                 }}
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.background = "rgba(246, 146, 30, 0.2)")
