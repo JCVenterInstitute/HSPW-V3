@@ -1,6 +1,14 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import main_feature from "../../components/hero.jpeg";
-import { Container, TextField, Box, MenuItem } from "@mui/material";
+import {
+  Container,
+  TextField,
+  Box,
+  MenuItem,
+  Grid,
+  Button,
+  Stack,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import MuiAccordion from "@mui/material/Accordion";
@@ -13,6 +21,8 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
+import axios from "axios";
+import CustomHeaderGroup from "./CustomHeaderGroup";
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -63,32 +73,29 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 const DifferentialExpression = () => {
   const [expanded, setExpanded] = useState("");
   const [totalPageNumber, setTotalPageNumber] = useState(100);
-  const [rowData, setRowData] = useState([
-    {
-      group_a: "A",
-      group_b: "B",
-      experiment_title: "20140214_Sjogrens_WS1",
-      tissue_type: "saliva",
-      institution: "J. Craig Venter Institute",
-      disease: "Sjogren's Syndrome",
-      protein_count: 529,
-    },
-    {
-      group_a: "A",
-      group_b: "B",
-      experiment_title: "	20140227_Sjogrens_WS3",
-      tissue_type: "saliva",
-      institution: "J. Craig Venter Institute",
-      disease: "Sjogren's Syndrome",
-      protein_count: 597,
-    },
+  const [rowData, setRowData] = useState([]);
+  const [groupARowData, setGroupARowData] = useState([
+    { experiment_title: "hello" },
   ]);
+  const [groupBRowData, setGroupBRowData] = useState([]);
   const [gridApi, setGridApi] = useState();
-
   const gridRef = useRef();
   const onGridReady = (params) => {
     setGridApi(params);
   };
+
+  useEffect(() => {
+    const getStudyData = async () => {
+      const results = await axios
+        .get("http://localhost:8000/api/study")
+        .then((res) => res.data);
+
+      const sourceData = results.map((item) => item._source);
+
+      setRowData(sourceData);
+    };
+    getStudyData();
+  }, []);
 
   const filterList = [
     "Experiment Title",
@@ -119,95 +126,97 @@ const DifferentialExpression = () => {
 
   const columns = [
     {
-      headerName: "Group A",
-      field: "group_a",
-      maxWidth: "130",
-      autoHeight: true,
-      cellStyle: { "word-break": "break-word" },
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      cellRenderer: "proteinLinkComponent",
-    },
-    {
-      headerName: "Group B",
-      field: "group_b",
-      maxWidth: "130",
-      autoHeight: true,
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      cellStyle: { "word-break": "break-word" },
-    },
-    {
       headerName: "Experiment Title",
       field: "experiment_title",
       wrapText: true,
+      minWidth: 600,
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      autoHeight: true,
-      cellStyle: { "word-break": "break-word" },
+      checkboxSelection: true,
+      headerCheckboxSelection: true,
     },
     {
       headerName: "Tissue Type",
-      field: "tissue_type",
+      field: "sample_type",
       wrapText: true,
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      autoHeight: true,
-      cellStyle: { "word-break": "break-word" },
     },
     {
       headerName: "Institution",
       field: "institution",
       wrapText: true,
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      autoHeight: true,
-      cellStyle: { "word-break": "break-word" },
     },
     {
       headerName: "Disease",
-      field: "disease",
+      field: "condition_type",
       wrapText: true,
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      autoHeight: true,
-      cellStyle: { "word-break": "break-word" },
     },
     {
       headerName: "Protein Count",
-      field: "protein_count",
+      field: "experiment_protein_count",
       wrapText: true,
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      autoHeight: true,
-      cellStyle: { "word-break": "break-word" },
     },
   ];
 
-  const defColumnDefs = {
-    flex: 1,
-    filter: true,
-    resizable: true,
-    wrapHeaderText: true,
-    wrapText: true,
-    autoHeaderHeight: true,
-    autoHeight: true,
-    headerStyle: { "word-break": "break-word" },
-    initialWidth: 200,
-    headerComponentParams: {
-      template:
-        '<div class="ag-cell-label-container" role="presentation">' +
-        '  <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button"></span>' +
-        '  <div ref="eLabel" class="ag-header-cell-label" role="presentation">' +
-        '    <span ref="eSortOrder" class="ag-header-icon ag-sort-order"></span>' +
-        '    <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon"></span>' +
-        '    <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon"></span>' +
-        '    <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon"></span>' +
-        '    <span ref="eText" class="ag-header-cell-text" role="columnheader" style="white-space: normal;"></span>' +
-        '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
-        "  </div>" +
-        "</div>",
+  const groupAColDef = [
+    {
+      headerName: "Group A",
+      headerGroupComponent: CustomHeaderGroup,
+      headerClass: ["header-border"],
+      children: [
+        {
+          headerName: "Experiment Title",
+          field: "experiment_title",
+          minWidth: "135",
+          headerClass: ["header-border"],
+        },
+        {
+          headerName: "Tissue Type",
+          field: "sample_type",
+          minWidth: "95",
+          headerClass: ["header-border"],
+        },
+      ],
+      autoHeight: true,
+      wrapText: true,
+      cellStyle: { textAlign: "center" },
     },
+  ];
+
+  const groupBColDef = [
+    {
+      headerName: "Group B",
+      headerGroupComponent: CustomHeaderGroup,
+      headerClass: ["header-border"],
+      children: [
+        {
+          headerName: "Experiment Title",
+          field: "experiment_title",
+          minWidth: "135",
+          headerClass: ["header-border"],
+        },
+        {
+          headerName: "Tissue Type",
+          field: "sample_type",
+          minWidth: "95",
+          headerClass: ["header-border"],
+        },
+      ],
+      autoHeight: true,
+      wrapText: true,
+      cellStyle: { textAlign: "center" },
+    },
+  ];
+
+  const defaultColDef = {
+    flex: 1,
+    resizable: true,
+    sortable: true,
+    minWidth: 150,
+    filter: "text",
+    autoHeight: true,
   };
 
   const handleChange = (panel) => (event, newExpanded) => {
@@ -468,26 +477,95 @@ const DifferentialExpression = () => {
               </button>
             </Box>
           </Box>
-          <Box sx={{ marginTop: "20px" }}>
+          <Box
+            sx={{
+              marginTop: "20px",
+            }}
+          >
             <div
               className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
-              style={{ height: 600 }}
+              style={{ height: 620 }}
             >
               <AgGridReact
                 className="ag-cell-wrap-text"
                 rowData={rowData}
                 columnDefs={columns}
                 ref={gridRef}
-                defaultColDef={defColumnDefs}
+                defaultColDef={defaultColDef}
                 onGridReady={onGridReady}
                 pagination={true}
                 enableCellTextSelection={true}
                 paginationPageSize={50}
                 rowHeight={20}
                 suppressPaginationPanel={true}
+                rowSelection={"multiple"}
+                rowMultiSelectWithClick={true}
               ></AgGridReact>
             </div>
           </Box>
+          <Grid container spacing={8}>
+            <Grid item xs={6}>
+              <Box sx={{ m: 4, justifyContent: "center", display: "center" }}>
+                <Stack direction="row" spacing={5}>
+                  <Button variant="contained">Add</Button>
+                  <Button variant="outlined">Delete</Button>
+                </Stack>
+              </Box>
+
+              <div
+                className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
+                style={{
+                  height: 400,
+                  border: "2px solid #3592E4",
+                  borderRadius: "18px 18px 0 0",
+                }}
+              >
+                <AgGridReact
+                  className="ag-cell-wrap-text"
+                  rowData={groupARowData}
+                  columnDefs={groupAColDef}
+                  ref={gridRef}
+                  defaultColDef={defaultColDef}
+                  onGridReady={onGridReady}
+                  pagination={true}
+                  enableCellTextSelection={true}
+                  paginationPageSize={50}
+                  rowHeight={20}
+                  suppressPaginationPanel={true}
+                ></AgGridReact>
+              </div>
+            </Grid>
+            <Grid item xs={6}>
+              <Box sx={{ m: 4, justifyContent: "center", display: "center" }}>
+                <Stack direction="row" spacing={5}>
+                  <Button variant="contained">Add</Button>
+                  <Button variant="outlined">Delete</Button>
+                </Stack>
+              </Box>
+              <div
+                className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
+                style={{
+                  height: 400,
+                  border: "2px solid #3592E4",
+                  borderRadius: "18px 18px 0 0",
+                }}
+              >
+                <AgGridReact
+                  className="ag-cell-wrap-text"
+                  rowData={groupBRowData}
+                  columnDefs={groupBColDef}
+                  ref={gridRef}
+                  defaultColDef={defaultColDef}
+                  onGridReady={onGridReady}
+                  pagination={true}
+                  enableCellTextSelection={true}
+                  paginationPageSize={50}
+                  rowHeight={20}
+                  suppressPaginationPanel={true}
+                ></AgGridReact>
+              </div>
+            </Grid>
+          </Grid>
         </Container>
       </Container>
     </>
