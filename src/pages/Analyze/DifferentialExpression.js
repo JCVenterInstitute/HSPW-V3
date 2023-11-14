@@ -46,11 +46,11 @@ const Accordion = styled((props) => (
 
 const AccordionSummary = styled((props) => (
   <MuiAccordionSummary
-    expandIcon={<PlayArrowIcon sx={{ fontSize: "1.2rem", color: "#454545" }} />}
+    expandIcon={<PlayArrowIcon sx={{ fontSize: "1.1rem", color: "#454545" }} />}
     {...props}
   />
 ))(({ theme }) => ({
-  paddingLeft: "30px",
+  paddingLeft: "25px",
   backgroundColor:
     theme.palette.mode === "dark"
       ? "rgba(255, 255, 255, .05)"
@@ -74,13 +74,15 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 const DifferentialExpression = () => {
   const gridRef = useRef();
+  const [gridApi, setGridApi] = useState();
   const [expanded, setExpanded] = useState("");
-  const [totalPageNumber, setTotalPageNumber] = useState(100);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [totalRecordCount, setTotalRecordCount] = useState(0);
+  const [totalPageNumber, setTotalPageNumber] = useState(0);
   const [recordsPerPage, setRecordsPerPage] = useState(50);
-  const [rowData, setRowData] = useState([]);
+  const [rowData, setRowData] = useState();
   const [groupARowData, setGroupARowData] = useState([]);
   const [groupBRowData, setGroupBRowData] = useState([]);
-  const [gridApi, setGridApi] = useState();
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
@@ -90,12 +92,41 @@ const DifferentialExpression = () => {
     return CustomNoRowsOverlay;
   }, []);
 
-  const onGridReady = (params) => {
+  const onGridReady = useCallback((params) => {
     axios
       .get("http://localhost:8000/api/study")
       .then((res) => res.data)
       .then((data) => data.map((item) => item._source))
-      .then((sourceData) => setRowData(sourceData));
+      .then((sourceData) => {
+        setRowData(sourceData);
+        setTotalRecordCount(sourceData.length);
+      })
+      .then(() => {
+        setTotalPageNumber(params.api.paginationProxy.totalPages);
+        setGridApi(params.api);
+      });
+  }, []);
+
+  // Previous Button Click Handler
+  const onPrevPage = () => {
+    if (pageNumber > 1) {
+      const newPageNumber = pageNumber - 1;
+      setPageNumber(newPageNumber);
+      if (gridApi) {
+        gridApi.paginationGoToPage(newPageNumber - 1);
+      }
+    }
+  };
+
+  // Next Button Click Handler
+  const onNextPage = () => {
+    if (pageNumber < totalPageNumber) {
+      const newPageNumber = pageNumber + 1;
+      setPageNumber(newPageNumber);
+      if (gridApi) {
+        gridApi.paginationGoToPage(newPageNumber - 1);
+      }
+    }
   };
 
   const filterList = [
@@ -217,7 +248,6 @@ const DifferentialExpression = () => {
     sortable: true,
     minWidth: 150,
     filter: "text",
-    autoHeight: true,
   };
 
   const handleChange = (panel) => (event, newExpanded) => {
@@ -298,7 +328,7 @@ const DifferentialExpression = () => {
                     sx={{
                       color: "#454545",
                       fontFamily: "Montserrat",
-                      fontSize: "18px",
+                      fontSize: "16px",
                       fontStyle: "normal",
                       lineHeight: "normal",
                     }}
@@ -377,6 +407,10 @@ const DifferentialExpression = () => {
                 value={recordsPerPage}
                 onChange={(event) => {
                   setRecordsPerPage(event.target.value);
+                  setTotalPageNumber(
+                    Math.ceil(totalRecordCount / event.target.value)
+                  );
+                  gridApi.paginationSetPageSize(Number(event.target.value));
                 }}
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
               >
@@ -404,12 +438,16 @@ const DifferentialExpression = () => {
                     borderRadius: "10px",
                   },
                 }}
-                defaultValue={50}
+                value={pageNumber}
                 sx={{ marginLeft: "10px", marginRight: "10px" }}
+                onChange={(event) => {
+                  setPageNumber(event.target.value);
+                  gridApi.paginationGoToPage(event.target.value - 1);
+                }}
               >
-                {recordsPerPageList.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
+                {Array.from({ length: totalPageNumber }, (_, index) => (
+                  <MenuItem key={index + 1} value={index + 1}>
+                    {index + 1}
                   </MenuItem>
                 ))}
               </TextField>
@@ -425,15 +463,18 @@ const DifferentialExpression = () => {
                 out of {totalPageNumber}
               </Typography>
               <button
+                onClick={onPrevPage}
+                disabled={pageNumber === 1}
                 style={{
-                  color: "#F6921E",
+                  color: pageNumber === 1 ? "#D3D3D3" : "#F6921E",
                   background: "white",
                   fontSize: "20px",
                   border: "none",
-                  cursor: "pointer",
-                  transition: "background 0.3s",
+                  cursor: pageNumber === 1 ? "default" : "pointer",
+                  transition: pageNumber === 1 ? "none" : "background 0.3s",
                   borderRadius: "5px",
                   marginRight: "15px",
+                  pointerEvents: pageNumber === 1 ? "none" : "auto",
                 }}
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.background = "rgba(246, 146, 30, 0.2)")
@@ -453,14 +494,20 @@ const DifferentialExpression = () => {
                 prev
               </button>
               <button
+                onClick={onNextPage}
+                disabled={pageNumber === totalPageNumber}
                 style={{
-                  color: "#F6921E",
+                  color: pageNumber === totalPageNumber ? "#D3D3D3" : "#F6921E",
                   background: "white",
                   fontSize: "20px",
                   border: "none",
-                  cursor: "pointer",
-                  transition: "background 0.3s", // Add a smooth transition effect for the background
+                  cursor:
+                    pageNumber === totalPageNumber ? "default" : "pointer",
+                  transition:
+                    pageNumber === totalPageNumber ? "none" : "background 0.3s",
                   borderRadius: "5px",
+                  pointerEvents:
+                    pageNumber === totalPageNumber ? "none" : "auto",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background = "rgba(246, 146, 30, 0.2)";
@@ -492,7 +539,6 @@ const DifferentialExpression = () => {
             >
               <AgGridReact
                 className="ag-cell-wrap-text"
-                ref={gridRef}
                 rowData={rowData}
                 columnDefs={columns}
                 defaultColDef={defaultColDef}
@@ -530,7 +576,6 @@ const DifferentialExpression = () => {
                   columnDefs={groupAColDef}
                   ref={gridRef}
                   defaultColDef={defaultColDef}
-                  onGridReady={onGridReady}
                   pagination={true}
                   enableCellTextSelection={true}
                   paginationPageSize={50}
@@ -558,9 +603,7 @@ const DifferentialExpression = () => {
                   className="ag-cell-wrap-text"
                   rowData={groupBRowData}
                   columnDefs={groupBColDef}
-                  ref={gridRef}
                   defaultColDef={defaultColDef}
-                  onGridReady={onGridReady}
                   pagination={true}
                   enableCellTextSelection={true}
                   paginationPageSize={50}

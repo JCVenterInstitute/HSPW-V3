@@ -61,6 +61,10 @@
   padding: 0px !important;
 }
 
+.differential-expression .ag-cell-value {
+  height: auto !important;
+}
+
 .header-border {
   border: 1px solid #3592e4;
   --ag-header-size: 3px;
