@@ -38,7 +38,7 @@
   display: flex;
   justify-content: center; /* align horizontal */
   align-items: center;
-  white-space: pre-wrap;
+  /* white-space: pre-wrap; */
   word-break: break-word;
 }
 
@@ -71,4 +71,8 @@
   border: 1px solid #f9f8f7 !important;
   background: #fff;
   padding: 0px !important;
+}
+
+.ag-icon-menu {
+  color: white;
 }

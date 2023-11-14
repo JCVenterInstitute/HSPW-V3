@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import main_feature from "../../components/hero.jpeg";
 import {
   Container,
@@ -23,6 +23,8 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import axios from "axios";
 import CustomHeaderGroup from "./CustomHeaderGroup";
+import CustomLoadingOverlay from "./CustomLoadingOverlay";
+import CustomNoRowsOverlay from "./CustomNoRowsOverlay";
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -71,31 +73,30 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const DifferentialExpression = () => {
+  const gridRef = useRef();
   const [expanded, setExpanded] = useState("");
   const [totalPageNumber, setTotalPageNumber] = useState(100);
+  const [recordsPerPage, setRecordsPerPage] = useState(50);
   const [rowData, setRowData] = useState([]);
-  const [groupARowData, setGroupARowData] = useState([
-    { experiment_title: "hello" },
-  ]);
+  const [groupARowData, setGroupARowData] = useState([]);
   const [groupBRowData, setGroupBRowData] = useState([]);
   const [gridApi, setGridApi] = useState();
-  const gridRef = useRef();
-  const onGridReady = (params) => {
-    setGridApi(params);
-  };
 
-  useEffect(() => {
-    const getStudyData = async () => {
-      const results = await axios
-        .get("http://localhost:8000/api/study")
-        .then((res) => res.data);
-
-      const sourceData = results.map((item) => item._source);
-
-      setRowData(sourceData);
-    };
-    getStudyData();
+  const loadingOverlayComponent = useMemo(() => {
+    return CustomLoadingOverlay;
   }, []);
+
+  const noRowsOverlayComponent = useMemo(() => {
+    return CustomNoRowsOverlay;
+  }, []);
+
+  const onGridReady = (params) => {
+    axios
+      .get("http://localhost:8000/api/study")
+      .then((res) => res.data)
+      .then((data) => data.map((item) => item._source))
+      .then((sourceData) => setRowData(sourceData));
+  };
 
   const filterList = [
     "Experiment Title",
@@ -105,7 +106,7 @@ const DifferentialExpression = () => {
     "Protein Count",
   ];
 
-  const recordsPerPage = [
+  const recordsPerPageList = [
     {
       value: 50,
       label: 50,
@@ -268,7 +269,7 @@ const DifferentialExpression = () => {
           sx={{
             backgroundColor: "#f9f8f7",
             width: "280px",
-            height: "1180px",
+            height: "1800px",
           }}
         >
           <h1
@@ -373,10 +374,13 @@ const DifferentialExpression = () => {
                     borderRadius: "10px",
                   },
                 }}
-                defaultValue={50}
+                value={recordsPerPage}
+                onChange={(event) => {
+                  setRecordsPerPage(event.target.value);
+                }}
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
               >
-                {recordsPerPage.map((option) => (
+                {recordsPerPageList.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
                   </MenuItem>
@@ -403,7 +407,7 @@ const DifferentialExpression = () => {
                 defaultValue={50}
                 sx={{ marginLeft: "10px", marginRight: "10px" }}
               >
-                {recordsPerPage.map((option) => (
+                {recordsPerPageList.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
                   </MenuItem>
@@ -488,18 +492,19 @@ const DifferentialExpression = () => {
             >
               <AgGridReact
                 className="ag-cell-wrap-text"
+                ref={gridRef}
                 rowData={rowData}
                 columnDefs={columns}
-                ref={gridRef}
                 defaultColDef={defaultColDef}
                 onGridReady={onGridReady}
-                pagination={true}
                 enableCellTextSelection={true}
-                paginationPageSize={50}
-                rowHeight={20}
+                pagination={true}
+                paginationPageSize={recordsPerPage}
                 suppressPaginationPanel={true}
                 rowSelection={"multiple"}
                 rowMultiSelectWithClick={true}
+                noRowsOverlayComponent={noRowsOverlayComponent}
+                loadingOverlayComponent={loadingOverlayComponent}
               ></AgGridReact>
             </div>
           </Box>
@@ -511,7 +516,6 @@ const DifferentialExpression = () => {
                   <Button variant="outlined">Delete</Button>
                 </Stack>
               </Box>
-
               <div
                 className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
                 style={{
@@ -543,7 +547,7 @@ const DifferentialExpression = () => {
                 </Stack>
               </Box>
               <div
-                className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
+                className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
                 style={{
                   height: 400,
                   border: "2px solid #3592E4",
