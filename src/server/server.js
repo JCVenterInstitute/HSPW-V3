@@ -6,6 +6,8 @@ const { Client } = require("@opensearch-project/opensearch");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const createAwsOpensearchConnector = require("aws-opensearch-connector");
 const fs = require("fs");
+const { exec } = require("child_process");
+const { s3Upload } = require("./utils/s3Upload");
 
 app.use(cors());
 app.use(express.json());
@@ -2144,6 +2146,69 @@ app.get("/protein/:id", (req, res) => {
   a.then(function (result) {
     console.log(result);
     res.json(result);
+  });
+});
+
+app.post("/api/differential-expression/analyze", (req, res) => {
+  const scriptPath = "/Users/iwu/Desktop/HSPW/Test1"; // Path to the directory containing the R script
+  const command = "Rscript test.R"; // The R command you want to run
+
+  exec(command, { cwd: scriptPath }, async (error, stdout, stderr) => {
+    if (error) {
+      console.error(`error: ${error.message}`);
+      res.status(500).send(`Error: ${error.message}`);
+      return;
+    }
+
+    if (stderr) {
+      console.error(`stderr: ${stderr}`);
+      res.status(500).send(`Stderr: ${stderr}`);
+      return;
+    }
+
+    console.log(`stdout:\n${stdout}`);
+
+    // Get date and time for s3 upload location
+    let [date, time] = new Date(new Date() - new Date(4 * 3600000)) // EST TIME
+      .toISOString()
+      .split("T");
+    time = time.match(/([0-9]{1,2}:[0-9]{2}:[0-9]{2}).*/)[1];
+
+    const params = {
+      bucketName: "differential-expression-result-dev",
+      s3Key: `${date}/${time}`,
+      contentType: "text/plain",
+      directoryPath: scriptPath,
+    };
+
+    await s3Upload(params);
+
+    res.status(200).send(`Output: ${stdout}`);
+  });
+});
+
+const searchStudy = async () => {
+  // Initialize the client.
+  const client = await getClient();
+
+  const query = {
+    size: 10000,
+    query: {
+      match_all: {},
+    },
+  };
+
+  const response = await client.search({
+    index: "study",
+    body: query,
+  });
+
+  return response.body.hits.hits;
+};
+
+app.get("/api/study", async (req, res) => {
+  searchStudy().then((response) => {
+    res.json(response);
   });
 });
 

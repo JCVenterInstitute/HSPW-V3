@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import MuiAccordion from "@mui/material/Accordion";
 import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
@@ -25,6 +26,18 @@ import axios from "axios";
 import CustomHeaderGroup from "./CustomHeaderGroup";
 import CustomLoadingOverlay from "./CustomLoadingOverlay";
 import CustomNoRowsOverlay from "./CustomNoRowsOverlay";
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -85,6 +98,7 @@ const DifferentialExpression = () => {
   const [rowData, setRowData] = useState();
   const [groupARowData, setGroupARowData] = useState([]);
   const [groupBRowData, setGroupBRowData] = useState([]);
+  const [fileName, setFileName] = useState("");
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
@@ -336,6 +350,24 @@ const DifferentialExpression = () => {
     );
 
     setGroupBRowData(newGroupRowData);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]; // Get the selected file
+    if (file) {
+      setFileName(file.name);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const content = event.target.result;
+      };
+      reader.readAsText(file); // Read the file as text
+    }
+  };
+
+  const handleAnalyze = async () => {
+    await axios.post(
+      "http://localhost:8000/api/differential-expression/analyze"
+    );
   };
 
   return (
@@ -755,8 +787,15 @@ const DifferentialExpression = () => {
               >
                 SELECT FILE:
               </Typography>
-              <Button variant="contained" sx={{ mr: 6 }}>
-                BROWSE
+              <Button
+                component="label"
+                variant="contained"
+                sx={{ mr: 6 }}
+                startIcon={<CloudUploadIcon />}
+                onChange={handleFileChange}
+              >
+                Upload file
+                <VisuallyHiddenInput type="file" />
               </Button>
               <Typography
                 display="inline"
@@ -786,9 +825,12 @@ const DifferentialExpression = () => {
                 sx={{
                   fontFamily: "Lato",
                   color: "#464646",
-                  flexGrow: 1,
+                  mr: 2,
+                  fontStyle: "italic",
                 }}
-              ></Typography>
+              >
+                {fileName}
+              </Typography>
               <Button
                 variant="contained"
                 sx={{
@@ -814,7 +856,9 @@ const DifferentialExpression = () => {
             <Typography variant="body1" sx={{ fontFamily: "Lato" }}>
               Please select
             </Typography>
-            <Button variant="contained">ANALYZE</Button>
+            <Button variant="contained" onClick={handleAnalyze}>
+              ANALYZE
+            </Button>
           </Box>
         </Container>
       </Container>
