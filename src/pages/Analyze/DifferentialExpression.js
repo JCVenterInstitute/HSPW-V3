@@ -75,6 +75,8 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 const DifferentialExpression = () => {
   const gridRef = useRef();
   const [gridApi, setGridApi] = useState();
+  const [gridApiGroupA, setGridApiGroupA] = useState();
+  const [gridApiGroupB, setGridApiGroupB] = useState();
   const [expanded, setExpanded] = useState("");
   const [pageNumber, setPageNumber] = useState(1);
   const [totalRecordCount, setTotalRecordCount] = useState(0);
@@ -107,6 +109,14 @@ const DifferentialExpression = () => {
       });
   }, []);
 
+  const onGroupAGridReady = useCallback((params) => {
+    setGridApiGroupA(params.api);
+  }, []);
+
+  const onGroupBGridReady = useCallback((params) => {
+    setGridApiGroupB(params.api);
+  }, []);
+
   // Previous Button Click Handler
   const onPrevPage = () => {
     if (pageNumber > 1) {
@@ -130,7 +140,7 @@ const DifferentialExpression = () => {
   };
 
   const filterList = [
-    "Experiment Title",
+    "Sample Name",
     "Tissue Type",
     "Institution",
     "Disease",
@@ -158,13 +168,21 @@ const DifferentialExpression = () => {
 
   const columns = [
     {
-      headerName: "Experiment Title",
-      field: "experiment_title",
+      headerName: "Sample ID",
+      field: "experiment_id_key",
       wrapText: true,
-      minWidth: 600,
+      minWidth: 230,
       headerClass: ["header-border"],
       checkboxSelection: true,
       headerCheckboxSelection: true,
+      sort: "asc",
+    },
+    {
+      headerName: "Sample Title",
+      field: "experiment_title",
+      wrapText: true,
+      minWidth: 500,
+      headerClass: ["header-border"],
     },
     {
       headerName: "Tissue Type",
@@ -199,19 +217,21 @@ const DifferentialExpression = () => {
       headerClass: ["header-border"],
       children: [
         {
-          headerName: "Experiment Title",
-          field: "experiment_title",
-          minWidth: "135",
+          headerName: "Sample ID",
+          field: "experiment_id_key",
+          minWidth: "220",
           headerClass: ["header-border"],
+          checkboxSelection: true,
+          headerCheckboxSelection: true,
+          sort: "asc",
         },
         {
-          headerName: "Tissue Type",
-          field: "sample_type",
-          minWidth: "95",
+          headerName: "Sample Title",
+          field: "experiment_title",
+          minWidth: "450",
           headerClass: ["header-border"],
         },
       ],
-      autoHeight: true,
       wrapText: true,
       cellStyle: { textAlign: "center" },
     },
@@ -224,19 +244,21 @@ const DifferentialExpression = () => {
       headerClass: ["header-border"],
       children: [
         {
-          headerName: "Experiment Title",
-          field: "experiment_title",
-          minWidth: "135",
+          headerName: "Sample ID",
+          field: "experiment_id_key",
+          minWidth: "220",
           headerClass: ["header-border"],
+          checkboxSelection: true,
+          headerCheckboxSelection: true,
+          sort: "asc",
         },
         {
-          headerName: "Tissue Type",
-          field: "sample_type",
-          minWidth: "95",
+          headerName: "Sample Title",
+          field: "experiment_title",
+          minWidth: "450",
           headerClass: ["header-border"],
         },
       ],
-      autoHeight: true,
       wrapText: true,
       cellStyle: { textAlign: "center" },
     },
@@ -252,6 +274,68 @@ const DifferentialExpression = () => {
 
   const handleChange = (panel) => (event, newExpanded) => {
     setExpanded(newExpanded ? panel : false);
+  };
+
+  const handleAddGroupA = () => {
+    const selectedRows = gridApi.getSelectedRows();
+    console.log("To Group A: ", selectedRows);
+
+    const existingIds = new Set(
+      groupARowData.map((row) => row.experiment_id_key)
+    );
+
+    // Filter out selected rows that are already present in Group A
+    const newRowsToAdd = selectedRows.filter(
+      (row) => !existingIds.has(row.experiment_id_key)
+    );
+
+    setGroupARowData([...groupARowData, ...newRowsToAdd]);
+  };
+
+  const handleDeleteGroupA = () => {
+    const selectedRows = gridApiGroupA.getSelectedRows();
+    console.log("Out Group A: ", selectedRows);
+
+    const selectedIdSet = new Set(
+      selectedRows.map((row) => row.experiment_id_key)
+    );
+
+    const newGroupRowData = groupARowData.filter(
+      (row) => !selectedIdSet.has(row.experiment_id_key)
+    );
+
+    setGroupARowData(newGroupRowData);
+  };
+
+  const handleAddGroupB = () => {
+    const selectedRows = gridApi.getSelectedRows();
+    console.log("To Group B: ", selectedRows);
+
+    const existingIds = new Set(
+      groupBRowData.map((row) => row.experiment_id_key)
+    );
+
+    // Filter out selected rows that are already present in Group A
+    const newRowsToAdd = selectedRows.filter(
+      (row) => !existingIds.has(row.experiment_id_key)
+    );
+
+    setGroupBRowData([...groupBRowData, ...newRowsToAdd]);
+  };
+
+  const handleDeleteGroupB = () => {
+    const selectedRows = gridApiGroupB.getSelectedRows();
+    console.log("Out Group B: ", selectedRows);
+
+    const selectedIdSet = new Set(
+      selectedRows.map((row) => row.experiment_id_key)
+    );
+
+    const newGroupRowData = groupBRowData.filter(
+      (row) => !selectedIdSet.has(row.experiment_id_key)
+    );
+
+    setGroupBRowData(newGroupRowData);
   };
 
   return (
@@ -475,6 +559,7 @@ const DifferentialExpression = () => {
                   borderRadius: "5px",
                   marginRight: "15px",
                   pointerEvents: pageNumber === 1 ? "none" : "auto",
+                  paddingBottom: "5px",
                 }}
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.background = "rgba(246, 146, 30, 0.2)")
@@ -508,6 +593,7 @@ const DifferentialExpression = () => {
                   borderRadius: "5px",
                   pointerEvents:
                     pageNumber === totalPageNumber ? "none" : "auto",
+                  paddingBottom: "5px",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background = "rgba(246, 146, 30, 0.2)";
@@ -551,6 +637,7 @@ const DifferentialExpression = () => {
                 rowMultiSelectWithClick={true}
                 noRowsOverlayComponent={noRowsOverlayComponent}
                 loadingOverlayComponent={loadingOverlayComponent}
+                suppressScrollOnNewData={true}
               ></AgGridReact>
             </div>
           </Box>
@@ -558,8 +645,12 @@ const DifferentialExpression = () => {
             <Grid item xs={6}>
               <Box sx={{ m: 4, justifyContent: "center", display: "center" }}>
                 <Stack direction="row" spacing={5}>
-                  <Button variant="contained">Add</Button>
-                  <Button variant="outlined">Delete</Button>
+                  <Button variant="contained" onClick={handleAddGroupA}>
+                    Add
+                  </Button>
+                  <Button variant="outlined" onClick={handleDeleteGroupA}>
+                    Delete
+                  </Button>
                 </Stack>
               </Box>
               <div
@@ -574,25 +665,29 @@ const DifferentialExpression = () => {
                   className="ag-cell-wrap-text"
                   rowData={groupARowData}
                   columnDefs={groupAColDef}
-                  ref={gridRef}
                   defaultColDef={defaultColDef}
-                  pagination={true}
+                  onGridReady={onGroupAGridReady}
                   enableCellTextSelection={true}
-                  paginationPageSize={50}
-                  rowHeight={20}
                   suppressPaginationPanel={true}
+                  rowSelection={"multiple"}
+                  rowMultiSelectWithClick={true}
+                  suppressScrollOnNewData={true}
                 ></AgGridReact>
               </div>
             </Grid>
             <Grid item xs={6}>
               <Box sx={{ m: 4, justifyContent: "center", display: "center" }}>
                 <Stack direction="row" spacing={5}>
-                  <Button variant="contained">Add</Button>
-                  <Button variant="outlined">Delete</Button>
+                  <Button variant="contained" onClick={handleAddGroupB}>
+                    Add
+                  </Button>
+                  <Button variant="outlined" onClick={handleDeleteGroupB}>
+                    Delete
+                  </Button>
                 </Stack>
               </Box>
               <div
-                className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
+                className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
                 style={{
                   height: 400,
                   border: "2px solid #3592E4",
@@ -604,15 +699,123 @@ const DifferentialExpression = () => {
                   rowData={groupBRowData}
                   columnDefs={groupBColDef}
                   defaultColDef={defaultColDef}
-                  pagination={true}
+                  onGridReady={onGroupBGridReady}
                   enableCellTextSelection={true}
-                  paginationPageSize={50}
-                  rowHeight={20}
                   suppressPaginationPanel={true}
+                  rowSelection={"multiple"}
+                  rowMultiSelectWithClick={true}
+                  suppressScrollOnNewData={true}
                 ></AgGridReact>
               </div>
             </Grid>
           </Grid>
+          <div
+            style={{
+              height: "3px",
+              background: "linear-gradient(to right, #1463B9, #ffffff)",
+              margin: "40px 0",
+            }}
+          ></div>
+          <Box>
+            <Typography
+              sx={{
+                fontFamily: "Montserrat",
+                color: "#1463B9",
+              }}
+            >
+              OR
+            </Typography>
+            <Typography
+              sx={{
+                fontFamily: "Montserrat",
+                color: "#1463B9",
+              }}
+            >
+              PLAIN TEXT FILE (.TxT OR .CSV):
+            </Typography>
+            <Box
+              sx={{
+                backgroundColor: "#f9f8f7",
+                height: "84px",
+                mt: "20px",
+                borderRadius: "16px",
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "row",
+                padding: "0 16px",
+              }}
+            >
+              <Typography
+                display="inline"
+                sx={{
+                  fontFamily: "Lato",
+                  color: "#464646",
+                  mr: 2,
+                }}
+              >
+                SELECT FILE:
+              </Typography>
+              <Button variant="contained" sx={{ mr: 6 }}>
+                BROWSE
+              </Button>
+              <Typography
+                display="inline"
+                sx={{
+                  fontFamily: "Lato",
+                  color: "#464646",
+                  mr: 2,
+                }}
+              >
+                TEMPLATE:
+              </Typography>
+              <Button variant="contained" sx={{ mr: 6 }}>
+                DOWNLOAD
+              </Button>
+              <Typography
+                display="inline"
+                sx={{
+                  fontFamily: "Lato",
+                  color: "#464646",
+                  mr: 2,
+                }}
+              >
+                FILE NAME:
+              </Typography>
+              <Typography
+                display="inline"
+                sx={{
+                  fontFamily: "Lato",
+                  color: "#464646",
+                  flexGrow: 1,
+                }}
+              ></Typography>
+              <Button
+                variant="contained"
+                sx={{
+                  marginLeft: "auto",
+                  marginRight: 5,
+                }}
+              >
+                UPLOAD
+              </Button>
+            </Box>
+          </Box>
+          <div
+            style={{
+              height: "3px",
+              background: "linear-gradient(to right, #1463B9, #ffffff)",
+              margin: "40px 0",
+            }}
+          ></div>
+          <Box>
+            <Typography variant="h6" sx={{ fontFamily: "Lato" }}>
+              ANALYSIS OPTIONS
+            </Typography>
+            <Typography variant="body1" sx={{ fontFamily: "Lato" }}>
+              Please select
+            </Typography>
+            <Button variant="contained">ANALYZE</Button>
+          </Box>
         </Container>
       </Container>
     </>
