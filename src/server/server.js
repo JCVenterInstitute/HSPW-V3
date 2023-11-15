@@ -2176,7 +2176,7 @@ app.post("/api/differential-expression/analyze", (req, res) => {
 
     const params = {
       bucketName: "differential-expression-result-dev",
-      s3Key: `${date}/${time}`,
+      s3KeyPrefix: `${date}/${time}`,
       contentType: "text/plain",
       directoryPath: scriptPath,
     };
