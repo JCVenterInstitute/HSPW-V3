@@ -20,12 +20,14 @@ const th = {
   fontWeight: "bold",
   fontSize: "20px",
   padding: "0.2em",
+  maxWidth: "1000px",
 };
 
 const td = {
   border: "1px solid #aaa",
   fontSize: "18px",
   padding: "0.2em",
+  borderTopRightRadius: "10px",
   fontSize: "18px",
 };
 
@@ -100,67 +102,74 @@ const Signature_detail = (props) => {
           {data[0]["_source"]["Type"] + ": " + data[0]["_source"]["Name"]}
         </h1>
       </div>
-
-      <TableContainer component={Paper} style={{ padding: "10px" }}>
-        <Table
-          sx={{ minWidth: 650 }}
-          aria-label="simple table"
-          style={{ border: "1px solid black", borderTopLeftRadius: "10px" }}
+      <div style={{ margin: "20px" }}>
+        <TableContainer
+          component={Paper}
+          style={{
+            borderTopLeftRadius: "10px",
+            borderTopRightRadius: "10px",
+            border: "1px solid #CACACA",
+          }}
         >
-          <TableHead>
-            <TableRow sx={{ border: "1px solid black" }}>
-              <TableCell
-                sx={th}
-                style={{
-                  backgroundColor: "#1463B9",
-                  color: "white",
-                  fontFamily: "Montserrat",
-                  fontSize: "17px",
-                  fontWeight: "bold",
-                }}
-              >
-                Abstract
-              </TableCell>
-              <TableCell
-                sx={td}
-                style={{ fontFamily: "Lato", fontSize: "17px" }}
-              >
-                <div style={{ paddingLeft: "2.5%" }}>
-                  <span style={{ color: "black" }}>
-                    {parse(parse(abstract))}
-                  </span>
-                </div>
-              </TableCell>
-            </TableRow>
+          <Table
+            sx={{ minWidth: 250 }}
+            aria-label="simple table"
+            style={{ border: "1px solid black", borderTopLeftRadius: "10px" }}
+          >
+            <TableHead>
+              <TableRow sx={{ border: "1px solid black" }}>
+                <TableCell
+                  sx={th}
+                  style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Abstract
+                </TableCell>
+                <TableCell
+                  sx={td}
+                  style={{ fontFamily: "Lato", fontSize: "14px" }}
+                >
+                  <div style={{ paddingLeft: "1%" }}>
+                    <span style={{ color: "black", fontSize: "14px" }}>
+                      {parse(parse(abstract))}
+                    </span>
+                  </div>
+                </TableCell>
+              </TableRow>
 
-            <TableRow>
-              <TableCell
-                style={{
-                  backgroundColor: "#1463B9",
-                  color: "white",
-                  fontFamily: "Montserrat",
-                  fontSize: "17px",
-                  fontWeight: "bold",
-                }}
-                sx={th}
-              >
-                Signatures
-              </TableCell>
-              <TableCell
-                sx={td}
-                style={{ fontFamily: "Lato", fontSize: "17px" }}
-              >
-                <Table>
-                  <TableHead>
+              <TableRow>
+                <TableCell
+                  style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                  }}
+                  sx={th}
+                >
+                  Signatures
+                </TableCell>
+                <TableCell
+                  sx={td}
+                  style={{ fontFamily: "Lato", fontSize: "14px" }}
+                >
+                  <TableHead style={{ borderTopLeftRadius: "10px" }}>
                     <TableRow style={{ border: "1px solid white" }}>
                       <TableCell
                         style={{
                           backgroundColor: "#1463B9",
                           color: "white",
                           fontFamily: "Montserrat",
-                          fontSize: "17px",
+                          fontSize: "16px",
                           fontWeight: "bold",
                           border: "1px solid white",
+                          width: "10%",
                         }}
                       >
                         Pfam
@@ -172,7 +181,7 @@ const Signature_detail = (props) => {
                               backgroundColor: "#1463B9",
                               color: "white",
                               fontFamily: "Montserrat",
-                              fontSize: "17px",
+                              fontSize: "16px",
                               fontWeight: "bold",
                               border: "1px solid white",
                             }}
@@ -191,7 +200,7 @@ const Signature_detail = (props) => {
                               backgroundColor: "#1463B9",
                               color: "white",
                               fontFamily: "Montserrat",
-                              fontSize: "17px",
+                              fontSize: "16px",
                               fontWeight: "bold",
                               border: "1px solid white",
                             }}
@@ -210,7 +219,7 @@ const Signature_detail = (props) => {
                               backgroundColor: "#1463B9",
                               color: "white",
                               fontFamily: "Montserrat",
-                              fontSize: "17px",
+                              fontSize: "16px",
                               fontWeight: "bold",
                               border: "1px solid white",
                             }}
@@ -224,15 +233,17 @@ const Signature_detail = (props) => {
                     </TableRow>
 
                     <TableRow style={{ border: "1px solid white" }}>
-                      <TableCell
-                        style={{
-                          borderRight: "1px solid grey",
-                          borderBottom: "1px solid grey",
-                          width: "15%",
-                        }}
-                      >
-                        {pfam ? (
-                          <>
+                      {pfam ? (
+                        <>
+                          <TableCell
+                            style={{
+                              borderRight: "1px solid grey",
+                              borderBottom: "1px solid grey",
+                              width: "15%",
+                              fontSize: "14px",
+                              fontFamily: "Lato",
+                            }}
+                          >
                             <a
                               href={
                                 "https://www.ebi.ac.uk/interpro/entry/pfam/" +
@@ -241,11 +252,11 @@ const Signature_detail = (props) => {
                             >
                               {pfam}
                             </a>
-                          </>
-                        ) : (
-                          <></>
-                        )}
-                      </TableCell>
+                          </TableCell>
+                        </>
+                      ) : (
+                        <></>
+                      )}
 
                       {PRINTS ? (
                         <>
@@ -253,6 +264,8 @@ const Signature_detail = (props) => {
                             style={{
                               border: "1px solid grey",
                               width: "20%",
+                              fontSize: "14px",
+                              fontFamily: "Lato",
                             }}
                           >
                             <a
@@ -274,6 +287,8 @@ const Signature_detail = (props) => {
                           borderLeft: "1px solid grey",
                           borderBottom: "1px solid grey",
                           width: "15%",
+                          fontSize: "14px",
+                          fontFamily: "Lato",
                         }}
                       >
                         {PROFILE ? (
@@ -297,6 +312,8 @@ const Signature_detail = (props) => {
                             style={{
                               border: "1px solid grey",
                               width: "20%",
+                              fontSize: "14px",
+                              fontFamily: "Lato",
                             }}
                           >
                             <a
@@ -315,57 +332,62 @@ const Signature_detail = (props) => {
                       )}
                     </TableRow>
                   </TableHead>
-                </Table>
-              </TableCell>
-            </TableRow>
+                </TableCell>
+              </TableRow>
 
-            <TableRow>
-              <TableCell
-                sx={th}
-                style={{
-                  backgroundColor: "#1463B9",
-                  color: "white",
-                  fontFamily: "Montserrat",
-                  fontSize: "17px",
-                  fontWeight: "bold",
-                }}
-              >
-                GO Annotations
-              </TableCell>
-              <TableCell
-                sx={td}
-                style={{ fontFamily: "Lato", fontSize: "17px" }}
-              >
-                <Table>
+              <TableRow>
+                <TableCell
+                  sx={th}
+                  style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  GO Annotations
+                </TableCell>
+                <TableCell
+                  sx={td}
+                  style={{ fontFamily: "Lato", fontSize: "17px" }}
+                >
                   <TableHead>
-                    <TableRow sx={{ border: "1px solid black" }}>
+                    <TableRow>
                       <TableCell
-                        sx={th}
                         style={{
                           backgroundColor: "#1463B9",
                           color: "white",
                           fontFamily: "Montserrat",
                           fontSize: "17px",
                           fontWeight: "bold",
+
+                          borderTopLeftRadius: "10px",
                         }}
                       >
                         Functions
                       </TableCell>
                       <TableCell
                         sx={td}
-                        style={{ fontFamily: "Lato", fontSize: "17px" }}
+                        style={{
+                          maxWidth: "100%",
+                          border: "1px solid #CACACA",
+                          borderTopRightRadius: "10px",
+                          fontFamily: "Lato",
+                          fontSize: "14px",
+                        }}
                       >
                         {data[0]["_source"]["GO Annotations"].split(",")[0]}
                       </TableCell>
                     </TableRow>
-                    <TableRow sx={{ border: "1px solid black" }}>
+                    <TableRow>
                       <TableCell
                         sx={th}
                         style={{
                           backgroundColor: "#1463B9",
                           color: "white",
                           fontFamily: "Montserrat",
-                          fontSize: "17px",
+                          fontSize: "16px",
                           fontWeight: "bold",
                         }}
                       >
@@ -373,88 +395,88 @@ const Signature_detail = (props) => {
                       </TableCell>
                       <TableCell
                         sx={td}
-                        style={{ fontFamily: "Lato", fontSize: "17px" }}
+                        style={{ fontFamily: "Lato", fontSize: "14px" }}
                       >
                         {data[0]["_source"]["GO Annotations"].split(",")[1]}
                       </TableCell>
                     </TableRow>
                   </TableHead>
-                </Table>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell
-                sx={th}
-                style={{
-                  backgroundColor: "#1463B9",
-                  color: "white",
-                  fontFamily: "Montserrat",
-                  fontSize: "17px",
-                  fontWeight: "bold",
-                }}
-              >
-                References
-              </TableCell>
-              <TableCell
-                sx={td}
-                style={{ fontFamily: "Lato", fontSize: "17px" }}
-              >
-                {reference1.map((val, j, arr) => {
-                  return (
-                    <>
-                      {j + 1}. {val}
-                      <br></br>
-                    </>
-                  );
-                })}
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell
-                sx={th}
-                style={{
-                  backgroundColor: "#1463B9",
-                  color: "white",
-                  fontFamily: "Montserrat",
-                  fontSize: "17px",
-                  fontWeight: "bold",
-                }}
-              >
-                Members
-              </TableCell>
-              <TableCell
-                sx={td}
-                style={{ fontFamily: "Lato", fontSize: "17px" }}
-              >
-                View Protein Members
-              </TableCell>
-            </TableRow>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell
+                  sx={th}
+                  style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  References
+                </TableCell>
+                <TableCell
+                  sx={td}
+                  style={{ fontFamily: "Lato", fontSize: "14px" }}
+                >
+                  {reference1.map((val, j, arr) => {
+                    return (
+                      <>
+                        {j + 1}. {val}
+                        <br></br>
+                      </>
+                    );
+                  })}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell
+                  sx={th}
+                  style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Members
+                </TableCell>
+                <TableCell
+                  sx={td}
+                  style={{ fontFamily: "Lato", fontSize: "14px" }}
+                >
+                  View Protein Members
+                </TableCell>
+              </TableRow>
 
-            <TableRow style={{ border: "1px solid black" }}>
-              <TableCell
-                sx={th}
-                style={{
-                  backgroundColor: "#1463B9",
-                  color: "white",
-                  fontFamily: "Montserrat",
-                  fontSize: "17px",
-                  fontWeight: "bold",
-                }}
-              >
-                Link
-              </TableCell>
-              <TableCell
-                sx={td}
-                style={{ fontFamily: "Lato", fontSize: "17px" }}
-              >
-                <a href={interpro_link + data[0]["_source"]["InterPro ID"]}>
-                  InterPro
-                </a>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-        </Table>
-      </TableContainer>
+              <TableRow style={{ border: "1px solid black" }}>
+                <TableCell
+                  sx={th}
+                  style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Link
+                </TableCell>
+                <TableCell
+                  sx={td}
+                  style={{ fontFamily: "Lato", fontSize: "14px" }}
+                >
+                  <a href={interpro_link + data[0]["_source"]["InterPro ID"]}>
+                    InterPro
+                  </a>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+          </Table>
+        </TableContainer>
+      </div>
       <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
       <script src="https://unpkg.com/html-react-parser@latest/dist/html-react-parser.min.js"></script>
       <script>window.HTMLReactParser(/* string */);</script>

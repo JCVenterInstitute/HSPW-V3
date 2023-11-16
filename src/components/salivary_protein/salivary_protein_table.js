@@ -1,12 +1,17 @@
-import "./filter.css";
+import "../filter.css";
 import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Collapse from "@material-ui/core/Collapse";
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import CustomLoadingOverlay from "../customLoadingOverlay.jsx";
+import CustomNoRowsOverlay from "../customNoRowsOverlay.jsx";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
 import { AgGridReact } from "ag-grid-react";
 import { rgb } from "d3";
-import "./table.css";
+import "../table.css";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import FormGroup from "@mui/material/FormGroup";
@@ -17,15 +22,15 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import CustomHeaderGroup from "./customHeaderGroup.jsx";
+import CustomHeaderGroup from "../customHeaderGroup.jsx";
 import Switch from "@mui/material/Switch";
 import Stack from "@mui/material/Stack";
 
 import { ICellRendererParams } from "ag-grid-community";
-import { ReactComponent as Download_Logo } from "./table_icon/download.svg";
-import { ReactComponent as Left_Arrow } from "./table_icon/left_arrow.svg";
-import { ReactComponent as Right_Arrow } from "./table_icon/right_arrow.svg";
-import { ReactComponent as Search } from "./table_icon/search.svg";
+import { ReactComponent as Download_Logo } from "../table_icon/download.svg";
+import { ReactComponent as Left_Arrow } from "../table_icon/left_arrow.svg";
+import { ReactComponent as Right_Arrow } from "../table_icon/right_arrow.svg";
+import { ReactComponent as Search } from "../table_icon/search.svg";
 
 const styles = {
   transform: "translate(0, 0)",
@@ -235,7 +240,7 @@ function IHCComponent(props: ICellRendererParams) {
             paddingTop: "25%",
           }}
         >
-          N/A
+          n/a
         </div>
       </>
     );
@@ -423,7 +428,7 @@ function LinkComponent(props: ICellRendererParams) {
 function App() {
   const [gridApi, setGridApi] = useState();
   const [pageSize, setPageSize] = useState(50);
-  const [pageNum, setPageNum] = useState(1);
+  const [pageNum, setPageNum] = useState(0);
   const [message, setMessage] = useState("");
   const [count, setCount] = useState(2);
   const [docCount, setDocCount] = useState(0);
@@ -457,10 +462,7 @@ function App() {
   const [wsEnd, setwsEnd] = useState("20000");
   const [mRNAStart, setmRNAStart] = useState("0");
   const [mRNAEnd, setmRNAEnd] = useState("20000");
-  const [parArr, setparArr] = useState([0, 20000]);
-  const [ssArr, setssArr] = useState([0, 20000]);
-  const [pArr, setpArr] = useState([0, 20000]);
-  const [mRNAArr, setmRNAArr] = useState([0, 20000]);
+  const [queryArr, setQueryArr] = useState([]);
   const [opArr, setOpArr] = useState([false, false]);
   const [orChecked, setorChecked] = useState(false);
   const [exclude, setExclude] = useState(false);
@@ -566,45 +568,24 @@ function App() {
       const json = data.json();
       return json;
     };
+
+    const customHeaders = {
+      "Content-Type": "application/json",
+    };
     const fetchOrData = async () => {
       console.log("a:" + wsStart + wsEnd);
+
       const data = await fetch(
-        "http://localhost:8000/or_search/" +
-          pageSize +
-          "/" +
-          pageNum +
-          "/" +
-          prefix +
-          "*/" +
-          genePrefix +
-          "*/" +
-          namePrefix +
-          "*/" +
-          opinionVal +
-          "*/" +
-          wsStart +
-          "/" +
-          wsEnd +
-          "/" +
-          parStart +
-          "/" +
-          parEnd +
-          "/" +
-          pStart +
-          "/" +
-          pEnd +
-          "/" +
-          subStart +
-          "/" +
-          subEnd +
-          "/" +
-          mRNAStart +
-          "/" +
-          mRNAEnd +
-          "," +
-          IHCVal
+        `http://localhost:8000/or_search/${pageSize}/${pageNum}/`,
+        {
+          method: "POST",
+          headers: customHeaders,
+          body: JSON.stringify(queryArr),
+        }
       );
       const json = data.json();
+      console.log("73" + JSON.stringify(json));
+      console.log("583" + JSON.stringify(queryArr));
       return json;
     };
     const fetchAndExcludeData = async () => {
@@ -748,7 +729,6 @@ function App() {
       orChecked === true &&
       exclude === false
     ) {
-      console.log("3");
       const result = fetchOrData().catch(console.errror);
       result.then((value) => {
         if (value.hits.hits) {
@@ -982,6 +962,7 @@ function App() {
     pageSize,
     pageNum,
     searchText,
+    exclude,
   ]);
 
   useEffect(() => {
@@ -1007,13 +988,21 @@ function App() {
     });
   }, []);
 
+  const loadingOverlayComponent = useMemo(() => {
+    return CustomLoadingOverlay;
+  }, []);
+
+  const noRowsOverlayComponent = useMemo(() => {
+    return CustomNoRowsOverlay;
+  }, []);
+
   const columns = [
     {
       headerName: "Accession",
       field: "UniProt Accession",
       checkboxSelection: false,
       headerCheckboxSelection: false,
-      minWidth: "135",
+      minWidth: "155",
       wordWrap: true,
       autoHeight: true,
       cellStyle: { "word-break": "break-word" },
@@ -1023,7 +1012,7 @@ function App() {
     },
     {
       headerName: "Gene Symbol",
-      minWidth: "120",
+      minWidth: "132",
       field: "Gene Symbol",
       wrapText: true,
       autoHeight: true,
@@ -1033,7 +1022,7 @@ function App() {
     },
     {
       headerName: "Protein Name",
-      minWidth: "115",
+      minWidth: "133",
       maxHeight: "5",
       field: "Protein Name",
       wrapText: true,
@@ -1044,7 +1033,7 @@ function App() {
     },
     {
       headerName: "Expert Opinion",
-      minWidth: "120",
+      minWidth: "140",
       field: "expert_opinion",
       autoHeight: true,
       cellRenderer: "opinionComponent",
@@ -1061,26 +1050,26 @@ function App() {
         {
           headerName: "WS",
           field: "saliva_abundance",
-          minWidth: "95",
+          minWidth: "98",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
-          cellClass: ["table-border"],
+          cellClass: ["square_table"],
         },
         {
           headerName: "Par",
           field: "parotid_gland_abundance",
-          minWidth: "95",
+          minWidth: "97",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
-          cellClass: ["table-border"],
+          cellClass: ["square_table"],
         },
         {
           headerName: "Sub",
           field: "sm/sl_abundance",
-          minWidth: "95",
+          minWidth: "101",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
-          cellClass: ["table-border"],
+          cellClass: ["square_table"],
         },
         {
           headerName: "B",
@@ -1088,7 +1077,7 @@ function App() {
           minWidth: "95",
           cellRenderer: "LinkComponent",
           headerClass: ["header-border"],
-          cellClass: ["table-border"],
+          cellClass: ["square_table"],
         },
       ],
       autoHeight: true,
@@ -1098,12 +1087,12 @@ function App() {
     {
       headerName: "IHC",
       field: "IHC",
-      minWidth: "95",
+      minWidth: "101",
       autoHeight: true,
       wrapText: true,
       cellRenderer: "IHCComponent",
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
+      cellClass: ["square_table"],
     },
     {
       headerName: "mRNA",
@@ -1116,24 +1105,24 @@ function App() {
       cellClass: ["table-border"],
       children: [
         {
-          headerName: "value",
+          headerName: "Value",
           field: "mRNA",
-          minWidth: "105",
+          minWidth: "116",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
-          cellClass: ["table-border"],
+          cellClass: ["square_table"],
         },
         {
-          headerName: "specificity",
+          headerName: "Specificity",
           field: "Specificity",
-          minWidth: "140",
+          minWidth: "160",
           headerClass: ["header-border"],
           cellClass: ["table-border"],
         },
         {
           headerName: "Specificity Score",
           field: "Specificity_Score",
-          minWidth: "140",
+          minWidth: "159",
           headerClass: ["header-border"],
           cellClass: ["table-border"],
         },
@@ -1141,28 +1130,6 @@ function App() {
     },
   ];
   const gridRef = useRef();
-
-  const searchAccession = () => {
-    setAccessionC(true);
-  };
-
-  const searchGene = () => {
-    setGeneC(true);
-
-    console.log(geneC + genePrefix);
-  };
-
-  const searchName = () => {
-    setNameC(true);
-  };
-
-  const paginationNumberFormatter = useCallback((params) => {
-    return params.value.toLocaleString();
-  }, []);
-
-  const onFirstDataRendered = useCallback((params) => {
-    gridRef.current.api.paginationGoToPage(0);
-  }, []);
 
   const onPageSizeChanged = (event) => {
     var value = document.getElementById("page-size").value;
@@ -1232,115 +1199,389 @@ function App() {
     setGridApi(params);
   };
 
+  const updateQuery = (newQuery) => {
+    setQueryArr((prevArray) => {
+      // Remove existing queries of the same type (InterPro ID or Name)
+      const wildcardProperty =
+        newQuery.bool.filter[0].wildcard &&
+        Object.keys(newQuery.bool.filter[0].wildcard)[0];
+
+      const rangeProperty =
+        newQuery.bool.filter[0].range &&
+        Object.keys(newQuery.bool.filter[0].range)[0];
+
+      const filteredArray = prevArray.filter((p) => {
+        const boolFilter = p && p.bool && p.bool.filter;
+        const wildcardProperty =
+          boolFilter &&
+          boolFilter[0] &&
+          boolFilter[0].wildcard &&
+          Object.keys(boolFilter[0].wildcard)[0];
+
+        const rangeProperty =
+          boolFilter &&
+          boolFilter[0] &&
+          boolFilter[0].range &&
+          Object.keys(boolFilter[0].range)[0];
+
+        return !(
+          newQuery &&
+          wildcardProperty &&
+          boolFilter[0].wildcard &&
+          boolFilter[0].wildcard.hasOwnProperty(wildcardProperty) &&
+          rangeProperty &&
+          boolFilter[0].range &&
+          boolFilter[0].range.hasOwnProperty(rangeProperty)
+        );
+      });
+
+      // Add the new query to the filtered array
+      return newQuery ? [...filteredArray, newQuery] : filteredArray;
+    });
+  };
+
   const handleAccessionChange = (e) => {
-    if (e.target.value === "") {
+    const inputValue = e.target.value;
+    if (inputValue === "") {
       setAccessionC(false);
     } else {
       setAccessionC(true);
     }
-    setPrefix(e.target.value);
+    if (orChecked === true) {
+    }
+    const newIDQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  wildcard: {
+                    uniprot_accession: {
+                      value: `${inputValue}*`,
+                      case_insensitive: true,
+                    },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
+    setPrefix(inputValue);
+    if (orChecked === true) {
+      updateQuery(newIDQuery);
+    }
   };
 
   const handleGeneChange = (e) => {
-    if (e.target.value === "") {
+    const inputValue = e.target.value;
+    if (inputValue === "") {
       console.log("wt");
       setGeneC(false);
-    } else if (e.target.value !== "") {
+    } else if (inputValue !== "") {
       setGeneC(true);
     }
-    setGenePrefix(e.target.value);
+    const newGeneQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  wildcard: {
+                    "Gene Symbol": {
+                      value: `${inputValue}*`,
+                      case_insensitive: true,
+                    },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
+
+    setGenePrefix(inputValue);
+    if (orChecked === true) {
+      updateQuery(newGeneQuery);
+    }
   };
 
   const handleNameChange = (e) => {
-    if (e.target.value === "") {
+    const inputValue = e.target.value;
+    if (inputValue === "") {
       console.log("wt");
       setNameC(false);
-    } else if (e.target.value !== "") {
+    } else if (inputValue !== "") {
       setNameC(true);
     }
+    const newNameQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  wildcard: {
+                    "Protein Name": {
+                      value: `${inputValue}*`,
+                      case_insensitive: true,
+                    },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
     setNamePrefix(e.target.value);
+    if (orChecked === true) {
+      updateQuery(newNameQuery);
+    }
   };
 
   const handlestartWSChange = (e) => {
-    if (e.target.value === "") {
+    const inputValue = e.target.value;
+    if (inputValue === "") {
       setwsC(false);
-    } else if (e.target.value !== "") {
+    } else if (inputValue !== "") {
       setwsC(true);
     }
-    setwsStart(e.target.value);
+    const newstartWSQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [{ range: { saliva_abundance: { gte: inputValue } } }],
+            },
+          }
+        : null;
+    setwsStart(inputValue);
+    if (orChecked === true) {
+      updateQuery(newstartWSQuery);
+    }
   };
+
   const handleendWSChange = (e) => {
-    if (e.target.value === "") {
+    const inputValue = e.target.value;
+    if (inputValue === "") {
       setwsC(false);
-    } else if (e.target.value !== "") {
+    } else if (inputValue !== "") {
       setwsC(true);
     }
-    setwsEnd(e.target.value);
+    const newendWSQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [{ range: { saliva_abundance: { lte: inputValue } } }],
+            },
+          }
+        : null;
+    setwsEnd(inputValue);
+    if (orChecked === true) {
+      updateQuery(newendWSQuery);
+    }
   };
 
   const handlestartParChange = (e) => {
-    if (e.target.value === "") {
+    const inputValue = e.target.value;
+    if (inputValue === "") {
       setparC(false);
-    } else if (e.target.value !== "") {
+    } else if (inputValue !== "") {
       setparC(true);
     }
-    setparStart(e.target.value);
+    const newstartParQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                { range: { parotid_gland_abundance: { gte: inputValue } } },
+              ],
+            },
+          }
+        : null;
+    setparStart(inputValue);
+    if (orChecked === true) {
+      updateQuery(newstartParQuery);
+    }
   };
+
   const handleendParChange = (e) => {
-    if (e.target.value === "") {
+    const inputValue = e.target.value;
+    if (inputValue === "") {
       setparC(false);
-    } else if (e.target.value !== "") {
+    } else if (inputValue !== "") {
       setparC(true);
     }
-    setparEnd(e.target.value);
+    const newendParQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                { range: { parotid_gland_abundance: { lte: inputValue } } },
+              ],
+            },
+          }
+        : null;
+
+    setparEnd(inputValue);
+    if (orChecked === true) {
+      updateQuery(newendParQuery);
+    }
   };
+
   const handlestartSubChange = (e) => {
-    if (e.target.value === "") {
+    const inputValue = e.target.value;
+    if (inputValue === "") {
       setsubC(false);
-    } else if (e.target.value !== "") {
+    } else if (inputValue !== "") {
       setsubC(true);
     }
-    setsubStart(e.target.value);
+    const newstartSubQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [{ range: { "sm/sl_abundance": { gte: inputValue } } }],
+            },
+          }
+        : null;
+    setsubStart(inputValue);
+    if (orChecked === true) {
+      updateQuery(newstartSubQuery);
+    }
   };
   const handleendSubChange = (e) => {
-    if (e.target.value === "") {
+    const inputValue = e.target.value;
+    if (inputValue === "") {
       setsubC(false);
-    } else if (e.target.value !== "") {
+    } else if (inputValue !== "") {
       setsubC(true);
     }
-    setsubEnd(e.target.value);
+
+    const newendSubQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [{ range: { "sm/sl_abundance": { lte: inputValue } } }],
+            },
+          }
+        : null;
+
+    setsubEnd(inputValue);
+    if (orChecked === true) {
+      updateQuery(newendSubQuery);
+    }
   };
+
   const handlestartBChange = (e) => {
-    if (e.target.value === "") {
+    const inputValue = e.target.value;
+    if (inputValue === "") {
       setplasmaC(false);
-    } else if (e.target.value !== "") {
+    } else if (inputValue !== "") {
       setplasmaC(true);
     }
-    setpStart(e.target.value);
+
+    const newstartBQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [{ range: { plasma_abundance: { gte: inputValue } } }],
+            },
+          }
+        : null;
+
+    setpStart(inputValue);
+    if (orChecked === true) {
+      updateQuery(newstartBQuery);
+    }
   };
+
   const handleendBChange = (e) => {
-    if (e.target.value === "") {
+    const inputValue = e.target.value;
+    if (inputValue === "") {
       setplasmaC(false);
-    } else if (e.target.value !== "") {
+    } else if (inputValue !== "") {
       setplasmaC(true);
     }
-    setpEnd(e.target.value);
+
+    const newendBQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [{ range: { plasma_abundance: { lte: inputValue } } }],
+            },
+          }
+        : null;
+
+    setpEnd(inputValue);
+    if (orChecked === true) {
+      updateQuery(newendBQuery);
+    }
   };
+
   const handlestartmRNAChange = (e) => {
-    if (e.target.value === "") {
+    const inputValue = e.target.value;
+    if (inputValue === "") {
       setmRNAC(false);
-    } else if (e.target.value !== "") {
+    } else if (inputValue !== "") {
       setmRNAC(true);
     }
-    setmRNAStart(e.target.value);
+
+    const newstartmRNAQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [{ range: { mRNA: { gte: inputValue } } }],
+            },
+          }
+        : null;
+
+    setmRNAStart(inputValue);
+    if (orChecked === true) {
+      updateQuery(newstartmRNAQuery);
+    }
   };
+
   const handleendmRNAChange = (e) => {
-    if (e.target.value === "") {
+    const inputValue = e.target.value;
+    if (inputValue === "") {
       setmRNAC(false);
-    } else if (e.target.value !== "") {
+    } else if (inputValue !== "") {
       setmRNAC(true);
     }
-    setmRNAEnd(e.target.value);
+
+    const newendmRNAQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [{ range: { mRNA: { lte: inputValue } } }],
+            },
+          }
+        : null;
+    setmRNAEnd(inputValue);
+    if (orChecked === true) {
+      updateQuery(newendmRNAQuery);
+    }
   };
 
   const filterOpUS = (event) => {
@@ -1350,7 +1591,6 @@ function App() {
       if (updatedOpArr[0] === true) {
         seteoC(true);
         setopinionVal("Unsubstantiated");
-        console.log("diu:" + eoC + opinionVal);
       } else if (updatedOpArr[0] === false && updatedOpArr[1] === false) {
         seteoC(false);
         setopinionVal("");
@@ -1513,7 +1753,7 @@ function App() {
   return (
     <>
       <div className="rowC">
-        <div className="sidebar1">
+        <div className="sidebar1" style={{ height: "45rem" }}>
           <h2
             style={{
               margin: "26px",
@@ -1830,9 +2070,9 @@ function App() {
                 <Typography variant="h6">MS B</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <FormGroup style={{ marginLeft: "18%" }}>
+                <FormGroup style={{ marginLeft: "5%" }}>
                   <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography color="common.black">Not</Typography>
+                    <Typography color="common.black">Include</Typography>
                     <Switch
                       checked={exclude}
                       inputProps={{ "aria-label": "ant design" }}
@@ -2041,9 +2281,8 @@ function App() {
               opinionComponent,
               proteinLinkComponent,
             }}
-            overlayNoRowsTemplate={
-              '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
-            }
+            noRowsOverlayComponent={noRowsOverlayComponent}
+            loadingOverlayComponent={loadingOverlayComponent}
             onGridReady={onGridReady}
             pagination={true}
             enableCellTextSelection={true}

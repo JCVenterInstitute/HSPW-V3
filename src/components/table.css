@@ -16,23 +16,25 @@
 .ag-theme-alpine .ag-header {
   color: #fff;
   font-family: Montserrat;
-  font-size: 10px;
+  font-size: 16px;
   font-style: normal;
-
+  --ag-header-column-separator-color: #3592e4;
+  --ag-header-cell-hover-background-color: #177be9;
+  --ag-header-cell-moving-background-color: #177be9;
   border-radius: 10px 10px 0 0;
   justify-content: center !important;
   text-align: center !important;
 }
 .ag-theme-alpine .ag-header-group-cell {
   font-weight: normal;
-  font-size: 14px;
+  font-size: 16px;
   --ag-grid-size: 3px;
   justify-content: center !important;
   text-align: center !important;
   --ag-list-item-height: 20px;
 }
 .ag-theme-alpine .ag-header-cell {
-  font-size: 12px;
+  font-size: 16px;
   --ag-grid-size: 3px;
   --ag-list-item-height: 20px;
   display: flex;
@@ -68,6 +70,12 @@
 }
 
 .table-border {
+  border: 1px solid #f9f8f7 !important;
+  background: #fff;
+  padding-left: 10px;
+}
+
+.square_table {
   border: 1px solid #f9f8f7 !important;
   background: #fff;
   padding: 0px !important;

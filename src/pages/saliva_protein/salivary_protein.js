@@ -1,7 +1,7 @@
 import { display } from "@mui/system";
 import React from "react";
-import Gene from "../components/gene_table";
-import "./style.css";
+import Gene from "../../components/gene_table";
+import "../style.css";
 import { useState, useEffect } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -12,9 +12,8 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { translateDOMPositionXY } from "rsuite/esm/DOMHelper";
 import { rgb } from "d3";
-import Protein from "../components/salivary_protein_table.js";
-import main_feature from "../components/hero.jpeg";
-import Filter from "../components/salivary_protein/filter_protein";
+import Protein from "../../components/salivary_protein/salivary_protein_table.js";
+import main_feature from "../../components/hero.jpeg";
 
 const mystyle = {
   color: "white",

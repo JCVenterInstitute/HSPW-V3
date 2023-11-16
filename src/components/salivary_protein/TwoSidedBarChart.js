@@ -27,15 +27,15 @@ const TwoSidedBarChart = (props) => {
       "#BDBDBD",
       "#D9D9D9",
     ]);
-  var canvasWidth = 880;
+  var canvasWidth = 920;
   var barsWidthTotal = 350;
   var barHeight = 15;
   var svgTopOffset = 30;
   var barsHeightTotal = barHeight * props.data.length;
   var canvasHeight = props.data.length * barHeight + svgTopOffset + 20; // +10 puts a little space at bottom.
   var legendOffset = barHeight / 2;
-  var legendBulletOffset = 30;
-  var legendTextOffset = 50;
+  var legendBulletOffset = 80;
+  var legendTextOffset = 20;
   var ihBarOffset = 90;
   useEffect(() => {
     var synchronizedMouseOver = function () {
@@ -187,7 +187,7 @@ const TwoSidedBarChart = (props) => {
           legendBulletOffset +
           legendTextOffset +
           ihBarOffset +
-          barsWidthTotal / 2
+          barsWidthTotal / 1.5
       )
       .attr("y", 0)
       .attr("dy", svgTopOffset / 2) // vertical-align: middle

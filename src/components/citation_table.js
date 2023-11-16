@@ -11,7 +11,10 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { DATA } from "./data_citations";
-
+import { ReactComponent as Download_Logo } from "./table_icon/download.svg";
+import { ReactComponent as Left_Arrow } from "./table_icon/left_arrow.svg";
+import { ReactComponent as Right_Arrow } from "./table_icon/right_arrow.svg";
+import { ReactComponent as Search } from "./table_icon/search.svg";
 function LinkComponent(props: ICellRendererParams) {
   return (
     <a
@@ -26,18 +29,136 @@ function LinkComponent(props: ICellRendererParams) {
 
 function App() {
   const [message, setMessage] = useState("");
+  const [rowData, setRowData] = useState([]);
+
+  const [gridApi, setGridApi] = useState();
+  const [pageSize, setPageSize] = useState(50);
+  const [pageNum, setPageNum] = useState(0);
+  const [count, setCount] = useState(1);
+  const [docCount, setDocCount] = useState(0);
+  const [queryArr, setQueryArr] = useState([]);
+  const [CitationIDC, setCitationIDC] = useState(false);
+  const [citationID, setCitationID] = useState("");
+  const [pageNumArr, setPageNumArr] = useState([1]);
+
   useEffect(() => {
-    fetch("http://localhost:8000/citation")
-      .then((res) => res.json())
-      .then((data) => setMessage(data));
+    const fetchData = async () => {
+      const data = await fetch(
+        `http://localhost:8000/citation/${pageSize}/${pageNum}`
+      );
+      const json = data.json();
+      return json;
+    };
+    const result = fetchData().catch(console.errror);
+    console.log(result);
+    result.then((value) => {
+      if (value.hits) {
+        console.log(value);
+        let data1 = [];
+        for (let i = 0; i < value.hits.length; i++) {
+          data1.push(value.hits[i]["_source"]);
+        }
+
+        setRowData(data1);
+      }
+      setDocCount(value.total.value);
+      const newOptions = [];
+      for (let i = 1; i <= Math.round(value.total.value / pageSize); i++) {
+        newOptions.push(
+          <option key={i} value={i}>
+            {i}
+          </option>
+        );
+      }
+      setPageNumArr(newOptions);
+    });
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetch(
+        `http://localhost:8000/citation/${pageSize}/${pageNum}`
+      );
+      console.log(`http://localhost:8000/citation/${pageSize}/${pageNum}`);
+      const json = data.json();
+      return json;
+    };
+
+    const url = `http://localhost:8000/citation_search/${pageSize}/${pageNum}`;
+
+    const customHeaders = {
+      "Content-Type": "application/json",
+    };
+    const fetchQuery = async () => {
+      console.log(JSON.stringify(queryArr));
+      const data = await fetch(url, {
+        method: "POST",
+        headers: customHeaders,
+        body: JSON.stringify(queryArr),
+      });
+      const json = data.json();
+
+      return json;
+    };
+    console.log(url);
+
+    if (CitationIDC === true) {
+      const queryResult = fetchQuery().catch(console.errror);
+      queryResult.then((value) => {
+        if (value.hits.hits) {
+          console.log("109" + value);
+          let data1 = [];
+          for (let i = 0; i < value.hits.hits.length; i++) {
+            data1.push(value.hits.hits[i]["_source"]);
+          }
+          console.log(data1);
+          setRowData(data1);
+        }
+        setDocCount(value.hits.total.value);
+        const newOptions = [];
+        for (
+          let i = 1;
+          i <= Math.round(value.hits.total.value / pageSize);
+          i++
+        ) {
+          newOptions.push(
+            <option key={i} value={i}>
+              {i}
+            </option>
+          );
+        }
+        setPageNumArr(newOptions);
+      });
+    } else {
+      const result = fetchData().catch(console.errror);
+      result.then((value) => {
+        if (value.hits) {
+          console.log(value);
+          let data1 = [];
+          for (let i = 0; i < value.hits.length; i++) {
+            data1.push(value.hits[i]["_source"]);
+          }
+          console.log(data1);
+          setRowData(data1);
+        }
+        setDocCount(value.total.value);
+        const newOptions = [];
+        for (let i = 1; i <= Math.round(value.total.value / pageSize); i++) {
+          newOptions.push(
+            <option key={i} value={i}>
+              {i}
+            </option>
+          );
+        }
+        setPageNumArr(newOptions);
+      });
+    }
+  }, [pageSize, pageNum, citationID]);
+
   let data1 = [];
   for (let i = 0; i < message.length; i++) {
     data1.push(message[i]["_source"]);
   }
-
-  const [gridApi, setGridApi] = useState();
-  const rowData = data1;
 
   const columns = [
     {
@@ -46,18 +167,19 @@ function App() {
       cellRenderer: "LinkComponent",
       checkboxSelection: false,
       headerCheckboxSelection: false,
-      minWidth: 185,
+      maxWidth: 145,
       wrapText: true,
+      headerClass: ["header-border"],
+      cellClass: ["table-border"],
     },
     {
       headerName: "Date of Publication",
       field: "Date of Publication",
       maxWidth: 205,
-      sortable: true,
       wrapText: true,
       suppressSizeToFit: true,
-      sortable: true,
-      sort: "asc",
+      headerClass: ["header-border"],
+      cellClass: ["table-border"],
     },
     {
       headerName: "Title",
@@ -66,6 +188,8 @@ function App() {
       autoHeight: true,
       cellStyle: { "word-break": "break-word" },
       sortable: true,
+      headerClass: ["header-border"],
+      cellClass: ["table-border"],
     },
     {
       headerName: "Journal",
@@ -74,6 +198,8 @@ function App() {
       maxWidth: 145,
       maxWidth: 145,
       sortable: true,
+      headerClass: ["header-border"],
+      cellClass: ["table-border"],
     },
   ];
 
@@ -84,24 +210,76 @@ function App() {
     autoHeaderHeight: true,
   };
 
+  const onBtNext = (event) => {
+    if (count < docCount / pageSize) {
+      var x = gridRef.current.api.paginationGetCurrentPage();
+
+      setPageNum(pageNum + 1);
+
+      setCount(count + 1);
+    }
+  };
+
+  const onPageNumChanged = (event) => {
+    var value = document.getElementById("page-num").value;
+    setPageNum(value);
+    setCount(value);
+  };
+
+  const onBtPrevious = (event) => {
+    if (pageNum !== 1) {
+      var x = pageNum;
+      setPageNum(x - 1);
+      setCount(count - 1);
+    }
+  };
+
+  const updateQuery = (newQuery) => {
+    setQueryArr((prevArray) => {
+      // Remove existing queries of the same type (InterPro ID or Name)
+      const filteredArray = prevArray.filter((p) => {
+        return !(
+          newQuery &&
+          p.wildcard.hasOwnProperty(Object.keys(newQuery.wildcard)[0])
+        );
+      });
+
+      // Add the new query to the filtered array
+      return newQuery ? [...filteredArray, newQuery] : filteredArray;
+    });
+  };
+
+  const handleIDChange = (e) => {
+    const inputValue = e.target.value;
+
+    if (inputValue === "") {
+      setCitationIDC(false);
+    } else {
+      setCitationIDC(true);
+    }
+
+    // Add new element for InterPro ID with updated input value
+    const newIDQuery =
+      inputValue !== ""
+        ? {
+            wildcard: {
+              CitationID: {
+                value: `${inputValue}*`,
+                case_insensitive: true,
+              },
+            },
+          }
+        : null;
+
+    setCitationID(inputValue);
+    updateQuery(newIDQuery);
+  };
+
   const onGridReady = (params) => {
     setGridApi(params);
   };
 
   const gridRef = useRef();
-
-  const paginationNumberFormatter = useCallback((params) => {
-    return params.value.toLocaleString();
-  }, []);
-
-  const onFirstDataRendered = useCallback((params) => {
-    gridRef.current.api.paginationGoToPage(0);
-  }, []);
-
-  const onPageSizeChanged = useCallback(() => {
-    var value = document.getElementById("page-size").value;
-    gridRef.current.api.paginationSetPageSize(Number(value));
-  }, []);
 
   const onBtExport = useCallback(() => {
     gridRef.current.api.exportDataAsExcel();
@@ -116,7 +294,7 @@ function App() {
   return (
     <>
       <div className="rowC">
-        <div className="sidebar1">
+        <div className="sidebar1" style={{ height: "45em" }}>
           <h2
             style={{
               margin: "26px",
@@ -146,6 +324,7 @@ function App() {
                   type="text"
                   id="filter-id-box"
                   placeholder="Search..."
+                  onChange={handleIDChange}
                   style={{
                     width: "80%",
                     marginLeft: "10px",
@@ -167,19 +346,31 @@ function App() {
                 <Typography variant="h6">Date of Publication</Typography>
               </AccordionSummary>
               <AccordionDetails>
+                <label for="start" style={{ marginRight: "10px" }}>
+                  Start date:
+                </label>
+
                 <input
-                  type="text"
-                  id="filter-name-box"
-                  placeholder="Search..."
-                  style={{
-                    width: "80%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
-                  }}
+                  type="date"
+                  id="start"
+                  name="pub-start"
+                  value="1957-08-17"
+                  min="1957-08-17"
+                  max="2021-03-16"
+                  style={{ marginBottom: "10px" }}
+                />
+                <br></br>
+                <label for="start" style={{ marginRight: "15px" }}>
+                  End date:
+                </label>
+
+                <input
+                  type="date"
+                  id="end"
+                  name="pub-end"
+                  value="2021-03-16"
+                  min="1957-08-17"
+                  max="2021-03-16"
                 />
               </AccordionDetails>
             </Accordion>
@@ -236,34 +427,104 @@ function App() {
       </div>
       <div className="AppBox1">
         <div className="example-header" style={{ marginLeft: "35px" }}>
-          <label>Search: </label>
-          <input
-            type="text"
-            id="filter-text-box"
-            placeholder="Filter..."
-            onInput={onFilterTextBoxChanged}
-            style={{ width: "50%", padding: "0.25rem 0.75rem" }}
-          />
-          <b style={{ marginLeft: "15%" }}>Page size: </b>
-          <select onChange={onPageSizeChanged} id="page-size">
-            <option value="50" selected={true}>
-              50
-            </option>
+          <form
+            onSubmit={onFilterTextBoxChanged}
+            style={{ display: "inline", position: "relative" }}
+          >
+            <input
+              type="text"
+              id="filter-text-box"
+              placeholder="Search..."
+              onInput={onFilterTextBoxChanged}
+              style={{
+                width: "30%",
+                padding: "0.25rem 0.75rem",
+                borderRadius: "10px 0 0 10px",
+                borderColor: "#1463B9",
+                display: "inline",
+                position: "relative",
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                display: "inline",
+                position: "relative",
+                top: "0.3em",
+                backgroundColor: "#1463B9",
+                borderColor: "#1463B9",
+                cursor: "pointer",
+                width: "5%",
+                borderRadius: "0 10px 10px 0",
+              }}
+            >
+              <Search />
+            </button>
+          </form>
+          <text style={{ marginLeft: "5%" }}>Records Per Page</text>
+          <select id="page-size">
+            <option value="50">50</option>
             <option value="100">100</option>
             <option value="500">500</option>
             <option value="1000">1000</option>
           </select>
-
+          <text style={{ marginLeft: "5%" }}>Page</text>
+          <select onChange={onPageNumChanged} value={pageNum} id="page-num">
+            {pageNumArr}
+          </select>
+          <text style={{ marginLeft: "1%" }}>
+            out of {Math.round(docCount / pageSize)}
+          </text>
           <button
-            onClick={onBtExport}
+            onClick={onBtPrevious}
             style={{
-              marginBottom: "5px",
+              marginLeft: "5%",
               fontWeight: "bold",
-              textAlign: "right",
               marginLeft: "3%",
+              marginTop: "10px",
+              color: "#F6921E",
+              background: "white",
+              fontSize: "20",
+              padding: ".3em 2em",
+              border: "none",
+              cursor: "pointer",
             }}
           >
-            Export to Excel
+            <Left_Arrow
+              style={{
+                marginRight: "10px",
+                paddingTop: "5px",
+                display: "inline",
+                position: "relative",
+                top: "0.15em",
+              }}
+            />
+            prev
+          </button>
+          <button
+            onClick={onBtNext}
+            style={{
+              fontWeight: "bold",
+              marginTop: "10px",
+              marginLeft: "1%",
+              color: "#F6921E",
+              background: "white",
+              fontSize: "20",
+              padding: "2em .3em ",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            next
+            <Right_Arrow
+              style={{
+                marginLeft: "10px",
+                paddingTop: "5px",
+                display: "inline",
+                position: "relative",
+                top: "0.15em",
+              }}
+            />
           </button>
         </div>
         <div
@@ -272,28 +533,46 @@ function App() {
         >
           <AgGridReact
             className="ag-cell-wrap-text"
-            ref={gridRef}
-            cacheQuickFilter={true}
-            paginationNumberFormatter={paginationNumberFormatter}
-            onFirstDataRendered={onFirstDataRendered}
             rowData={rowData}
+            columnDefs={columns}
+            ref={gridRef}
+            defaultColDef={defColumnDefs}
             enableCellTextSelection={true}
-            overlayLoadingTemplate={
-              '<span class="ag-overlay-loading-center">Please wait while your rows are loading</span>'
-            }
             overlayNoRowsTemplate={
               '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
             }
-            columnDefs={columns}
-            frameworkComponents={{
-              LinkComponent,
-            }}
-            defaultColDef={defColumnDefs}
             onGridReady={onGridReady}
             pagination={true}
             paginationPageSize={50}
+            suppressPaginationPanel={true}
+            frameworkComponents={{
+              LinkComponent,
+            }}
           />
         </div>
+        <button
+          onClick={onBtExport}
+          style={{
+            fontWeight: "bold",
+            textAlign: "center",
+            color: "#F6921E",
+            background: "white",
+            fontSize: "20",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          <Download_Logo
+            style={{
+              marginRight: "10px",
+              paddingTop: "5px",
+              display: "inline",
+              position: "relative",
+              top: "0.15em",
+            }}
+          />
+          Download Spreadsheet
+        </button>
       </div>
     </>
   );
