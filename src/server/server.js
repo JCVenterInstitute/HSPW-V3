@@ -2190,7 +2190,7 @@ app.post("/api/differential-expression/analyze", (req, res) => {
       await exec(
         command,
         { cwd: workingDirectory },
-        async (error, stdout, stderr) => {
+        (error, stdout, stderr) => {
           if (error) {
             console.error(`error: ${error.message}`);
             res.status(500).send(`Error: ${error.message}`);
@@ -2207,7 +2207,8 @@ app.post("/api/differential-expression/analyze", (req, res) => {
           res.status(200).send(`Output: ${stdout}`);
         }
       );
-
+    })
+    .then(async () => {
       // S3 upload parameters
       const params = {
         bucketName: "differential-expression-result-dev",
