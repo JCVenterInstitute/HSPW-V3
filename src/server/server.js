@@ -7,6 +7,8 @@ const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const createAwsOpensearchConnector = require("aws-opensearch-connector");
 const fs = require("fs");
 const { exec } = require("child_process");
+const util = require("util");
+const execPromise = util.promisify(exec);
 const { s3Upload } = require("./utils/s3Upload");
 const fse = require("fs-extra");
 const path = require("path");
@@ -2152,78 +2154,59 @@ app.get("/protein/:id", (req, res) => {
   });
 });
 
-app.post("/api/differential-expression/analyze", (req, res) => {
-  console.log("> req.body", req.body);
-  // const scriptPath = "/Users/iwu/Desktop/HSPW/Test1"; // Path to the directory containing the R script
-  const scriptPath = "/home/ec2-user/r4test1/test";
+app.post("/api/differential-expression/analyze", async (req, res) => {
+  try {
+    console.log("> req.body", req.body);
 
-  // Get date and time for the working directory and s3 upload location
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are zero-based
-  const day = String(now.getDate()).padStart(2, "0");
-  const hours = String(now.getHours()).padStart(2, "0");
-  const minutes = String(now.getMinutes()).padStart(2, "0");
-  const seconds = String(now.getSeconds()).padStart(2, "0");
-  const formattedDate = `${year}${month}${day}-${hours}${minutes}${seconds}`;
+    const scriptPath = "/home/ec2-user/r4test1/test";
 
-  // const workingDirectory = `/Users/iwu/Desktop/differential-expression-result/${year}-${month}-${day}/differential-expression-${formattedDate}`;
-  const workingDirectory = `/home/ec2-user/differential-expression-result/${year}-${month}-${day}/differential-expression-${formattedDate}`;
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
 
-  // Create the working directory and copy the R script
-  fse
-    .ensureDir(workingDirectory)
-    .then(async () => {
-      // Form the R script required data
-      await processGroupData(req.body, workingDirectory);
-      fse.copy(
-        // path.join(scriptPath, "test.R"),
-        // path.join(workingDirectory, "test.R")
-        path.join(scriptPath, "generate-data.R"),
-        path.join(workingDirectory, "generate-data.R")
-      );
-    })
-    .then(async () => {
-      // Execute the R script from the working directory
-      // const command = "Rscript test.R";
-      const command = "Rscript generate-data.R LogNorm 1 0.05 raw";
-      await exec(
-        command,
-        { cwd: workingDirectory },
-        (error, stdout, stderr) => {
-          if (error) {
-            console.error(`error: ${error.message}`);
-            res.status(500).send(`Error: ${error.message}`);
-            return;
-          }
-          if (stderr) {
-            console.error(`stderr: ${stderr}`);
-            res.status(500).send(`Stderr: ${stderr}`);
-            return;
-          }
+    const formattedDate = `${year}${month}${day}-${hours}${minutes}${seconds}`;
 
-          console.log(`stdout:\n${stdout}`);
+    const workingDirectory = `/home/ec2-user/differential-expression-result/${year}-${month}-${day}/differential-expression-${formattedDate}`;
 
-          res.status(200).send(`Output: ${stdout}`);
-        }
-      );
-    })
-    .then(async () => {
-      // S3 upload parameters
-      const params = {
-        bucketName: "differential-expression-result-dev",
-        s3KeyPrefix: `${year}-${month}-${day}/differential-expression-${formattedDate}`,
-        contentType: "text/plain",
-        directoryPath: workingDirectory, // The new directory
-      };
+    // Create the working directory and copy the R script
+    await fse.ensureDir(workingDirectory);
+    await processGroupData(req.body, workingDirectory);
+    await fse.copy(
+      path.join(scriptPath, "generate-data.R"),
+      path.join(workingDirectory, "generate-data.R")
+    );
 
-      // Perform the s3 upload
-      await s3Upload(params);
-    })
-    .catch((error) => {
-      console.error(`Error during file operations: ${error.message}`);
-      res.status(500).send(`Server Error: ${error.message}`);
+    // Execute the R script from the working directory
+    const command = "Rscript generate-data.R LogNorm 1 0.05 raw";
+    const { stdout, stderr } = await execPromise(command, {
+      cwd: workingDirectory,
     });
+
+    if (stderr) {
+      throw new Error(`Stderr: ${stderr}`);
+    }
+
+    console.log(`stdout:\n${stdout}`);
+    res.status(200).send(`Output: ${stdout}`);
+
+    // S3 upload parameters
+    const params = {
+      bucketName: "differential-expression-result-dev",
+      s3KeyPrefix: `${year}-${month}-${day}/differential-expression-${formattedDate}`,
+      contentType: "text/plain",
+      directoryPath: workingDirectory,
+    };
+
+    // Perform the s3 upload
+    await s3Upload(params);
+  } catch (error) {
+    console.error(`Error during file operations: ${error.message}`);
+    res.status(500).send(`Server Error: ${error.message}`);
+  }
 });
 
 const searchStudy = async () => {
