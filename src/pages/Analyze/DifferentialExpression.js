@@ -154,7 +154,7 @@ const DifferentialExpression = () => {
   };
 
   const filterList = [
-    "Sample Name",
+    "Sample Title",
     "Tissue Type",
     "Institution",
     "Disease",
@@ -366,7 +366,11 @@ const DifferentialExpression = () => {
 
   const handleAnalyze = async () => {
     await axios.post(
-      "http://localhost:8000/api/differential-expression/analyze"
+      "http://localhost:8000/api/differential-expression/analyze",
+      {
+        groupAData: groupARowData,
+        groupBData: groupBRowData,
+      }
     );
   };
 
@@ -467,15 +471,15 @@ const DifferentialExpression = () => {
         </Box>
         <Container maxWidth="xl" sx={{ marginTop: "30px" }}>
           <Box sx={{ display: "flex" }}>
-            <Box>
+            <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
               <TextField
                 variant="outlined"
                 size="small"
                 label="Search..."
                 InputProps={{
                   style: {
-                    width: "500px",
                     height: "44px",
+                    width: "500px",
                     borderRadius: "16px 0 0 16px",
                   },
                 }}
@@ -850,12 +854,12 @@ const DifferentialExpression = () => {
             }}
           ></div>
           <Box>
-            <Typography variant="h6" sx={{ fontFamily: "Lato" }}>
+            {/* <Typography variant="h6" sx={{ fontFamily: "Lato" }}>
               ANALYSIS OPTIONS
             </Typography>
             <Typography variant="body1" sx={{ fontFamily: "Lato" }}>
               Please select
-            </Typography>
+            </Typography> */}
             <Button variant="contained" onClick={handleAnalyze}>
               ANALYZE
             </Button>

@@ -8,6 +8,9 @@ const createAwsOpensearchConnector = require("aws-opensearch-connector");
 const fs = require("fs");
 const { exec } = require("child_process");
 const { s3Upload } = require("./utils/s3Upload");
+const fse = require("fs-extra");
+const path = require("path");
+const { processGroupData } = require("./utils/processGroupData");
 
 app.use(cors());
 app.use(express.json());
@@ -2150,41 +2153,75 @@ app.get("/protein/:id", (req, res) => {
 });
 
 app.post("/api/differential-expression/analyze", (req, res) => {
-  const scriptPath = "/Users/iwu/Desktop/HSPW/Test1"; // Path to the directory containing the R script
-  const command = "Rscript test.R"; // The R command you want to run
+  // const scriptPath = "/Users/iwu/Desktop/HSPW/Test1"; // Path to the directory containing the R script
+  const scriptPath = "/home/ec2-user/r4test1/test";
 
-  exec(command, { cwd: scriptPath }, async (error, stdout, stderr) => {
-    if (error) {
-      console.error(`error: ${error.message}`);
-      res.status(500).send(`Error: ${error.message}`);
-      return;
-    }
+  // Get date and time for the working directory and s3 upload location
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+  const day = String(now.getDate()).padStart(2, "0");
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
+  const formattedDate = `${year}${month}${day}-${hours}${minutes}${seconds}`;
 
-    if (stderr) {
-      console.error(`stderr: ${stderr}`);
-      res.status(500).send(`Stderr: ${stderr}`);
-      return;
-    }
+  // const workingDirectory = `/Users/iwu/Desktop/differential-expression-result/${year}-${month}-${day}/differential-expression-${formattedDate}`;
+  const workingDirectory = `/home/ec2-user/differential-expression-result/${year}-${month}-${day}/differential-expression-${formattedDate}`;
 
-    console.log(`stdout:\n${stdout}`);
+  // Create the working directory and copy the R script
+  fse
+    .ensureDir(workingDirectory)
+    .then(async () => {
+      // Form the R script required data
+      await processGroupData(req.body, workingDirectory);
+      fse.copy(
+        // path.join(scriptPath, "test.R"),
+        // path.join(workingDirectory, "test.R")
+        path.join(scriptPath, "generate-data.R"),
+        path.join(workingDirectory, "generate-data.R")
+      );
+    })
+    .then(() => {
+      // Execute the R script from the working directory
+      // const command = "Rscript test.R";
+      const command = "Rscript generate-data.R LogNorm 1 0.05 raw";
+      exec(
+        command,
+        { cwd: workingDirectory },
+        async (error, stdout, stderr) => {
+          if (error) {
+            console.error(`error: ${error.message}`);
+            res.status(500).send(`Error: ${error.message}`);
+            return;
+          }
+          if (stderr) {
+            console.error(`stderr: ${stderr}`);
+            res.status(500).send(`Stderr: ${stderr}`);
+            return;
+          }
 
-    // Get date and time for s3 upload location
-    let [date, time] = new Date(new Date() - new Date(4 * 3600000)) // EST TIME
-      .toISOString()
-      .split("T");
-    time = time.match(/([0-9]{1,2}:[0-9]{2}:[0-9]{2}).*/)[1];
+          console.log(`stdout:\n${stdout}`);
 
-    const params = {
-      bucketName: "differential-expression-result-dev",
-      s3KeyPrefix: `${date}/${time}`,
-      contentType: "text/plain",
-      directoryPath: scriptPath,
-    };
+          // S3 upload parameters
+          const params = {
+            bucketName: "differential-expression-result-dev",
+            s3KeyPrefix: `${year}-${month}-${day}/differential-expression-${formattedDate}`,
+            contentType: "text/plain",
+            directoryPath: workingDirectory, // The new directory
+          };
 
-    await s3Upload(params);
+          // Perform the s3 upload
+          await s3Upload(params);
 
-    res.status(200).send(`Output: ${stdout}`);
-  });
+          res.status(200).send(`Output: ${stdout}`);
+        }
+      );
+    })
+    .catch((error) => {
+      console.error(`Error during file operations: ${error.message}`);
+      res.status(500).send(`Server Error: ${error.message}`);
+    });
 });
 
 const searchStudy = async () => {
@@ -2208,6 +2245,34 @@ const searchStudy = async () => {
 
 app.get("/api/study", async (req, res) => {
   searchStudy().then((response) => {
+    res.json(response);
+  });
+});
+
+const searchStudyProtein = async (experiment_id_key) => {
+  // Initialize the client.
+  const client = await getClient();
+
+  const query = {
+    size: 10000,
+    query: {
+      query_string: {
+        default_field: "experiment_id_key",
+        query: experiment_id_key,
+      },
+    },
+  };
+
+  const response = await client.search({
+    index: "study_protein",
+    body: query,
+  });
+
+  return response.body.hits.hits;
+};
+
+app.get("/api/study_protein/:id", async (req, res) => {
+  searchStudyProtein(req.params.id).then((response) => {
     res.json(response);
   });
 });

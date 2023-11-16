@@ -17,7 +17,12 @@ const path = require("path");
  * @param {any} options.data The metadata for geneflow to process
  * @returns {Promise}
  */
-exports.s3Upload = ({ directoryPath, bucketName, s3Key, contentType }) => {
+exports.s3Upload = ({
+  directoryPath,
+  bucketName,
+  s3KeyPrefix,
+  contentType,
+}) => {
   fs.readdir(directoryPath, async (err, files) => {
     if (err) {
       console.error("Could not list the directory.", err);
@@ -26,14 +31,15 @@ exports.s3Upload = ({ directoryPath, bucketName, s3Key, contentType }) => {
 
     for (const file of files) {
       const filePath = path.join(directoryPath, file);
-
-      const s3KeyPath = `/${s3Key}/${file}`; // Define how you want the S3 key to be named
-      console.log(s3KeyPath);
+      if (file === ".DS_Store") {
+        continue;
+      }
+      const s3Key = `${s3KeyPrefix}/${file}`; // Define how you want the S3 key to be named
 
       try {
         const presignedUrl = await getPresignUrl({
           bucketName,
-          s3KeyPath,
+          s3Key,
           contentType,
         });
 
