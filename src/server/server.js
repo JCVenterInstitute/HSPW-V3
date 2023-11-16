@@ -2153,6 +2153,7 @@ app.get("/protein/:id", (req, res) => {
 });
 
 app.post("/api/differential-expression/analyze", (req, res) => {
+  console.log("> req.body", req.body);
   // const scriptPath = "/Users/iwu/Desktop/HSPW/Test1"; // Path to the directory containing the R script
   const scriptPath = "/home/ec2-user/r4test1/test";
 
