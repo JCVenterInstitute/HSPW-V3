@@ -2183,11 +2183,11 @@ app.post("/api/differential-expression/analyze", (req, res) => {
         path.join(workingDirectory, "generate-data.R")
       );
     })
-    .then(() => {
+    .then(async () => {
       // Execute the R script from the working directory
       // const command = "Rscript test.R";
       const command = "Rscript generate-data.R LogNorm 1 0.05 raw";
-      exec(
+      await exec(
         command,
         { cwd: workingDirectory },
         async (error, stdout, stderr) => {
@@ -2204,20 +2204,20 @@ app.post("/api/differential-expression/analyze", (req, res) => {
 
           console.log(`stdout:\n${stdout}`);
 
-          // S3 upload parameters
-          const params = {
-            bucketName: "differential-expression-result-dev",
-            s3KeyPrefix: `${year}-${month}-${day}/differential-expression-${formattedDate}`,
-            contentType: "text/plain",
-            directoryPath: workingDirectory, // The new directory
-          };
-
-          // Perform the s3 upload
-          await s3Upload(params);
-
           res.status(200).send(`Output: ${stdout}`);
         }
       );
+
+      // S3 upload parameters
+      const params = {
+        bucketName: "differential-expression-result-dev",
+        s3KeyPrefix: `${year}-${month}-${day}/differential-expression-${formattedDate}`,
+        contentType: "text/plain",
+        directoryPath: workingDirectory, // The new directory
+      };
+
+      // Perform the s3 upload
+      await s3Upload(params);
     })
     .catch((error) => {
       console.error(`Error during file operations: ${error.message}`);

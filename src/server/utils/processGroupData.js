@@ -81,7 +81,7 @@ exports.processGroupData = async (
   const csvString = createCsvString(combinedData);
 
   // Save to file
-  const csvFilePath = path.join(workingDirectory, "inputData.txt");
+  const csvFilePath = path.join(workingDirectory, "inputdata.txt");
   fs.writeFileSync(csvFilePath, csvString);
   console.log(`Data saved to ${csvFilePath}`);
 
