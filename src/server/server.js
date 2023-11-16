@@ -2186,9 +2186,9 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
       cwd: workingDirectory,
     });
 
-    if (stderr) {
-      throw new Error(`Stderr: ${stderr}`);
-    }
+    // if (stderr) {
+    //   throw new Error(`Stderr: ${stderr}`);
+    // }
 
     console.log(`stdout:\n${stdout}`);
     res.status(200).send(`Output: ${stdout}`);
