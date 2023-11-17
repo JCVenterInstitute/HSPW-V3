@@ -29,6 +29,7 @@ import CustomLoadingOverlay from "./CustomLoadingOverlay";
 import CustomNoRowsOverlay from "./CustomNoRowsOverlay";
 import CircleCheckedFilled from "@mui/icons-material/CheckCircle";
 import CircleUnchecked from "@mui/icons-material/RadioButtonUnchecked";
+import Swal from "sweetalert2";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -372,17 +373,48 @@ const DifferentialExpression = () => {
   };
 
   const handleAnalyze = async () => {
-    await axios.post(
-      "http://localhost:8000/api/differential-expression/analyze",
-      {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+
+    const formattedDate = `${year}${month}${day}-${hours}${minutes}${seconds}`;
+
+    const jobId = `differential-expression-${formattedDate}`;
+
+    const workingDirectory = `/home/ec2-user/differential-expression-result/${year}-${month}-${day}/${jobId}`;
+
+    Swal.fire({
+      title: "Submitting the job, please wait...",
+    });
+    Swal.showLoading();
+
+    await axios
+      .post("http://localhost:8000/api/differential-expression/analyze", {
         groupAData: groupARowData,
         groupBData: groupBRowData,
         logNorm,
         foldChangeThreshold,
         pValueThreshold,
         pValueType,
-      }
-    );
+        timestamp: {
+          year,
+          month,
+          day,
+          hours,
+          minutes,
+          seconds,
+        },
+        formattedDate,
+        workingDirectory,
+      })
+      .then(() => {
+        Swal.close();
+      });
+    window.location.href = `/differential-expression/results/${jobId}`;
   };
 
   return (
@@ -424,6 +456,7 @@ const DifferentialExpression = () => {
           width: "100%",
           display: "flex",
           paddingLeft: "0px !important",
+          // paddingRight: "0px !important",
         }}
       >
         <Box
