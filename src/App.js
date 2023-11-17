@@ -16,7 +16,6 @@ import Protein_Detail from "./pages/saliva_protein/protein_detail";
 import Analysis from "./pages/analysis";
 import Citation from "./pages/citation";
 import Citation_Detail from "./pages/citation_detail";
-import InterProScan from "./pages/interproscan.js";
 import Signature_Detail from "./pages/signature_detail";
 import Basic_Search from "./pages/basic_search";
 import Experiment_Search from "./pages/experiment_search";
