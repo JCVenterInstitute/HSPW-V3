@@ -1,7 +1,7 @@
 import "./filter.css";
 import React, { useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-enterprise";
+
 import { Link } from "react-router-dom";
 
 import "ag-grid-community/dist/styles/ag-grid.css";
