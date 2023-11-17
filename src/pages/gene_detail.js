@@ -21,9 +21,9 @@ const th = {
 
 const td = {
   border: "1px solid #aaa",
-  fontSize: "18px",
+  fontSize: "14px",
   padding: "0.2em",
-  fontSize: "18px",
+  fontSize: "14px",
 };
 
 const Gene_detail = (props) => {
@@ -51,52 +51,41 @@ const Gene_detail = (props) => {
   const [proteinName, setProteinName] = useState("");
   const fetchProtein = async () => {
     let p = [];
-    data[0]["_source"]["Gene Products"].map(
-      async (item, i) =>
-        await fetch("https://rest.uniprot.org/uniprotkb/" + item + ".json")
-          .then((res) => res.json())
-          .then((proteinName) => {
-            console.log(proteinName["proteinDescription"]);
-            if (
-              typeof proteinName["proteinDescription"]["recommendedName"] !==
-              "undefined"
-            ) {
-              p.push(
-                proteinName["proteinDescription"]["recommendedName"][
-                  "fullName"
-                ]["value"]
-              );
-              console.log(p);
-              setProteinName(p);
-              if (i === data[0]["_source"]["Gene Products"].length - 1) {
-                setLoading(false);
-              }
-            } else if (
-              typeof proteinName["proteinDescription"].submissionNames[0] !==
-              "undefined"
-            ) {
-              console.log(
-                "123:" +
-                  proteinName["proteinDescription"].submissionNames[0].fullName
-                    .value
-              );
-              p.push(
-                proteinName["proteinDescription"].submissionNames[0].fullName
-                  .value
-              );
-              console.log(p);
-              setProteinName(p);
-              console.log(i);
-              console.log(data[0]["_source"]["Gene Products"].length);
-              if (i === data[0]["_source"]["Gene Products"].length - 1) {
-                setLoading(false);
-              }
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          })
-    );
+    data[0]["_source"]["Gene Products"].map(async (item, i) => {
+      try {
+        const response = await fetch(
+          `https://rest.uniprot.org/uniprotkb/${item}.json`
+        );
+        if (!response.ok) {
+          throw new Error(`An error occurred: ${response.status}`);
+        }
+
+        const proteinName = await response.json();
+
+        if (
+          proteinName &&
+          proteinName.proteinDescription &&
+          proteinName.proteinDescription.recommendedName
+        ) {
+          p.push(proteinName.proteinDescription.recommendedName.fullName.value);
+        } else if (
+          proteinName &&
+          proteinName["proteinDescription"] &&
+          proteinName["proteinDescription"].submissionNames &&
+          proteinName["proteinDescription"].submissionNames[0]
+        ) {
+          p.push(
+            proteinName["proteinDescription"].submissionNames[0].fullName.value
+          );
+        }
+
+        if (i === data[0]["_source"]["Gene Products"].length - 1) {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
   };
 
   useEffect(() => {
@@ -147,7 +136,14 @@ const Gene_detail = (props) => {
         </p>
       </div>
       <div style={{ margin: "20px" }}>
-        <TableContainer component={Paper}>
+        <TableContainer
+          component={Paper}
+          style={{
+            borderTopLeftRadius: "10px",
+            borderTopRightRadius: "10px",
+            border: "1px solid #CACACA",
+          }}
+        >
           <Table
             aria-label="simple table"
             style={{ border: "1px solid white" }}
@@ -159,9 +155,10 @@ const Gene_detail = (props) => {
                     backgroundColor: "#1463B9",
                     color: "white",
                     fontFamily: "Montserrat",
-                    fontSize: "17px",
+                    fontSize: "16px",
                     fontWeight: "bold",
                     border: "1px solid white",
+                    borderTopLeftRadius: "10px",
                   }}
                   sx={th}
                 >
@@ -169,7 +166,13 @@ const Gene_detail = (props) => {
                 </TableCell>
                 <TableCell
                   sx={td}
-                  style={{ fontFamily: "Lato", fontSize: "18px" }}
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "14px",
+                    borderTopRightRadius: "10px",
+                    border: "1px solid #CACACA",
+                    paddingLeft: "15px",
+                  }}
                 >
                   {data[0]["_source"]["Aliases"]}
                 </TableCell>
@@ -180,7 +183,7 @@ const Gene_detail = (props) => {
                     backgroundColor: "#1463B9",
                     color: "white",
                     fontFamily: "Montserrat",
-                    fontSize: "17px",
+                    fontSize: "16px",
                     fontWeight: "bold",
                     border: "1px solid white",
                   }}
@@ -190,11 +193,15 @@ const Gene_detail = (props) => {
                 </TableCell>
                 <TableCell
                   sx={td}
-                  style={{ fontFamily: "Lato", fontSize: "18px" }}
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "14px",
+                    paddingLeft: "15px",
+                  }}
                 >
                   <a
                     style={{ color: "/*#116988*/#0b5989" }}
-                    href="http://salivaryproteome.org/public/index.php/Special:Ontology_Term/NEWT:9606"
+                    href="https://www.uniprot.org/taxonomy/9606 "
                   >
                     Homo sapiens
                   </a>
@@ -206,7 +213,7 @@ const Gene_detail = (props) => {
                     backgroundColor: "#1463B9",
                     color: "white",
                     fontFamily: "Montserrat",
-                    fontSize: "17px",
+                    fontSize: "16px",
                     fontWeight: "bold",
                     border: "1px solid white",
                   }}
@@ -216,7 +223,11 @@ const Gene_detail = (props) => {
                 </TableCell>
                 <TableCell
                   sx={td}
-                  style={{ fontFamily: "Lato", fontSize: "18px" }}
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "14px",
+                    paddingLeft: "15px",
+                  }}
                 >
                   Eukaryota {">"} Opisthokonta {">"} Metazoa {">"} Eumetazoa{" "}
                   {">"} Bilateria {">"} Deuterostomia {">"} Chordata {">"}{" "}
@@ -235,7 +246,7 @@ const Gene_detail = (props) => {
                     backgroundColor: "#1463B9",
                     color: "white",
                     fontFamily: "Montserrat",
-                    fontSize: "17px",
+                    fontSize: "16px",
                     fontWeight: "bold",
                     border: "1px solid white",
                   }}
@@ -247,8 +258,9 @@ const Gene_detail = (props) => {
                   sx={td}
                   style={{
                     fontFamily: "Lato",
-                    fontSize: "18px",
+                    fontSize: "14px",
                     color: "#464646",
+                    paddingLeft: "15px",
                   }}
                 >
                   {data[0]["_source"]["Location"]}
@@ -260,7 +272,7 @@ const Gene_detail = (props) => {
                     backgroundColor: "#1463B9",
                     color: "white",
                     fontFamily: "Montserrat",
-                    fontSize: "17px",
+                    fontSize: "16px",
                     fontWeight: "bold",
                     border: "1px solid white",
                   }}
@@ -270,7 +282,11 @@ const Gene_detail = (props) => {
                 </TableCell>
                 <TableCell
                   sx={td}
-                  style={{ fontFamily: "Lato", fontSize: "18px" }}
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "14px",
+                    paddingLeft: "15px",
+                  }}
                 >
                   {data[0]["_source"]["Summary"]}
                 </TableCell>
@@ -284,7 +300,7 @@ const Gene_detail = (props) => {
                     backgroundColor: "#1463B9",
                     color: "white",
                     fontFamily: "Montserrat",
-                    fontSize: "17px",
+                    fontSize: "16px",
                     fontWeight: "bold",
                     border: "1px solid white",
                   }}
@@ -294,7 +310,7 @@ const Gene_detail = (props) => {
                 </TableCell>
                 <TableCell
                   sx={td}
-                  style={{ fontFamily: "Lato", fontSize: "18px" }}
+                  style={{ fontFamily: "Lato", fontSize: "14px" }}
                 >
                   <Table>
                     <TableHead>
@@ -304,9 +320,10 @@ const Gene_detail = (props) => {
                             backgroundColor: "#1463B9",
                             color: "white",
                             fontFamily: "Montserrat",
-                            fontSize: "17px",
+                            fontSize: "16px",
                             fontWeight: "bold",
                             border: "1px solid white",
+                            borderTopLeftRadius: "10px",
                           }}
                         >
                           <a
@@ -321,7 +338,7 @@ const Gene_detail = (props) => {
                             backgroundColor: "#1463B9",
                             color: "white",
                             fontFamily: "Montserrat",
-                            fontSize: "17px",
+                            fontSize: "16px",
                             fontWeight: "bold",
                             border: "1px solid white",
                           }}
@@ -338,9 +355,10 @@ const Gene_detail = (props) => {
                             backgroundColor: "#1463B9",
                             color: "white",
                             fontFamily: "Montserrat",
-                            fontSize: "17px",
+                            fontSize: "16px",
                             fontWeight: "bold",
                             border: "1px solid white",
+                            borderTopRightRadius: "10px",
                           }}
                         >
                           Link
@@ -395,7 +413,7 @@ const Gene_detail = (props) => {
                     backgroundColor: "#1463B9",
                     color: "white",
                     fontFamily: "Montserrat",
-                    fontSize: "17px",
+                    fontSize: "16px",
                     fontWeight: "bold",
                     border: "1px solid white",
                   }}
@@ -403,10 +421,7 @@ const Gene_detail = (props) => {
                 >
                   Link
                 </TableCell>
-                <TableCell
-                  style={td}
-                  style={{ fontFamily: "Lato", fontSize: "18px" }}
-                >
+                <TableCell style={{ fontFamily: "Lato", fontSize: "14px" }}>
                   <a href={gene_link + data[0]["_source"]["GeneID"]}>
                     Entrez Gene
                   </a>

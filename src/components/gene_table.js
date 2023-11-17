@@ -167,9 +167,12 @@ function App() {
     {
       headerName: "Gene",
       field: "GeneID",
+      maxWidth: "120",
       checkboxSelection: false,
       headerCheckboxSelection: false,
       cellRenderer: "LinkComponent",
+      headerClass: ["header-border"],
+      cellClass: ["table-border"],
     },
     {
       headerName: "Gene Name",
@@ -177,8 +180,16 @@ function App() {
       wrapText: true,
       autoHeight: true,
       cellStyle: { "word-break": "break-word" },
+      headerClass: ["header-border"],
+      cellClass: ["table-border"],
     },
-    { headerName: "Location", field: "Location" },
+    {
+      headerName: "Location",
+      field: "Location",
+      maxWidth: "150",
+      headerClass: ["header-border"],
+      cellClass: ["table-border"],
+    },
   ];
 
   const defColumnDefs = { flex: 1, filter: true };
@@ -188,19 +199,6 @@ function App() {
   };
 
   const gridRef = useRef();
-
-  const paginationNumberFormatter = useCallback((params) => {
-    return params.value.toLocaleString();
-  }, []);
-
-  const onFirstDataRendered = useCallback((params) => {
-    gridRef.current.api.paginationGoToPage(0);
-  }, []);
-
-  const onPageSizeChanged = useCallback(() => {
-    var value = document.getElementById("page-size").value;
-    gridRef.current.api.paginationSetPageSize(Number(value));
-  }, []);
 
   const handleIDChange = (e) => {
     const inputValue = e.target.value;
@@ -331,7 +329,7 @@ function App() {
   return (
     <>
       <div className="rowC">
-        <div className="sidebar1">
+        <div className="sidebar1" style={{ height: "45rem" }}>
           <h2
             style={{
               margin: "26px",

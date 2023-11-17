@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import Header from "./components/index";
+import Navbar from "./components/index";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages";
 import Download from "./pages/download";
@@ -11,11 +11,12 @@ import Footer from "./components/footer.js";
 import Signature from "./pages/signature";
 import Cluster from "./pages/cluster";
 import Gene_Detail from "./pages/gene_detail";
-import Salivary_Protein from "./pages/salivary_protein";
-import Protein_Detail from "./pages/protein_detail";
+import Salivary_Protein from "./pages/saliva_protein/salivary_protein";
+import Protein_Detail from "./pages/saliva_protein/protein_detail";
 import Analysis from "./pages/analysis";
 import Citation from "./pages/citation";
 import Citation_Detail from "./pages/citation_detail";
+import InterProScan from "./pages/interproscan.js";
 import Signature_Detail from "./pages/signature_detail";
 import Basic_Search from "./pages/basic_search";
 import Experiment_Search from "./pages/experiment_search";
@@ -31,7 +32,7 @@ import PSIBlast from "./pages/Analyze/PSIBlast";
 function App() {
   return (
     <Router>
-      <Header />
+      <Navbar />
       <Routes>
         <Route exact path="/" element={<Home />} />
         <Route path="/download" element={<Download />} />

@@ -473,7 +473,7 @@ function App() {
         ? {
             wildcard: {
               "InterPro ID": {
-                value: `${inputValue}*`,
+                value: `*${inputValue}*`,
                 case_insensitive: true,
               },
             },
@@ -562,7 +562,7 @@ function App() {
   return (
     <>
       <div className="rowC">
-        <div className="sidebar1">
+        <div className="sidebar1" style={{ height: "45rem" }}>
           <h2
             style={{
               margin: "26px",
@@ -661,32 +661,6 @@ function App() {
                     position: "relative",
                   }}
                   value={name}
-                />
-              </AccordionDetails>
-            </Accordion>
-            <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
-                <Typography variant="h6"># of Members</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <input
-                  type="text"
-                  id="filter-gene-box"
-                  placeholder="Search"
-                  onChange={handleStartMember}
-                  style={{
-                    width: "80%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
-                  }}
-                  value={startMember}
                 />
               </AccordionDetails>
             </Accordion>

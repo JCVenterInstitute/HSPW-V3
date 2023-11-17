@@ -157,6 +157,7 @@ function App() {
           defaultColDef={defColumnDefs}
           onGridReady={onGridReady}
           cacheQuickFilter={true}
+          enableCellTextSelection={true}
           pagination={true}
           overlayNoRowsTemplate={
             '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
