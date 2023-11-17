@@ -71,7 +71,9 @@ h1 {
 .second_paragraph {
   color: #fff;
   margin-top: -7%;
-  margin-left: 65%;
+  margin-left: 75%;
+  font-family: Lato;
+  font-size: 21px;
 }
 
 .third_title {
