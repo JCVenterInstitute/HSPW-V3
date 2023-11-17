@@ -8,6 +8,7 @@ import {
   Grid,
   Button,
   Stack,
+  Checkbox,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -26,6 +27,8 @@ import axios from "axios";
 import CustomHeaderGroup from "./CustomHeaderGroup";
 import CustomLoadingOverlay from "./CustomLoadingOverlay";
 import CustomNoRowsOverlay from "./CustomNoRowsOverlay";
+import CircleCheckedFilled from "@mui/icons-material/CheckCircle";
+import CircleUnchecked from "@mui/icons-material/RadioButtonUnchecked";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -99,6 +102,10 @@ const DifferentialExpression = () => {
   const [groupARowData, setGroupARowData] = useState([]);
   const [groupBRowData, setGroupBRowData] = useState([]);
   const [fileName, setFileName] = useState("");
+  const [logNorm, setLogNorm] = useState("NULL");
+  const [foldChangeThreshold, setFoldChangeThreshold] = useState("2.0");
+  const [pValueThreshold, setPValueThreshold] = useState("0.05");
+  const [pValueType, setPValueType] = useState("Raw");
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
@@ -370,6 +377,10 @@ const DifferentialExpression = () => {
       {
         groupAData: groupARowData,
         groupBData: groupBRowData,
+        logNorm,
+        foldChangeThreshold,
+        pValueThreshold,
+        pValueType,
       }
     );
   };
@@ -418,8 +429,8 @@ const DifferentialExpression = () => {
         <Box
           sx={{
             backgroundColor: "#f9f8f7",
-            width: "280px",
-            height: "1800px",
+            width: "250px",
+            height: "2000px",
           }}
         >
           <h1
@@ -854,13 +865,115 @@ const DifferentialExpression = () => {
             }}
           ></div>
           <Box>
-            {/* <Typography variant="h6" sx={{ fontFamily: "Lato" }}>
+            <Typography variant="h5" sx={{ fontFamily: "Lato" }}>
               ANALYSIS OPTIONS
             </Typography>
-            <Typography variant="body1" sx={{ fontFamily: "Lato" }}>
-              Please select
-            </Typography> */}
-            <Button variant="contained" onClick={handleAnalyze}>
+            <Box>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  color: "#1463B9",
+                  fontFamily: "Montserrat",
+                  fontWeight: 600,
+                  mt: 3,
+                }}
+              >
+                Log Transformation:
+              </Typography>
+              <Checkbox
+                icon={<CircleUnchecked />}
+                checkedIcon={<CircleCheckedFilled />}
+                checked={logNorm === "NULL"}
+                onChange={() => setLogNorm("NULL")}
+                sx={{ paddingLeft: 0 }}
+              />
+              <Typography
+                display="inline"
+                variant="body2"
+                sx={{ fontFamily: "Lato", color: "#464646", mr: 2 }}
+              >
+                NULL
+              </Typography>
+              <Checkbox
+                icon={<CircleUnchecked />}
+                checkedIcon={<CircleCheckedFilled />}
+                checked={logNorm === "LogNorm"}
+                onChange={() => setLogNorm("LogNorm")}
+              />
+              <Typography
+                display="inline"
+                variant="body2"
+                sx={{ fontFamily: "Lato", color: "#464646" }}
+              >
+                Log Normalization
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  color: "#1463B9",
+                  fontFamily: "Montserrat",
+                  fontWeight: 600,
+                  mt: 3,
+                }}
+              >
+                Fold change threshold:
+              </Typography>
+              <TextField
+                size="small"
+                value={foldChangeThreshold}
+                onChange={(event) => {
+                  setFoldChangeThreshold(event.target.value);
+                }}
+                sx={{ width: "80px" }}
+              />
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  color: "#1463B9",
+                  fontFamily: "Montserrat",
+                  fontWeight: 600,
+                  mt: 3,
+                }}
+              >
+                P-value threshold:
+              </Typography>
+              <TextField
+                size="small"
+                value={pValueThreshold}
+                onChange={(event) => {
+                  setPValueThreshold(event.target.value);
+                }}
+                sx={{ width: "80px", mr: 3 }}
+              />
+              <Checkbox
+                icon={<CircleUnchecked />}
+                checkedIcon={<CircleCheckedFilled />}
+                checked={pValueType === "Raw"}
+                onChange={() => setPValueType("Raw")}
+                sx={{ paddingLeft: 0 }}
+              />
+              <Typography
+                display="inline"
+                variant="body2"
+                sx={{ fontFamily: "Lato", color: "#464646", mr: 2 }}
+              >
+                Raw
+              </Typography>
+              <Checkbox
+                icon={<CircleUnchecked />}
+                checkedIcon={<CircleCheckedFilled />}
+                checked={pValueType === "fdr"}
+                onChange={() => setPValueType("fdr")}
+              />
+              <Typography
+                display="inline"
+                variant="body2"
+                sx={{ fontFamily: "Lato", color: "#464646" }}
+              >
+                FDR
+              </Typography>
+            </Box>
+            <Button variant="contained" sx={{ mt: 5 }} onClick={handleAnalyze}>
               ANALYZE
             </Button>
           </Box>

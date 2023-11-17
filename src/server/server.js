@@ -2157,6 +2157,8 @@ app.get("/protein/:id", (req, res) => {
 app.post("/api/differential-expression/analyze", async (req, res) => {
   try {
     console.log("> req.body", req.body);
+    const { logNorm, foldChangeThreshold, pValueThreshold, pValueType } =
+      req.body;
 
     const scriptPath = "/home/ec2-user/r4test1/test";
 
@@ -2181,7 +2183,7 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
     );
 
     // Execute the R script from the working directory
-    const command = "Rscript generate-data.R LogNorm 1 0.05 raw";
+    const command = `Rscript generate-data.R ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType}`;
     const { stdout, stderr } = await execPromise(command, {
       cwd: workingDirectory,
     });
