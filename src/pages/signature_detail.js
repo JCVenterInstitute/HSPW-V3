@@ -159,23 +159,19 @@ const Signature_detail = (props) => {
                   sx={td}
                   style={{ fontFamily: "Lato", fontSize: "14px" }}
                 >
-                  <TableHead style={{ borderTopLeftRadius: "10px" }}>
-                    <TableRow style={{ border: "1px solid white" }}>
-                      <TableCell
-                        style={{
-                          backgroundColor: "#1463B9",
-                          color: "white",
-                          fontFamily: "Montserrat",
-                          fontSize: "16px",
-                          fontWeight: "bold",
-                          border: "1px solid white",
-                          width: "10%",
-                        }}
-                      >
-                        Pfam
-                      </TableCell>
-                      {PRINTS ? (
-                        <>
+                  <TableContainer
+                    component={Paper}
+                    style={{
+                      borderTopLeftRadius: "10px",
+                      borderTopRightRadius: "10px",
+                      border: "1px solid #CACACA",
+                      maxWidth: "40%",
+                      margin: "10px",
+                    }}
+                  >
+                    <TableHead style={{ borderTopLeftRadius: "10px" }}>
+                      <TableRow style={{ border: "1px solid white" }}>
+                        {pfam ? (
                           <TableCell
                             style={{
                               backgroundColor: "#1463B9",
@@ -184,154 +180,174 @@ const Signature_detail = (props) => {
                               fontSize: "16px",
                               fontWeight: "bold",
                               border: "1px solid white",
+                              width: "10%",
                             }}
                           >
-                            PRINTS
+                            Pfam
                           </TableCell>
-                        </>
-                      ) : (
-                        <></>
-                      )}
-
-                      {PROFILE ? (
-                        <>
-                          <TableCell
-                            style={{
-                              backgroundColor: "#1463B9",
-                              color: "white",
-                              fontFamily: "Montserrat",
-                              fontSize: "16px",
-                              fontWeight: "bold",
-                              border: "1px solid white",
-                            }}
-                          >
-                            Profile
-                          </TableCell>
-                        </>
-                      ) : (
-                        <></>
-                      )}
-
-                      {SMART ? (
-                        <>
-                          <TableCell
-                            style={{
-                              backgroundColor: "#1463B9",
-                              color: "white",
-                              fontFamily: "Montserrat",
-                              fontSize: "16px",
-                              fontWeight: "bold",
-                              border: "1px solid white",
-                            }}
-                          >
-                            SMART
-                          </TableCell>
-                        </>
-                      ) : (
-                        <></>
-                      )}
-                    </TableRow>
-
-                    <TableRow style={{ border: "1px solid white" }}>
-                      {pfam ? (
-                        <>
-                          <TableCell
-                            style={{
-                              borderRight: "1px solid grey",
-                              borderBottom: "1px solid grey",
-                              width: "15%",
-                              fontSize: "14px",
-                              fontFamily: "Lato",
-                            }}
-                          >
-                            <a
-                              href={
-                                "https://www.ebi.ac.uk/interpro/entry/pfam/" +
-                                pfam.split(":")[1]
-                              }
-                            >
-                              {pfam}
-                            </a>
-                          </TableCell>
-                        </>
-                      ) : (
-                        <></>
-                      )}
-
-                      {PRINTS ? (
-                        <>
-                          <TableCell
-                            style={{
-                              border: "1px solid grey",
-                              width: "20%",
-                              fontSize: "14px",
-                              fontFamily: "Lato",
-                            }}
-                          >
-                            <a
-                              href={
-                                "https://www.ebi.ac.uk/interpro/entry/prints/" +
-                                PRINTS.split(":")[1]
-                              }
-                            >
-                              {PRINTS}
-                            </a>
-                          </TableCell>
-                        </>
-                      ) : (
-                        <></>
-                      )}
-
-                      <TableCell
-                        style={{
-                          borderLeft: "1px solid grey",
-                          borderBottom: "1px solid grey",
-                          width: "15%",
-                          fontSize: "14px",
-                          fontFamily: "Lato",
-                        }}
-                      >
-                        {PROFILE ? (
+                        ) : (
+                          <></>
+                        )}
+                        {PRINTS ? (
                           <>
-                            <a
-                              href={
-                                "https://prosite.expasy.org/" +
-                                PROFILE.split(":")[1]
-                              }
+                            <TableCell
+                              style={{
+                                backgroundColor: "#1463B9",
+                                color: "white",
+                                fontFamily: "Montserrat",
+                                fontSize: "16px",
+                                fontWeight: "bold",
+                                border: "1px solid white",
+                              }}
                             >
-                              {PROFILE}
-                            </a>
+                              PRINTS
+                            </TableCell>
                           </>
                         ) : (
                           <></>
                         )}
-                      </TableCell>
-                      {SMART ? (
-                        <>
-                          <TableCell
-                            style={{
-                              border: "1px solid grey",
-                              width: "20%",
-                              fontSize: "14px",
-                              fontFamily: "Lato",
-                            }}
-                          >
-                            <a
-                              href={
-                                "http://smart.embl-heidelberg.de/smart/do_annotation.pl?ACC=" +
-                                SMART.split(":")[1] +
-                                "&BLAST=DUMMY"
-                              }
+
+                        {PROFILE ? (
+                          <>
+                            <TableCell
+                              style={{
+                                backgroundColor: "#1463B9",
+                                color: "white",
+                                fontFamily: "Montserrat",
+                                fontSize: "16px",
+                                fontWeight: "bold",
+                                border: "1px solid white",
+                              }}
                             >
-                              {SMART}
-                            </a>
-                          </TableCell>
-                        </>
-                      ) : (
-                        <></>
-                      )}
-                    </TableRow>
-                  </TableHead>
+                              Profile
+                            </TableCell>
+                          </>
+                        ) : (
+                          <></>
+                        )}
+
+                        {SMART ? (
+                          <>
+                            <TableCell
+                              style={{
+                                backgroundColor: "#1463B9",
+                                color: "white",
+                                fontFamily: "Montserrat",
+                                fontSize: "16px",
+                                fontWeight: "bold",
+                                border: "1px solid white",
+                              }}
+                            >
+                              SMART
+                            </TableCell>
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                      </TableRow>
+
+                      <TableRow style={{ border: "1px solid white" }}>
+                        {pfam ? (
+                          <>
+                            <TableCell
+                              style={{
+                                borderRight: "1px solid grey",
+                                borderBottom: "1px solid grey",
+                                width: "15%",
+                                fontSize: "14px",
+                                fontFamily: "Lato",
+                              }}
+                            >
+                              <a
+                                href={
+                                  "https://www.ebi.ac.uk/interpro/entry/pfam/" +
+                                  pfam.split(":")[1]
+                                }
+                              >
+                                {pfam}
+                              </a>
+                            </TableCell>
+                          </>
+                        ) : (
+                          <></>
+                        )}
+
+                        {PRINTS ? (
+                          <>
+                            <TableCell
+                              style={{
+                                border: "1px solid grey",
+                                width: "20%",
+                                fontSize: "14px",
+                                fontFamily: "Lato",
+                              }}
+                            >
+                              <a
+                                href={
+                                  "https://www.ebi.ac.uk/interpro/entry/prints/" +
+                                  PRINTS.split(":")[1]
+                                }
+                              >
+                                {PRINTS}
+                              </a>
+                            </TableCell>
+                          </>
+                        ) : (
+                          <></>
+                        )}
+
+                        {PROFILE ? (
+                          <>
+                            <TableCell
+                              style={{
+                                borderLeft: "1px solid grey",
+                                borderBottom: "1px solid grey",
+                                width: "15%",
+                                fontSize: "14px",
+                                fontFamily: "Lato",
+                              }}
+                            >
+                              <a
+                                href={
+                                  "https://prosite.expasy.org/" +
+                                  PROFILE.split(":")[1]
+                                }
+                              >
+                                {PROFILE}
+                              </a>
+                            </TableCell>
+                          </>
+                        ) : (
+                          <></>
+                        )}
+
+                        {SMART ? (
+                          <>
+                            <TableCell
+                              style={{
+                                border: "1px solid grey",
+                                width: "20%",
+                                fontSize: "14px",
+                                fontFamily: "Lato",
+                              }}
+                            >
+                              <a
+                                href={
+                                  "http://smart.embl-heidelberg.de/smart/do_annotation.pl?ACC=" +
+                                  SMART.split(":")[1] +
+                                  "&BLAST=DUMMY"
+                                }
+                              >
+                                {SMART}
+                              </a>
+                            </TableCell>
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                      </TableRow>
+                    </TableHead>
+                  </TableContainer>
                 </TableCell>
               </TableRow>
 
@@ -352,55 +368,70 @@ const Signature_detail = (props) => {
                   sx={td}
                   style={{ fontFamily: "Lato", fontSize: "17px" }}
                 >
-                  <TableHead>
-                    <TableRow>
-                      <TableCell
-                        style={{
-                          backgroundColor: "#1463B9",
-                          color: "white",
-                          fontFamily: "Montserrat",
-                          fontSize: "17px",
-                          fontWeight: "bold",
+                  <TableContainer
+                    component={Paper}
+                    style={{
+                      borderTopLeftRadius: "10px",
+                      borderTopRightRadius: "10px",
+                      border: "1px solid #CACACA",
+                      maxWidth: "40%",
+                      margin: "10px",
+                    }}
+                  >
+                    <TableHead>
+                      <TableRow style={{ borderTopRightRadius: "10px" }}>
+                        <TableCell
+                          style={{
+                            backgroundColor: "#1463B9",
+                            color: "white",
+                            fontFamily: "Montserrat",
+                            fontSize: "17px",
+                            fontWeight: "bold",
 
-                          borderTopLeftRadius: "10px",
-                        }}
-                      >
-                        Functions
-                      </TableCell>
-                      <TableCell
-                        sx={td}
-                        style={{
-                          maxWidth: "100%",
-                          border: "1px solid #CACACA",
-                          borderTopRightRadius: "10px",
-                          fontFamily: "Lato",
-                          fontSize: "14px",
-                        }}
-                      >
-                        {data[0]["_source"]["GO Annotations"].split(",")[0]}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell
-                        sx={th}
-                        style={{
-                          backgroundColor: "#1463B9",
-                          color: "white",
-                          fontFamily: "Montserrat",
-                          fontSize: "16px",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        Processes
-                      </TableCell>
-                      <TableCell
-                        sx={td}
-                        style={{ fontFamily: "Lato", fontSize: "14px" }}
-                      >
-                        {data[0]["_source"]["GO Annotations"].split(",")[1]}
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
+                            borderTopLeftRadius: "10px",
+                          }}
+                        >
+                          Functions
+                        </TableCell>
+                        <TableCell
+                          sx={td}
+                          style={{
+                            maxWidth: "100%",
+                            border: "1px solid #CACACA",
+                            borderTopRightRadius: "10px",
+                            fontFamily: "Lato",
+                            fontSize: "14px",
+                          }}
+                        >
+                          {data[0]["_source"]["GO Annotations"].split(",")[0]}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell
+                          sx={th}
+                          style={{
+                            backgroundColor: "#1463B9",
+                            color: "white",
+                            fontFamily: "Montserrat",
+                            fontSize: "16px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          Processes
+                        </TableCell>
+                        <TableCell
+                          sx={td}
+                          style={{
+                            fontFamily: "Lato",
+                            fontSize: "14px",
+                            border: "1px solid #CACACA",
+                          }}
+                        >
+                          {data[0]["_source"]["GO Annotations"].split(",")[1]}
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                  </TableContainer>
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -418,7 +449,11 @@ const Signature_detail = (props) => {
                 </TableCell>
                 <TableCell
                   sx={td}
-                  style={{ fontFamily: "Lato", fontSize: "14px" }}
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "14px",
+                    paddingLeft: "1%",
+                  }}
                 >
                   {reference1.map((val, j, arr) => {
                     return (
@@ -445,7 +480,11 @@ const Signature_detail = (props) => {
                 </TableCell>
                 <TableCell
                   sx={td}
-                  style={{ fontFamily: "Lato", fontSize: "14px" }}
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "14px",
+                    paddingLeft: "1%",
+                  }}
                 >
                   View Protein Members
                 </TableCell>
@@ -466,7 +505,11 @@ const Signature_detail = (props) => {
                 </TableCell>
                 <TableCell
                   sx={td}
-                  style={{ fontFamily: "Lato", fontSize: "14px" }}
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "14px",
+                    paddingLeft: "1%",
+                  }}
                 >
                   <a href={interpro_link + data[0]["_source"]["InterPro ID"]}>
                     InterPro

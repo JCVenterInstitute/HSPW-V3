@@ -473,7 +473,7 @@ function App() {
         ? {
             wildcard: {
               "InterPro ID": {
-                value: `${inputValue}*`,
+                value: `*${inputValue}*`,
                 case_insensitive: true,
               },
             },

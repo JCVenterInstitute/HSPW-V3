@@ -39,121 +39,87 @@ function App() {
   const [queryArr, setQueryArr] = useState([]);
   const [CitationIDC, setCitationIDC] = useState(false);
   const [citationID, setCitationID] = useState("");
+  const [dateC, setdateC] = useState(false);
   const [pageNumArr, setPageNumArr] = useState([1]);
-
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetch(
-        `http://localhost:8000/citation/${pageSize}/${pageNum}`
-      );
-      const json = data.json();
-      return json;
-    };
-    const result = fetchData().catch(console.errror);
-    console.log(result);
-    result.then((value) => {
-      if (value.hits) {
-        console.log(value);
-        let data1 = [];
-        for (let i = 0; i < value.hits.length; i++) {
-          data1.push(value.hits[i]["_source"]);
-        }
-
-        setRowData(data1);
-      }
-      setDocCount(value.total.value);
-      const newOptions = [];
-      for (let i = 1; i <= Math.round(value.total.value / pageSize); i++) {
-        newOptions.push(
-          <option key={i} value={i}>
-            {i}
-          </option>
+      try {
+        const data = await fetch(
+          `http://localhost:8000/citation/${pageSize}/${pageNum}`
         );
+        const json = await data.json();
+
+        if (json.hits) {
+          const data1 = json.hits.map((hit) => hit._source);
+          setRowData(data1);
+        }
+
+        setDocCount(json.total.value);
+        const newOptions = Array.from(
+          { length: Math.round(json.total.value / pageSize) },
+          (_, i) => (
+            <option key={i + 1} value={i + 1}>
+              {i + 1}
+            </option>
+          )
+        );
+        setPageNumArr(newOptions);
+      } catch (error) {
+        console.error(error);
       }
-      setPageNumArr(newOptions);
-    });
-  }, []);
+    };
+
+    fetchData();
+  }, [pageSize, pageNum]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetch(
-        `http://localhost:8000/citation/${pageSize}/${pageNum}`
-      );
-      console.log(`http://localhost:8000/citation/${pageSize}/${pageNum}`);
-      const json = data.json();
-      return json;
-    };
-
-    const url = `http://localhost:8000/citation_search/${pageSize}/${pageNum}`;
-
-    const customHeaders = {
-      "Content-Type": "application/json",
-    };
     const fetchQuery = async () => {
-      console.log(JSON.stringify(queryArr));
-      const data = await fetch(url, {
-        method: "POST",
-        headers: customHeaders,
-        body: JSON.stringify(queryArr),
-      });
-      const json = data.json();
+      try {
+        const url = `http://localhost:8000/citation_search/${pageSize}/${pageNum}`;
+        const customHeaders = { "Content-Type": "application/json" };
+        const data = await fetch(url, {
+          method: "POST",
+          headers: customHeaders,
+          body: JSON.stringify(queryArr),
+        });
+        const json = await data.json();
 
-      return json;
+        if (json.hits && json.hits.hits) {
+          const data1 = json.hits.hits.map((hit) => hit._source);
+          setRowData(data1);
+        }
+
+        setDocCount(json.hits.total.value);
+        const newOptions = Array.from(
+          { length: Math.round(json.hits.total.value / pageSize) },
+          (_, i) => (
+            <option key={i + 1} value={i + 1}>
+              {i + 1}
+            </option>
+          )
+        );
+        setPageNumArr(newOptions);
+      } catch (error) {
+        console.error(error);
+      }
     };
-    console.log(url);
 
-    if (CitationIDC === true) {
-      const queryResult = fetchQuery().catch(console.errror);
-      queryResult.then((value) => {
-        if (value.hits.hits) {
-          console.log("109" + value);
-          let data1 = [];
-          for (let i = 0; i < value.hits.hits.length; i++) {
-            data1.push(value.hits.hits[i]["_source"]);
-          }
-          console.log(data1);
-          setRowData(data1);
-        }
-        setDocCount(value.hits.total.value);
-        const newOptions = [];
-        for (
-          let i = 1;
-          i <= Math.round(value.hits.total.value / pageSize);
-          i++
-        ) {
-          newOptions.push(
-            <option key={i} value={i}>
-              {i}
-            </option>
-          );
-        }
-        setPageNumArr(newOptions);
-      });
+    if (CitationIDC) {
+      fetchQuery();
     } else {
-      const result = fetchData().catch(console.errror);
-      result.then((value) => {
-        if (value.hits) {
-          console.log(value);
-          let data1 = [];
-          for (let i = 0; i < value.hits.length; i++) {
-            data1.push(value.hits[i]["_source"]);
-          }
-          console.log(data1);
-          setRowData(data1);
-        }
-        setDocCount(value.total.value);
-        const newOptions = [];
-        for (let i = 1; i <= Math.round(value.total.value / pageSize); i++) {
-          newOptions.push(
-            <option key={i} value={i}>
-              {i}
-            </option>
-          );
-        }
-        setPageNumArr(newOptions);
-      });
+      fetchData();
     }
-  }, [pageSize, pageNum, citationID]);
+  }, [
+    pageSize,
+    pageNum,
+    citationID,
+    startDate,
+    endDate,
+    queryArr,
+    CitationIDC,
+  ]);
 
   let data1 = [];
   for (let i = 0; i < message.length; i++) {
@@ -209,7 +175,17 @@ function App() {
     wrapHeaderText: true,
     autoHeaderHeight: true,
   };
-
+  const handleDateChange = (start, end) => {
+    const newDateQuery = {
+      range: {
+        "Date of Publication": {
+          gte: start || "1957-08-17",
+          lte: end || "2021-03-16",
+        },
+      },
+    };
+    updateQuery(newDateQuery);
+  };
   const onBtNext = (event) => {
     if (count < docCount / pageSize) {
       var x = gridRef.current.api.paginationGetCurrentPage();
@@ -236,12 +212,15 @@ function App() {
 
   const updateQuery = (newQuery) => {
     setQueryArr((prevArray) => {
-      // Remove existing queries of the same type (InterPro ID or Name)
+      // Remove existing queries of the same type (wildcard or range)
       const filteredArray = prevArray.filter((p) => {
-        return !(
-          newQuery &&
-          p.wildcard.hasOwnProperty(Object.keys(newQuery.wildcard)[0])
-        );
+        const existingQueryType = p.wildcard
+          ? "wildcard"
+          : p.range
+          ? "range"
+          : null;
+
+        return !(newQuery && existingQueryType && newQuery[existingQueryType]);
       });
 
       // Add the new query to the filtered array
@@ -346,56 +325,46 @@ function App() {
                 <Typography variant="h6">Date of Publication</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <label for="start" style={{ marginRight: "10px" }}>
+                <label htmlFor="start" style={{ marginRight: "10px" }}>
                   Start date:
                 </label>
-
                 <input
                   type="date"
                   id="start"
                   name="pub-start"
-                  value="1957-08-17"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
                   min="1957-08-17"
                   max="2021-03-16"
                   style={{ marginBottom: "10px" }}
                 />
-                <br></br>
-                <label for="start" style={{ marginRight: "15px" }}>
+                <br />
+                <label htmlFor="end" style={{ marginRight: "15px" }}>
                   End date:
                 </label>
-
                 <input
                   type="date"
                   id="end"
                   name="pub-end"
-                  value="2021-03-16"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
                   min="1957-08-17"
                   max="2021-03-16"
                 />
-              </AccordionDetails>
-            </Accordion>
-            <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
-                <Typography variant="h6">Title</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <input
-                  type="text"
-                  id="filter-location-box"
-                  placeholder="Search"
+                <button
+                  onClick={() => handleDateChange(startDate, endDate)}
                   style={{
-                    width: "80%",
                     marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "5px",
+                    padding: "5px 10px",
+                    cursor: "pointer",
                   }}
-                />
+                >
+                  Apply
+                </button>
               </AccordionDetails>
             </Accordion>
             <Accordion>

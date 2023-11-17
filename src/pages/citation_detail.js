@@ -75,37 +75,58 @@ const Citation_detail = (props) => {
         b.push(c);
       }
       setKeyWord(b.toString());
-      console.log("diu:" + xml1.getElementsByTagName("Article"));
-      if (xml1.getElementsByTagName("LastName").length === 1) {
-        setauthorName(
-          xml1.getElementsByTagName("LastName")[0].textContent +
-            " " +
-            xml1.getElementsByTagName("Initials")[0].textContent
-        );
+      if (xml1.getElementsByTagName("LastName").length >= 1) {
+        const lastNameElement = xml1.getElementsByTagName("LastName")[0];
+        const initialsElement = xml1.getElementsByTagName("Initials")[0];
+
+        if (lastNameElement && initialsElement) {
+          setauthorName(
+            `${lastNameElement.textContent || ""} ${
+              initialsElement.textContent || ""
+            }`
+          );
+        }
       } else if (xml1.getElementsByTagName("LastName").length === 2) {
-        setauthorName(
-          xml1.getElementsByTagName("LastName")[0].textContent +
-            " " +
-            xml1.getElementsByTagName("Initials")[0].textContent +
-            " and " +
-            xml1.getElementsByTagName("LastName")[1].textContent +
-            " " +
-            xml1.getElementsByTagName("Initials")[1].textContent
-        );
+        const lastName1 = xml1.getElementsByTagName("LastName")[0];
+        const initials1 = xml1.getElementsByTagName("Initials")[0];
+        const lastName2 = xml1.getElementsByTagName("LastName")[1];
+        const initials2 = xml1.getElementsByTagName("Initials")[1];
+
+        if (lastName1 && initials1 && lastName2 && initials2) {
+          setauthorName(
+            `${lastName1.textContent || ""} ${
+              initials1.textContent || ""
+            } and ${lastName2.textContent || ""} ${initials2.textContent || ""}`
+          );
+        }
       } else if (xml1.getElementsByTagName("LastName").length >= 3) {
-        setauthorName(
-          xml1.getElementsByTagName("LastName")[0].textContent +
-            " " +
-            xml1.getElementsByTagName("Initials")[0].textContent +
-            ", et al."
-        );
+        const lastName = xml1.getElementsByTagName("LastName")[0];
+        const initials = xml1.getElementsByTagName("Initials")[0];
+
+        if (lastName && initials) {
+          setauthorName(
+            `${lastName.textContent || ""} ${
+              initials.textContent || ""
+            }, et al.`
+          );
+        }
+      } else {
+        // Handle the case when there is no author information
+        setauthorName("Author information not available");
       }
-      setJournal(
-        xml1.getElementsByTagName("Volume")[0].textContent +
-          "(" +
-          xml1.getElementsByTagName("Issue")[0].textContent +
-          ")"
-      );
+      const volumeElement = xml1.getElementsByTagName("Volume")[0];
+      const issueElement = xml1.getElementsByTagName("Issue")[0];
+
+      if (volumeElement && issueElement) {
+        setJournal(
+          `${volumeElement.textContent || ""}(${
+            issueElement.textContent || ""
+          })`
+        );
+      } else {
+        // Handle the case when Volume or Issue information is not available
+        setJournal("Volume and Issue information not available");
+      }
       setYear(xml1.getElementsByTagName("Year")[0].textContent);
       setTA(xml1.getElementsByTagName("MedlineTA")[0].textContent);
       setPGN(xml1.getElementsByTagName("MedlinePgn")[0].textContent);
@@ -159,14 +180,7 @@ const Citation_detail = (props) => {
             ", et al."
         );
       }
-      if (xml1.getElementsByTagName("Volume").length === 1) {
-        setJournal(
-          xml1.getElementsByTagName("Volume")[0].textContent +
-            "(" +
-            xml1.getElementsByTagName("Issue")[0].textContent +
-            ")"
-        );
-      }
+
       setYear(xml1.getElementsByTagName("Year")[0].textContent);
       setTA(xml1.getElementsByTagName("MedlineTA")[0].textContent);
       if (xml1.getElementsByTagName("MedlinePgn").length === 1) {
