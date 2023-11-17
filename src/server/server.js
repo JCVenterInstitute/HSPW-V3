@@ -242,13 +242,14 @@ app.get("/protein_signature/:size/:from", (req, res) => {
   });
 });
 
-async function and_search_citation(size, from, wildQuery, scriptQuery) {
+async function and_search_citation(size, from, wildQuery) {
   var client = await getClient();
   console.log(wildQuery);
 
   var query = {
     size: size,
     from: from,
+    sort: [{ "Date of Publication": { order: "desc" } }],
     query: {
       bool: {
         filter: wildQuery,
@@ -260,7 +261,7 @@ async function and_search_citation(size, from, wildQuery, scriptQuery) {
     index: "citation",
     body: query,
   });
-
+  console.log(response.body.hits.hits);
   return response.body;
 }
 

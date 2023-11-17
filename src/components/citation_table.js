@@ -39,10 +39,16 @@ function App() {
   const [queryArr, setQueryArr] = useState([]);
   const [CitationIDC, setCitationIDC] = useState(false);
   const [citationID, setCitationID] = useState("");
+  const [title, setTitle] = useState("");
+  const [journal, setJournal] = useState("");
+  const [titleInputted, setTitleInputted] = useState(false);
+  const [journalInputted, setJournalInputted] = useState(false);
   const [dateC, setdateC] = useState(false);
   const [pageNumArr, setPageNumArr] = useState([1]);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState("1957-08-17");
+  const [endDate, setEndDate] = useState("2021-03-16");
+  const [dateInputted, setDateInputted] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -75,6 +81,32 @@ function App() {
   }, [pageSize, pageNum]);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetch(
+          `http://localhost:8000/citation/${pageSize}/${pageNum}`
+        );
+        const json = await data.json();
+
+        if (json.hits) {
+          const data1 = json.hits.map((hit) => hit._source);
+          setRowData(data1);
+        }
+
+        setDocCount(json.total.value);
+        const newOptions = Array.from(
+          { length: Math.round(json.total.value / pageSize) },
+          (_, i) => (
+            <option key={i + 1} value={i + 1}>
+              {i + 1}
+            </option>
+          )
+        );
+        setPageNumArr(newOptions);
+      } catch (error) {
+        console.error(error);
+      }
+    };
     const fetchQuery = async () => {
       try {
         const url = `http://localhost:8000/citation_search/${pageSize}/${pageNum}`;
@@ -106,7 +138,13 @@ function App() {
       }
     };
 
-    if (CitationIDC) {
+    if (
+      CitationIDC === true ||
+      dateInputted ||
+      journalInputted ||
+      titleInputted
+    ) {
+      console.log(queryArr);
       fetchQuery();
     } else {
       fetchData();
@@ -115,10 +153,11 @@ function App() {
     pageSize,
     pageNum,
     citationID,
-    startDate,
-    endDate,
+    dateInputted,
     queryArr,
     CitationIDC,
+    journalInputted,
+    titleInputted,
   ]);
 
   let data1 = [];
@@ -176,15 +215,27 @@ function App() {
     autoHeaderHeight: true,
   };
   const handleDateChange = (start, end) => {
+    const formatDate = (date) => {
+      if (!date) return null;
+
+      const [day, month, year] = new Date(date)
+        .toLocaleDateString("en-GB")
+        .split("/");
+      return `${year}/${month}/${day}`;
+    };
+
     const newDateQuery = {
       range: {
         "Date of Publication": {
-          gte: start || "1957-08-17",
-          lte: end || "2021-03-16",
+          gte: formatDate(start) || "1957/08/17",
+          lte: formatDate(end) || "2021/03/16",
         },
       },
     };
     updateQuery(newDateQuery);
+
+    // Set the boolean to true when at least one date is inputted
+    setDateInputted(Boolean(start) || Boolean(end));
   };
   const onBtNext = (event) => {
     if (count < docCount / pageSize) {
@@ -212,15 +263,28 @@ function App() {
 
   const updateQuery = (newQuery) => {
     setQueryArr((prevArray) => {
-      // Remove existing queries of the same type (wildcard or range)
+      // Remove existing queries of the same type (wildcard or range) for the same field
       const filteredArray = prevArray.filter((p) => {
-        const existingQueryType = p.wildcard
+        const existingQueryType = p?.wildcard
           ? "wildcard"
-          : p.range
+          : p?.range
           ? "range"
           : null;
 
-        return !(newQuery && existingQueryType && newQuery[existingQueryType]);
+        const newQueryType = newQuery?.wildcard
+          ? "wildcard"
+          : newQuery?.range
+          ? "range"
+          : null;
+
+        return !(
+          newQuery &&
+          existingQueryType &&
+          newQueryType &&
+          p[newQueryType] &&
+          Object.keys(p[newQueryType])[0] ===
+            Object.keys(newQuery[newQueryType])[0]
+        );
       });
 
       // Add the new query to the filtered array
@@ -252,6 +316,66 @@ function App() {
 
     setCitationID(inputValue);
     updateQuery(newIDQuery);
+  };
+
+  const handleTitleChange = (e) => {
+    const inputValue = e.target.value;
+
+    // You can modify the condition based on your requirements
+    if (inputValue === "") {
+      // If the input is empty, set the boolean variable to false
+      // (you might need to adjust this logic based on your specific requirements)
+      // For example, you might want to consider setting it to true only if the length is greater than a certain threshold.
+      setTitleInputted(false);
+    } else {
+      setTitleInputted(true);
+    }
+
+    // Add new element for Title with updated input value
+    const newTitleQuery =
+      inputValue !== ""
+        ? {
+            wildcard: {
+              Title: {
+                value: `${inputValue}*`,
+                case_insensitive: true,
+              },
+            },
+          }
+        : null;
+
+    setTitle(inputValue);
+    updateQuery(newTitleQuery);
+  };
+
+  const handleJournalChange = (e) => {
+    const inputValue = e.target.value;
+
+    // You can modify the condition based on your requirements
+    if (inputValue === "") {
+      // If the input is empty, set the boolean variable to false
+      // (you might need to adjust this logic based on your specific requirements)
+      // For example, you might want to consider setting it to true only if the length is greater than a certain threshold.
+      setJournalInputted(false);
+    } else {
+      setJournalInputted(true);
+    }
+
+    // Add new element for Journal with updated input value
+    const newJournalQuery =
+      inputValue !== ""
+        ? {
+            wildcard: {
+              Journal: {
+                value: `${inputValue}*`,
+                case_insensitive: true,
+              },
+            },
+          }
+        : null;
+
+    setJournal(inputValue);
+    updateQuery(newJournalQuery);
   };
 
   const onGridReady = (params) => {
@@ -372,13 +496,39 @@ function App() {
                 expandIcon={<ExpandMoreIcon />}
                 style={{ flexDirection: "row-reverse" }}
               >
+                <Typography variant="h6">Title</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <input
+                  type="text"
+                  id="filter-title-box"
+                  placeholder="Search"
+                  onChange={handleTitleChange}
+                  style={{
+                    width: "80%",
+                    marginLeft: "10px",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "10px",
+                    borderColor: "#1463B9",
+                    display: "inline",
+                    position: "relative",
+                  }}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
                 <Typography variant="h6">Journal</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <input
                   type="text"
-                  id="filter-location-box"
+                  id="filter-journal-box"
                   placeholder="Search"
+                  onChange={handleJournalChange}
                   style={{
                     width: "80%",
                     marginLeft: "10px",
