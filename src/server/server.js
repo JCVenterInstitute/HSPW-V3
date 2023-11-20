@@ -2155,46 +2155,44 @@ app.get("/protein/:id", (req, res) => {
 });
 
 app.post("/api/differential-expression/analyze", async (req, res) => {
-  // try {
-  //   console.log("> req.body", req.body);
-  //   const {
-  //     logNorm,
-  //     foldChangeThreshold,
-  //     pValueThreshold,
-  //     pValueType,
-  //     timestamp,
-  //     formattedDate,
-  //     workingDirectory,
-  //   } = req.body;
-  //   const scriptPath = "/home/ec2-user/r4test1/test";
-  //   // Create the working directory and copy the R script
-  //   await fse.ensureDir(workingDirectory);
-  //   await processGroupData(req.body, workingDirectory);
-  //   await fse.copy(
-  //     path.join(scriptPath, "generate-data.R"),
-  //     path.join(workingDirectory, "generate-data.R")
-  //   );
-  //   // Execute the R script from the working directory
-  //   const command = `Rscript generate-data.R ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType}`;
-  //   const { stdout } = await execPromise(command, {
-  //     cwd: workingDirectory,
-  //   });
-  //   // S3 upload parameters
-  //   const params = {
-  //     bucketName: "differential-expression-result-dev",
-  //     s3KeyPrefix: `${timestamp.year}-${timestamp.month}-${timestamp.day}/differential-expression-${formattedDate}`,
-  //     contentType: "text/plain",
-  //     directoryPath: workingDirectory,
-  //   };
-  //   // Perform the s3 upload
-  //   await s3Upload(params);
-  //   console.log(`stdout:\n${stdout}`);
-  // res.status(200).send(`Output: ${stdout}`);
-  // } catch (error) {
-  //   console.error(`Error during file operations: ${error.message}`);
-  //   res.status(500).send(`Server Error: ${error.message}`);
-  // }
-  res.status(200).send("Good");
+  try {
+    const {
+      logNorm,
+      foldChangeThreshold,
+      pValueThreshold,
+      pValueType,
+      timestamp,
+      formattedDate,
+      workingDirectory,
+    } = req.body;
+    const scriptPath = "/home/ec2-user/r4test1/test";
+    // Create the working directory and copy the R script
+    await processGroupData(req.body, workingDirectory);
+    await fse.copy(
+      path.join(scriptPath, "generate-data.R"),
+      path.join(workingDirectory, "generate-data.R")
+    );
+    // Execute the R script from the working directory
+    const command = `Rscript generate-data.R ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType}`;
+    const { stdout } = await execPromise(command, {
+      cwd: workingDirectory,
+    });
+    // S3 upload parameters
+    const params = {
+      bucketName: "differential-expression-result-dev",
+      s3KeyPrefix: `${timestamp.year}-${timestamp.month}-${timestamp.day}/differential-expression-${formattedDate}`,
+      contentType: "text/plain",
+      directoryPath: workingDirectory,
+    };
+    // Perform the s3 upload
+    await s3Upload(params);
+    console.log(`stdout:\n${stdout}`);
+    res.status(200).send(`Output: ${stdout}`);
+  } catch (error) {
+    console.error(`Error during file operations: ${error.message}`);
+    res.status(500).send(`Server Error: ${error.message}`);
+  }
+  // res.status(200).send("Good");
 });
 
 const searchStudy = async () => {
@@ -2248,6 +2246,19 @@ app.get("/api/study_protein/:id", async (req, res) => {
   searchStudyProtein(req.params.id).then((response) => {
     res.json(response);
   });
+});
+
+app.get("/api/s3Download/:jobId", async (req, res) => {
+  console.log(req.params.jobId);
+  // // S3 download parameters
+  // const params = {
+  //   bucketName: "differential-expression-result-dev",
+  //   s3KeyPrefix: `${timestamp.year}-${timestamp.month}-${timestamp.day}/differential-expression-${formattedDate}`,
+  //   contentType: "text/plain",
+  //   directoryPath: workingDirectory,
+  // };
+  // // Perform the s3 upload
+  // await s3Download(params);
 });
 
 app.listen(8000, () => {
