@@ -12,7 +12,7 @@ import Divider from "@mui/material/Divider";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import FontAwesome from "react-fontawesome";
 import "font-awesome/css/font-awesome.min.css";
-
+import Comment_Table from "../../components/salivary_protein/comment_table";
 import { useParams } from "react-router";
 import ProtvistaUniprot from "protvista-uniprot";
 import axios from "axios";
@@ -172,6 +172,7 @@ const Protein_Detail = (props) => {
   const [j, setJ] = useState("");
   const [sS, setSS] = useState("");
   const [checkData, setCheckData] = useState(false);
+  const [annotation, setAnnotation] = useState("");
 
   const fetchProtein = async () => {
     console.log(url);
@@ -187,6 +188,7 @@ const Protein_Detail = (props) => {
 
     if (proteinResult) {
       setData(proteinResult);
+
       console.log(proteinResult);
       if (proteinResult[0]._source.salivary_proteins) {
         const cites = proteinResult[0]._source.salivary_proteins.cites;
@@ -199,6 +201,7 @@ const Protein_Detail = (props) => {
 
         await Promise.all(promises);
       }
+
       setLoading(false);
       setCheckData(true);
     }
@@ -635,24 +638,28 @@ const Protein_Detail = (props) => {
               </TableRow>
             </TableHead>
 
-            {/*
-        <h2 style={{color:'black', marginBottom:'20px', fontWeight:'bold',marginTop:'20px'}}>Go Annotations</h2>
-        <Divider style={{'margin-bottom':'10px'}}/>
-        <p style={{ 'display': 'inline','color':'black','font-size':'0.9rem' }}>
-            The Gene Ontology (GO) describes knowledge of the biological domain with respect to three aspects: 1. Molecular function 2. Biological process 3. Cellular component
-        </p>
-        <br style={{'margin-bottom':'5px'}}></br>
-        <p style={{ 'display': 'inline','color':'black','font-size':'0.9rem' }}>
-            A variety of groups, including UniProtKB curators, use GO terms to annotate gene products in a computationally tractable manner. UniProt lists the annotated GO terms in the 'Function' section; the GO terms from the 'Cellular component' category can also be seen in 'Subcellular location' section. The project that made the annotation is shown as the 'Source', and a click on this label will display the supporting type of evidence. When available, a link to the relevant publications is provided.
-        </p>
-        <Comment_Table data={p}/>
-        <h2 style={{color:'black', marginBottom:'20px', fontWeight:'bold',marginTop:'20px'}}>PTM/Processing</h2>
-        <Divider style={{'margin-bottom':'10px'}}/>
-        <p style={{ 'display': 'inline','color':'black','font-size':'0.9rem' }}>This section describes post-translational modifications (PTMs) and/or processing events.</p>
-        <Comment_Table data={o}/>
-        <h2 style={{color:'black', marginBottom:'20px', fontWeight:'bold',marginTop:'20px'}}>Features</h2>
-        <Divider sx={{'marginBottom': "10px"}}/>
-  */}
+            <Divider
+              sx={{
+                marginBottom: "10px",
+                borderColor: "#1463B9",
+                paddingTop: "35px",
+              }}
+            />
+            <h2
+              style={{
+                color: "black",
+                marginBottom: "24px",
+                fontWeight: "bold",
+                fontFamily: "Lato",
+                marginTop: "10px",
+              }}
+              id="feature-map"
+            >
+              Comments
+            </h2>
+            <Comment_Table
+              data={data[0]["_source"]["salivary_proteins"]["annotations"]}
+            />
             <Divider
               sx={{
                 marginBottom: "10px",

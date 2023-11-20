@@ -1,7 +1,6 @@
 import "./filter.css";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-enterprise";
 
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -10,11 +9,15 @@ import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import { DATA } from "./data_citations";
+import dayjs, { Dayjs } from "dayjs";
 import { ReactComponent as Download_Logo } from "./table_icon/download.svg";
 import { ReactComponent as Left_Arrow } from "./table_icon/left_arrow.svg";
 import { ReactComponent as Right_Arrow } from "./table_icon/right_arrow.svg";
 import { ReactComponent as Search } from "./table_icon/search.svg";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+
 function LinkComponent(props: ICellRendererParams) {
   return (
     <a
@@ -45,8 +48,8 @@ function App() {
   const [journalInputted, setJournalInputted] = useState(false);
   const [dateC, setdateC] = useState(false);
   const [pageNumArr, setPageNumArr] = useState([1]);
-  const [startDate, setStartDate] = useState("1957-08-17");
-  const [endDate, setEndDate] = useState("2021-03-16");
+  const [startDate, setStartDate] = useState(dayjs("1957-08-17"));
+  const [endDate, setEndDate] = useState(dayjs("2021-03-16"));
   const [dateInputted, setDateInputted] = useState(false);
 
   useEffect(() => {
@@ -452,6 +455,13 @@ function App() {
                 <label htmlFor="start" style={{ marginRight: "10px" }}>
                   Start date:
                 </label>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="Start date:"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                  />
+                </LocalizationProvider>
                 <input
                   type="date"
                   id="start"
