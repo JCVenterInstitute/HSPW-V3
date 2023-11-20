@@ -1,7 +1,38 @@
+import React, { useState } from "react";
 import main_feature from "../../components/hero.jpeg";
-import { Container, Box, Typography } from "@mui/material";
+import {
+  Container,
+  Box,
+  Typography,
+  ToggleButton,
+  ToggleButtonGroup,
+  Button,
+} from "@mui/material";
 
 const DifferentialExpressionResults = () => {
+  const [selected, setSelected] = useState("Valcano Plot");
+  const [alignment, setAlignment] = useState("VISUALISATION");
+
+  const handleAlignment = (event, newAlignment) => {
+    if (newAlignment !== null) {
+      setAlignment(newAlignment);
+    }
+  };
+
+  const handleSelect = (item) => {
+    setSelected(item);
+  };
+
+  const option = [
+    "Valcano Plot",
+    "Heatmap",
+    "T-Tests",
+    "Venn-Diagram",
+    "Normalization",
+    "Result Data",
+    "Download",
+  ];
+
   return (
     <>
       <div style={{ backgroundImage: `url(${main_feature})` }}>
@@ -50,32 +81,83 @@ const DifferentialExpressionResults = () => {
             height: "1200px",
           }}
         >
-          <Box sx={{ m: 2, borderRadius: "16px" }}>
-            <Typography
-              sx={{
-                color: "#454545",
-                fontFamily: "Montserrat",
-                display: "center",
-                textAlign: "center",
-                paddingTop: "30px",
-              }}
-            >
-              Valcano Plot
-            </Typography>
+          <Box sx={{ p: 4, borderRadius: "16px", width: "100%" }}>
+            {option.map((item, index) => (
+              <Typography
+                key={index}
+                sx={{
+                  color: "#454545",
+                  fontFamily: "Montserrat",
+                  textAlign: "left",
+                  marginTop: "30px",
+                  fontSize: "16px",
+                  padding: "12px 15px 12px 15px",
+                  borderRadius: "16px",
+                  transition: "0.3s",
+                  "&:hover": {
+                    backgroundColor: "#D9D9D9",
+                    cursor: "pointer",
+                  },
+                  ...(selected === item && {
+                    backgroundColor: "#C9C9C9",
+                  }),
+                }}
+                onClick={() => handleSelect(item)}
+              >
+                {item}
+              </Typography>
+            ))}
           </Box>
         </Box>
         <Container maxWidth="xl" sx={{ marginTop: "30px" }}>
           <Box sx={{ display: "flex" }}>
-            <Box
-              style={{ display: "flex", width: "100%", maxWidth: "550px" }}
-            ></Box>
+            <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
+              <Box sx={{ display: "flex", justifyContent: "center" }}>
+                <ToggleButtonGroup
+                  value={alignment}
+                  exclusive
+                  onChange={handleAlignment}
+                  sx={{
+                    backgroundColor: "#EBEBEB",
+                    borderRadius: "16px",
+                    "& .MuiToggleButtonGroup-grouped": {
+                      margin: "7px 5px",
+                      border: "none",
+                      padding: "8px 12px",
+                      fontFamily: "Montserrat",
+                      borderRadius: "16px !important",
+                      "&.Mui-selected": {
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        "&:hover": {
+                          backgroundColor: "#6B9AC4",
+                        },
+                      },
+                      "&:not(.Mui-selected)": {
+                        color: "#1463B9",
+                        "&:hover": {
+                          backgroundColor: "#BBD1E9",
+                        },
+                      },
+                    },
+                  }}
+                >
+                  <ToggleButton value="VISUALISATION">
+                    VISUALISATION
+                  </ToggleButton>
+                  <ToggleButton value="DATA_MATRIX">DATA MATRIX</ToggleButton>
+                </ToggleButtonGroup>
+              </Box>
+            </Box>
             <Box
               sx={{
                 textAlign: "right",
                 justifyContent: "flex-end", // To push content to the right
                 flexGrow: 1, // To make the right Box occupy remaining space
               }}
-            ></Box>
+            >
+              <Button variant="contained">Download</Button>
+            </Box>
           </Box>
         </Container>
       </Container>
