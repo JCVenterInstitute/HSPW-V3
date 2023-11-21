@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import main_feature from "../../components/hero.jpeg";
 import {
   Container,
@@ -8,8 +8,11 @@ import {
   ToggleButtonGroup,
   Button,
 } from "@mui/material";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const DifferentialExpressionResults = () => {
+  const { jobId } = useParams();
   const [selected, setSelected] = useState("Valcano Plot");
   const [alignment, setAlignment] = useState("VISUALISATION");
 
@@ -32,6 +35,14 @@ const DifferentialExpressionResults = () => {
     "Result Data",
     "Download",
   ];
+
+  useEffect(() => {
+    handleS3Download();
+  }, []);
+
+  const handleS3Download = async () => {
+    await axios.get(`http://localhost:8000/api/s3Download/${jobId}`);
+  };
 
   return (
     <>
