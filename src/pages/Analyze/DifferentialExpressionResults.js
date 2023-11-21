@@ -7,6 +7,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Button,
+  CircularProgress,
 } from "@mui/material";
 import axios from "axios";
 import { useParams } from "react-router-dom";
@@ -15,16 +16,8 @@ const DifferentialExpressionResults = () => {
   const { jobId } = useParams();
   const [selected, setSelected] = useState("Valcano Plot");
   const [alignment, setAlignment] = useState("VISUALISATION");
-
-  const handleAlignment = (event, newAlignment) => {
-    if (newAlignment !== null) {
-      setAlignment(newAlignment);
-    }
-  };
-
-  const handleSelect = (item) => {
-    setSelected(item);
-  };
+  const [imageUrl, setImageUrl] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const option = [
     "Valcano Plot",
@@ -36,13 +29,58 @@ const DifferentialExpressionResults = () => {
     "Download",
   ];
 
-  useEffect(() => {
-    handleS3Download();
-  }, []);
-
-  const handleS3Download = async () => {
-    await axios.get(`http://localhost:8000/api/s3Download/${jobId}`);
+  const optionFile = {
+    "Valcano Plot": "volcano_0_dpi72.png",
+    Heatmap: "heatmap_1_dpi72.png",
+    HeatmapAll: "heatmap_0_dpi72.png",
+    "T-Tests": "tt_0_dpi72.png",
+    "Venn-Diagram": "venn-dimensions.png",
+    Normalization: "norm_0_dpi72.png",
+    "Result Data": "all_data.tsv",
   };
+
+  const handleAlignment = (event, newAlignment) => {
+    if (newAlignment !== null) {
+      setAlignment(newAlignment);
+    }
+  };
+
+  const handleSelect = (item) => {
+    setSelected(item);
+    const fileName = optionFile[item]; // Get the file name based on the selected item
+    fetchImage(jobId, fileName); // Fetch the image for the selected item
+  };
+
+  const getImageStyle = (selectedItem) => {
+    if (selectedItem === "Venn-Diagram") {
+      return {
+        maxWidth: "600px",
+        maxHeight: "600px",
+        width: "100%",
+        height: "auto",
+      };
+    }
+    return { maxWidth: "100%", maxHeight: "100%", height: "auto" };
+  };
+
+  const fetchImage = async (jobId, fileName) => {
+    setIsLoading(true); // Start loading
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/s3Download/${jobId}/${fileName}`
+      );
+      setImageUrl(response.data.url); // Set the image URL
+    } catch (error) {
+      console.error("Error downloading image:", error);
+      setImageUrl(""); // Reset the image URL on error
+    } finally {
+      setIsLoading(false); // Stop loading regardless of the outcome
+    }
+  };
+
+  useEffect(() => {
+    fetchImage(jobId, optionFile[selected]); // Fetch the image on component mount
+  }, [jobId, selected]); // Add 'selected' as a dependency
 
   return (
     <>
@@ -124,40 +162,87 @@ const DifferentialExpressionResults = () => {
           <Box sx={{ display: "flex" }}>
             <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
               <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <ToggleButtonGroup
-                  value={alignment}
-                  exclusive
-                  onChange={handleAlignment}
-                  sx={{
-                    backgroundColor: "#EBEBEB",
-                    borderRadius: "16px",
-                    "& .MuiToggleButtonGroup-grouped": {
-                      margin: "7px 5px",
-                      border: "none",
-                      padding: "8px 12px",
-                      fontFamily: "Montserrat",
-                      borderRadius: "16px !important",
-                      "&.Mui-selected": {
-                        backgroundColor: "#1463B9",
-                        color: "white",
-                        "&:hover": {
-                          backgroundColor: "#6B9AC4",
+                {selected === "Heatmap" ? (
+                  <ToggleButtonGroup
+                    value={alignment}
+                    exclusive
+                    onChange={handleAlignment}
+                    sx={{
+                      backgroundColor: "#EBEBEB",
+                      borderRadius: "16px",
+                      "& .MuiToggleButtonGroup-grouped": {
+                        margin: "7px 5px",
+                        border: "none",
+                        padding: "8px 12px",
+                        fontFamily: "Montserrat",
+                        borderRadius: "16px !important",
+                        "&.Mui-selected": {
+                          backgroundColor: "#1463B9",
+                          color: "white",
+                          "&:hover": {
+                            backgroundColor: "#6B9AC4",
+                          },
+                        },
+                        "&:not(.Mui-selected)": {
+                          color: "#1463B9",
+                          "&:hover": {
+                            backgroundColor: "#BBD1E9",
+                          },
                         },
                       },
-                      "&:not(.Mui-selected)": {
-                        color: "#1463B9",
-                        "&:hover": {
-                          backgroundColor: "#BBD1E9",
+                    }}
+                  >
+                    <ToggleButton
+                      value="VISUALISATION"
+                      onClick={() => handleSelect("Heatmap")}
+                    >
+                      TOP 25 SAMPLES
+                    </ToggleButton>
+                    <ToggleButton
+                      value="DATA_MATRIX"
+                      onClick={() =>
+                        fetchImage(jobId, optionFile["HeatmapAll"])
+                      }
+                    >
+                      ALL SAMPLES
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                ) : (
+                  <ToggleButtonGroup
+                    value={alignment}
+                    exclusive
+                    onChange={handleAlignment}
+                    sx={{
+                      backgroundColor: "#EBEBEB",
+                      borderRadius: "16px",
+                      "& .MuiToggleButtonGroup-grouped": {
+                        margin: "7px 5px",
+                        border: "none",
+                        padding: "8px 12px",
+                        fontFamily: "Montserrat",
+                        borderRadius: "16px !important",
+                        "&.Mui-selected": {
+                          backgroundColor: "#1463B9",
+                          color: "white",
+                          "&:hover": {
+                            backgroundColor: "#6B9AC4",
+                          },
+                        },
+                        "&:not(.Mui-selected)": {
+                          color: "#1463B9",
+                          "&:hover": {
+                            backgroundColor: "#BBD1E9",
+                          },
                         },
                       },
-                    },
-                  }}
-                >
-                  <ToggleButton value="VISUALISATION">
-                    VISUALISATION
-                  </ToggleButton>
-                  <ToggleButton value="DATA_MATRIX">DATA MATRIX</ToggleButton>
-                </ToggleButtonGroup>
+                    }}
+                  >
+                    <ToggleButton value="VISUALISATION">
+                      VISUALIZATION
+                    </ToggleButton>
+                    <ToggleButton value="DATA_MATRIX">DATA MATRIX</ToggleButton>
+                  </ToggleButtonGroup>
+                )}
               </Box>
             </Box>
             <Box
@@ -169,6 +254,27 @@ const DifferentialExpressionResults = () => {
             >
               <Button variant="contained">Download</Button>
             </Box>
+          </Box>
+          <Box
+            sx={{
+              marginTop: "40px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "auto",
+            }}
+          >
+            {isLoading ? (
+              <CircularProgress />
+            ) : (
+              imageUrl && (
+                <img
+                  src={imageUrl}
+                  alt={selected}
+                  style={getImageStyle(selected)}
+                />
+              )
+            )}
           </Box>
         </Container>
       </Container>

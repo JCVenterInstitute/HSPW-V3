@@ -13,6 +13,7 @@ const { s3Upload } = require("./utils/s3Upload");
 const fse = require("fs-extra");
 const path = require("path");
 const { processGroupData } = require("./utils/processGroupData");
+const { s3Download } = require("./utils/s3Download");
 
 app.use(cors());
 app.use(express.json());
@@ -2250,17 +2251,32 @@ app.get("/api/study_protein/:id", async (req, res) => {
   });
 });
 
-app.get("/api/s3Download/:jobId", async (req, res) => {
-  console.log(req.params.jobId);
-  // // S3 download parameters
-  // const params = {
-  //   bucketName: "differential-expression-result-dev",
-  //   s3KeyPrefix: `${timestamp.year}-${timestamp.month}-${timestamp.day}/differential-expression-${formattedDate}`,
-  //   contentType: "text/plain",
-  //   directoryPath: workingDirectory,
-  // };
-  // // Perform the s3 upload
-  // await s3Download(params);
+app.get("/api/s3Download/:jobId/:fileName", async (req, res) => {
+  const jobId = req.params.jobId;
+  const fileName = req.params.fileName;
+  console.log("> Processing jobId: ", jobId);
+  console.log("> Getting file: ", fileName);
+
+  const datePart = jobId.split("-")[2];
+
+  // Split the date part into year, month, and day
+  const year = datePart.substring(0, 4);
+  const month = datePart.substring(4, 6);
+  const day = datePart.substring(6, 8);
+
+  // S3 download parameters
+  const params = {
+    bucketName: "differential-expression-result-dev",
+    s3Key: `${year}-${month}-${day}/${jobId}/${fileName}`,
+  };
+
+  try {
+    const presignedUrl = await s3Download(params);
+    res.send({ url: presignedUrl }); // Send the presigned URL to the client
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Error generating presigned URL");
+  }
 });
 
 app.listen(8000, () => {
