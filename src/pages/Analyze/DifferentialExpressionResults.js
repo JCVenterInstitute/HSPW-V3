@@ -15,7 +15,7 @@ import { useParams } from "react-router-dom";
 const DifferentialExpressionResults = () => {
   const { jobId } = useParams();
   const [selected, setSelected] = useState("Valcano Plot");
-  const [alignment, setAlignment] = useState("VISUALISATION");
+  const [alignment, setAlignment] = useState("left");
   const [imageUrl, setImageUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -42,13 +42,21 @@ const DifferentialExpressionResults = () => {
   const handleAlignment = (event, newAlignment) => {
     if (newAlignment !== null) {
       setAlignment(newAlignment);
+      let fileName;
+      if (selected === "Heatmap") {
+        fileName =
+          newAlignment === "left"
+            ? optionFile["Heatmap"]
+            : optionFile["HeatmapAll"];
+        fetchImage(jobId, fileName);
+      }
     }
   };
 
   const handleSelect = (item) => {
+    setAlignment("left"); // Reset the alignment
     setSelected(item);
-    const fileName = optionFile[item]; // Get the file name based on the selected item
-    fetchImage(jobId, fileName); // Fetch the image for the selected item
+    fetchImage(jobId, optionFile[item]); // Fetch the image for the selected item
   };
 
   const getImageStyle = (selectedItem) => {
@@ -192,20 +200,8 @@ const DifferentialExpressionResults = () => {
                       },
                     }}
                   >
-                    <ToggleButton
-                      value="VISUALISATION"
-                      onClick={() => handleSelect("Heatmap")}
-                    >
-                      TOP 25 SAMPLES
-                    </ToggleButton>
-                    <ToggleButton
-                      value="DATA_MATRIX"
-                      onClick={() =>
-                        fetchImage(jobId, optionFile["HeatmapAll"])
-                      }
-                    >
-                      ALL SAMPLES
-                    </ToggleButton>
+                    <ToggleButton value="left">TOP 25 SAMPLES</ToggleButton>
+                    <ToggleButton value="right">ALL SAMPLES</ToggleButton>
                   </ToggleButtonGroup>
                 ) : (
                   <ToggleButtonGroup
@@ -237,10 +233,8 @@ const DifferentialExpressionResults = () => {
                       },
                     }}
                   >
-                    <ToggleButton value="VISUALISATION">
-                      VISUALIZATION
-                    </ToggleButton>
-                    <ToggleButton value="DATA_MATRIX">DATA MATRIX</ToggleButton>
+                    <ToggleButton value="left">VISUALIZATION</ToggleButton>
+                    <ToggleButton value="right">DATA MATRIX</ToggleButton>
                   </ToggleButtonGroup>
                 )}
               </Box>
