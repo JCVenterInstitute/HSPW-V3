@@ -2166,7 +2166,9 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
       workingDirectory,
     } = req.body;
     const scriptPath = "/home/ec2-user/r4test1/test";
+
     // Create the working directory and copy the R script
+    await fse.ensureDir(workingDirectory);
     await processGroupData(req.body, workingDirectory);
     await fse.copy(
       path.join(scriptPath, "generate-data.R"),
