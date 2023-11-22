@@ -90,7 +90,6 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const DifferentialExpression = () => {
-  const gridRef = useRef();
   const [gridApi, setGridApi] = useState();
   const [gridApiGroupA, setGridApiGroupA] = useState();
   const [gridApiGroupB, setGridApiGroupB] = useState();
@@ -107,6 +106,7 @@ const DifferentialExpression = () => {
   const [foldChangeThreshold, setFoldChangeThreshold] = useState("2.0");
   const [pValueThreshold, setPValueThreshold] = useState("0.05");
   const [pValueType, setPValueType] = useState("Raw");
+  const [filterKeyword, setFilterKeyword] = useState("");
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
@@ -361,6 +361,11 @@ const DifferentialExpression = () => {
     setGroupBRowData(newGroupRowData);
   };
 
+  const handleFilter = (searchKeyWord) => {
+    gridApi.setQuickFilter(searchKeyWord);
+    setTotalPageNumber(gridApi.paginationGetTotalPages());
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0]; // Get the selected file
     if (file) {
@@ -526,15 +531,20 @@ const DifferentialExpression = () => {
                     {filter}
                   </Typography>
                 </AccordionSummary>
-                <AccordionDetails>
-                  <Typography>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Suspendisse malesuada lacus ex, sit amet blandit leo
-                    lobortis eget. Lorem ipsum dolor sit amet, consectetur
-                    adipiscing elit. Suspendisse malesuada lacus ex, sit amet
-                    blandit leo lobortis eget.
-                  </Typography>
-                </AccordionDetails>
+                {(filter === "Sample ID" || filter === "Sample Title") && (
+                  <AccordionDetails>
+                    <TextField
+                      variant="outlined"
+                      size="small"
+                      label="Search..."
+                      InputProps={{
+                        style: {
+                          borderRadius: "16px",
+                        },
+                      }}
+                    />
+                  </AccordionDetails>
+                )}
               </Accordion>
             );
           })}
@@ -553,6 +563,12 @@ const DifferentialExpression = () => {
                     borderRadius: "16px 0 0 16px",
                   },
                 }}
+                onChange={(e) => setFilterKeyword(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    handleFilter(e.target.value);
+                  }
+                }}
               />
               <button
                 type="submit"
@@ -565,6 +581,7 @@ const DifferentialExpression = () => {
                   cursor: "pointer",
                   borderRadius: "0 16px 16px 0",
                 }}
+                onClick={() => handleFilter(filterKeyword)}
               >
                 <SearchIcon sx={{ color: "white" }} />
               </button>
