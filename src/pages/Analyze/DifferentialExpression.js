@@ -93,7 +93,7 @@ const DifferentialExpression = () => {
   const [gridApi, setGridApi] = useState();
   const [gridApiGroupA, setGridApiGroupA] = useState();
   const [gridApiGroupB, setGridApiGroupB] = useState();
-  const [expanded, setExpanded] = useState("");
+  const [expanded, setExpanded] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
   const [totalRecordCount, setTotalRecordCount] = useState(0);
   const [totalPageNumber, setTotalPageNumber] = useState(0);
@@ -107,6 +107,8 @@ const DifferentialExpression = () => {
   const [pValueThreshold, setPValueThreshold] = useState("0.05");
   const [pValueType, setPValueType] = useState("Raw");
   const [filterKeyword, setFilterKeyword] = useState("");
+  const [sampleIdFilter, setSampleIdFilter] = useState("");
+  const [sampleTitleFilter, setSampleTitleFilter] = useState("");
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
@@ -199,6 +201,7 @@ const DifferentialExpression = () => {
       checkboxSelection: true,
       headerCheckboxSelection: true,
       sort: "asc",
+      filter: "agTextColumnFilter",
     },
     {
       headerName: "Sample Title",
@@ -295,8 +298,14 @@ const DifferentialExpression = () => {
     filter: "text",
   };
 
-  const handleChange = (panel) => (event, newExpanded) => {
-    setExpanded(newExpanded ? panel : false);
+  const handleChange = (panel) => (event, isExpanded) => {
+    setExpanded((prevExpanded) => {
+      if (isExpanded) {
+        return [...prevExpanded, panel];
+      } else {
+        return prevExpanded.filter((exp) => exp !== panel);
+      }
+    });
   };
 
   const handleAddGroupA = () => {
@@ -361,8 +370,43 @@ const DifferentialExpression = () => {
     setGroupBRowData(newGroupRowData);
   };
 
-  const handleFilter = (searchKeyWord) => {
-    gridApi.setQuickFilter(searchKeyWord);
+  const handleFilter = (searchKeyword) => {
+    gridApi.setQuickFilter(searchKeyword);
+    setTotalPageNumber(gridApi.paginationGetTotalPages());
+  };
+
+  const handleSideFilter = (searchKeyword, columnName) => {
+    const filterModel = {};
+
+    if (columnName === "Sample ID") {
+      setSampleIdFilter(searchKeyword);
+      filterModel.experiment_id_key = {
+        type: "contains",
+        filter: searchKeyword,
+      };
+    } else if (columnName === "Sample Title") {
+      setSampleTitleFilter(searchKeyword);
+      filterModel.experiment_title = {
+        type: "contains",
+        filter: searchKeyword,
+      };
+    }
+
+    // Apply existing filters from the other column
+    if (columnName !== "Sample ID" && sampleIdFilter) {
+      filterModel.experiment_id_key = {
+        type: "contains",
+        filter: sampleIdFilter,
+      };
+    }
+    if (columnName !== "Sample Title" && sampleTitleFilter) {
+      filterModel.experiment_title = {
+        type: "contains",
+        filter: sampleTitleFilter,
+      };
+    }
+
+    gridApi.setFilterModel(filterModel);
     setTotalPageNumber(gridApi.paginationGetTotalPages());
   };
 
@@ -512,7 +556,7 @@ const DifferentialExpression = () => {
           {filterList.map((filter) => {
             return (
               <Accordion
-                expanded={expanded === `${filter}`}
+                expanded={expanded.includes(filter)}
                 onChange={handleChange(filter)}
               >
                 <AccordionSummary
@@ -542,6 +586,12 @@ const DifferentialExpression = () => {
                           borderRadius: "16px",
                         },
                       }}
+                      value={
+                        filter === "Sample ID"
+                          ? sampleIdFilter
+                          : sampleTitleFilter
+                      }
+                      onChange={(e) => handleSideFilter(e.target.value, filter)}
                     />
                   </AccordionDetails>
                 )}
