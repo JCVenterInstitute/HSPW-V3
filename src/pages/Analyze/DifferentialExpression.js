@@ -201,7 +201,6 @@ const DifferentialExpression = () => {
       checkboxSelection: true,
       headerCheckboxSelection: true,
       sort: "asc",
-      filter: "agTextColumnFilter",
     },
     {
       headerName: "Sample Title",
