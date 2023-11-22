@@ -59,6 +59,24 @@ const DifferentialExpressionResults = () => {
     fetchImage(jobId, optionFile[item]); // Fetch the image for the selected item
   };
 
+  const handleDataDownload = () => {
+    // Create a new anchor element
+    const link = document.createElement("a");
+    link.href = imageUrl;
+
+    // Set the download attribute to a default filename or based on the URL
+    link.download = imageUrl.split("/").pop(); // This will take the last part of the URL as a filename
+
+    // Append the link to the body
+    document.body.appendChild(link);
+
+    // Trigger a click event on the link
+    link.click();
+
+    // Remove the link from the body
+    document.body.removeChild(link);
+  };
+
   const getImageStyle = (selectedItem) => {
     if (selectedItem === "Venn-Diagram") {
       return {
@@ -246,7 +264,9 @@ const DifferentialExpressionResults = () => {
                 flexGrow: 1, // To make the right Box occupy remaining space
               }}
             >
-              <Button variant="contained">Download</Button>
+              <Button variant="contained" onClick={handleDataDownload}>
+                Download
+              </Button>
             </Box>
           </Box>
           <Box
@@ -261,6 +281,7 @@ const DifferentialExpressionResults = () => {
             {isLoading ? (
               <CircularProgress />
             ) : (
+              (selected === "Heatmap" || alignment === "left") &&
               imageUrl && (
                 <img
                   src={imageUrl}
