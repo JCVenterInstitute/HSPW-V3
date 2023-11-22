@@ -162,6 +162,7 @@ const DifferentialExpression = () => {
   };
 
   const filterList = [
+    "Sample ID",
     "Sample Title",
     "Tissue Type",
     "Institution",
@@ -373,6 +374,29 @@ const DifferentialExpression = () => {
   };
 
   const handleAnalyze = async () => {
+    if (groupARowData.length === 0 || groupBRowData.length === 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "GroupA and/or GroupB cannot be empty. Please try again.",
+      });
+      return;
+    }
+
+    const checkDuplicate = new Set();
+    groupARowData.forEach((row) => checkDuplicate.add(row.experiment_id_key));
+
+    for (const row of groupBRowData) {
+      if (checkDuplicate.has(row.experiment_id_key)) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Duplicate samples in both groups. Please try again.",
+        });
+        return;
+      }
+    }
+
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, "0");
@@ -392,8 +416,9 @@ const DifferentialExpression = () => {
     });
     Swal.showLoading();
 
-    await axios
-      .post("http://localhost:8000/api/differential-expression/analyze", {
+    await axios.post(
+      "http://localhost:8000/api/differential-expression/analyze",
+      {
         groupAData: groupARowData,
         groupBData: groupBRowData,
         logNorm,
@@ -410,11 +435,12 @@ const DifferentialExpression = () => {
         },
         formattedDate,
         workingDirectory,
-      })
-      .then(() => {
-        Swal.close();
-      });
+      }
+    );
+
     window.location.href = `/differential-expression/results/${jobId}`;
+
+    Swal.close();
   };
 
   return (
