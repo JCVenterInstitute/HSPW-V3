@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import main_feature from "../../components/hero.jpeg";
 import {
   Container,
@@ -11,6 +11,11 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { AgGridReact } from "ag-grid-react";
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-material.css";
+import CustomLoadingOverlay from "./CustomLoadingOverlay";
+import CustomNoRowsOverlay from "./CustomNoRowsOverlay";
 
 const DifferentialExpressionResults = () => {
   const { jobId } = useParams();
@@ -18,6 +23,16 @@ const DifferentialExpressionResults = () => {
   const [alignment, setAlignment] = useState("left");
   const [imageUrl, setImageUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [rowData, setRowData] = useState();
+  const [gridApi, setGridApi] = useState();
+
+  const loadingOverlayComponent = useMemo(() => {
+    return CustomLoadingOverlay;
+  }, []);
+
+  const noRowsOverlayComponent = useMemo(() => {
+    return CustomNoRowsOverlay;
+  }, []);
 
   const option = [
     "Valcano Plot",
@@ -31,13 +46,83 @@ const DifferentialExpressionResults = () => {
 
   const optionFile = {
     "Valcano Plot": "volcano_0_dpi72.png",
+    "Valcano-Data": "volcano.csv",
     Heatmap: "heatmap_1_dpi72.png",
     HeatmapAll: "heatmap_0_dpi72.png",
     "T-Tests": "tt_0_dpi72.png",
+    "T-Tests-Data": "t_test.csv",
     "Venn-Diagram": "venn-dimensions.png",
+    "Venn-Diagram-Common": "venn_common.csv",
     Normalization: "norm_0_dpi72.png",
     "Result Data": "all_data.tsv",
   };
+
+  const columns = [
+    {
+      headerName: "Sample ID",
+      field: "experiment_id_key",
+      wrapText: true,
+      minWidth: 230,
+      headerClass: ["header-border"],
+      checkboxSelection: true,
+      headerCheckboxSelection: true,
+      sort: "asc",
+    },
+    {
+      headerName: "Sample Title",
+      field: "experiment_title",
+      wrapText: true,
+      minWidth: 500,
+      headerClass: ["header-border"],
+    },
+    {
+      headerName: "Tissue Type",
+      field: "sample_type",
+      wrapText: true,
+      headerClass: ["header-border"],
+    },
+    {
+      headerName: "Institution",
+      field: "institution",
+      wrapText: true,
+      headerClass: ["header-border"],
+    },
+    {
+      headerName: "Disease",
+      field: "condition_type",
+      wrapText: true,
+      headerClass: ["header-border"],
+    },
+    {
+      headerName: "Protein Count",
+      field: "experiment_protein_count",
+      wrapText: true,
+      headerClass: ["header-border"],
+    },
+  ];
+
+  const defaultColDef = {
+    flex: 1,
+    resizable: true,
+    sortable: true,
+    minWidth: 150,
+    filter: "agTextColumnFilter",
+  };
+
+  const onGridReady = useCallback((params) => {
+    axios
+      .get("http://localhost:8000/api/study")
+      .then((res) => res.data)
+      .then((data) => {
+        return data.hits.hits.map((item) => item._source);
+      })
+      .then((sourceData) => {
+        setRowData(sourceData);
+      })
+      .then(() => {
+        setGridApi(params.api);
+      });
+  }, []);
 
   const handleAlignment = (event, newAlignment) => {
     if (newAlignment !== null) {
@@ -48,6 +133,12 @@ const DifferentialExpressionResults = () => {
           newAlignment === "left"
             ? optionFile["Heatmap"]
             : optionFile["HeatmapAll"];
+        fetchImage(jobId, fileName);
+      } else if (selected === "Valcano Plot") {
+        fileName =
+          newAlignment === "left"
+            ? optionFile["Valcano Plot"]
+            : optionFile["Valcano-Data"];
         fetchImage(jobId, fileName);
       }
     }
@@ -280,8 +371,7 @@ const DifferentialExpressionResults = () => {
           >
             {isLoading ? (
               <CircularProgress />
-            ) : (
-              (selected === "Heatmap" || alignment === "left") &&
+            ) : selected === "Heatmap" || alignment === "left" ? (
               imageUrl && (
                 <img
                   src={imageUrl}
@@ -289,6 +379,30 @@ const DifferentialExpressionResults = () => {
                   style={getImageStyle(selected)}
                 />
               )
+            ) : selected === "Valcano Plot" && alignment === "right" ? (
+              <div
+                className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
+                style={{ width: "100%", height: "1000px" }}
+              >
+                <AgGridReact
+                  className="ag-cell-wrap-text"
+                  rowData={rowData}
+                  columnDefs={columns}
+                  defaultColDef={defaultColDef}
+                  onGridReady={onGridReady}
+                  enableCellTextSelection={true}
+                  pagination={true}
+                  paginationPageSize={500}
+                  suppressPaginationPanel={true}
+                  rowSelection={"multiple"}
+                  rowMultiSelectWithClick={true}
+                  noRowsOverlayComponent={noRowsOverlayComponent}
+                  loadingOverlayComponent={loadingOverlayComponent}
+                  suppressScrollOnNewData={true}
+                ></AgGridReact>
+              </div>
+            ) : (
+              <div>Hello</div>
             )}
           </Box>
         </Container>
