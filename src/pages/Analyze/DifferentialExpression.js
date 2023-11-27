@@ -9,6 +9,8 @@ import {
   Button,
   Stack,
   Checkbox,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -30,6 +32,7 @@ import CustomNoRowsOverlay from "./CustomNoRowsOverlay";
 import CircleCheckedFilled from "@mui/icons-material/CheckCircle";
 import CircleUnchecked from "@mui/icons-material/RadioButtonUnchecked";
 import Swal from "sweetalert2";
+import ClearIcon from "@mui/icons-material/Clear";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -109,6 +112,9 @@ const DifferentialExpression = () => {
   const [filterKeyword, setFilterKeyword] = useState("");
   const [sampleIdFilter, setSampleIdFilter] = useState("");
   const [sampleTitleFilter, setSampleTitleFilter] = useState("");
+  const [tissueTypeFilterList, setTissueTypeFilterList] = useState([]);
+  const [institutionFilterList, setInstitutionFilterList] = useState([]);
+  const [diseaseFilterList, setDiseaseFilterList] = useState([]);
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
@@ -122,7 +128,15 @@ const DifferentialExpression = () => {
     axios
       .get("http://localhost:8000/api/study")
       .then((res) => res.data)
-      .then((data) => data.map((item) => item._source))
+      .then((data) => {
+        setTissueTypeFilterList([...data.aggregations.condition_type.buckets]);
+        setInstitutionFilterList([...data.aggregations.institution.buckets]);
+        setDiseaseFilterList([...data.aggregations.sample_type.buckets]);
+        return data.hits.hits.map((item) => ({
+          ...item._source,
+          institution: item._source.institution.replace(/,$/, ""), // Removes only the last comma
+        }));
+      })
       .then((sourceData) => {
         setRowData(sourceData);
         setTotalRecordCount(sourceData.length);
@@ -536,7 +550,7 @@ const DifferentialExpression = () => {
         <Box
           sx={{
             backgroundColor: "#f9f8f7",
-            width: "250px",
+            width: "270px",
             height: "2000px",
           }}
         >
@@ -574,7 +588,7 @@ const DifferentialExpression = () => {
                     {filter}
                   </Typography>
                 </AccordionSummary>
-                {(filter === "Sample ID" || filter === "Sample Title") && (
+                {filter === "Sample ID" || filter === "Sample Title" ? (
                   <AccordionDetails>
                     <TextField
                       variant="outlined"
@@ -593,30 +607,48 @@ const DifferentialExpression = () => {
                       onChange={(e) => handleSideFilter(e.target.value, filter)}
                     />
                   </AccordionDetails>
+                ) : (
+                  <div></div>
                 )}
               </Accordion>
             );
           })}
         </Box>
-        <Container maxWidth="xl" sx={{ marginTop: "30px" }}>
+        <Container maxWidth="xl" sx={{ marginTop: "30px", marginLeft: "20px" }}>
           <Box sx={{ display: "flex" }}>
             <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
               <TextField
                 variant="outlined"
                 size="small"
                 label="Search..."
+                value={filterKeyword}
+                onChange={(e) => setFilterKeyword(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    handleFilter(e.target.value);
+                  }
+                }}
                 InputProps={{
                   style: {
                     height: "44px",
                     width: "500px",
                     borderRadius: "16px 0 0 16px",
                   },
-                }}
-                onChange={(e) => setFilterKeyword(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") {
-                    handleFilter(e.target.value);
-                  }
+                  endAdornment: filterKeyword && (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="clear search"
+                        onClick={() => {
+                          handleFilter("");
+                          setFilterKeyword("");
+                        }}
+                        edge="end"
+                        size="small"
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
                 }}
               />
               <button

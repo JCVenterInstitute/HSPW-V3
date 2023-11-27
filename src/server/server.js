@@ -2207,6 +2207,23 @@ const searchStudy = async () => {
     query: {
       match_all: {},
     },
+    aggs: {
+      sample_type: {
+        terms: {
+          field: "sample_type.keyword",
+        },
+      },
+      institution: {
+        terms: {
+          field: "institution.keyword",
+        },
+      },
+      condition_type: {
+        terms: {
+          field: "condition_type.keyword",
+        },
+      },
+    },
   };
 
   const response = await client.search({
@@ -2214,7 +2231,7 @@ const searchStudy = async () => {
     body: query,
   });
 
-  return response.body.hits.hits;
+  return response.body;
 };
 
 app.get("/api/study", async (req, res) => {
