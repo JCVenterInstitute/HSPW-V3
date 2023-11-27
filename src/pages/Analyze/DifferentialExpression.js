@@ -11,6 +11,11 @@ import {
   Checkbox,
   InputAdornment,
   IconButton,
+  FormGroup,
+  FormControlLabel,
+  Modal,
+  Backdrop,
+  Fade,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -99,7 +104,7 @@ const DifferentialExpression = () => {
   const [expanded, setExpanded] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
   const [totalRecordCount, setTotalRecordCount] = useState(0);
-  const [totalPageNumber, setTotalPageNumber] = useState(0);
+  const [totalPageNumber, setTotalPageNumber] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(50);
   const [rowData, setRowData] = useState();
   const [groupARowData, setGroupARowData] = useState([]);
@@ -112,9 +117,13 @@ const DifferentialExpression = () => {
   const [filterKeyword, setFilterKeyword] = useState("");
   const [sampleIdFilter, setSampleIdFilter] = useState("");
   const [sampleTitleFilter, setSampleTitleFilter] = useState("");
+  const [tissueTypeFilter, setTissueTypeFilter] = useState("");
+  const [institutionFilter, setInstitutionFilter] = useState("");
+  const [diseaseFilter, setDiseaseFilter] = useState("");
   const [tissueTypeFilterList, setTissueTypeFilterList] = useState([]);
   const [institutionFilterList, setInstitutionFilterList] = useState([]);
   const [diseaseFilterList, setDiseaseFilterList] = useState([]);
+  const [openExplanationModal, setOpenExplanationModal] = useState(false);
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
@@ -129,13 +138,10 @@ const DifferentialExpression = () => {
       .get("http://localhost:8000/api/study")
       .then((res) => res.data)
       .then((data) => {
-        setTissueTypeFilterList([...data.aggregations.condition_type.buckets]);
+        setTissueTypeFilterList([...data.aggregations.sample_type.buckets]);
         setInstitutionFilterList([...data.aggregations.institution.buckets]);
-        setDiseaseFilterList([...data.aggregations.sample_type.buckets]);
-        return data.hits.hits.map((item) => ({
-          ...item._source,
-          institution: item._source.institution.replace(/,$/, ""), // Removes only the last comma
-        }));
+        setDiseaseFilterList([...data.aggregations.condition_type.buckets]);
+        return data.hits.hits.map((item) => item._source);
       })
       .then((sourceData) => {
         setRowData(sourceData);
@@ -308,6 +314,7 @@ const DifferentialExpression = () => {
     resizable: true,
     sortable: true,
     minWidth: 150,
+    filter: "agTextColumnFilter",
   };
 
   const handleChange = (panel) => (event, isExpanded) => {
@@ -382,13 +389,21 @@ const DifferentialExpression = () => {
     setGroupBRowData(newGroupRowData);
   };
 
+  const handleOpenExplanationModal = () => {
+    setOpenExplanationModal(true);
+  };
+
+  const handleCloseExplanationModal = () => {
+    setOpenExplanationModal(false);
+  };
+
   const handleFilter = (searchKeyword) => {
     gridApi.setQuickFilter(searchKeyword);
     setTotalPageNumber(gridApi.paginationGetTotalPages());
   };
 
   const handleSideFilter = (searchKeyword, columnName) => {
-    const filterModel = {};
+    let filterModel = gridApi.getFilterModel();
 
     if (columnName === "Sample ID") {
       setSampleIdFilter(searchKeyword);
@@ -402,19 +417,20 @@ const DifferentialExpression = () => {
         type: "contains",
         filter: searchKeyword,
       };
-    }
-
-    // Apply existing filters from the other column
-    if (columnName !== "Sample ID" && sampleIdFilter) {
-      filterModel.experiment_id_key = {
+    } else if (columnName === "Tissue Type") {
+      filterModel.sample_type = {
         type: "contains",
-        filter: sampleIdFilter,
+        filter: searchKeyword,
       };
-    }
-    if (columnName !== "Sample Title" && sampleTitleFilter) {
-      filterModel.experiment_title = {
+    } else if (columnName === "Institution") {
+      filterModel.institution = {
         type: "contains",
-        filter: sampleTitleFilter,
+        filter: searchKeyword,
+      };
+    } else if (columnName === "Disease") {
+      filterModel.condition_type = {
+        type: "contains",
+        filter: searchKeyword,
       };
     }
 
@@ -587,8 +603,8 @@ const DifferentialExpression = () => {
                     {filter}
                   </Typography>
                 </AccordionSummary>
-                {filter === "Sample ID" || filter === "Sample Title" ? (
-                  <AccordionDetails>
+                <AccordionDetails>
+                  {filter === "Sample ID" || filter === "Sample Title" ? (
                     <TextField
                       variant="outlined"
                       size="small"
@@ -605,10 +621,119 @@ const DifferentialExpression = () => {
                       }
                       onChange={(e) => handleSideFilter(e.target.value, filter)}
                     />
-                  </AccordionDetails>
-                ) : (
-                  <div></div>
-                )}
+                  ) : filter === "Tissue Type" ? (
+                    <FormGroup>
+                      {tissueTypeFilterList.map((option) => (
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={tissueTypeFilter === option.key}
+                              onChange={() => {
+                                if (tissueTypeFilter === option.key) {
+                                  setTissueTypeFilter("");
+                                  handleSideFilter("", filter);
+                                } else {
+                                  setTissueTypeFilter(option.key);
+                                  handleSideFilter(option.key, filter);
+                                }
+                              }}
+                            />
+                          }
+                          label={`${option.key}`}
+                          sx={{
+                            "& .MuiFormControlLabel-label": {
+                              fontSize: "16px", // Set your desired font size here
+                            },
+                          }}
+                        />
+                      ))}
+                    </FormGroup>
+                  ) : filter === "Institution" ? (
+                    <FormGroup>
+                      {institutionFilterList.map((option) => (
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={institutionFilter === option.key}
+                              onChange={() => {
+                                if (institutionFilter === option.key) {
+                                  setInstitutionFilter("");
+                                  handleSideFilter("", filter);
+                                } else {
+                                  setInstitutionFilter(option.key);
+                                  handleSideFilter(option.key, filter);
+                                }
+                              }}
+                            />
+                          }
+                          label={`${option.key}`}
+                          sx={{
+                            "& .MuiFormControlLabel-label": {
+                              fontSize: "16px", // Set your desired font size here
+                            },
+                          }}
+                        />
+                      ))}
+                    </FormGroup>
+                  ) : filter === "Disease" ? (
+                    <FormGroup>
+                      {diseaseFilterList.map((option) => (
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={diseaseFilter === option.key}
+                              onChange={() => {
+                                if (diseaseFilter === option.key) {
+                                  setDiseaseFilter("");
+                                  handleSideFilter("", filter);
+                                } else {
+                                  setDiseaseFilter(option.key);
+                                  handleSideFilter(option.key, filter);
+                                }
+                              }}
+                            />
+                          }
+                          label={`${option.key}`}
+                          sx={{
+                            "& .MuiFormControlLabel-label": {
+                              fontSize: "16px", // Set your desired font size here
+                            },
+                          }}
+                        />
+                      ))}
+                    </FormGroup>
+                  ) : (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <TextField
+                        variant="outlined"
+                        size="small"
+                        InputProps={{
+                          style: {
+                            borderRadius: "16px",
+                            width: "80px",
+                          },
+                        }}
+                      />
+                      <span style={{ margin: "0 8px" }}>to</span>{" "}
+                      <TextField
+                        variant="outlined"
+                        size="small"
+                        InputProps={{
+                          style: {
+                            borderRadius: "16px",
+                            width: "80px",
+                          },
+                        }}
+                      />
+                    </div>
+                  )}
+                </AccordionDetails>
               </Accordion>
             );
           })}
@@ -978,14 +1103,58 @@ const DifferentialExpression = () => {
               >
                 TEMPLATE:
               </Typography>
-              <Button variant="contained" sx={{ mr: 6 }}>
+              <Button variant="contained" sx={{ mr: 2 }}>
                 DOWNLOAD
               </Button>
+              <Button variant="text" onClick={handleOpenExplanationModal}>
+                Explain Template
+              </Button>
+              <Modal
+                aria-labelledby="template-explanation-modal"
+                aria-describedby="template-explanation-message"
+                open={openExplanationModal}
+                onClose={handleCloseExplanationModal}
+                closeAfterTransition
+                BackdropComponent={Backdrop}
+                BackdropProps={{
+                  timeout: 500,
+                }}
+              >
+                <Fade in={openExplanationModal}>
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      width: 400,
+                      bgcolor: "background.paper",
+                      boxShadow: 24,
+                      p: 4,
+                    }}
+                  >
+                    <Typography
+                      id="template-explanation-modal"
+                      variant="h6"
+                      component="h2"
+                    >
+                      Template Explanation
+                    </Typography>
+                    <Typography
+                      id="template-explanation-message"
+                      sx={{ mt: 2 }}
+                    >
+                      Here is the explanation of how to use the template...
+                    </Typography>
+                  </Box>
+                </Fade>
+              </Modal>
               <Typography
                 display="inline"
                 sx={{
                   fontFamily: "Lato",
                   color: "#464646",
+                  ml: 6,
                   mr: 2,
                 }}
               >
