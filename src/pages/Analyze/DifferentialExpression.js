@@ -308,7 +308,6 @@ const DifferentialExpression = () => {
     resizable: true,
     sortable: true,
     minWidth: 150,
-    filter: "text",
   };
 
   const handleChange = (panel) => (event, isExpanded) => {
