@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import main_feature from "../../components/hero.jpeg";
 import {
   Container,
@@ -124,6 +124,33 @@ const DifferentialExpression = () => {
   const [institutionFilterList, setInstitutionFilterList] = useState([]);
   const [diseaseFilterList, setDiseaseFilterList] = useState([]);
   const [openExplanationModal, setOpenExplanationModal] = useState(false);
+  const [lowerLimit, setLowerLimit] = useState(0);
+  const [upperLimit, setUpperLimit] = useState(20000);
+
+  useEffect(() => {
+    // Apply the filter whenever the limits change
+    if (gridApi) {
+      applyFilter(lowerLimit, upperLimit);
+    }
+  }, [lowerLimit, upperLimit]);
+
+  const applyFilter = () => {
+    handleProteinCountFilter(lowerLimit, upperLimit);
+  };
+
+  const handleProteinCountFilter = (lowerLimit, upperLimit) => {
+    let filterModel = gridApi.getFilterModel();
+
+    // Assuming the column name for protein count is "Protein Count"
+    filterModel.experiment_protein_count = {
+      type: "inRange",
+      filter: lowerLimit,
+      filterTo: upperLimit,
+    };
+
+    gridApi.setFilterModel(filterModel);
+    setTotalPageNumber(gridApi.paginationGetTotalPages());
+  };
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
@@ -260,6 +287,7 @@ const DifferentialExpression = () => {
       field: "experiment_protein_count",
       wrapText: true,
       headerClass: ["header-border"],
+      filter: "agNumberColumnFilter",
     },
   ];
 
@@ -721,6 +749,8 @@ const DifferentialExpression = () => {
                       <TextField
                         variant="outlined"
                         size="small"
+                        value={lowerLimit}
+                        onChange={(e) => setLowerLimit(e.target.value)}
                         InputProps={{
                           style: {
                             borderRadius: "16px",
@@ -728,10 +758,12 @@ const DifferentialExpression = () => {
                           },
                         }}
                       />
-                      <span style={{ margin: "0 8px" }}>to</span>{" "}
+                      <span style={{ margin: "0 8px" }}>to</span>
                       <TextField
                         variant="outlined"
                         size="small"
+                        value={upperLimit}
+                        onChange={(e) => setUpperLimit(e.target.value)}
                         InputProps={{
                           style: {
                             borderRadius: "16px",
