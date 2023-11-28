@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState } from "react";
 import main_feature from "../../components/hero.jpeg";
 import {
   Container,
@@ -11,11 +11,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-material.css";
-import CustomLoadingOverlay from "./CustomLoadingOverlay";
-import CustomNoRowsOverlay from "./CustomNoRowsOverlay";
+import CSVDataTable from "./CSVDataTable";
 
 const DifferentialExpressionResults = () => {
   const { jobId } = useParams();
@@ -23,16 +19,7 @@ const DifferentialExpressionResults = () => {
   const [alignment, setAlignment] = useState("left");
   const [imageUrl, setImageUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [rowData, setRowData] = useState();
-  const [gridApi, setGridApi] = useState();
-
-  const loadingOverlayComponent = useMemo(() => {
-    return CustomLoadingOverlay;
-  }, []);
-
-  const noRowsOverlayComponent = useMemo(() => {
-    return CustomNoRowsOverlay;
-  }, []);
+  const [csvData, setCsvData] = useState([]);
 
   const option = [
     "Valcano Plot",
@@ -52,77 +39,9 @@ const DifferentialExpressionResults = () => {
     "T-Tests": "tt_0_dpi72.png",
     "T-Tests-Data": "t_test.csv",
     "Venn-Diagram": "venn-dimensions.png",
-    "Venn-Diagram-Common": "venn_common.csv",
     Normalization: "norm_0_dpi72.png",
     "Result Data": "all_data.tsv",
   };
-
-  const columns = [
-    {
-      headerName: "Sample ID",
-      field: "experiment_id_key",
-      wrapText: true,
-      minWidth: 230,
-      headerClass: ["header-border"],
-      checkboxSelection: true,
-      headerCheckboxSelection: true,
-      sort: "asc",
-    },
-    {
-      headerName: "Sample Title",
-      field: "experiment_title",
-      wrapText: true,
-      minWidth: 500,
-      headerClass: ["header-border"],
-    },
-    {
-      headerName: "Tissue Type",
-      field: "sample_type",
-      wrapText: true,
-      headerClass: ["header-border"],
-    },
-    {
-      headerName: "Institution",
-      field: "institution",
-      wrapText: true,
-      headerClass: ["header-border"],
-    },
-    {
-      headerName: "Disease",
-      field: "condition_type",
-      wrapText: true,
-      headerClass: ["header-border"],
-    },
-    {
-      headerName: "Protein Count",
-      field: "experiment_protein_count",
-      wrapText: true,
-      headerClass: ["header-border"],
-    },
-  ];
-
-  const defaultColDef = {
-    flex: 1,
-    resizable: true,
-    sortable: true,
-    minWidth: 150,
-    filter: "agTextColumnFilter",
-  };
-
-  const onGridReady = useCallback((params) => {
-    axios
-      .get("http://localhost:8000/api/study")
-      .then((res) => res.data)
-      .then((data) => {
-        return data.hits.hits.map((item) => item._source);
-      })
-      .then((sourceData) => {
-        setRowData(sourceData);
-      })
-      .then(() => {
-        setGridApi(params.api);
-      });
-  }, []);
 
   const handleAlignment = (event, newAlignment) => {
     if (newAlignment !== null) {
@@ -139,6 +58,18 @@ const DifferentialExpressionResults = () => {
           newAlignment === "left"
             ? optionFile["Valcano Plot"]
             : optionFile["Valcano-Data"];
+        fetchImage(jobId, fileName);
+      } else if (selected === "T-Tests") {
+        fileName =
+          newAlignment === "left"
+            ? optionFile["T-Tests"]
+            : optionFile["T-Tests-Data"];
+        fetchImage(jobId, fileName);
+      } else if (selected === "Venn-Diagram") {
+        fileName = newAlignment === "left" ? optionFile["Venn-Diagram"] : null;
+        fetchImage(jobId, fileName);
+      } else if (selected === "Normalization") {
+        fileName = newAlignment === "left" ? optionFile["Normalization"] : null;
         fetchImage(jobId, fileName);
       }
     }
@@ -186,13 +117,54 @@ const DifferentialExpressionResults = () => {
       const response = await axios.get(
         `http://localhost:8000/api/s3Download/${jobId}/${fileName}`
       );
-      setImageUrl(response.data.url); // Set the image URL
+      if (fileName === null) {
+        setCsvData([]);
+      } else if (fileName.endsWith("csv")) {
+        const csvText = await axios
+          .get(response.data.url)
+          .then((res) => res.data);
+        parseCSV(csvText);
+      } else {
+        setImageUrl(response.data.url); // Set the image URL
+      }
     } catch (error) {
       console.error("Error downloading image:", error);
       setImageUrl(""); // Reset the image URL on error
     } finally {
       setIsLoading(false); // Stop loading regardless of the outcome
     }
+  };
+
+  const parseCSV = (csvText) => {
+    const lines = csvText.split("\n");
+
+    // Split the first line to get headers
+    let headers = lines[0].split(",");
+
+    // Replace the first header if it's empty and remove quotes from all headers
+    headers = headers.map((header, index) => {
+      if (index === 0 && header === '""') {
+        return "Protein"; // Replace the first header if it's empty
+      } else {
+        return header.replace(/['"]+/g, ""); // Remove quotes from headers
+      }
+    });
+
+    const parsedData = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      const currentLine = lines[i].split(",");
+
+      if (currentLine.length === headers.length) {
+        const row = {};
+        for (let j = 0; j < headers.length; j++) {
+          row[headers[j].trim()] = currentLine[j].trim();
+        }
+        parsedData.push(row);
+      }
+    }
+
+    setCsvData(parsedData);
   };
 
   useEffect(() => {
@@ -244,7 +216,7 @@ const DifferentialExpressionResults = () => {
           sx={{
             backgroundColor: "#f9f8f7",
             width: "250px",
-            height: "1200px",
+            height: "100%",
           }}
         >
           <Box sx={{ p: 4, borderRadius: "16px", width: "100%" }}>
@@ -313,38 +285,41 @@ const DifferentialExpressionResults = () => {
                     <ToggleButton value="right">ALL SAMPLES</ToggleButton>
                   </ToggleButtonGroup>
                 ) : (
-                  <ToggleButtonGroup
-                    value={alignment}
-                    exclusive
-                    onChange={handleAlignment}
-                    sx={{
-                      backgroundColor: "#EBEBEB",
-                      borderRadius: "16px",
-                      "& .MuiToggleButtonGroup-grouped": {
-                        margin: "7px 5px",
-                        border: "none",
-                        padding: "8px 12px",
-                        fontFamily: "Montserrat",
-                        borderRadius: "16px !important",
-                        "&.Mui-selected": {
-                          backgroundColor: "#1463B9",
-                          color: "white",
-                          "&:hover": {
-                            backgroundColor: "#6B9AC4",
+                  selected !== "Result Data" &&
+                  selected !== "Download" && (
+                    <ToggleButtonGroup
+                      value={alignment}
+                      exclusive
+                      onChange={handleAlignment}
+                      sx={{
+                        backgroundColor: "#EBEBEB",
+                        borderRadius: "16px",
+                        "& .MuiToggleButtonGroup-grouped": {
+                          margin: "7px 5px",
+                          border: "none",
+                          padding: "8px 12px",
+                          fontFamily: "Montserrat",
+                          borderRadius: "16px !important",
+                          "&.Mui-selected": {
+                            backgroundColor: "#1463B9",
+                            color: "white",
+                            "&:hover": {
+                              backgroundColor: "#6B9AC4",
+                            },
+                          },
+                          "&:not(.Mui-selected)": {
+                            color: "#1463B9",
+                            "&:hover": {
+                              backgroundColor: "#BBD1E9",
+                            },
                           },
                         },
-                        "&:not(.Mui-selected)": {
-                          color: "#1463B9",
-                          "&:hover": {
-                            backgroundColor: "#BBD1E9",
-                          },
-                        },
-                      },
-                    }}
-                  >
-                    <ToggleButton value="left">VISUALIZATION</ToggleButton>
-                    <ToggleButton value="right">DATA MATRIX</ToggleButton>
-                  </ToggleButtonGroup>
+                      }}
+                    >
+                      <ToggleButton value="left">VISUALIZATION</ToggleButton>
+                      <ToggleButton value="right">DATA MATRIX</ToggleButton>
+                    </ToggleButtonGroup>
+                  )
                 )}
               </Box>
             </Box>
@@ -379,28 +354,12 @@ const DifferentialExpressionResults = () => {
                   style={getImageStyle(selected)}
                 />
               )
-            ) : selected === "Valcano Plot" && alignment === "right" ? (
-              <div
-                className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
-                style={{ width: "100%", height: "1000px" }}
-              >
-                <AgGridReact
-                  className="ag-cell-wrap-text"
-                  rowData={rowData}
-                  columnDefs={columns}
-                  defaultColDef={defaultColDef}
-                  onGridReady={onGridReady}
-                  enableCellTextSelection={true}
-                  pagination={true}
-                  paginationPageSize={500}
-                  suppressPaginationPanel={true}
-                  rowSelection={"multiple"}
-                  rowMultiSelectWithClick={true}
-                  noRowsOverlayComponent={noRowsOverlayComponent}
-                  loadingOverlayComponent={loadingOverlayComponent}
-                  suppressScrollOnNewData={true}
-                ></AgGridReact>
-              </div>
+            ) : (selected === "Valcano Plot" ||
+                selected === "T-Tests" ||
+                selected === "Venn-Diagram" ||
+                selected === "Normalization") &&
+              alignment === "right" ? (
+              <CSVDataTable data={csvData} />
             ) : (
               <div>Hello</div>
             )}
