@@ -272,8 +272,8 @@ const DifferentialExpressionResults = () => {
         <Box
           sx={{
             backgroundColor: "#f9f8f7",
-            width: "250px",
-            height: "100%",
+            width: "270px",
+            height: "auto",
           }}
         >
           <Box sx={{ p: 4, borderRadius: "16px", width: "100%" }}>

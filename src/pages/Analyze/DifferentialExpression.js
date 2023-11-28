@@ -141,7 +141,15 @@ const DifferentialExpression = () => {
         setTissueTypeFilterList([...data.aggregations.sample_type.buckets]);
         setInstitutionFilterList([...data.aggregations.institution.buckets]);
         setDiseaseFilterList([...data.aggregations.condition_type.buckets]);
-        return data.hits.hits.map((item) => item._source);
+
+        return data.hits.hits.map((item) => {
+          return {
+            ...item._source,
+            experiment_protein_count: Number(
+              item._source.experiment_protein_count
+            ),
+          };
+        });
       })
       .then((sourceData) => {
         setRowData(sourceData);
@@ -566,7 +574,7 @@ const DifferentialExpression = () => {
           sx={{
             backgroundColor: "#f9f8f7",
             width: "270px",
-            height: "2000px",
+            height: "auto",
           }}
         >
           <h1
