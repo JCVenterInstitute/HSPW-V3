@@ -166,7 +166,10 @@ const DifferentialExpressionResults = () => {
       );
       if (fileName === null) {
         setCsvData([]);
-      } else if (fileName.endsWith("csv") || fileName.endsWith("tsv")) {
+      } else if (
+        fileName &&
+        (fileName.endsWith("csv") || fileName.endsWith("tsv"))
+      ) {
         const csvText = await axios
           .get(response.data.url)
           .then((res) => res.data);
@@ -430,26 +433,34 @@ const DifferentialExpressionResults = () => {
                     display: "flex",
                     alignItems: "center",
                     flexDirection: "row",
-                    padding: "16px",
+                    padding: "25px",
                   }}
                 >
                   <Grid container spacing={2}>
                     {Object.entries(fileDownloadOption).map(
                       ([key, fileName]) => (
                         <Grid item xs={6} key={key}>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              ml: 3,
-                            }}
-                          >
-                            <Typography variant="body1">{key}</Typography>
-                            <IconButton
+                          <Box sx={{ ml: 3 }}>
+                            <Button
                               onClick={() => handleDownload(jobId, fileName)}
+                              startIcon={
+                                <DownloadIcon sx={{ color: "#1463B9" }} />
+                              }
+                              sx={{
+                                textTransform: "none", // Keeps the button text style similar to Typography
+                                color: "#1463B9", // Sets the color of the text
+                              }}
                             >
-                              <DownloadIcon />
-                            </IconButton>
+                              <Typography
+                                variant="body1"
+                                sx={{
+                                  textDecoration: "underline",
+                                  color: "#1463B9",
+                                }}
+                              >
+                                {key}
+                              </Typography>
+                            </Button>
                           </Box>
                         </Grid>
                       )
