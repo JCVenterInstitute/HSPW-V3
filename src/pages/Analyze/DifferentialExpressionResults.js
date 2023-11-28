@@ -174,6 +174,7 @@ const DifferentialExpressionResults = () => {
           .get(response.data.url)
           .then((res) => res.data);
         parseCSV(csvText);
+        setImageUrl(response.data.url);
       } else {
         setImageUrl(response.data.url); // Set the image URL
       }
@@ -387,8 +388,8 @@ const DifferentialExpressionResults = () => {
                 flexGrow: 1, // To make the right Box occupy remaining space
               }}
             >
-              {(selected === "Heatmap" || alignment === "left") &&
-                selected !== "Result Data" &&
+              {(selected !== "Venn-Diagram" || alignment !== "right") &&
+                (selected !== "Normalization" || alignment !== "right") &&
                 selected !== "Download" && (
                   <Button variant="contained" onClick={handleDataDownload}>
                     Download
