@@ -12,7 +12,16 @@ const CSVDataTable = ({ data }) => {
   return (
     <>
       {data.length === 0 ? (
-        <p>No data available.</p>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "40vh",
+          }}
+        >
+          <p>No data available.</p>
+        </div>
       ) : (
         <Table>
           <TableHead>

@@ -8,10 +8,13 @@ import {
   ToggleButtonGroup,
   Button,
   CircularProgress,
+  Grid,
+  IconButton,
 } from "@mui/material";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import CSVDataTable from "./CSVDataTable";
+import DownloadIcon from "@mui/icons-material/Download";
 
 const DifferentialExpressionResults = () => {
   const { jobId } = useParams();
@@ -43,6 +46,18 @@ const DifferentialExpressionResults = () => {
     "Result Data": "all_data.tsv",
   };
 
+  const fileDownloadOption = {
+    "Valcano Plot": "volcano_0_dpi72.png",
+    "Valcano Data": "volcano.csv",
+    "Top 25 Samples Heatmap": "heatmap_1_dpi72.png",
+    "All Samples Heatmap": "heatmap_0_dpi72.png",
+    "T-Tests Plot": "tt_0_dpi72.png",
+    "T-Tests Data": "t_test.csv",
+    "Venn-Diagram Plot": "venn-dimensions.png",
+    "Normalization Plot": "norm_0_dpi72.png",
+    "Result Data": "all_data.tsv",
+  };
+
   const handleAlignment = (event, newAlignment) => {
     if (newAlignment !== null) {
       setAlignment(newAlignment);
@@ -71,6 +86,9 @@ const DifferentialExpressionResults = () => {
       } else if (selected === "Normalization") {
         fileName = newAlignment === "left" ? optionFile["Normalization"] : null;
         fetchImage(jobId, fileName);
+      } else {
+        fileName = null;
+        fetchImage(jobId, fileName);
       }
     }
   };
@@ -86,6 +104,8 @@ const DifferentialExpressionResults = () => {
     const link = document.createElement("a");
     link.href = imageUrl;
 
+    link.target = "_blank";
+
     // Set the download attribute to a default filename or based on the URL
     link.download = imageUrl.split("/").pop(); // This will take the last part of the URL as a filename
 
@@ -97,6 +117,33 @@ const DifferentialExpressionResults = () => {
 
     // Remove the link from the body
     document.body.removeChild(link);
+  };
+
+  const handleDownload = async (jobId, fileName) => {
+    try {
+      await axios
+        .get(`http://localhost:8000/api/s3Download/${jobId}/${fileName}`)
+        .then((res) => {
+          const link = document.createElement("a");
+          link.href = res.data.url;
+
+          link.target = "_blank";
+
+          // Set the download attribute to a default filename or based on the URL
+          link.download = fileName; // This will take the last part of the URL as a filename
+
+          // Append the link to the body
+          document.body.appendChild(link);
+
+          // Trigger a click event on the link
+          link.click();
+
+          // Remove the link from the body
+          document.body.removeChild(link);
+        });
+    } catch (error) {
+      console.error("Error downloading file:", error);
+    }
   };
 
   const getImageStyle = (selectedItem) => {
@@ -119,7 +166,7 @@ const DifferentialExpressionResults = () => {
       );
       if (fileName === null) {
         setCsvData([]);
-      } else if (fileName.endsWith("csv")) {
+      } else if (fileName.endsWith("csv") || fileName.endsWith("tsv")) {
         const csvText = await axios
           .get(response.data.url)
           .then((res) => res.data);
@@ -138,22 +185,29 @@ const DifferentialExpressionResults = () => {
   const parseCSV = (csvText) => {
     const lines = csvText.split("\n");
 
-    // Split the first line to get headers
-    let headers = lines[0].split(",");
+    // Detect delimiter (comma or tab)
+    const delimiter = lines[0].indexOf("\t") >= 0 ? "\t" : ",";
+
+    // Split the first line with the detected delimiter to get headers
+    let headers = lines[0].split(delimiter);
 
     // Replace the first header if it's empty and remove quotes from all headers
     headers = headers.map((header, index) => {
-      if (index === 0 && header === '""') {
-        return "Protein"; // Replace the first header if it's empty
+      if (
+        index === 0 &&
+        (header.replace(/['"]+/g, "") === "" ||
+          header.replace(/['"]+/g, "") === "rn")
+      ) {
+        return "Protein";
       } else {
-        return header.replace(/['"]+/g, ""); // Remove quotes from headers
+        return header.replace(/['"]+/g, "");
       }
     });
 
     const parsedData = [];
 
     for (let i = 1; i < lines.length; i++) {
-      const currentLine = lines[i].split(",");
+      const currentLine = lines[i].split(delimiter);
 
       if (currentLine.length === headers.length) {
         const row = {};
@@ -330,9 +384,13 @@ const DifferentialExpressionResults = () => {
                 flexGrow: 1, // To make the right Box occupy remaining space
               }}
             >
-              <Button variant="contained" onClick={handleDataDownload}>
-                Download
-              </Button>
+              {(selected === "Heatmap" || alignment === "left") &&
+                selected !== "Result Data" &&
+                selected !== "Download" && (
+                  <Button variant="contained" onClick={handleDataDownload}>
+                    Download
+                  </Button>
+                )}
             </Box>
           </Box>
           <Box
@@ -345,7 +403,62 @@ const DifferentialExpressionResults = () => {
             }}
           >
             {isLoading ? (
-              <CircularProgress />
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "50vh",
+                }}
+              >
+                <CircularProgress />
+              </Box>
+            ) : selected === "Download" ? (
+              <Box sx={{ width: "80%" }}>
+                <Typography
+                  variant="h5"
+                  sx={{ fontFamily: "Montserrat" }}
+                  gutterBottom
+                >
+                  Download
+                </Typography>
+                <Box
+                  sx={{
+                    backgroundColor: "#f9f8f7",
+                    mt: "20px",
+                    borderRadius: "16px",
+                    display: "flex",
+                    alignItems: "center",
+                    flexDirection: "row",
+                    padding: "16px",
+                  }}
+                >
+                  <Grid container spacing={2}>
+                    {Object.entries(fileDownloadOption).map(
+                      ([key, fileName]) => (
+                        <Grid item xs={6} key={key}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              ml: 3,
+                            }}
+                          >
+                            <Typography variant="body1">{key}</Typography>
+                            <IconButton
+                              onClick={() => handleDownload(jobId, fileName)}
+                            >
+                              <DownloadIcon />
+                            </IconButton>
+                          </Box>
+                        </Grid>
+                      )
+                    )}
+                  </Grid>
+                </Box>
+              </Box>
+            ) : selected === "Result Data" ? (
+              <CSVDataTable data={csvData} />
             ) : selected === "Heatmap" || alignment === "left" ? (
               imageUrl && (
                 <img
@@ -354,14 +467,12 @@ const DifferentialExpressionResults = () => {
                   style={getImageStyle(selected)}
                 />
               )
-            ) : (selected === "Valcano Plot" ||
+            ) : (
+              (selected === "Valcano Plot" ||
                 selected === "T-Tests" ||
                 selected === "Venn-Diagram" ||
                 selected === "Normalization") &&
-              alignment === "right" ? (
-              <CSVDataTable data={csvData} />
-            ) : (
-              <div>Hello</div>
+              alignment === "right" && <CSVDataTable data={csvData} />
             )}
           </Box>
         </Container>
