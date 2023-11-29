@@ -346,6 +346,7 @@ const DifferentialExpression = () => {
     resizable: true,
     sortable: true,
     minWidth: 150,
+    autoHeight: true,
     filter: "agTextColumnFilter",
   };
 
