@@ -173,7 +173,7 @@ async function search_proteinID(id) {
   };
 
   var response = await client.search({
-    index: "salivary-proteins-111323",
+    index: "salivary-proteins-112023",
     body: query,
   });
   console.log(
@@ -243,7 +243,7 @@ app.get("/protein_signature/:size/:from", (req, res) => {
 });
 
 async function and_search_citation(size, from, wildQuery) {
-  var client = await getClient();
+  var client = await getClient1();
   console.log(wildQuery);
 
   var query = {
@@ -391,7 +391,7 @@ async function multi_search(index, text) {
     query = {
       query: {
         query_string: {
-          query: text,
+          query: text + "*",
           fields: ["UniProt Accession", "Gene Symbol", "Protein Name"],
         },
       },
@@ -452,7 +452,7 @@ app.get("/protein_signature/:id", (req, res) => {
 });
 
 async function search_withID(index, id) {
-  var client = await getClient();
+  var client = await getClient1();
 
   var query = {
     query: {
@@ -482,7 +482,7 @@ app.get("/citation/:id", (req, res) => {
 
 async function search_citation_field() {
   // Initialize the client.
-  var client = await getClient();
+  var client = await getClient1();
 
   var response = await client.indices.getFieldMapping({
     index: "citation",
@@ -501,12 +501,12 @@ app.get("/citation/field", (req, res) => {
 
 async function search_citation(size, from) {
   // Initialize the client
-  var client = await getClient();
+  var client = await getClient1();
 
   var query = {
     size: size,
     from: from,
-    sort: [{ "Date of Publication": { order: "desc" } }],
+    sort: [{ PubYear: { order: "desc" } }],
     query: {
       match_all: {},
     },
@@ -1216,11 +1216,6 @@ async function and_search(
             { range: { plasma_abundance: { gte: start_p, lte: end_p } } },
             { range: { "sm/sl_abundance": { gte: start_ss, lte: end_ss } } },
             { range: { mRNA: { gte: start_mRNA, lte: end_mRNA } } },
-            {
-              match: {
-                Specificity: 2,
-              },
-            },
           ],
           filter: [
             {

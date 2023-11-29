@@ -171,7 +171,7 @@ function App() {
   const columns = [
     {
       headerName: "Citation",
-      field: "CitationID",
+      field: "PubMedID",
       cellRenderer: "LinkComponent",
       checkboxSelection: false,
       headerCheckboxSelection: false,
@@ -182,7 +182,7 @@ function App() {
     },
     {
       headerName: "Date of Publication",
-      field: "Date of Publication",
+      field: "PubDate",
       maxWidth: 205,
       wrapText: true,
       suppressSizeToFit: true,
@@ -201,7 +201,7 @@ function App() {
     },
     {
       headerName: "Journal",
-      field: "Journal",
+      field: "journalTitle",
       wrapText: true,
       maxWidth: 145,
       maxWidth: 145,

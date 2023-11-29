@@ -8,7 +8,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useParams } from "react-router";
-import main_feature from "../components/hero.jpeg";
+import main_feature from "../../components/hero.jpeg";
 const th = {
   background: "#f2f2f2",
   textAlign: "center",
@@ -212,6 +212,8 @@ const Citation_detail = (props) => {
   };
 
   useEffect(() => {
+    console.log("41" + params["citationid"]);
+
     fetchAbstract();
     fetchSignature();
   }, []);
@@ -319,7 +321,9 @@ const Citation_detail = (props) => {
                 border: "1px solid #CACACA",
               }}
             >
-              {data[0]["_source"]["Authors"]}
+              {data[0]["_source"]["Authors"].map((child, i) => (
+                <span>{data[0]["_source"]["Authors"][i]}</span>
+              ))}
             </TableCell>
           </TableRow>
           <TableRow>
@@ -394,7 +398,7 @@ const Citation_detail = (props) => {
                 border: "1px solid #CACACA",
               }}
             >
-              {data[0]["_source"]["Date of Publication"]}
+              {data[0]["_source"]["PubDate"]}
             </TableCell>
           </TableRow>
           <TableRow>
@@ -444,7 +448,7 @@ const Citation_detail = (props) => {
                 border: "1px solid #CACACA",
               }}
             >
-              <a href={interpro_link + data[0]["_source"]["CitationID"]}>
+              <a href={interpro_link + data[0]["_source"]["PubMedID"]}>
                 PubMed
               </a>
             </TableCell>

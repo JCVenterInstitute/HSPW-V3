@@ -29,8 +29,6 @@ function LinkComponent(props: ICellRendererParams) {
 }
 const rowHeight = 20;
 function App() {
-  const [message, setMessage] = useState("");
-  const [number, setNumber] = useState("");
   const [pageSize, setPageSize] = useState(50);
   const [pageNum, setPageNum] = useState(0);
   const [count, setCount] = useState(1);
@@ -227,7 +225,7 @@ function App() {
   };
 
   const handleNameChange = (e) => {
-    const inputValue = e.target.value;
+    var inputValue = e.target.value;
 
     if (inputValue === "") {
       setGeneNameC(false);
@@ -235,13 +233,17 @@ function App() {
       setGeneNameC(true);
     }
 
+    if (inputValue.includes("-")) {
+      inputValue = inputValue.replace("-", "\\-");
+      console.log(inputValue);
+    }
     // Add new element for Name with updated input value
     const newNameQuery =
       inputValue !== ""
         ? {
             wildcard: {
               "Gene Name": {
-                value: `${inputValue}*`,
+                value: `*${inputValue}*`,
                 case_insensitive: true,
               },
             },

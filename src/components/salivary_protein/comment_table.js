@@ -34,37 +34,61 @@ function App(props) {
   const [pageNumArr, setPageNumArr] = useState([1]);
 
   useEffect(() => {
-    // Assuming jsonData is your provided JSON data
     console.log(props.data);
     const jsonData = props.data;
 
+    // Transform JSON data into Ag-Grid compatible format
     const transformedData = jsonData.flatMap((annotation) => {
       const { annotation_type, annotation_description, features } = annotation;
 
-      const annotationDescriptionInfo =
-        annotation_description.length > 0
-          ? annotation_description[0]
-          : { description: "", evidences: [] };
+      return annotation_description.map((description) => {
+        const { description: annotation_description_text, evidences = [] } =
+          description;
 
-      return annotationDescriptionInfo.evidences.map((evidence) => {
-        const featuresInfo = features.length > 0 ? features[0] : {};
-        const featuresType = featuresInfo.type || "";
-        const featuresPosition =
-          featuresInfo.position && featuresInfo.position.length > 0
-            ? featuresInfo.position.join(", ")
-            : "";
+        const uniqueEvidenceCodes = Array.from(
+          new Set(evidences.map((evidence) => evidence.evidenceCode))
+        );
+        const annotationDescription_evidences1 = uniqueEvidenceCodes.map(
+          (evidenceCode) => ({
+            source:
+              evidences.find(
+                (evidence) => evidence.evidenceCode === evidenceCode
+              )?.source || "",
+            id: evidences
+              .filter((evidence) => evidence.evidenceCode === evidenceCode)
+              .map((evidence) => evidence.id)
+              .join(", "),
+            evidenceCode: evidenceCode || "",
+          })
+        );
+        const annotationDescription_evidences = evidences.map((evidence) => ({
+          source: evidence.source || "",
+          id: evidence.id || "",
+          evidenceCode: evidence.evidenceCode || "",
+        }));
+
+        const annotationDescription_source_id =
+          annotationDescription_evidences.map((evidence) => {
+            // Check if evidence.source and evidence.id are empty, if yes, return an empty string
+            if (!evidence.source && !evidence.id) {
+              return "";
+            }
+
+            // Concatenate source and id with a colon
+            return `${evidence.source}:${evidence.id}`;
+          });
 
         return {
           annotation_type,
-          annotation_description: annotationDescriptionInfo.description,
-          annotationDescription_source: evidence.source,
-          annotationDescription_id: evidence.id,
-          annotationDescription_evidenceCode: evidence.evidenceCode,
-          features_type: featuresType,
-          features_position: featuresPosition,
+          annotation_description: annotation_description_text || "",
+          annotationDescription_source_id,
+          annotationDescription_evidenceCode: annotationDescription_evidences1
+            .map((evidence) => evidence.evidenceCode)
+            .join(", "),
         };
       });
     });
+
     setRowData(transformedData);
   }, []);
 
@@ -89,37 +113,40 @@ function App(props) {
       field: "annotation_description",
       minWidth: 155,
       wrapText: true,
-      suppressSizeToFit: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
-    },
-    {
-      headerName: "Evidences Source",
-      field: "annotationDescription_source",
-      wrapText: true,
+      resizable: true,
       autoHeight: true,
-      minWidth: 45,
-      cellStyle: { "word-break": "break-word" },
-      sortable: true,
-      cellRenderer: "LinkComponent",
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
     },
     {
       headerName: "Evidences ID",
-      field: "annotationDescription_id",
+      field: "annotationDescription_source_id",
       wrapText: true,
       minWidth: 45,
+      cellStyle: { "word-break": "break-word" },
       sortable: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
+      resizable: true,
+      cellRenderer: (params) => {
+        const ids = Array.isArray(params.value) ? params.value : "";
+        const links = ids.map((id, index) => (
+          <React.Fragment key={index}>
+            <a href={`${id}`} target="_blank">
+              {id}
+            </a>
+            {index < ids.length - 1 && <br />}{" "}
+            {/* Add line break if it's not the last element */}
+          </React.Fragment>
+        ));
+        return <>{links}</>;
+      },
     },
     {
       headerName: "Evidences Code",
       field: "annotationDescription_evidenceCode",
       wrapText: true,
       min: 65,
-
       sortable: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],

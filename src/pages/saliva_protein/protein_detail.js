@@ -219,8 +219,8 @@ const Protein_Detail = (props) => {
       throw new Error(message);
     }
     const data = await response.json();
-    console.log("188:" + id + " i: " + JSON.stringify(data[0]["_source"]));
-    authorArr = data[0]["_source"].Authors.split(",");
+
+    authorArr = data[0]["_source"].Authors;
     if (authorArr.length === 2) {
       line = `${authorArr[0]} and ${authorArr[1]}`;
     } else if (authorArr.length >= 3) {
@@ -1396,10 +1396,7 @@ const Protein_Detail = (props) => {
                 return (
                   <>
                     <a
-                      href={
-                        "https://www.uniprot.org/keywords/" +
-                        value.id.split(":")[1]
-                      }
+                      href={"https://www.uniprot.org/keywords/" + value.id}
                       style={{ fontFamily: "Lato", fontSize: "18px" }}
                     >
                       {value.keyword}
@@ -1458,10 +1455,7 @@ const Protein_Detail = (props) => {
                             <i>{journal[i]}</i>
 
                             <a
-                              href={
-                                "https://pubmed.ncbi.nlm.nih.gov/" +
-                                value.split(":")[1]
-                              }
+                              href={"https://pubmed.ncbi.nlm.nih.gov/" + value}
                             >
                               {" "}
                               [{value}

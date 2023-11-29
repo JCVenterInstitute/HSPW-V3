@@ -164,7 +164,7 @@ function App() {
   }
   const columns = [
     {
-      headerName: "InterPro_ID",
+      headerName: "InterPro ID",
       field: "InterPro ID",
       cellRenderer: "LinkComponent",
       maxWidth: 320,
@@ -249,17 +249,16 @@ function App() {
 
   const onBtNext = (event) => {
     if (count < docCount / pageSize) {
-      var x = gridRef.current.api.paginationGetCurrentPage();
-      console.log("count2:" + count);
-      console.log("page num:" + pageNum);
-      setPageNum(pageNum + 1);
-      console.log("page num2:" + pageNum);
-      setCount(count + 1);
+      setPageNum((prevPageNum) => {
+        console.log("Updated pageNum:", prevPageNum + 1);
+        return prevPageNum + 1;
+      });
+      setCount((prevCount) => prevCount + 1);
     }
   };
 
   const onBtPrevious = (event) => {
-    if (pageNum !== 1) {
+    if (pageNum + 1 !== 1) {
       var x = pageNum;
       setPageNum(x - 1);
       setCount(count - 1);
@@ -480,12 +479,17 @@ function App() {
   };
 
   const handleNameChange = (e) => {
-    const inputValue = e.target.value;
+    var inputValue = e.target.value;
 
     if (inputValue === "") {
       setNameC(false);
     } else {
       setNameC(true);
+    }
+
+    if (inputValue.includes("-")) {
+      inputValue = inputValue.replace("-", "\\-");
+      console.log(inputValue);
     }
 
     // Add new element for Name with updated input value
@@ -494,7 +498,7 @@ function App() {
         ? {
             wildcard: {
               Name: {
-                value: `${inputValue}*`,
+                value: `*${inputValue}*`,
                 case_insensitive: true,
               },
             },
@@ -706,7 +710,7 @@ function App() {
             <option value="1000">1000</option>
           </select>
           <text style={{ marginLeft: "5%" }}>Page</text>
-          <select onChange={onPageNumChanged} value={pageNum} id="page-num">
+          <select onChange={onPageNumChanged} value={pageNum + 1} id="page-num">
             {pageNumArr}
           </select>
           <text style={{ marginLeft: "1%" }}>
@@ -771,22 +775,18 @@ function App() {
         >
           <AgGridReact
             className="ag-cell-wrap-text"
-            enableCellTextSelection={true}
+            ref={gridRef}
             rowData={rowData}
             columnDefs={columns}
-            ref={gridRef}
             defaultColDef={defColumnDefs}
-            frameworkComponents={{
-              LinkComponent,
-            }}
+            onGridReady={onGridReady}
+            cacheQuickFilter={true}
+            enableCellTextSelection={true}
+            pagination={true}
             overlayNoRowsTemplate={
               '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
             }
-            onGridReady={onGridReady}
-            pagination={true}
             paginationPageSize={50}
-            rowHeight={rowHeight}
-            suppressPaginationPanel={true}
           />
         </div>
         <button
