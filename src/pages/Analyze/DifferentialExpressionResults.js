@@ -9,7 +9,6 @@ import {
   Button,
   CircularProgress,
   Grid,
-  IconButton,
 } from "@mui/material";
 import axios from "axios";
 import { useParams } from "react-router-dom";
@@ -18,14 +17,14 @@ import DownloadIcon from "@mui/icons-material/Download";
 
 const DifferentialExpressionResults = () => {
   const { jobId } = useParams();
-  const [selected, setSelected] = useState("Valcano Plot");
+  const [selected, setSelected] = useState("Volcano Plot");
   const [alignment, setAlignment] = useState("left");
   const [imageUrl, setImageUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [csvData, setCsvData] = useState([]);
 
   const option = [
-    "Valcano Plot",
+    "Volcano Plot",
     "Heatmap",
     "T-Tests",
     "Fold Change Analysis",
@@ -37,8 +36,8 @@ const DifferentialExpressionResults = () => {
   ];
 
   const optionFile = {
-    "Valcano Plot": "volcano_0_dpi72.png",
-    "Valcano-Data": "volcano.csv",
+    "Volcano Plot": "volcano_0_dpi72.png",
+    "Volcano-Data": "volcano.csv",
     Heatmap: "heatmap_1_dpi72.png",
     HeatmapAll: "heatmap_0_dpi72.png",
     "T-Tests": "tt_0_dpi72.png",
@@ -53,8 +52,8 @@ const DifferentialExpressionResults = () => {
   };
 
   const fileDownloadOption = {
-    "Valcano Plot": "volcano_0_dpi72.png",
-    "Valcano Data": "volcano.csv",
+    "Volcano Plot": "volcano_0_dpi72.png",
+    "Volcano Data": "volcano.csv",
     "Top 25 Samples Heatmap": "heatmap_1_dpi72.png",
     "All Samples Heatmap": "heatmap_0_dpi72.png",
     "T-Tests Plot": "tt_0_dpi72.png",
@@ -78,11 +77,11 @@ const DifferentialExpressionResults = () => {
             ? optionFile["Heatmap"]
             : optionFile["HeatmapAll"];
         fetchImage(jobId, fileName);
-      } else if (selected === "Valcano Plot") {
+      } else if (selected === "Volcano Plot") {
         fileName =
           newAlignment === "left"
-            ? optionFile["Valcano Plot"]
-            : optionFile["Valcano-Data"];
+            ? optionFile["Volcano Plot"]
+            : optionFile["Volcano-Data"];
         fetchImage(jobId, fileName);
       } else if (selected === "T-Tests") {
         fileName =
@@ -504,7 +503,7 @@ const DifferentialExpressionResults = () => {
                 />
               )
             ) : (
-              (selected === "Valcano Plot" ||
+              (selected === "Volcano Plot" ||
                 selected === "T-Tests" ||
                 selected === "Fold Change Analysis" ||
                 selected === "Principal Component Analysis" ||
