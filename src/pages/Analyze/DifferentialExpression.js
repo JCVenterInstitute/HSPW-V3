@@ -480,6 +480,7 @@ const DifferentialExpression = () => {
     setDiseaseFilter("");
     setLowerLimit(0);
     setUpperLimit(20000);
+    setFilterKeyword("");
   };
 
   const handleFileChange = (e) => {
