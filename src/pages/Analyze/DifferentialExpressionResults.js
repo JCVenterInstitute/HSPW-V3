@@ -28,6 +28,8 @@ const DifferentialExpressionResults = () => {
     "Valcano Plot",
     "Heatmap",
     "T-Tests",
+    "Fold Change Analysis",
+    "Principal Component Analysis",
     "Venn-Diagram",
     "Normalization",
     "Result Data",
@@ -41,6 +43,10 @@ const DifferentialExpressionResults = () => {
     HeatmapAll: "heatmap_0_dpi72.png",
     "T-Tests": "tt_0_dpi72.png",
     "T-Tests-Data": "t_test.csv",
+    "Fold Change Analysis": "fc_0_dpi72.png",
+    "FC-Data": "fold_change.csv",
+    "Principal Component Analysis": "pca_score2d_0_dpi72.png",
+    "PCA-Data": "pca_score.csv",
     "Venn-Diagram": "venn-dimensions.png",
     Normalization: "norm_0_dpi72.png",
     "Result Data": "all_data.tsv",
@@ -53,6 +59,10 @@ const DifferentialExpressionResults = () => {
     "All Samples Heatmap": "heatmap_0_dpi72.png",
     "T-Tests Plot": "tt_0_dpi72.png",
     "T-Tests Data": "t_test.csv",
+    "Fold Change Analysis Plot": "fc_0_dpi72.png",
+    "Fold Change Analysis Data": "fold_change.csv",
+    "Principal Component Analysis Plot": "pca_score2d_0_dpi72.png",
+    "Principal Component Analysis Data": "pca_score.csv",
     "Venn-Diagram Plot": "venn-dimensions.png",
     "Normalization Plot": "norm_0_dpi72.png",
     "Result Data": "all_data.tsv",
@@ -79,6 +89,18 @@ const DifferentialExpressionResults = () => {
           newAlignment === "left"
             ? optionFile["T-Tests"]
             : optionFile["T-Tests-Data"];
+        fetchImage(jobId, fileName);
+      } else if (selected === "Fold Change Analysis") {
+        fileName =
+          newAlignment === "left"
+            ? optionFile["Fold Change Analysis"]
+            : optionFile["FC-Data"];
+        fetchImage(jobId, fileName);
+      } else if (selected === "Principal Component Analysis") {
+        fileName =
+          newAlignment === "left"
+            ? optionFile["Principal Component Analysis"]
+            : optionFile["PCA-Data"];
         fetchImage(jobId, fileName);
       } else if (selected === "Venn-Diagram") {
         fileName = newAlignment === "left" ? optionFile["Venn-Diagram"] : null;
@@ -202,7 +224,9 @@ const DifferentialExpressionResults = () => {
         (header.replace(/['"]+/g, "") === "" ||
           header.replace(/['"]+/g, "") === "rn")
       ) {
-        return "Protein";
+        return selected === "Principal Component Analysis"
+          ? "Sample"
+          : "Protein";
       } else {
         return header.replace(/['"]+/g, "");
       }
@@ -482,6 +506,8 @@ const DifferentialExpressionResults = () => {
             ) : (
               (selected === "Valcano Plot" ||
                 selected === "T-Tests" ||
+                selected === "Fold Change Analysis" ||
+                selected === "Principal Component Analysis" ||
                 selected === "Venn-Diagram" ||
                 selected === "Normalization") &&
               alignment === "right" && <CSVDataTable data={csvData} />
