@@ -778,7 +778,7 @@ const DifferentialExpression = () => {
             );
           })}
         </Box>
-        <Container maxWidth="xl" sx={{ marginTop: "30px", marginLeft: "20px" }}>
+        <Container maxWidth="xl" sx={{ margin: "30px 0 30px 20px" }}>
           <Box sx={{ display: "flex" }}>
             <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
               <TextField
@@ -1211,7 +1211,7 @@ const DifferentialExpression = () => {
               >
                 {fileName}
               </Typography>
-              <Button
+              {/* <Button
                 variant="contained"
                 sx={{
                   marginLeft: "auto",
@@ -1219,7 +1219,7 @@ const DifferentialExpression = () => {
                 }}
               >
                 UPLOAD
-              </Button>
+              </Button> */}
             </Box>
           </Box>
           <div

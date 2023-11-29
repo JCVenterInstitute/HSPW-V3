@@ -329,7 +329,7 @@ const DifferentialExpressionResults = () => {
             ))}
           </Box>
         </Box>
-        <Container maxWidth="xl" sx={{ marginTop: "30px" }}>
+        <Container maxWidth="xl" sx={{ margin: "30px 0 30px 20px" }}>
           <Box sx={{ display: "flex" }}>
             <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
               <Box sx={{ display: "flex", justifyContent: "center" }}>
