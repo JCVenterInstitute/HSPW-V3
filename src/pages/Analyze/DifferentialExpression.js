@@ -130,13 +130,9 @@ const DifferentialExpression = () => {
   useEffect(() => {
     // Apply the filter whenever the limits change
     if (gridApi) {
-      applyFilter(lowerLimit, upperLimit);
+      handleProteinCountFilter(lowerLimit, upperLimit);
     }
   }, [lowerLimit, upperLimit]);
-
-  const applyFilter = () => {
-    handleProteinCountFilter(lowerLimit, upperLimit);
-  };
 
   const handleProteinCountFilter = (lowerLimit, upperLimit) => {
     let filterModel = gridApi.getFilterModel();
@@ -474,13 +470,25 @@ const DifferentialExpression = () => {
     setTotalPageNumber(gridApi.paginationGetTotalPages());
   };
 
+  const handleResetFilter = () => {
+    gridApi.setFilterModel({});
+    setTotalPageNumber(gridApi.paginationGetTotalPages());
+    setSampleIdFilter("");
+    setSampleTitleFilter("");
+    setTissueTypeFilter("");
+    setInstitutionFilter("");
+    setDiseaseFilter("");
+    setLowerLimit(0);
+    setUpperLimit(20000);
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0]; // Get the selected file
     if (file) {
       setFileName(file.name);
       const reader = new FileReader();
       reader.onload = (event) => {
-        const content = event.target.result;
+        // const content = event.target.result;
       };
       reader.readAsText(file); // Read the file as text
     }
@@ -612,11 +620,25 @@ const DifferentialExpression = () => {
               textAlign: "center",
               paddingTop: "30px",
               fontSize: "25px",
-              paddingBottom: "40px",
             }}
           >
             Filters
           </h1>
+          <Button
+            variant="text"
+            size="small"
+            sx={{
+              marginTop: "10px",
+              marginBottom: "20px",
+              display: "block",
+              marginLeft: "auto",
+              marginRight: "auto",
+              textAlign: "center",
+            }}
+            onClick={handleResetFilter}
+          >
+            Reset Filter
+          </Button>
           {filterList.map((filter) => {
             return (
               <Accordion
