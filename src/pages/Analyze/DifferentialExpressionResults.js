@@ -47,7 +47,9 @@ const DifferentialExpressionResults = () => {
     "Principal Component Analysis": "pca_score2d_0_dpi72.png",
     "PCA-Data": "pca_score.csv",
     "Venn-Diagram": "venn-dimensions.png",
+    "Venn-Diagram-Data": "venn_out_data.txt",
     Normalization: "norm_0_dpi72.png",
+    "Normalization-Data": "data_normalized.csv",
     "Result Data": "all_data.tsv",
   };
 
@@ -63,7 +65,9 @@ const DifferentialExpressionResults = () => {
     "Principal Component Analysis Plot": "pca_score2d_0_dpi72.png",
     "Principal Component Analysis Data": "pca_score.csv",
     "Venn-Diagram Plot": "venn-dimensions.png",
+    "Venn-Diagram Data": "venn_out_data.txt",
     "Normalization Plot": "norm_0_dpi72.png",
+    "Normalization Data": "data_normalized.csv",
     "Result Data": "all_data.tsv",
   };
 
@@ -102,10 +106,16 @@ const DifferentialExpressionResults = () => {
             : optionFile["PCA-Data"];
         fetchImage(jobId, fileName);
       } else if (selected === "Venn-Diagram") {
-        fileName = newAlignment === "left" ? optionFile["Venn-Diagram"] : null;
+        fileName =
+          newAlignment === "left"
+            ? optionFile["Venn-Diagram"]
+            : optionFile["Venn-Diagram-Data"];
         fetchImage(jobId, fileName);
       } else if (selected === "Normalization") {
-        fileName = newAlignment === "left" ? optionFile["Normalization"] : null;
+        fileName =
+          newAlignment === "left"
+            ? optionFile["Normalization"]
+            : optionFile["Normalization-Data"];
         fetchImage(jobId, fileName);
       } else {
         fileName = null;
@@ -189,7 +199,9 @@ const DifferentialExpressionResults = () => {
         setCsvData([]);
       } else if (
         fileName &&
-        (fileName.endsWith("csv") || fileName.endsWith("tsv"))
+        (fileName.endsWith("csv") ||
+          fileName.endsWith("tsv") ||
+          fileName.endsWith("txt"))
       ) {
         const csvText = await axios
           .get(response.data.url)
@@ -515,7 +527,14 @@ const DifferentialExpressionResults = () => {
                 </Box>
               </Box>
             ) : selected === "Result Data" ? (
-              <CSVDataTable data={csvData} />
+              <Box
+                sx={{
+                  overflowX: "auto", // Enable horizontal scrolling
+                  width: "100%",
+                }}
+              >
+                <CSVDataTable data={csvData} />
+              </Box>
             ) : selected === "Heatmap" || alignment === "left" ? (
               imageUrl && (
                 <img
@@ -531,7 +550,16 @@ const DifferentialExpressionResults = () => {
                 selected === "Principal Component Analysis" ||
                 selected === "Venn-Diagram" ||
                 selected === "Normalization") &&
-              alignment === "right" && <CSVDataTable data={csvData} />
+              alignment === "right" && (
+                <Box
+                  sx={{
+                    overflowX: "auto", // Enable horizontal scrolling
+                    width: "100%",
+                  }}
+                >
+                  <CSVDataTable data={csvData} />
+                </Box>
+              )
             )}
           </Box>
         </Container>

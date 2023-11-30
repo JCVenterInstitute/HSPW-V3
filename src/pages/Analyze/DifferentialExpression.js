@@ -539,9 +539,8 @@ const DifferentialExpression = () => {
     });
     Swal.showLoading();
 
-    await axios.post(
-      "http://localhost:8000/api/differential-expression/analyze",
-      {
+    await axios
+      .post("http://localhost:8000/api/differential-expression/analyze", {
         groupAData: groupARowData,
         groupBData: groupBRowData,
         logNorm,
@@ -558,10 +557,11 @@ const DifferentialExpression = () => {
         },
         formattedDate,
         workingDirectory,
-      }
-    );
-
-    window.location.href = `/differential-expression/results/${jobId}`;
+      })
+      .then(
+        () =>
+          (window.location.href = `/differential-expression/results/${jobId}`)
+      );
 
     Swal.close();
   };
