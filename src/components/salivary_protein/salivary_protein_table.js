@@ -3,6 +3,8 @@ import List from "@material-ui/core/List";
 import { Link } from "react-router-dom";
 import CustomLoadingOverlay from "../customLoadingOverlay.jsx";
 import CustomNoRowsOverlay from "../customNoRowsOverlay.jsx";
+import ClearIcon from "@mui/icons-material/Clear";
+import SearchIcon from "@mui/icons-material/Search";
 import React, {
   useState,
   useEffect,
@@ -17,16 +19,27 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
+import MuiAccordion from "@mui/material/Accordion";
+import MuiAccordionSummary from "@mui/material/AccordionSummary";
+import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CustomHeaderGroup from "../customHeaderGroup.jsx";
 import Switch from "@mui/material/Switch";
-import Stack from "@mui/material/Stack";
-
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import {
+  Container,
+  TextField,
+  Box,
+  MenuItem,
+  Grid,
+  Button,
+  Stack,
+  Checkbox,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { ICellRendererParams } from "ag-grid-community";
 import { ReactComponent as Download_Logo } from "../table_icon/download.svg";
 import { ReactComponent as Left_Arrow } from "../table_icon/left_arrow.svg";
@@ -40,6 +53,53 @@ const styles = {
 const styles1 = {
   transform: "translate(2, 0)",
 };
+
+const Accordion = styled((props) => (
+  <MuiAccordion disableGutters elevation={0} square {...props} />
+))(({ theme }) => ({
+  marginBottom: "15px",
+  "&:not(:last-child)": {
+    borderBottom: 0,
+  },
+  "&:before": {
+    display: "none",
+  },
+  "&:hover": {
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? "rgba(255, 255, 255, .1)"
+        : "rgba(0, 0, 0, .05)",
+  },
+}));
+
+const AccordionSummary = styled((props) => (
+  <MuiAccordionSummary
+    expandIcon={<PlayArrowIcon sx={{ fontSize: "1.1rem", color: "#454545" }} />}
+    {...props}
+  />
+))(({ theme }) => ({
+  paddingLeft: "25px",
+  backgroundColor:
+    theme.palette.mode === "dark"
+      ? "rgba(255, 255, 255, .05)"
+      : "rgba(0, 0, 0, .03)",
+  flexDirection: "row-reverse",
+  "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
+    transform: "rotate(90deg)",
+  },
+  "& .MuiAccordionSummary-content": {
+    marginLeft: theme.spacing(2),
+  },
+}));
+
+const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderTop: "1px solid rgba(0, 0, 0, .125)",
+  backgroundColor: "#f9f8f7",
+  color: "#454545",
+  fontFamily: "Montserrat",
+}));
+
 function WSComponent(props: ICellRendererParams) {
   const d = props.value;
   if (d < 10 || d === "low") {
@@ -1729,23 +1789,34 @@ function App() {
   const rowHeight = 20;
   return (
     <>
-      <div className="rowC">
-        <div className="sidebar1" style={{ height: "45rem" }}>
-          <h2
+      <Container
+        maxWidth="false"
+        sx={{
+          width: "100%",
+          display: "flex",
+          paddingLeft: "0px !important",
+          // paddingRight: "0px !important",
+        }}
+      >
+        <Box
+          sx={{
+            backgroundColor: "#f9f8f7",
+            width: "270px",
+            height: "0.75em",
+          }}
+        >
+          <h1
             style={{
-              margin: "26px",
               color: "#1463B9",
-              fontFamily: "Montserrat",
-              fontSize: "20px",
-              fontStyle: "normal",
-              fontWeight: "700",
-              lineHeight: "130%",
+              display: "center",
               textAlign: "center",
-              alignItems: "center",
+              paddingTop: "30px",
+              fontSize: "25px",
+              paddingBottom: "40px",
             }}
           >
-            FILTER
-          </h2>
+            Filters
+          </h1>
           <FormGroup style={{ marginLeft: "18%" }}>
             <Stack direction="row" spacing={1} alignItems="center">
               <Typography color="common.black">And</Typography>
@@ -1763,23 +1834,29 @@ function App() {
                 expandIcon={<ExpandMoreIcon />}
                 style={{ flexDirection: "row-reverse" }}
               >
-                <Typography variant="h6">Accession</Typography>
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  Accession
+                </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <input
-                  type="text"
-                  id="filter-accession-box"
-                  placeholder="Search..."
-                  onChange={handleAccessionChange}
-                  style={{
-                    width: "80%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Search..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
                   }}
+                  onChange={handleAccessionChange}
                   value={prefix}
                 />
               </AccordionDetails>
@@ -1789,23 +1866,29 @@ function App() {
                 expandIcon={<ExpandMoreIcon />}
                 style={{ flexDirection: "row-reverse" }}
               >
-                <Typography variant="h6">Gene Symbol</Typography>
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  Gene Symbol
+                </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <input
-                  type="text"
-                  id="filter-gene-box"
-                  placeholder="Search..."
-                  onChange={handleGeneChange}
-                  style={{
-                    width: "80%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Search..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
                   }}
+                  onChange={handleGeneChange}
                   value={genePrefix}
                 />
               </AccordionDetails>
@@ -1815,23 +1898,29 @@ function App() {
                 expandIcon={<ExpandMoreIcon />}
                 style={{ flexDirection: "row-reverse" }}
               >
-                <Typography variant="h6">Protein Name</Typography>
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  Protein Name
+                </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <input
-                  type="text"
-                  id="filter-protein-name-box"
-                  placeholder="Search..."
-                  onChange={handleNameChange}
-                  style={{
-                    width: "80%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Search..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
                   }}
+                  onChange={handleNameChange}
                   value={namePrefix}
                 />
               </AccordionDetails>
@@ -1841,7 +1930,17 @@ function App() {
                 expandIcon={<ExpandMoreIcon />}
                 style={{ flexDirection: "row-reverse" }}
               >
-                <Typography variant="h6">Expert Opinion</Typography>
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  Expert Opinion
+                </Typography>
               </AccordionSummary>
               <List
                 component="div"
@@ -1882,7 +1981,17 @@ function App() {
                 expandIcon={<ExpandMoreIcon />}
                 style={{ flexDirection: "row-reverse" }}
               >
-                <Typography variant="h6">IHC</Typography>
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  IHC
+                </Typography>
               </AccordionSummary>
 
               <AccordionDetails>
@@ -1915,40 +2024,53 @@ function App() {
                 expandIcon={<ExpandMoreIcon />}
                 style={{ flexDirection: "row-reverse" }}
               >
-                <Typography variant="h6">MS WS</Typography>
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  MS WS
+                </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <input
-                  type="text"
-                  id="filter-startws-box"
-                  placeholder="Start"
-                  onChange={handlestartWSChange}
-                  style={{
-                    width: "40%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Start..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
                   }}
+                  onChange={handlestartWSChange}
                   value={wsStart}
                 />
-                <Typography variant="p"> to</Typography>
-                <input
-                  type="text"
-                  id="filter-endws-box"
-                  placeholder="End"
-                  onChange={handleendWSChange}
+                <Typography
+                  variant="p"
                   style={{
-                    width: "40%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
+                    margin: "5px",
+                    textAlign: "center",
+                    display: "flex",
+                    justifyContent: "center",
                   }}
+                >
+                  {" "}
+                  to
+                </Typography>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="End..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                  onChange={handleendWSChange}
                   value={wsEnd}
                 />
               </AccordionDetails>
@@ -1958,40 +2080,53 @@ function App() {
                 expandIcon={<ExpandMoreIcon />}
                 style={{ flexDirection: "row-reverse" }}
               >
-                <Typography variant="h6">MS Par</Typography>
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  MS Par
+                </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <input
-                  type="text"
-                  id="filter-gene-box"
-                  placeholder="Start"
-                  onChange={handlestartParChange}
-                  style={{
-                    width: "40%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Start..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
                   }}
+                  onChange={handlestartParChange}
                   value={parStart}
                 />
-                <Typography variant="p"> to</Typography>
-                <input
-                  type="text"
-                  id="filter-gene-box"
-                  placeholder="End"
-                  onChange={handleendParChange}
+                <Typography
+                  variant="p"
                   style={{
-                    width: "40%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
+                    margin: "5px",
+                    textAlign: "center",
+                    display: "flex",
+                    justifyContent: "center",
                   }}
+                >
+                  {" "}
+                  to
+                </Typography>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="End..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                  onChange={handleendParChange}
                   value={parEnd}
                 />
               </AccordionDetails>
@@ -2001,40 +2136,53 @@ function App() {
                 expandIcon={<ExpandMoreIcon />}
                 style={{ flexDirection: "row-reverse" }}
               >
-                <Typography variant="h6">MS Sub</Typography>
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  MS Sub
+                </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <input
-                  type="text"
-                  id="filter-gene-box"
-                  placeholder="Start"
-                  onChange={handlestartSubChange}
-                  style={{
-                    width: "40%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Start..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
                   }}
+                  onChange={handlestartSubChange}
                   value={subStart}
                 />
-                <Typography variant="p"> to</Typography>
-                <input
-                  type="text"
-                  id="filter-gene-box"
-                  placeholder="End"
-                  onChange={handleendSubChange}
+                <Typography
+                  variant="p"
                   style={{
-                    width: "40%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
+                    margin: "5px",
+                    textAlign: "center",
+                    display: "flex",
+                    justifyContent: "center",
                   }}
+                >
+                  {" "}
+                  to
+                </Typography>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="End..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                  onChange={handleendSubChange}
                   value={subEnd}
                 />
               </AccordionDetails>
@@ -2044,7 +2192,17 @@ function App() {
                 expandIcon={<ExpandMoreIcon />}
                 style={{ flexDirection: "row-reverse" }}
               >
-                <Typography variant="h6">MS B</Typography>
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  MS B
+                </Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <FormGroup style={{ marginLeft: "5%" }}>
@@ -2058,37 +2216,40 @@ function App() {
                     <Typography color="common.black">Exclude</Typography>
                   </Stack>
                 </FormGroup>
-                <input
-                  type="text"
-                  id="filter-gene-box"
-                  placeholder="Start"
-                  onChange={handlestartBChange}
-                  style={{
-                    width: "40%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Start..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
                   }}
+                  onChange={handlestartBChange}
                   value={pStart}
                 />
-                <Typography variant="p"> to</Typography>
-                <input
-                  type="text"
-                  id="filter-gene-box"
-                  placeholder="End"
-                  onChange={handleendBChange}
+                <Typography
+                  variant="p"
                   style={{
-                    width: "40%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
+                    margin: "5px",
+                    textAlign: "center",
+                    display: "flex",
+                    justifyContent: "center",
                   }}
+                >
+                  {" "}
+                  to
+                </Typography>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="End..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                  onChange={handleendBChange}
                   value={pEnd}
                 />
               </AccordionDetails>
@@ -2098,220 +2259,291 @@ function App() {
                 expandIcon={<ExpandMoreIcon />}
                 style={{ flexDirection: "row-reverse" }}
               >
-                <Typography variant="h6">mRNA Val</Typography>
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  mRNA Val
+                </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <input
-                  type="text"
-                  id="filter-gene-box"
-                  placeholder="Start"
-                  onChange={handlestartmRNAChange}
-                  style={{
-                    width: "40%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Start..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
                   }}
+                  onChange={handlestartmRNAChange}
                   value={mRNAStart}
                 />
-                <Typography variant="p"> to</Typography>
-                <input
-                  type="text"
-                  id="filter-gene-box"
-                  placeholder="End"
-                  onChange={handleendmRNAChange}
+                <Typography
+                  variant="p"
                   style={{
-                    width: "40%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
+                    margin: "5px",
+                    textAlign: "center",
+                    display: "flex",
+                    justifyContent: "center",
                   }}
+                >
+                  {" "}
+                  to
+                </Typography>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="End..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                  onChange={handleendmRNAChange}
                   value={mRNAEnd}
                 />
               </AccordionDetails>
             </Accordion>
           </div>
-        </div>
-      </div>
-      <div className="AppBox1">
-        <div className="example-header" style={{ marginLeft: "35px" }}>
-          <form
-            onSubmit={onSubmit}
-            style={{ display: "inline", position: "relative" }}
-          >
-            <input
-              type="search"
-              id="filter-text-box"
-              placeholder="Search..."
-              autoComplete="on"
-              onChange={onFilterTextBoxChanged}
-              style={{
-                width: "calc(30% - 30px)", // Adjust width to accommodate clear button
-                padding: "0.25rem 0.75rem",
-                borderRadius: "10px 0 0 10px",
-                borderColor: "#1463B9",
-                display: "inline",
-                position: "relative",
-              }}
-            />
-            {searchText && (
-              <button
-                type="button"
-                onClick={clearSearch}
-                style={{
-                  position: "absolute",
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                  backgroundColor: "#fff",
-                  border: "none",
-                  cursor: "pointer",
+        </Box>
+
+        <Container maxWidth="xl" sx={{ marginTop: "30px", marginLeft: "20px" }}>
+          <Box sx={{ display: "flex" }}>
+            <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
+              <TextField
+                variant="outlined"
+                size="small"
+                label="Search..."
+                value={searchText}
+                onChange={(e) => onFilterTextBoxChanged(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    onFilterTextBoxChanged(e.target.value);
+                  }
                 }}
+                InputProps={{
+                  style: {
+                    height: "44px",
+                    width: "500px",
+                    borderRadius: "16px 0 0 16px",
+                  },
+                  endAdornment: searchText && (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="clear search"
+                        onClick={() => {
+                          clearSearch();
+                        }}
+                        edge="end"
+                        size="small"
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <button
+                type="submit"
+                style={{
+                  border: "2px solid #1463B9",
+                  width: "50px",
+                  height: "44px",
+                  backgroundColor: "#1463B9",
+                  borderColor: "#1463B9",
+                  cursor: "pointer",
+                  borderRadius: "0 16px 16px 0",
+                }}
+                onClick={() => onFilterTextBoxChanged(searchText)}
               >
-                X
+                <SearchIcon sx={{ color: "white" }} />
               </button>
-            )}
-            <button
-              type="button" // Change type to "button" to prevent form submission
-              onClick={onFilterTextBoxChanged} // Use onClick event handler for the button
-              style={{
-                display: "inline",
-                position: "relative",
-                top: "0.3em",
-                backgroundColor: "#1463B9",
-                borderColor: "#1463B9",
-                cursor: "pointer",
-                width: "5%",
-                borderRadius: "0 10px 10px 0",
-              }}
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              marginTop: "20px",
+            }}
+          >
+            <div
+              className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
+              style={{ height: 600 }}
             >
-              <Search />
-            </button>
-          </form>
-          <text style={{ marginLeft: "5%" }}>Records Per Page</text>
-          <select onChange={onPageSizeChanged} value={pageSize} id="page-size">
-            <option value="50">50</option>
-            <option value="100">100</option>
-            <option value="500">500</option>
-            <option value="1000">1000</option>
-          </select>
-          <text style={{ marginLeft: "5%" }}>Page</text>
-          <select onChange={onPageNumChanged} value={pageNum} id="page-num">
-            {pageNumArr}
-          </select>
-          <text style={{ marginLeft: "1%" }}>
-            out of {Math.round(docCount / pageSize)}
-          </text>
-          <button
-            onClick={onBtPrevious}
-            style={{
-              marginLeft: "5%",
-              fontWeight: "bold",
-              marginLeft: "3%",
-              marginTop: "10px",
-              color: "#F6921E",
-              background: "white",
-              fontSize: "20",
-              padding: ".3em 2em",
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            <Left_Arrow
-              style={{
-                marginRight: "10px",
-                paddingTop: "5px",
-                display: "inline",
-                position: "relative",
-                top: "0.15em",
-              }}
-            />
-            prev
-          </button>
-          <button
-            onClick={onBtNext}
-            style={{
-              fontWeight: "bold",
-              marginTop: "10px",
-              marginLeft: "1%",
-              color: "#F6921E",
-              background: "white",
-              fontSize: "20",
-              padding: "2em .3em ",
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            next
-            <Right_Arrow
-              style={{
-                marginLeft: "10px",
-                paddingTop: "5px",
-                display: "inline",
-                position: "relative",
-                top: "0.15em",
-              }}
-            />
-          </button>
-        </div>
-        <div
-          className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
-          style={{ height: 600 }}
-        >
-          <AgGridReact
-            className="ag-cell-wrap-text"
-            rowData={rowData}
-            columnDefs={columns}
-            ref={gridRef}
-            defaultColDef={defColumnDefs}
-            frameworkComponents={{
-              LinkComponent,
-              WSComponent,
-              IHCComponent,
-              opinionComponent,
-              proteinLinkComponent,
-            }}
-            noRowsOverlayComponent={noRowsOverlayComponent}
-            loadingOverlayComponent={loadingOverlayComponent}
-            onGridReady={onGridReady}
-            pagination={true}
-            enableCellTextSelection={true}
-            paginationPageSize={50}
-            rowHeight={rowHeight}
-            suppressPaginationPanel={true}
-          />
-        </div>
-        <button
-          onClick={onBtExport}
+              <AgGridReact
+                className="ag-cell-wrap-text"
+                rowData={rowData}
+                columnDefs={columns}
+                ref={gridRef}
+                defaultColDef={defColumnDefs}
+                frameworkComponents={{
+                  LinkComponent,
+                  WSComponent,
+                  IHCComponent,
+                  opinionComponent,
+                  proteinLinkComponent,
+                }}
+                noRowsOverlayComponent={noRowsOverlayComponent}
+                loadingOverlayComponent={loadingOverlayComponent}
+                onGridReady={onGridReady}
+                pagination={true}
+                enableCellTextSelection={true}
+                paginationPageSize={50}
+                rowHeight={rowHeight}
+                suppressPaginationPanel={true}
+              />
+            </div>
+          </Box>
+        </Container>
+      </Container>
+      <form
+        onSubmit={onSubmit}
+        style={{ display: "inline", position: "relative" }}
+      >
+        <input
+          type="search"
+          id="filter-text-box"
+          placeholder="Search..."
+          autoComplete="on"
+          onChange={onFilterTextBoxChanged}
           style={{
-            fontWeight: "bold",
-            textAlign: "center",
-            marginTop: "10px",
-            color: "#F6921E",
-            background: "white",
-            fontSize: "20",
-            border: "none",
+            width: "calc(30% - 30px)", // Adjust width to accommodate clear button
+            padding: "0.25rem 0.75rem",
+            borderRadius: "10px 0 0 10px",
+            borderColor: "#1463B9",
+            display: "inline",
+            position: "relative",
+          }}
+        />
+        {searchText && (
+          <button
+            type="button"
+            onClick={clearSearch}
+            style={{
+              position: "absolute",
+              right: 0,
+              top: 0,
+              bottom: 0,
+              backgroundColor: "#fff",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            X
+          </button>
+        )}
+        <button
+          type="button" // Change type to "button" to prevent form submission
+          onClick={onFilterTextBoxChanged} // Use onClick event handler for the button
+          style={{
+            display: "inline",
+            position: "relative",
+            top: "0.3em",
+            backgroundColor: "#1463B9",
+            borderColor: "#1463B9",
             cursor: "pointer",
+            width: "5%",
+            borderRadius: "0 10px 10px 0",
           }}
         >
-          <Download_Logo
-            style={{
-              marginRight: "10px",
-              paddingTop: "5px",
-              display: "inline",
-              position: "relative",
-              top: "0.15em",
-            }}
-          />
-          Download Spreadsheet
+          <Search />
         </button>
-      </div>
+      </form>
+      <text style={{ marginLeft: "5%" }}>Records Per Page</text>
+      <select onChange={onPageSizeChanged} value={pageSize} id="page-size">
+        <option value="50">50</option>
+        <option value="100">100</option>
+        <option value="500">500</option>
+        <option value="1000">1000</option>
+      </select>
+      <text style={{ marginLeft: "5%" }}>Page</text>
+      <select onChange={onPageNumChanged} value={pageNum} id="page-num">
+        {pageNumArr}
+      </select>
+      <text style={{ marginLeft: "1%" }}>
+        out of {Math.round(docCount / pageSize)}
+      </text>
+      <button
+        onClick={onBtPrevious}
+        style={{
+          marginLeft: "5%",
+          fontWeight: "bold",
+          marginLeft: "3%",
+          marginTop: "10px",
+          color: "#F6921E",
+          background: "white",
+          fontSize: "20",
+          padding: ".3em 2em",
+          border: "none",
+          cursor: "pointer",
+        }}
+      >
+        <Left_Arrow
+          style={{
+            marginRight: "10px",
+            paddingTop: "5px",
+            display: "inline",
+            position: "relative",
+            top: "0.15em",
+          }}
+        />
+        prev
+      </button>
+      <button
+        onClick={onBtNext}
+        style={{
+          fontWeight: "bold",
+          marginTop: "10px",
+          marginLeft: "1%",
+          color: "#F6921E",
+          background: "white",
+          fontSize: "20",
+          padding: "2em .3em ",
+          border: "none",
+          cursor: "pointer",
+        }}
+      >
+        next
+        <Right_Arrow
+          style={{
+            marginLeft: "10px",
+            paddingTop: "5px",
+            display: "inline",
+            position: "relative",
+            top: "0.15em",
+          }}
+        />
+      </button>
+
+      <button
+        onClick={onBtExport}
+        style={{
+          fontWeight: "bold",
+          textAlign: "center",
+          marginTop: "10px",
+          color: "#F6921E",
+          background: "white",
+          fontSize: "20",
+          border: "none",
+          cursor: "pointer",
+        }}
+      >
+        <Download_Logo
+          style={{
+            marginRight: "10px",
+            paddingTop: "5px",
+            display: "inline",
+            position: "relative",
+            top: "0.15em",
+          }}
+        />
+        Download Spreadsheet
+      </button>
     </>
   );
 }
