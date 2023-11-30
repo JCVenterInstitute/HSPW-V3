@@ -48,6 +48,14 @@ def create_protein_extract(uniprot_data):
 
     # Add to proteins extract
     proteins_extract["primary_accession"] = primary_accession
+    
+    # ______________________________________________________________________________________________________________________________________________________
+    # EXTRACT UNIPROT STATUS
+    # ______________________________________________________________________________________________________________________________________________________
+    
+    # Uniprot status
+    uniprot_status = uniprot_data.get("entryType", "")
+    proteins_extract["status"] = uniprot_status
 
     # ______________________________________________________________________________________________________________________________________________________
     # EXTRACT ENTRY AUDIT
@@ -505,8 +513,9 @@ def process_protein_files(uniprot_proteins_bucket, protein_id):
                 return True
         except Exception as e:
             logger.exception(f"An error occurred while processing file {uniprot_file_name}: {e}")
-            # Move file to failed
-            move_file(uniprot_proteins_bucket, source_path='uniprot_protein_files', sink_path='uniprot_protein_files/failed', file_name=uniprot_file_name)
+    
+        # Move file to failed
+        move_file(uniprot_proteins_bucket, source_path='uniprot_protein_files', sink_path='uniprot_protein_files/failed', file_name=uniprot_file_name)
     
     return None
         
