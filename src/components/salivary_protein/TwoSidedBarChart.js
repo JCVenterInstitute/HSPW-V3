@@ -2,7 +2,18 @@ import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
 
 const TwoSidedBarChart = (props) => {
-  console.log("length" + props.gene_id);
+  const mapScoreToValue = (score) => {
+    switch (score) {
+      case "Low":
+        return 1;
+      case "Medium":
+        return 2;
+      case "High":
+        return 3;
+      default:
+        return 0; // Handle other cases or undefined scores
+    }
+  };
   const chartRef = useRef(null);
   var color = d3
     .scaleOrdinal()
@@ -140,6 +151,13 @@ const TwoSidedBarChart = (props) => {
         }
       })
     );
+    var maxMappedScore = Math.max.apply(
+      Math,
+      props.data.map(function (o) {
+        return mapScoreToValue(o.score);
+      })
+    );
+
     const x = d3.scaleLinear().range([0, width + 100]);
     var x1 = d3
       .scaleLinear()
@@ -147,7 +165,7 @@ const TwoSidedBarChart = (props) => {
       .rangeRound([0, barsWidthTotal - 50]);
     var x2 = d3
       .scaleLinear()
-      .domain([-0.05, 4])
+      .domain([0, maxMappedScore])
       .rangeRound([0, barsWidthTotal]);
     var y1 = d3
       .scaleLinear()
@@ -255,19 +273,11 @@ const TwoSidedBarChart = (props) => {
       })
       .attr("height", barHeight)
       .attr("width", function (d) {
-        if (d.score.includes("?")) {
-          return 0;
-        } else {
-          return x2(parseInt(d.score));
-        }
+        return d.score ? x2(mapScoreToValue(d.score)) : 0;
       })
       .style("fill", "White")
       .style("fill", (d) => {
-        if (d.score.includes("?")) {
-          return color(0);
-        } else {
-          return color(parseInt(d.nx) % 20);
-        }
+        return d.score ? color(mapScoreToValue(d.score)) : color(0);
       })
       .on("click", function (d) {
         window.open(
@@ -345,34 +355,25 @@ const TwoSidedBarChart = (props) => {
       .selectAll(".text-right")
       .data(props.data)
       .enter()
+      .filter((d) => d.score) // Filter out data with empty "score" values
       .append("text")
       .attr("class", "text-right")
-      .attr("x", (d) => {
-        if (d.score.includes("?")) {
-          return 0;
-        } else {
-          return x2(parseInt(d.score)) + 5;
-        }
-      })
-      .attr("y", (d, i) => y(i))
       .attr(
-        "dx",
-        barsWidthTotal + legendBulletOffset + legendTextOffset + ihBarOffset
+        "x",
+        (d) =>
+          barsWidthTotal +
+          legendBulletOffset +
+          legendTextOffset +
+          ihBarOffset +
+          x2(mapScoreToValue(d.score)) +
+          5
       )
+      .attr("y", (d, i) => y(i))
+      .attr("dx", 5)
       .attr("dy", barHeight - 5)
       .attr("font-size", "10px")
       .attr("text-anchor", "start")
-      .text((d) => {
-        if (d.score.includes("?")) {
-          return 0;
-        } else if (d.score.includes("1")) {
-          return "low";
-        } else if (d.score.includes("2")) {
-          return "medium";
-        } else if (d.score.includes("3")) {
-          return "high";
-        }
-      })
+      .text((d) => d.score)
       .attr("fill", "Black");
   }, []);
 

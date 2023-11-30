@@ -253,7 +253,23 @@ export const MuiDrawer = () => {
                   onClose={handleClose3}
                   MenuListProps={{ onMouseLeave: handleClose3 }}
                 >
-                  <MenuItem onClick={handleClose3}>About</MenuItem>
+                  <MenuItem onClick={handleClose3} component="a" href="/About">
+                    About
+                  </MenuItem>
+                  <MenuItem
+                    onClick={handleClose3}
+                    component="a"
+                    href="/download"
+                  >
+                    Download
+                  </MenuItem>
+                  <MenuItem
+                    onClick={handleClose3}
+                    component="a"
+                    href="/download"
+                  >
+                    Team
+                  </MenuItem>
                   <MenuItem onClick={handleClose3}>Contact Us</MenuItem>
                 </Menu>
               </React.Fragment>

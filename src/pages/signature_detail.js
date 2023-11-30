@@ -59,22 +59,17 @@ const Signature_detail = (props) => {
       if (signature) {
         console.log(signature);
         setData(signature);
-        for (let i = 0; i < signature[0]["_source"]["Signature"].length; i++) {
-          if (signature[0]["_source"]["Signature"][i].includes("PFAM")) {
-            setpFam(signature[0]["_source"]["Signature"][i]);
-          } else if (
-            signature[0]["_source"]["Signature"][i].includes("PRINTS")
-          ) {
-            console.log("123");
-            setPRINTS(signature[0]["_source"]["Signature"][i]);
-          } else if (
-            signature[0]["_source"]["Signature"][i].includes("PROFILE")
-          ) {
-            setPROFILE(signature[0]["_source"]["Signature"][i]);
-          } else if (
-            signature[0]["_source"]["Signature"][i].includes("SMART")
-          ) {
-            setSMART(signature[0]["_source"]["Signature"][i]);
+        var elements = signature[0]["_source"]["Signature"].split(",");
+
+        for (let i = 0; i < elements.length; i++) {
+          if (elements[i].includes("PFAM")) {
+            setpFam(elements[i]);
+          } else if (elements[i].includes("PRINTS")) {
+            setPRINTS(elements[i]);
+          } else if (elements[i].includes("PROFILE")) {
+            setPROFILE(elements[i]);
+          } else if (elements[i].includes("SMART")) {
+            setSMART(elements[i]);
           }
         }
         if (signature[0]["_source"]["ReferencesID"] != "") {
@@ -374,7 +369,7 @@ const Signature_detail = (props) => {
                       borderTopLeftRadius: "10px",
                       borderTopRightRadius: "10px",
                       border: "1px solid #CACACA",
-                      maxWidth: "40%",
+                      width: "fit-content", // or "100%"
                       margin: "10px",
                     }}
                   >

@@ -43,7 +43,18 @@
   white-space: pre-wrap;
   word-break: break-word;
 }
+.ag-theme-material .ag-row {
+  padding: 0 !important;
+  box-sizing: border-box;
+}
+.ag-theme-material .ag-center-cols-container,
+.ag-theme-material .ag-body-viewport {
+  height: 100% !important;
+}
 
+.ag-theme-material .ag-cell {
+  padding-bottom: 5px;
+}
 .ag-theme-material .ag-cell-value {
   --ag-header-column-separator-display: block;
 

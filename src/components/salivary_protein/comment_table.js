@@ -103,7 +103,7 @@ function App(props) {
       field: "annotation_type",
       checkboxSelection: false,
       headerCheckboxSelection: false,
-      minWidth: 45,
+      maxWidth: 195,
       wrapText: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
@@ -111,18 +111,17 @@ function App(props) {
     {
       headerName: "Description",
       field: "annotation_description",
-      minWidth: 155,
+      minWidth: 355,
       wrapText: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
       resizable: true,
-      autoHeight: true,
     },
     {
       headerName: "Evidences ID",
       field: "annotationDescription_source_id",
       wrapText: true,
-      minWidth: 45,
+      maxWidth: 195,
       cellStyle: { "word-break": "break-word" },
       sortable: true,
       headerClass: ["header-border"],
@@ -146,7 +145,7 @@ function App(props) {
       headerName: "Evidences Code",
       field: "annotationDescription_evidenceCode",
       wrapText: true,
-      min: 65,
+      maxWidth: 155,
       sortable: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
@@ -332,7 +331,7 @@ function App(props) {
       </div>
       <div
         className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
-        style={{ height: 600 }}
+        style={{ height: "500px" }}
       >
         <AgGridReact
           className="ag-cell-wrap-text"
@@ -351,6 +350,25 @@ function App(props) {
           suppressPaginationPanel={true}
           frameworkComponents={{
             LinkComponent,
+          }}
+          domLayout="autoHeight"
+          getRowHeight={(params) => {
+            const lineHeight = 24; // Adjust this value as needed
+            const padding = 10; // Adjust this value as needed
+
+            // Consider the content of multiple columns for row height calculation
+            const columnsToCheck = [
+              "annotation_description",
+              "annotationDescription_source_id",
+            ];
+
+            const totalHeight = columnsToCheck.reduce((acc, col) => {
+              const text = params.data[col] || "";
+              const lineCount = Math.ceil(text.length / 50); // Adjust the divisor as needed
+              return acc + lineCount * lineHeight;
+            }, 0);
+
+            return totalHeight + padding;
           }}
         />
       </div>

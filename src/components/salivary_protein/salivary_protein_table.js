@@ -1,5 +1,6 @@
 import "../filter.css";
 import List from "@material-ui/core/List";
+import { Link } from "react-router-dom";
 import CustomLoadingOverlay from "../customLoadingOverlay.jsx";
 import CustomNoRowsOverlay from "../customNoRowsOverlay.jsx";
 import React, {
@@ -292,137 +293,56 @@ function proteinLinkComponent(props: ICellRendererParams) {
     <a
       target="_blank"
       rel="noopener noreferrer"
-      href={"http://localhost:3000/protein/" + props.value}
+      href={window.location.origin + "/protein/" + props.value}
     >
       {props.value}
     </a>
   );
 }
 
-function LinkComponent(props: ICellRendererParams) {
+const commonStyles = {
+  width: "100%",
+  height: "100%",
+  fontFamily: "Lato",
+  fontSize: "16px",
+  lineHeight: "24px",
+  textAlign: "center",
+};
+
+function LinkComponent(props) {
   const d = props.value;
 
-  if ((d < 0.79 && d > -0.18) || d === "low") {
-    return (
-      <>
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgb(250,180,180)",
-            color: "black",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "22%",
-          }}
-        >
-          {Number(d).toFixed(2)}
-        </div>
-      </>
-    );
-  } else if ((d < 2 && d > 0.8) || d === "medium") {
-    return (
-      <>
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgb(190,70,70)",
-            color: "black",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "22%",
-          }}
-        >
-          {Number(d).toFixed(2)}
-        </div>
-      </>
-    );
-  } else if ((d > 2.1 && d < 4.3) || d === "high") {
-    return (
-      <>
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgb(100,0,0)",
-            color: "white",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "22%",
-          }}
-        >
-          {Number(d).toFixed(2)}
-        </div>
-      </>
-    );
-  } else if (d === "not detected" || d === 0) {
-    return (
-      <>
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgb(250,250,250)",
-            color: "black",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "25%",
-          }}
-        >
-          N/A
-        </div>
-      </>
-    );
-  } else {
-    return (
-      <svg
-        style={{
-          stroke: "black",
-          alignItems: "center",
-          width: "100%",
-          height: "100%",
-        }}
-      >
-        <defs>
-          <pattern
-            id="stripe2"
-            patternUnits="userSpaceOnUse"
-            patternTransform="rotate(45)"
-            x="0"
-            y="0"
-            width="4"
-            height="4"
-            viewBox="0 0 10 10"
-          >
-            <rect
-              width={2}
-              height={4}
-              fill={rgb(220, 220, 220)}
-              style={styles}
-            ></rect>
-            <rect
-              width={2}
-              height={4}
-              fill={rgb(255, 255, 255)}
-              style={styles1}
-            ></rect>
-          </pattern>
-        </defs>
-        <rect style={{ fill: "url(#stripe2)", width: "100%", height: "100%" }}>
-          <title>Data not available</title>
-        </rect>
-      </svg>
-    );
-  }
+  // Assuming value is a number
+  const normalizedValue = typeof d === "number" ? d : 0;
+
+  // Interpolate between light red and dark red
+  const interpolateColor = (start, end, percent) => {
+    const r = Math.round(start[0] + (end[0] - start[0]) * percent);
+    const g = Math.round(start[1] + (end[1] - start[1]) * percent);
+    const b = Math.round(start[2] + (end[2] - start[2]) * percent);
+    return `rgb(${r},${g},${b})`;
+  };
+
+  // Define light red and dark red
+  const lightRed = [255, 200, 200]; // Light red color
+  const darkRed = [255, 0, 0]; // Dark red color
+
+  // Calculate color based on normalized value
+  const percent = (normalizedValue - 0.8) / (4.3 - 0.8); // Adjust the range as needed
+  const color = interpolateColor(lightRed, darkRed, percent);
+
+  return (
+    <div
+      style={{
+        ...commonStyles,
+        backgroundColor: color,
+        color: "black",
+        paddingTop: "22%",
+      }}
+    >
+      {Number(d).toFixed(2)}
+    </div>
+  );
 }
 
 function App() {
@@ -475,7 +395,7 @@ function App() {
     false,
   ]);
   const [searchText, setSearchText] = useState("");
-
+  const [globalSC, setGlobalSC] = useState(false);
   useEffect(() => {
     const fetchOpCount = async () => {
       const data = await fetch("http://localhost:8000/opCount");
@@ -518,158 +438,198 @@ function App() {
       });
   }, []);
 
-  useEffect(() => {
-    const globalSearch = async () => {
-      const data = await fetch(
-        `http://localhost:8000/multi_search/saliva_protein_test/${searchText}`
-      );
-      const json = data.json();
-      return json;
-    };
+  const globalSearch = async () => {
+    const data = await fetch(
+      `http://localhost:8000/multi_search/saliva_protein_test/${searchText}`
+    );
+    console.log(
+      `http://localhost:8000/multi_search/saliva_protein_test/${searchText}`
+    );
+    const json = data.json();
+    return json;
+  };
 
-    const fetchAndData = async () => {
-      console.log("a:" + wsStart + wsEnd);
-      const data = await fetch(
+  const fetchAndData = async () => {
+    console.log(
+      "a:" +
         "http://localhost:8000/and_search/" +
-          pageSize +
-          "/" +
-          pageNum +
-          "/" +
-          prefix +
-          "*/" +
-          genePrefix +
-          "*/" +
-          namePrefix +
-          "*/" +
-          opinionVal +
-          "*/" +
-          wsStart +
-          "/" +
-          wsEnd +
-          "/" +
-          parStart +
-          "/" +
-          parEnd +
-          "/" +
-          pStart +
-          "/" +
-          pEnd +
-          "/" +
-          subStart +
-          "/" +
-          subEnd +
-          "/" +
-          mRNAStart +
-          "/" +
-          mRNAEnd +
-          "," +
-          IHCVal
-      );
-      const json = data.json();
-      return json;
-    };
+        pageSize +
+        "/" +
+        pageNum +
+        "/" +
+        prefix +
+        "*/" +
+        genePrefix +
+        "*/" +
+        namePrefix +
+        "*/" +
+        opinionVal +
+        "*/" +
+        wsStart +
+        "/" +
+        wsEnd +
+        "/" +
+        parStart +
+        "/" +
+        parEnd +
+        "/" +
+        pStart +
+        "/" +
+        pEnd +
+        "/" +
+        subStart +
+        "/" +
+        subEnd +
+        "/" +
+        mRNAStart +
+        "/" +
+        mRNAEnd +
+        "," +
+        IHCVal
+    );
+    const data = await fetch(
+      "http://localhost:8000/and_search/" +
+        pageSize +
+        "/" +
+        pageNum +
+        "/" +
+        prefix +
+        "*/" +
+        genePrefix +
+        "*/" +
+        namePrefix +
+        "*/" +
+        opinionVal +
+        "*/" +
+        wsStart +
+        "/" +
+        wsEnd +
+        "/" +
+        parStart +
+        "/" +
+        parEnd +
+        "/" +
+        pStart +
+        "/" +
+        pEnd +
+        "/" +
+        subStart +
+        "/" +
+        subEnd +
+        "/" +
+        mRNAStart +
+        "/" +
+        mRNAEnd +
+        "," +
+        IHCVal
+    );
+    const json = data.json();
+    return json;
+  };
 
-    const customHeaders = {
-      "Content-Type": "application/json",
-    };
-    const fetchOrData = async () => {
-      console.log("a:" + wsStart + wsEnd);
+  const customHeaders = {
+    "Content-Type": "application/json",
+  };
+  const fetchOrData = async () => {
+    console.log("a:" + wsStart + wsEnd);
 
-      const data = await fetch(
-        `http://localhost:8000/or_search/${pageSize}/${pageNum}/`,
-        {
-          method: "POST",
-          headers: customHeaders,
-          body: JSON.stringify(queryArr),
-        }
-      );
-      const json = data.json();
-      console.log("73" + JSON.stringify(json));
-      console.log("583" + JSON.stringify(queryArr));
-      return json;
-    };
-    const fetchAndExcludeData = async () => {
-      console.log("a:" + wsStart + wsEnd);
-      const data = await fetch(
-        "http://localhost:8000/and_search_exclude/" +
-          pageSize +
-          "/" +
-          pageNum +
-          "/" +
-          prefix +
-          "*/" +
-          genePrefix +
-          "*/" +
-          namePrefix +
-          "*/" +
-          opinionVal +
-          "*/" +
-          wsStart +
-          "/" +
-          wsEnd +
-          "/" +
-          parStart +
-          "/" +
-          parEnd +
-          "/" +
-          pStart +
-          "/" +
-          pEnd +
-          "/" +
-          subStart +
-          "/" +
-          subEnd +
-          "/" +
-          mRNAStart +
-          "/" +
-          mRNAEnd +
-          "," +
-          IHCVal
-      );
-      const json = data.json();
-      return json;
-    };
-    const fetchOrExcludeData = async () => {
-      console.log("a:" + wsStart + wsEnd);
-      const data = await fetch(
-        "http://localhost:8000/or_search_exclude/" +
-          pageSize +
-          "/" +
-          pageNum +
-          "/" +
-          prefix +
-          "*/" +
-          genePrefix +
-          "*/" +
-          namePrefix +
-          "*/" +
-          opinionVal +
-          "*/" +
-          wsStart +
-          "/" +
-          wsEnd +
-          "/" +
-          parStart +
-          "/" +
-          parEnd +
-          "/" +
-          pStart +
-          "/" +
-          pEnd +
-          "/" +
-          subStart +
-          "/" +
-          subEnd +
-          "/" +
-          mRNAStart +
-          "/" +
-          mRNAEnd +
-          "," +
-          IHCVal
-      );
-      const json = data.json();
-      return json;
-    };
+    const data = await fetch(
+      `http://localhost:8000/or_search/${pageSize}/${pageNum}/`,
+      {
+        method: "POST",
+        headers: customHeaders,
+        body: JSON.stringify(queryArr),
+      }
+    );
+    const json = data.json();
+    console.log("73" + JSON.stringify(json));
+    console.log("583" + JSON.stringify(queryArr));
+    return json;
+  };
+  const fetchAndExcludeData = async () => {
+    console.log("a:" + wsStart + wsEnd);
+    const data = await fetch(
+      "http://localhost:8000/and_search_exclude/" +
+        pageSize +
+        "/" +
+        pageNum +
+        "/" +
+        prefix +
+        "*/" +
+        genePrefix +
+        "*/" +
+        namePrefix +
+        "*/" +
+        opinionVal +
+        "*/" +
+        wsStart +
+        "/" +
+        wsEnd +
+        "/" +
+        parStart +
+        "/" +
+        parEnd +
+        "/" +
+        pStart +
+        "/" +
+        pEnd +
+        "/" +
+        subStart +
+        "/" +
+        subEnd +
+        "/" +
+        mRNAStart +
+        "/" +
+        mRNAEnd +
+        "," +
+        IHCVal
+    );
+    const json = data.json();
+    return json;
+  };
+  const fetchOrExcludeData = async () => {
+    console.log("a:" + wsStart + wsEnd);
+    const data = await fetch(
+      "http://localhost:8000/or_search_exclude/" +
+        pageSize +
+        "/" +
+        pageNum +
+        "/" +
+        prefix +
+        "*/" +
+        genePrefix +
+        "*/" +
+        namePrefix +
+        "*/" +
+        opinionVal +
+        "*/" +
+        wsStart +
+        "/" +
+        wsEnd +
+        "/" +
+        parStart +
+        "/" +
+        parEnd +
+        "/" +
+        pStart +
+        "/" +
+        pEnd +
+        "/" +
+        subStart +
+        "/" +
+        subEnd +
+        "/" +
+        mRNAStart +
+        "/" +
+        mRNAEnd +
+        "," +
+        IHCVal
+    );
+    const json = data.json();
+    return json;
+  };
+
+  useEffect(() => {
     if (
       (accessionC === true ||
         geneC === true ||
@@ -709,7 +669,7 @@ function App() {
             </option>
           );
         }
-        setPageNum(1);
+
         setPageNumArr(newOptions);
         setCount(2);
         setOpCount(value.aggregations.expert_opinion.buckets);
@@ -753,7 +713,7 @@ function App() {
             </option>
           );
         }
-        setPageNum(1);
+
         setPageNumArr(newOptions);
         setCount(2);
         setOpCount(value.aggregations.expert_opinion.buckets);
@@ -797,7 +757,7 @@ function App() {
             </option>
           );
         }
-        setPageNum(1);
+
         setPageNumArr(newOptions);
         setCount(2);
         setOpCount(value.aggregations.expert_opinion.buckets);
@@ -842,7 +802,7 @@ function App() {
             </option>
           );
         }
-        setPageNum(1);
+
         setPageNumArr(newOptions);
         setCount(2);
         setOpCount(value.aggregations.expert_opinion.buckets);
@@ -873,12 +833,12 @@ function App() {
             </option>
           );
         }
-        setPageNum(1);
+
         setPageNumArr(newOptions);
         setCount(2);
       });
     } else {
-      console.log("2");
+      console.log(pageNum);
       const fetchData = async () => {
         const data = await fetch(
           "http://localhost:8000/saliva_protein_table/" +
@@ -912,9 +872,9 @@ function App() {
             </option>
           );
         }
-        setPageNum(0);
+
         setPageNumArr(newOptions);
-        setCount(1);
+
         setOpCount(value.aggregations.expert_opinion.buckets);
         setIHCCount(value.aggregations.IHC.buckets);
       });
@@ -961,8 +921,9 @@ function App() {
     mRNAEnd,
     pageSize,
     pageNum,
-    searchText,
+    globalSC,
     exclude,
+    searchText,
   ]);
 
   useEffect(() => {
@@ -1146,14 +1107,29 @@ function App() {
     gridRef.current.api.exportDataAsExcel();
   }, []);
 
-  const onFilterTextBoxChanged = (e) => {
-    const inputValue = e.target.value;
+  const onFilterTextBoxChanged = () => {
+    const inputValue = document.getElementById("filter-text-box").value;
+    console.log("Input Value: " + inputValue);
     if (inputValue !== "") {
       setSearchText(inputValue);
+      setGlobalSC(true);
     } else {
+      setGlobalSC(false);
       setSearchText("");
     }
   };
+
+  const clearSearch = () => {
+    setGlobalSC(false);
+    setSearchText("");
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    // Additional logic for form submission if needed
+    // You can use the searchText state here for searching/filtering data
+  };
+
   const onBtNext = (event) => {
     if (count < docCount / pageSize) {
       var x = gridRef.current.api.paginationGetCurrentPage();
@@ -1247,6 +1223,7 @@ function App() {
     } else {
       setAccessionC(true);
     }
+    setPageNum(0);
     if (orChecked === true) {
     }
     const newIDQuery =
@@ -2165,16 +2142,17 @@ function App() {
       <div className="AppBox1">
         <div className="example-header" style={{ marginLeft: "35px" }}>
           <form
-            onSubmit={onFilterTextBoxChanged}
+            onSubmit={onSubmit}
             style={{ display: "inline", position: "relative" }}
           >
             <input
-              type="text"
+              type="search"
               id="filter-text-box"
               placeholder="Search..."
-              onInput={onFilterTextBoxChanged}
+              autoComplete="on"
+              onChange={onFilterTextBoxChanged}
               style={{
-                width: "30%",
+                width: "calc(30% - 30px)", // Adjust width to accommodate clear button
                 padding: "0.25rem 0.75rem",
                 borderRadius: "10px 0 0 10px",
                 borderColor: "#1463B9",
@@ -2182,8 +2160,26 @@ function App() {
                 position: "relative",
               }}
             />
+            {searchText && (
+              <button
+                type="button"
+                onClick={clearSearch}
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  backgroundColor: "#fff",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                X
+              </button>
+            )}
             <button
-              type="submit"
+              type="button" // Change type to "button" to prevent form submission
+              onClick={onFilterTextBoxChanged} // Use onClick event handler for the button
               style={{
                 display: "inline",
                 position: "relative",

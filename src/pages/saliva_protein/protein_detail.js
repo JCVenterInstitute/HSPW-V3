@@ -17,6 +17,7 @@ import { useParams } from "react-router";
 import ProtvistaUniprot from "protvista-uniprot";
 import axios from "axios";
 import BChart from "../../components/salivary_protein/TwoSidedBarChart";
+import "resize-observer-polyfill";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -219,14 +220,14 @@ const Protein_Detail = (props) => {
       throw new Error(message);
     }
     const data = await response.json();
-
-    authorArr = data[0]["_source"].Authors;
+    console.log(data[0]["_source"]);
+    authorArr = data[0]["_source"]["author_names"];
     if (authorArr.length === 2) {
       line = `${authorArr[0]} and ${authorArr[1]}`;
     } else if (authorArr.length >= 3) {
       line = `${authorArr[0]}, et al.`;
     }
-    yearTitle = ` (${data[0]["_source"]["Date of Publication"]}) ${data[0]["_source"]["Title"]} `;
+    yearTitle = ` (${data[0]["_source"]["PubDate"]}) ${data[0]["_source"]["Title"]} `;
     setauthorName((prevLines) => [...prevLines, line]);
     setYear((prevLines) => [...prevLines, yearTitle]);
     setJournal((prevLines) => [...prevLines, data[0]["_source"]["Journal"]]);
@@ -257,86 +258,6 @@ const Protein_Detail = (props) => {
         </TabList>
 
         <TabPanel>
-          <div
-            style={{
-              backgroundImage: `url(${main_feature})`,
-            }}
-            className="head_background"
-          >
-            <h1 className="head_title" align="left">
-              Protein: {data[0]["_source"]["salivary_proteins"]["protein_name"]}
-            </h1>
-            <p
-              style={{
-                textAlign: "left",
-                color: "white",
-                paddingBottom: "15px",
-                marginLeft: "20px",
-                marginRight: "20px",
-              }}
-              className="head_text"
-            >
-              Altername Names:{" "}
-              {
-                data[0]["_source"]["salivary_proteins"][
-                  "protein_alternate_names"
-                ][0]
-              }
-            </p>
-          </div>
-          <div id="hero-section">
-            <span id="hero-text">Jump To Section</span>
-            <div
-              style={{
-                marginLeft: "10px",
-              }}
-            >
-              <Link
-                to="#names-and-origin"
-                className="hero-link"
-                style={{ marginLeft: "0px" }}
-              >
-                Names and Origin
-              </Link>
-              |
-              <Link to="#sequence-attributes" className="hero-link">
-                Sequence Attributes
-              </Link>
-              |
-              <Link to="#feature-map" className="hero-link">
-                Feature Map
-              </Link>
-              |
-              <Link to="#expression" className="hero-link">
-                Expression
-              </Link>
-              |
-              <Link to="#glycan" className="hero-link">
-                Glycan
-              </Link>
-              |
-              <Link to="#proteomics" className="hero-link">
-                Proteomics
-              </Link>
-              |
-              <Link to="#cross-reference" className="hero-link">
-                Cross References
-              </Link>
-              |
-              <Link to="#keywords" className="hero-link">
-                Keywords
-              </Link>
-              |
-              <Link to="#references" className="hero-link">
-                References
-              </Link>
-              |
-              <Link to="#entry-info" className="hero-link">
-                Entry Info
-              </Link>
-            </div>
-          </div>
-
           <feature_table data={test_data} />
           <div style={{ margin: "20px" }}>
             <h2
@@ -364,8 +285,7 @@ const Protein_Detail = (props) => {
                     backgroundColor: "#1463B9",
                     color: "white",
                     fontFamily: "Montserrat",
-                    fontSize: "17px",
-                    fontWeight: "bold",
+                    fontSize: "14px",
                     border: "1px solid #3592E4",
                     borderTopLeftRadius: "10px",
                   }}
@@ -377,6 +297,7 @@ const Protein_Detail = (props) => {
                     fontSize: "0.875rem",
                     border: "1px solid #CACACA",
                     borderTopRightRadius: "10px",
+                    fontFamily: "Lato",
                   }}
                 >
                   {data[0]["_source"]["salivary_proteins"]["uniprot_accession"]}
@@ -390,8 +311,7 @@ const Protein_Detail = (props) => {
                     backgroundColor: "#1463B9",
                     color: "white",
                     fontFamily: "Montserrat",
-                    fontSize: "17px",
-                    fontWeight: "bold",
+                    fontSize: "14px",
 
                     border: "1px solid #3592E4",
                   }}
@@ -399,7 +319,12 @@ const Protein_Detail = (props) => {
                   Genes
                 </TableCell>
                 <TableCell
-                  sx={{ fontSize: "0.875rem", border: "1px solid #CACACA" }}
+                  sx={{
+                    fontSize: "0.875rem",
+                    border: "1px solid #CACACA",
+                    fontFamily: "Lato",
+                    fontSize: "14px",
+                  }}
                 >
                   {data[0]["_source"]["salivary_proteins"][
                     "primary_gene_names"
@@ -420,15 +345,19 @@ const Protein_Detail = (props) => {
                     backgroundColor: "#1463B9",
                     color: "white",
                     fontFamily: "Montserrat",
-                    fontSize: "17px",
-                    fontWeight: "bold",
+                    fontSize: "14px",
                     border: "1px solid #3592E4",
                   }}
                 >
                   Organism
                 </TableCell>
                 <TableCell
-                  sx={{ fontSize: "0.875rem", border: "1px solid #CACACA" }}
+                  sx={{
+                    fontSize: "0.875rem",
+                    border: "1px solid #CACACA",
+                    fontFamily: "Lato",
+                    fontSize: "14px",
+                  }}
                 >
                   <a
                     style={{ color: "/*#116988*/#0b5989" }}
@@ -459,7 +388,7 @@ const Protein_Detail = (props) => {
               Taxonomy
             </h2>
 
-            <span>
+            <span style={{ fontFamily: "Lato", fontSize: "14px" }}>
               Eukaryota {">"} Opisthokonta {">"} Metazoa {">"} Eumetazoa {">"}{" "}
               Bilateria {">"} Deuterostomia {">"} Chordata {">"} Craniata {">"}{" "}
               Vertebrata {">"} Gnathostomata {">"} Teleostomi {">"} Euteleostomi{" "}
@@ -799,12 +728,7 @@ const Protein_Detail = (props) => {
                           {value.glytoucan_accession}
                         </TableCell>
                         <TableCell style={{ border: "1px solid #CACACA" }}>
-                          <img
-                            src={value.image}
-                            alt="Glygen"
-                            width="220"
-                            height="180"
-                          />
+                          <img src={value.image} alt="Glygen" />
                         </TableCell>
 
                         <TableCell style={{ border: "1px solid #CACACA" }}>
@@ -1215,6 +1139,11 @@ const Protein_Detail = (props) => {
                             "https://www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=protein&id=" +
                             value
                           }
+                          style={{
+                            color: "#464646",
+                            fontSize: "14px",
+                            fontFamily: "Lato",
+                          }}
                         >
                           {value}
                           <FontAwesome
@@ -1257,6 +1186,11 @@ const Protein_Detail = (props) => {
                               "https://db.systemsbiology.net/sbeams/cgi/PeptideAtlas/Search?action=GO&search_key=" +
                               value
                             }
+                            style={{
+                              color: "#464646",
+                              fontSize: "14px",
+                              fontFamily: "Lato",
+                            }}
                           >
                             {value}
                             <FontAwesome
@@ -1296,7 +1230,14 @@ const Protein_Detail = (props) => {
                     (value, i, arr) => {
                       return (
                         <>
-                          <a href={"http://www.ensembl.org/id/" + value}>
+                          <a
+                            href={"http://www.ensembl.org/id/" + value}
+                            style={{
+                              color: "#464646",
+                              fontSize: "14px",
+                              fontFamily: "Lato",
+                            }}
+                          >
                             {value}
                             <FontAwesome
                               className="super-crazy-colors"
@@ -1316,6 +1257,11 @@ const Protein_Detail = (props) => {
                       "http://www.ensembl.org/id/" +
                       data[0]["_source"]["salivary_proteins"]["ensembl_g"]
                     }
+                    style={{
+                      color: "#464646",
+                      fontSize: "14px",
+                      fontFamily: "Lato",
+                    }}
                   >
                     , {data[0]["_source"]["salivary_proteins"]["ensemgl_g"]}
                     <FontAwesome
@@ -1352,6 +1298,11 @@ const Protein_Detail = (props) => {
                               "https://www.genecards.org/cgi-bin/carddisp.pl?gene=" +
                               value
                             }
+                            style={{
+                              color: "#464646",
+                              fontSize: "14px",
+                              fontFamily: "Lato",
+                            }}
                           >
                             {value}
                             <FontAwesome
@@ -1397,7 +1348,11 @@ const Protein_Detail = (props) => {
                   <>
                     <a
                       href={"https://www.uniprot.org/keywords/" + value.id}
-                      style={{ fontFamily: "Lato", fontSize: "18px" }}
+                      style={{
+                        fontFamily: "Lato",
+                        fontSize: "14px",
+                        color: "#000",
+                      }}
                     >
                       {value.keyword}
                       <FontAwesome
@@ -1434,48 +1389,38 @@ const Protein_Detail = (props) => {
               References
             </h2>
 
-            <Table
-              sx={{ minWidth: 650, border: 1, width: "90%" }}
-              aria-label="simple table"
-            >
-              <TableRow style={{ border: "1px solid black" }}>
-                <TableCell
-                  sx={{ fontSize: "0.875rem", border: "1px solid black" }}
-                  style={{ maxWidth: "100%" }}
-                >
-                  {data[0]["_source"]["salivary_proteins"]["cites"].map(
-                    (value, i) => {
-                      return (
-                        <>
-                          <div key={value}>
-                            <h4 style={{ display: "inline" }}>{i + 1}. </h4>
+            {data[0]["_source"]["salivary_proteins"]["cites"].map(
+              (value, i) => {
+                return (
+                  <>
+                    <div key={value}>
+                      <h4 style={{ display: "inline" }}>{i + 1}. </h4>
 
-                            <b>{authorName[i]}</b>
-                            <span>{year[i]}</span>
-                            <i>{journal[i]}</i>
+                      <b style={{ color: "#1463B9" }}>{authorName[i]}</b>
+                      <span>{year[i]}</span>
+                      <i>{journal[i]}</i>
 
-                            <a
-                              href={"https://pubmed.ncbi.nlm.nih.gov/" + value}
-                            >
-                              {" "}
-                              [{value}
-                              <FontAwesome
-                                className="super-crazy-colors"
-                                name="external-link"
-                                style={{
-                                  textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
-                                }}
-                              />
-                              ]
-                            </a>
-                          </div>
-                        </>
-                      );
-                    }
-                  )}
-                </TableCell>
-              </TableRow>
-            </Table>
+                      <a
+                        href={"https://pubmed.ncbi.nlm.nih.gov/" + value}
+                        style={{ color: "#777777" }}
+                      >
+                        {" "}
+                        [{value}
+                        <FontAwesome
+                          className="super-crazy-colors"
+                          name="external-link"
+                          style={{
+                            textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                          }}
+                        />
+                        ]
+                      </a>
+                    </div>
+                  </>
+                );
+              }
+            )}
+
             <Divider
               sx={{
                 marginBottom: "10px",
@@ -1504,8 +1449,7 @@ const Protein_Detail = (props) => {
                     backgroundColor: "#1463B9",
                     color: "white",
                     fontFamily: "Montserrat",
-                    fontSize: "17px",
-                    fontWeight: "bold",
+                    fontSize: "16px",
                     border: "1px solid #3592E4",
                     borderTopLeftRadius: "10px",
                   }}
@@ -1534,8 +1478,7 @@ const Protein_Detail = (props) => {
                     backgroundColor: "#1463B9",
                     color: "white",
                     fontFamily: "Montserrat",
-                    fontSize: "17px",
-                    fontWeight: "bold",
+                    fontSize: "16px",
                     border: "1px solid #3592E4",
                   }}
                 >
@@ -1555,8 +1498,7 @@ const Protein_Detail = (props) => {
                     backgroundColor: "#1463B9",
                     color: "white",
                     fontFamily: "Montserrat",
-                    fontSize: "17px",
-                    fontWeight: "bold",
+                    fontSize: "16px",
                     border: "1px solid #3592E4",
                   }}
                 >
@@ -1641,7 +1583,3 @@ const Protein_Detail = (props) => {
 };
 
 export default Protein_Detail;
-<>
-  <script src="https://d3js.org/d3.v4.min.js" charset="utf-8" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/protvista-uniprot@latest/dist/protvista-uniprot.js"></script>
-</>;

@@ -11,31 +11,73 @@ import "ag-grid-community/styles/ag-theme-alpine.css";
 import { DATA } from "./data";
 import { ICellRendererParams } from "ag-grid-community";
 import "./table.css";
-import first_pic from "./first_pic.png";
-import second_pic from "./second_pic.png";
-import third_pic from "./third_pic.png";
+import first_pic from "./download_icon/first_pic.png";
+import second_pic from "./download_icon/second_pic.png";
+import third_pic from "./download_icon/third_pic.png";
+import first_pic_hover from "./download_icon/first_pic_hover.png";
+import second_pic_hover from "./download_icon/second_pic_hover.png";
+import third_pic_hover from "./download_icon/third_pic_hover.png";
+import MzTab from "./download_icon/MzTab.png";
+import METADATA from "./download_icon/METADATA.png";
+import RAW from "./download_icon/RAW.png";
 
 function LinkComponent(props: ICellRendererParams) {
+  const imageUrlArray = [first_pic, second_pic, third_pic];
+  const hoverImageUrlArray = [
+    third_pic_hover,
+    second_pic_hover,
+    third_pic_hover,
+  ];
+  const downloadIcons = [METADATA, MzTab, RAW];
+  const [isHovered, setIsHovered] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(-1);
+
+  const handleMouseEnter = (index) => {
+    setIsHovered(true);
+    setCurrentIndex(index);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setCurrentIndex(-1);
+  };
+
   return (
     <>
-      <a target="_blank" rel="noopener noreferrer" href={props.value}>
-        <img
-          src={first_pic}
-          style={{ marginLeft: "5px", marginRight: "5px" }}
-        />
-      </a>
-      <a target="_blank" rel="noopener noreferrer" href={props.value}>
-        <img
-          src={second_pic}
-          style={{ marginLeft: "5px", marginRight: "5px" }}
-        />
-      </a>
-      <a target="_blank" rel="noopener noreferrer" href={props.value}>
-        <img
-          src={third_pic}
-          style={{ marginLeft: "5px", marginRight: "5px" }}
-        />
-      </a>
+      {imageUrlArray.map((imageUrl, index) => (
+        <a
+          key={index}
+          target="_blank"
+          rel="noopener noreferrer"
+          href={props.value}
+          className={index === currentIndex && isHovered ? "download-link" : ""}
+          onMouseEnter={() => handleMouseEnter(index)}
+          onMouseLeave={handleMouseLeave}
+        >
+          <img
+            src={
+              index === currentIndex
+                ? isHovered
+                  ? hoverImageUrlArray[index]
+                  : imageUrl
+                : imageUrl
+            }
+            style={{ marginLeft: "5px", marginRight: "5px" }}
+            alt={`Link ${index + 1}`}
+          />
+          {index === currentIndex && isHovered && (
+            <>
+              <div className="download-hover-content">
+                <img
+                  src={downloadIcons[index]}
+                  alt={`${downloadIcons[index]} Image`}
+                  className="download-hover-image"
+                />
+              </div>
+            </>
+          )}
+        </a>
+      ))}
     </>
   );
 }

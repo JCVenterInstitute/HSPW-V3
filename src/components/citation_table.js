@@ -86,6 +86,7 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log(`http://localhost:8000/citation/${pageSize}/${pageNum}`);
         const data = await fetch(
           `http://localhost:8000/citation/${pageSize}/${pageNum}`
         );
@@ -171,7 +172,7 @@ function App() {
   const columns = [
     {
       headerName: "Citation",
-      field: "PubMedID",
+      field: "PubMed ID",
       cellRenderer: "LinkComponent",
       checkboxSelection: false,
       headerCheckboxSelection: false,
@@ -201,7 +202,7 @@ function App() {
     },
     {
       headerName: "Journal",
-      field: "journalTitle",
+      field: "journal_title",
       wrapText: true,
       maxWidth: 145,
       maxWidth: 145,

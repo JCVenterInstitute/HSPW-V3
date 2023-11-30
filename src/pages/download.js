@@ -2,9 +2,7 @@ import React from "react";
 import AgGrid from "../components/ag-grid.js";
 import "./style.css";
 import { components } from "react-select";
-import DonutChart_google from "../components/donutChart_google.tsx";
-import BarChart_google from "../components/barChart_google.tsx";
-import Filter from "../components/filter.js";
+
 import main_feature from "./page_main.png";
 
 const Option = (props) => {

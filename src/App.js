@@ -27,6 +27,8 @@ import InterProScanResults from "./pages/Analyze/InterProScanResults";
 import InterProScan from "./pages/Analyze/InterProScan";
 import PSIBlastResults from "./pages/Analyze/PSIBlastResults";
 import PSIBlast from "./pages/Analyze/PSIBlast";
+import About from "./pages/Help/About";
+import Team from "./pages/Help/Team";
 
 function App() {
   return (
@@ -69,6 +71,8 @@ function App() {
         <Route path="/Basic_Search" element={<Basic_Search />} />
         <Route path="/Experiment_Search" element={<Experiment_Search />} />
         <Route path="/Protein_Set_Search" element={<Protein_Set_Search />} />
+        <Route path="/About" element={<About />} />
+        <Route path="/Team" element={<Team />} />
       </Routes>
       <Footer />
     </Router>

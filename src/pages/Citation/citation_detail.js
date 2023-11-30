@@ -42,7 +42,7 @@ const Citation_detail = (props) => {
     const response = await fetch(
       "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=" +
         params["citationid"] +
-        "&retmode=xml&rettype=abstract&api_key=1b7c2864fec7f4749814a17559ed02608808"
+        "&retmode=xml&rettype=abstract&api_key=d5eafed1678a515f8279d979e1da12c76308"
     );
     if (!response.ok) {
       const message = `An error has occured: ${response.status}`;

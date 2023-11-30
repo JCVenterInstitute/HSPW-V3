@@ -391,8 +391,17 @@ async function multi_search(index, text) {
     query = {
       query: {
         query_string: {
-          query: text + "*",
+          query: "*" + text + "*",
           fields: ["UniProt Accession", "Gene Symbol", "Protein Name"],
+        },
+      },
+    };
+  } else if (index === "protein_signature") {
+    query = {
+      query: {
+        query_string: {
+          query: "*" + text + "*",
+          fields: ["InterPro ID", "Name", "Type"],
         },
       },
     };
@@ -506,7 +515,7 @@ async function search_citation(size, from) {
   var query = {
     size: size,
     from: from,
-    sort: [{ PubYear: { order: "desc" } }],
+    sort: [{ Date: { order: "desc" } }],
     query: {
       match_all: {},
     },

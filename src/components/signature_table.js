@@ -40,7 +40,7 @@ function App() {
   const [queryArr, setQueryArr] = useState([]);
   const [scriptArr, setScriptArr] = useState([]);
   const [startMember, setStartMember] = useState("");
-  const [endMember, setEndMember] = useState("");
+  const [searchText, setSearchText] = useState("");
   const [memberC, setMemberC] = useState(false);
 
   useEffect(() => {
@@ -116,6 +116,35 @@ function App() {
         settypeCount(value.aggregations.Type.buckets);
         console.log(typeArr);
       });
+    } else if (searchText !== "") {
+      const result = globalSearch().catch(console.errror);
+      result.then((value) => {
+        if (value.hits.hits) {
+          console.log(value);
+          let data1 = [];
+          for (let i = 0; i < value.hits.hits.length; i++) {
+            data1.push(value.hits.hits[i]["_source"]);
+          }
+          console.log(data1);
+          setRowData(data1);
+        }
+        setDocCount(value.hits.total.value);
+        const newOptions = [];
+        for (
+          let i = 1;
+          i <= Math.round(value.hits.total.value / pageSize);
+          i++
+        ) {
+          newOptions.push(
+            <option key={i} value={i}>
+              {i}
+            </option>
+          );
+        }
+
+        setPageNumArr(newOptions);
+        setCount(2);
+      });
     } else {
       const result = fetchData().catch(console.errror);
       result.then((value) => {
@@ -148,7 +177,7 @@ function App() {
         }
       });
     }
-  }, [pageSize, pageNum, queryArr, typeArr, name, startMember]);
+  }, [pageSize, pageNum, queryArr, typeArr, name, startMember, searchText]);
 
   const [gridApi, setGridApi] = useState();
   function LinkComponent(props: ICellRendererParams) {
@@ -162,6 +191,18 @@ function App() {
       </a>
     );
   }
+
+  const globalSearch = async () => {
+    const data = await fetch(
+      `http://localhost:8000/multi_search/protein_signature/${searchText}`
+    );
+    console.log(
+      `http://localhost:8000/multi_search/protein_signature/${searchText}`
+    );
+    const json = data.json();
+    return json;
+  };
+
   const columns = [
     {
       headerName: "InterPro ID",
@@ -266,11 +307,25 @@ function App() {
   };
   const rowHeight = 20;
 
-  const onFilterTextBoxChanged = useCallback(() => {
-    gridRef.current.api.setQuickFilter(
-      document.getElementById("filter-text-box").value
-    );
-  }, []);
+  const onFilterTextBoxChanged = () => {
+    const inputValue = document.getElementById("filter-text-box").value;
+    console.log("Input Value: " + inputValue);
+    if (inputValue !== "") {
+      setSearchText(inputValue);
+    } else {
+      setSearchText("");
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchText("");
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    // Additional logic for form submission if needed
+    // You can use the searchText state here for searching/filtering data
+  };
 
   const filterType = (event) => {
     console.log(event.target.value);
@@ -487,11 +542,6 @@ function App() {
       setNameC(true);
     }
 
-    if (inputValue.includes("-")) {
-      inputValue = inputValue.replace("-", "\\-");
-      console.log(inputValue);
-    }
-
     // Add new element for Name with updated input value
     const newNameQuery =
       inputValue !== ""
@@ -669,16 +719,17 @@ function App() {
       <div className="AppBox1">
         <div className="example-header" style={{ marginLeft: "35px" }}>
           <form
-            onSubmit={onFilterTextBoxChanged}
+            onSubmit={onSubmit}
             style={{ display: "inline", position: "relative" }}
           >
             <input
-              type="text"
+              type="search"
               id="filter-text-box"
               placeholder="Search..."
-              onInput={onFilterTextBoxChanged}
+              autoComplete="on"
+              onChange={onFilterTextBoxChanged}
               style={{
-                width: "30%",
+                width: "calc(30% - 30px)", // Adjust width to accommodate clear button
                 padding: "0.25rem 0.75rem",
                 borderRadius: "10px 0 0 10px",
                 borderColor: "#1463B9",
@@ -686,8 +737,26 @@ function App() {
                 position: "relative",
               }}
             />
+            {searchText && (
+              <button
+                type="button"
+                onClick={clearSearch}
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  backgroundColor: "#fff",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                X
+              </button>
+            )}
             <button
-              type="submit"
+              type="button" // Change type to "button" to prevent form submission
+              onClick={onFilterTextBoxChanged} // Use onClick event handler for the button
               style={{
                 display: "inline",
                 position: "relative",
@@ -781,8 +850,10 @@ function App() {
             defaultColDef={defColumnDefs}
             onGridReady={onGridReady}
             cacheQuickFilter={true}
+            frameworkComponents={{
+              LinkComponent,
+            }}
             enableCellTextSelection={true}
-            pagination={true}
             overlayNoRowsTemplate={
               '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
             }
