@@ -631,7 +631,7 @@ const DifferentialExpression = () => {
             size="small"
             sx={{
               marginTop: "10px",
-              marginBottom: "20px",
+              marginBottom: "30px",
               display: "block",
               marginLeft: "auto",
               marginRight: "auto",
