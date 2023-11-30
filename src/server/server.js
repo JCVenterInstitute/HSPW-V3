@@ -2172,11 +2172,11 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
     await fse.ensureDir(workingDirectory);
     await processGroupData(req.body, workingDirectory);
     await fse.copy(
-      path.join(scriptPath, "generate-data.R"),
-      path.join(workingDirectory, "generate-data.R")
+      path.join(scriptPath, "generate-data-new.R"),
+      path.join(workingDirectory, "generate-data-new.R")
     );
     // Execute the R script from the working directory
-    const command = `Rscript generate-data.R ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType}`;
+    const command = `Rscript generate-data-new.R ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType}`;
     const { stdout } = await execPromise(command, {
       cwd: workingDirectory,
     });

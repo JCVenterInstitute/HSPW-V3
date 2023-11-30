@@ -461,6 +461,28 @@ const DifferentialExpressionResults = () => {
                   }}
                 >
                   <Grid container spacing={2}>
+                    <Grid item xs={12} key="downloadAll">
+                      <Box sx={{ ml: 3 }}>
+                        <Button
+                          // onClick={() => handleDownload(jobId, fileName)}
+                          startIcon={<DownloadIcon sx={{ color: "#1463B9" }} />}
+                          sx={{
+                            textTransform: "none", // Keeps the button text style similar to Typography
+                            color: "#1463B9", // Sets the color of the text
+                          }}
+                        >
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              textDecoration: "underline",
+                              color: "#1463B9",
+                            }}
+                          >
+                            Download all data set (zip)
+                          </Typography>
+                        </Button>
+                      </Box>
+                    </Grid>
                     {Object.entries(fileDownloadOption).map(
                       ([key, fileName]) => (
                         <Grid item xs={6} key={key}>
