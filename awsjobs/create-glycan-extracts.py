@@ -42,38 +42,32 @@ def create_glycan_extract(uniprot_proteins_bucket, protein_id):
                 # Glycan data
                 if glycosylations:
                     glycan_arr = []
-                    glytoucan_ac = glycosylations[0].get("glytoucan_ac", "")
-                    mass = ''
-                    glycan_image_s3_url = ''
-
-                    if glytoucan_ac:
-                        # Glycan mass
-                        glycan_mass_url = f'https://api.glygen.org/glycan/detail/{glytoucan_ac}/'
-                        response_glycan_mass = session.post(glycan_mass_url, headers=headers)
-                    
-                        if response_glycan_mass.status_code == 200:
-                            glytoucans_response = response_glycan_mass.json()
-                            mass = glytoucans_response.get("mass", "")
-
-                        # Glycan image
-                        glycan_image_name = f'glycan_{protein_id}.png'
-                        glycan_image_url = f'https://api.glygen.org/glycan/image/{glytoucan_ac}'
-                        response_glycan_image = session.post(glycan_image_url)
-                    
-                        if response_glycan_image.status_code == 200:
-                            glycan_image_s3_url = f'https://{uniprot_proteins_bucket}.s3.amazonaws.com/images/{glycan_image_name}'
-                            
-                            #temp_image_path, _ = urllib.request.urlretrieve(glycan_image_url)
-                            ## Upload the image to S3
-                            #s3_client.upload_file(temp_image_path, uniprot_proteins_bucket, f'images/{glycan_image_name}')
-                            #os.remove(temp_image_path)
-                            #glycan_image_path = f'{uniprot_proteins_bucket}/images/{glycan_image_name}'
 
                     for glycosylation in glycosylations:
+                        glytoucan_ac = glycosylation.get("glytoucan_ac", "")
                         residue = glycosylation.get("residue", "")
+                        mass = ''
+                        glycan_image_s3_url = ''
 
                         if residue:
                             residue += str(glycosylation.get("start_pos", ""))
+
+                        if glytoucan_ac:
+                            # Glycan mass
+                            glycan_mass_url = f'https://api.glygen.org/glycan/detail/{glytoucan_ac}/'
+                            response_glycan_mass = session.post(glycan_mass_url, headers=headers)
+                        
+                            if response_glycan_mass.status_code == 200:
+                                glytoucans_response = response_glycan_mass.json()
+                                mass = glytoucans_response.get("mass", "")
+
+                            # Glycan image
+                            glycan_image_name = f'glycan_{protein_id}_{glytoucan_ac}.png'
+                            glycan_image_url = f'https://api.glygen.org/glycan/image/{glytoucan_ac}'
+                            response_glycan_image = session.post(glycan_image_url)
+                        
+                            if response_glycan_image.status_code == 200:
+                                glycan_image_s3_url = f'https://{uniprot_proteins_bucket}.s3.amazonaws.com/images/{glycan_image_name}'
 
                         # Glycan object
                         glycan_obj = {
