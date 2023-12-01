@@ -12,8 +12,7 @@ const execPromise = util.promisify(exec);
 const { s3Upload } = require("./utils/s3Upload");
 const fse = require("fs-extra");
 const path = require("path");
-const { processGroupData } = require("./utils/processGroupData");
-const { s3Download } = require("./utils/s3Download");
+const { processGroupData, processFile, s3Download } = require("./utils");
 
 app.use(cors());
 app.use(express.json());
