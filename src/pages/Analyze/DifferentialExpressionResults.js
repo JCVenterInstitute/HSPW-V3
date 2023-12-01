@@ -153,8 +153,6 @@ const DifferentialExpressionResults = () => {
           const link = document.createElement("a");
           link.href = res.data.url;
 
-          link.target = "_blank";
-
           // Set the download attribute to a default filename or based on the URL
           link.download = fileName; // This will take the last part of the URL as a filename
 
@@ -418,13 +416,11 @@ const DifferentialExpressionResults = () => {
                 flexGrow: 1, // To make the right Box occupy remaining space
               }}
             >
-              {(selected !== "Venn-Diagram" || alignment !== "right") &&
-                (selected !== "Normalization" || alignment !== "right") &&
-                selected !== "Download" && (
-                  <Button variant="contained" onClick={handleDataDownload}>
-                    Download
-                  </Button>
-                )}
+              {selected !== "Download" && (
+                <Button variant="contained" onClick={handleDataDownload}>
+                  Download
+                </Button>
+              )}
             </Box>
           </Box>
           <Box
