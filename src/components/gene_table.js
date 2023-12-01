@@ -2,7 +2,6 @@ import "./filter.css";
 import "./table.css";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-enterprise";
 
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -11,12 +10,11 @@ import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import { ICellRendererParams } from "ag-grid-community";
 import { ReactComponent as Download_Logo } from "./table_icon/download.svg";
 import { ReactComponent as Left_Arrow } from "./table_icon/left_arrow.svg";
 import { ReactComponent as Right_Arrow } from "./table_icon/right_arrow.svg";
 import { ReactComponent as Search } from "./table_icon/search.svg";
-function LinkComponent(props: ICellRendererParams) {
+function LinkComponent(props) {
   return (
     <a
       target="_blank"
@@ -27,7 +25,7 @@ function LinkComponent(props: ICellRendererParams) {
     </a>
   );
 }
-const rowHeight = 20;
+const rowHeight = 60;
 function App() {
   const [pageSize, setPageSize] = useState(50);
   const [pageNum, setPageNum] = useState(0);

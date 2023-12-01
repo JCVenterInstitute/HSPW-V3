@@ -1,27 +1,24 @@
-import "./filter.css";
+import "../filter.css";
 import React, { useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-enterprise";
-import Filter from "./filter.js";
-import DonutChart_google from "../components/donutChart_google.tsx";
-import BarChart_google from "../components/barChart_google.tsx";
+
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import { DATA } from "./data";
+import { DATA } from "../data";
 import { ICellRendererParams } from "ag-grid-community";
-import "./table.css";
-import first_pic from "./download_icon/first_pic.png";
-import second_pic from "./download_icon/second_pic.png";
-import third_pic from "./download_icon/third_pic.png";
-import first_pic_hover from "./download_icon/first_pic_hover.png";
-import second_pic_hover from "./download_icon/second_pic_hover.png";
-import third_pic_hover from "./download_icon/third_pic_hover.png";
-import MzTab from "./download_icon/MzTab.png";
-import METADATA from "./download_icon/METADATA.png";
-import RAW from "./download_icon/RAW.png";
+import "../table.css";
+import first_pic from "../../download_icon/first_pic.png";
+import second_pic from "../../download_icon/second_pic.png";
+import third_pic from "../../download_icon/third_pic.png";
+import first_pic_hover from "../../download_icon/first_pic_hover.png";
+import second_pic_hover from "../../download_icon/second_pic_hover.png";
+import third_pic_hover from "../../download_icon/third_pic_hover.png";
+import MzTab from "../../download_icon/MzTab.png";
+import METADATA from "../../download_icon/METADATA.png";
+import RAW from "../../download_icon/RAW.png";
 
-function LinkComponent(props: ICellRendererParams) {
+function LinkComponent(props) {
   const imageUrlArray = [first_pic, second_pic, third_pic];
   const hoverImageUrlArray = [
     third_pic_hover,
@@ -82,11 +79,11 @@ function LinkComponent(props: ICellRendererParams) {
   );
 }
 
-function App() {
+function DownloadTable() {
   const [gridApi, setGridApi] = useState();
   const rowData = DATA;
 
-  const rowHeight = 20;
+  const rowHeight = 120;
 
   const columns = [
     {
@@ -183,4 +180,4 @@ function App() {
   );
 }
 
-export default App;
+export default DownloadTable;

@@ -1,9 +1,9 @@
 import React from "react";
-import AgGrid from "../components/ag-grid.js";
-import "./style.css";
+import AgGrid from "../../components/Download/DownloadTable.js";
+import "../style.css";
 import { components } from "react-select";
 
-import main_feature from "./page_main.png";
+import main_feature from "../page_main.png";
 
 const Option = (props) => {
   return (

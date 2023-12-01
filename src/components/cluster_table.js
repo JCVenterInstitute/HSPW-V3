@@ -5,7 +5,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-enterprise";
+
 import { ReactComponent as Download_Logo } from "./table_icon/download.svg";
 import { ReactComponent as Left_Arrow } from "./table_icon/left_arrow.svg";
 import { ReactComponent as Right_Arrow } from "./table_icon/right_arrow.svg";

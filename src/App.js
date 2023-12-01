@@ -3,7 +3,7 @@ import "./App.css";
 import Navbar from "./components/index";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages";
-import Download from "./pages/download";
+import Download from "./pages/Download/download";
 import Analysis_Home from "./pages/analysis_home";
 import Gene from "./pages/gene";
 import Contact from "./pages/contact";
