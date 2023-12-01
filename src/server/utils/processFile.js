@@ -1,0 +1,11 @@
+const fs = require("fs");
+const path = require("path");
+
+exports.processFile = async (inputData, workingDirectory) => {
+  console.log("> Processing File Data");
+
+  // Save to file
+  const filePath = path.join(workingDirectory, "inputdata.txt");
+  fs.writeFileSync(filePath, inputData);
+  console.log(`Data saved to ${filePath}`);
+};

@@ -126,6 +126,7 @@ const DifferentialExpression = () => {
   const [openExplanationModal, setOpenExplanationModal] = useState(false);
   const [lowerLimit, setLowerLimit] = useState(0);
   const [upperLimit, setUpperLimit] = useState(20000);
+  const [inputData, setInputData] = useState("");
 
   useEffect(() => {
     // Apply the filter whenever the limits change
@@ -490,7 +491,8 @@ const DifferentialExpression = () => {
       setFileName(file.name);
       const reader = new FileReader();
       reader.onload = (event) => {
-        // const content = event.target.result;
+        const content = event.target.result;
+        setInputData(content);
       };
       reader.readAsText(file); // Read the file as text
     }
@@ -515,26 +517,28 @@ const DifferentialExpression = () => {
   };
 
   const handleAnalyze = async () => {
-    if (groupARowData.length === 0 || groupBRowData.length === 0) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "GroupA and/or GroupB cannot be empty. Please try again.",
-      });
-      return;
-    }
-
-    const checkDuplicate = new Set();
-    groupARowData.forEach((row) => checkDuplicate.add(row.experiment_id_key));
-
-    for (const row of groupBRowData) {
-      if (checkDuplicate.has(row.experiment_id_key)) {
+    if (!fileName) {
+      if (groupARowData.length === 0 || groupBRowData.length === 0) {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "Duplicate samples in both groups. Please try again.",
+          text: "GroupA and/or GroupB cannot be empty. Please try again.",
         });
         return;
+      }
+
+      const checkDuplicate = new Set();
+      groupARowData.forEach((row) => checkDuplicate.add(row.experiment_id_key));
+
+      for (const row of groupBRowData) {
+        if (checkDuplicate.has(row.experiment_id_key)) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Duplicate samples in both groups. Please try again.",
+          });
+          return;
+        }
       }
     }
 
@@ -557,29 +561,57 @@ const DifferentialExpression = () => {
     });
     Swal.showLoading();
 
-    await axios
-      .post("http://localhost:8000/api/differential-expression/analyze", {
-        groupAData: groupARowData,
-        groupBData: groupBRowData,
-        logNorm,
-        foldChangeThreshold,
-        pValueThreshold,
-        pValueType,
-        timestamp: {
-          year,
-          month,
-          day,
-          hours,
-          minutes,
-          seconds,
-        },
-        formattedDate,
-        workingDirectory,
-      })
-      .then(
-        () =>
-          (window.location.href = `/differential-expression/results/${jobId}`)
-      );
+    if (fileName) {
+      await axios
+        .post(
+          "http://localhost:8000/api/differential-expression/analyze-file",
+          {
+            inputData,
+            logNorm,
+            foldChangeThreshold,
+            pValueThreshold,
+            pValueType,
+            timestamp: {
+              year,
+              month,
+              day,
+              hours,
+              minutes,
+              seconds,
+            },
+            formattedDate,
+            workingDirectory,
+          }
+        )
+        .then(
+          () =>
+            (window.location.href = `/differential-expression/results/${jobId}`)
+        );
+    } else {
+      await axios
+        .post("http://localhost:8000/api/differential-expression/analyze", {
+          groupAData: groupARowData,
+          groupBData: groupBRowData,
+          logNorm,
+          foldChangeThreshold,
+          pValueThreshold,
+          pValueType,
+          timestamp: {
+            year,
+            month,
+            day,
+            hours,
+            minutes,
+            seconds,
+          },
+          formattedDate,
+          workingDirectory,
+        })
+        .then(
+          () =>
+            (window.location.href = `/differential-expression/results/${jobId}`)
+        );
+    }
 
     Swal.close();
   };

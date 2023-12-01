@@ -2209,6 +2209,49 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
   // res.status(200).send("Good");
 });
 
+app.post("/api/differential-expression/analyze-file", async (req, res) => {
+  try {
+    const {
+      inputData,
+      logNorm,
+      foldChangeThreshold,
+      pValueThreshold,
+      pValueType,
+      timestamp,
+      formattedDate,
+      workingDirectory,
+    } = req.body;
+    const scriptPath = "/home/ec2-user/r4test1/test";
+
+    // Create the working directory and copy the R script
+    await fse.ensureDir(workingDirectory);
+    await processFile(inputData, workingDirectory);
+    await fse.copy(
+      path.join(scriptPath, "generate-data-new.R"),
+      path.join(workingDirectory, "generate-data-new.R")
+    );
+    // Execute the R script from the working directory
+    const command = `Rscript generate-data-new.R ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType}`;
+    const { stdout } = await execPromise(command, {
+      cwd: workingDirectory,
+    });
+    // S3 upload parameters
+    const params = {
+      bucketName: "differential-expression-result-dev",
+      s3KeyPrefix: `${timestamp.year}-${timestamp.month}-${timestamp.day}/differential-expression-${formattedDate}`,
+      contentType: "text/plain",
+      directoryPath: workingDirectory,
+    };
+    // Perform the s3 upload
+    await s3Upload(params);
+    console.log(`stdout:\n${stdout}`);
+    res.status(200).send(`Output: ${stdout}`);
+  } catch (error) {
+    console.error(`Error during file operations: ${error.message}`);
+    res.status(500).send(`Server Error: ${error.message}`);
+  }
+});
+
 const searchStudy = async () => {
   // Initialize the client.
   const client = await getClient();
