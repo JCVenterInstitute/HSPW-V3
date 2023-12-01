@@ -8,6 +8,6 @@ exports.processFile = async (inputData, workingDirectory) => {
   const tsv = input.replace(",", "\t");
   // Save to file
   const filePath = path.join(workingDirectory, "inputdata.txt");
-  fs.writeFileSync(filePath, inputData);
+  fs.writeFileSync(filePath, tsv);
   console.log(`Data saved to ${filePath}`);
 };
