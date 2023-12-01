@@ -1383,9 +1383,10 @@ function App() {
   };
 
   const handlestartWSChange = (e) => {
-    const inputValue = e.target.value;
+    let inputValue = e.target.value;
     if (inputValue === "") {
       setwsC(false);
+      inputValue = 0;
     } else if (inputValue !== "") {
       setwsC(true);
     }
@@ -1406,9 +1407,10 @@ function App() {
   };
 
   const handleendWSChange = (e) => {
-    const inputValue = e.target.value;
+    let inputValue = e.target.value;
     if (inputValue === "") {
       setwsC(false);
+      inputValue = 20000;
     } else if (inputValue !== "") {
       setwsC(true);
     }
@@ -1429,9 +1431,10 @@ function App() {
   };
 
   const handlestartParChange = (e) => {
-    const inputValue = e.target.value;
+    let inputValue = e.target.value;
     if (inputValue === "") {
       setparC(false);
+      inputValue = 0;
     } else if (inputValue !== "") {
       setparC(true);
     }
@@ -1454,9 +1457,10 @@ function App() {
   };
 
   const handleendParChange = (e) => {
-    const inputValue = e.target.value;
+    let inputValue = e.target.value;
     if (inputValue === "") {
       setparC(false);
+      inputValue = 20000;
     } else if (inputValue !== "") {
       setparC(true);
     }
@@ -1480,12 +1484,15 @@ function App() {
   };
 
   const handlestartSubChange = (e) => {
-    const inputValue = e.target.value;
+    let inputValue = e.target.value;
+
     if (inputValue === "") {
       setsubC(false);
-    } else if (inputValue !== "") {
+      inputValue = 0; // Set inputValue to 0 when it is an empty string
+    } else {
       setsubC(true);
     }
+
     const newstartSubQuery =
       inputValue !== ""
         ? {
@@ -1496,15 +1503,18 @@ function App() {
             },
           }
         : null;
+
     setsubStart(inputValue);
+
     if (orChecked === true) {
       updateQuery(newstartSubQuery);
     }
   };
   const handleendSubChange = (e) => {
-    const inputValue = e.target.value;
+    let inputValue = e.target.value;
     if (inputValue === "") {
       setsubC(false);
+      inputValue = 20000;
     } else if (inputValue !== "") {
       setsubC(true);
     }
@@ -1527,9 +1537,10 @@ function App() {
   };
 
   const handlestartBChange = (e) => {
-    const inputValue = e.target.value;
+    let inputValue = e.target.value;
     if (inputValue === "") {
       setplasmaC(false);
+      inputValue = 0;
     } else if (inputValue !== "") {
       setplasmaC(true);
     }
@@ -1552,9 +1563,10 @@ function App() {
   };
 
   const handleendBChange = (e) => {
-    const inputValue = e.target.value;
+    let inputValue = e.target.value;
     if (inputValue === "") {
       setplasmaC(false);
+      inputValue = 10;
     } else if (inputValue !== "") {
       setplasmaC(true);
     }
@@ -1826,7 +1838,8 @@ function App() {
           sx={{
             backgroundColor: "#f9f8f7",
             width: "270px",
-            height: "0.25em",
+            height: "47rem",
+            overflow: "scroll",
           }}
         >
           <h1
