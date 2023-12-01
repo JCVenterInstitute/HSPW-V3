@@ -135,11 +135,6 @@ const DifferentialExpressionResults = () => {
     const link = document.createElement("a");
     link.href = imageUrl;
 
-    link.target = "_blank";
-
-    // Set the download attribute to a default filename or based on the URL
-    link.download = imageUrl.split("/").pop(); // This will take the last part of the URL as a filename
-
     // Append the link to the body
     document.body.appendChild(link);
 

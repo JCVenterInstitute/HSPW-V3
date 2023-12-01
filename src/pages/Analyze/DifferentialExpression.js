@@ -496,6 +496,24 @@ const DifferentialExpression = () => {
     }
   };
 
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await axios
+        .get("http://localhost:8000/api/download-template")
+        .then((res) => res.data);
+
+      const { url } = response;
+      // Create a link and trigger the download
+      const link = document.createElement("a");
+      link.href = url;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading template:", error);
+    }
+  };
+
   const handleAnalyze = async () => {
     if (groupARowData.length === 0 || groupBRowData.length === 0) {
       Swal.fire({
@@ -1167,7 +1185,11 @@ const DifferentialExpression = () => {
               >
                 TEMPLATE:
               </Typography>
-              <Button variant="contained" sx={{ mr: 2 }}>
+              <Button
+                variant="contained"
+                sx={{ mr: 2 }}
+                onClick={handleDownloadTemplate}
+              >
                 DOWNLOAD
               </Button>
               <Button variant="text" onClick={handleOpenExplanationModal}>

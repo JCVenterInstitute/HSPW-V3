@@ -1,8 +1,5 @@
 const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-const axios = require("axios");
-const fs = require("fs");
-const path = require("path");
 
 /**
  * Utility functions to mediate presigned GET to S3 bucket.
@@ -18,17 +15,19 @@ const path = require("path");
  */
 exports.s3Download = async ({ bucketName, s3Key }) => {
   try {
-    return await getPresignUrl({ bucketName, s3Key });
+    const fileName = s3Key.split("/").pop();
+    return await getPresignUrl({ bucketName, s3Key, fileName });
   } catch (error) {
     console.log(error);
     throw error;
   }
 };
 
-const getPresignUrl = async ({ bucketName, s3Key }) => {
+const getPresignUrl = async ({ bucketName, s3Key, fileName }) => {
   const params = {
     Bucket: bucketName,
     Key: s3Key,
+    ResponseContentDisposition: `attachment; filename=${fileName}`,
   };
   const s3Client = new S3Client({ region: "us-east-2" });
   const command = new GetObjectCommand(params);

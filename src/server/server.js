@@ -2155,6 +2155,17 @@ app.get("/protein/:id", (req, res) => {
   });
 });
 
+app.get("/api/download-template", async (req, res) => {
+  // S3 download parameters
+  const params = {
+    bucketName: "differential-expression-result-dev",
+    s3Key: "inputdata.csv",
+  };
+
+  const presignedUrl = await s3Download(params);
+  res.send({ url: presignedUrl });
+});
+
 app.post("/api/differential-expression/analyze", async (req, res) => {
   try {
     const {
