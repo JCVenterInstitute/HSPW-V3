@@ -1,4 +1,3 @@
-import { display } from "@mui/system";
 import React from "react";
 import Gene from "../../components/gene_table";
 import "../style.css";
@@ -7,22 +6,13 @@ import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
+
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { translateDOMPositionXY } from "rsuite/esm/DOMHelper";
+
 import { rgb } from "d3";
 import Protein from "../../components/salivary_protein/salivary_protein_table.js";
 import main_feature from "../../components/hero.jpeg";
-
-const mystyle = {
-  color: "white",
-  marginTop: "20px",
-  marginLeft: "20px",
-  textAlign: "left",
-  fontSize: "18px",
-  marginBottom: "20px",
-};
 
 const styles = {
   transform: "translate(0, 0)",
@@ -41,12 +31,8 @@ const accordionData = {
 };
 const { title, content } = accordionData;
 
-const Accordion = ({ title, content }) => {
+const Salivary_Protein = ({ title, content }) => {
   const [isActive, setIsActive] = useState(false);
-  const [message, setMessage] = useState("");
-  const [name, setName] = useState("");
-  const [symbol, setSymbol] = useState("");
-  const [opinion, setOpinion] = useState("");
 
   useEffect(() => {}, []);
 
@@ -403,4 +389,4 @@ const Accordion = ({ title, content }) => {
   );
 };
 
-export default Accordion;
+export default Salivary_Protein;

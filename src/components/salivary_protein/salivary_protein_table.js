@@ -102,7 +102,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   fontFamily: "Montserrat",
 }));
 
-function WSComponent(props: ICellRendererParams) {
+function WSComponent(props) {
   const d = props.value;
   if (d < 10 || d === "low") {
     return (
@@ -216,7 +216,7 @@ function WSComponent(props: ICellRendererParams) {
   }
 }
 
-function opinionComponent(props: ICellRendererParams) {
+function opinionComponent(props) {
   const d = props.value;
   if (d === "Confirmed") {
     return <span>C</span>;
@@ -225,7 +225,7 @@ function opinionComponent(props: ICellRendererParams) {
   }
 }
 
-function IHCComponent(props: ICellRendererParams) {
+function IHCComponent(props) {
   const d = props.value;
   if (d === "low") {
     return (
@@ -350,7 +350,7 @@ function IHCComponent(props: ICellRendererParams) {
   }
 }
 
-function proteinLinkComponent(props: ICellRendererParams) {
+function proteinLinkComponent(props) {
   return (
     <a
       target="_blank"
@@ -1029,7 +1029,7 @@ function App() {
       minWidth: "155",
       wordWrap: true,
 
-      cellStyle: { "word-break": "break-word" },
+      cellStyle: { wordBreak: "break-word" },
       headerClass: ["header-border"],
       cellClass: ["table-border"],
       cellRenderer: "proteinLinkComponent",
@@ -1042,7 +1042,7 @@ function App() {
 
       headerClass: ["header-border"],
       cellClass: ["table-border"],
-      cellStyle: { "word-break": "break-word" },
+      cellStyle: { wordBreak: "break-word" },
     },
     {
       headerName: "Protein Name",
@@ -1053,7 +1053,7 @@ function App() {
       headerClass: ["header-border"],
       cellClass: ["table-border"],
 
-      cellStyle: { "word-break": "break-word" },
+      cellStyle: { wordBreak: "break-word" },
     },
     {
       headerName: "Expert Opinion",
@@ -1216,7 +1216,7 @@ function App() {
     wrapHeaderText: true,
     wrapText: true,
     autoHeaderHeight: true,
-    headerStyle: { "word-break": "break-word" },
+    headerStyle: { wordBreak: "break-word" },
     initialWidth: 200,
     headerComponentParams: {
       template:
@@ -1975,7 +1975,7 @@ function App() {
                   child.key !== "" &&
                   child.key !== "D.D.S." &&
                   child.key != "Unknown" ? (
-                    <FormGroup sx={{ ml: "10px" }}>
+                    <FormGroup key={key} sx={{ ml: "10px" }}>
                       {child.key === "Unsubstantiated" ? (
                         <FormControlLabel
                           control={
@@ -2026,7 +2026,7 @@ function App() {
                 >
                   {IHCCount.map((child, i) =>
                     child.key !== "?" ? (
-                      <FormGroup sx={{ ml: "10px" }}>
+                      <FormGroup key={i} sx={{ ml: "10px" }}>
                         <FormControlLabel
                           control={
                             <Checkbox

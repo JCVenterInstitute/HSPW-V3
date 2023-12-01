@@ -15,5 +15,8 @@
     "@aws-sdk/credential-provider-node": "^3.298.0",
     "@opensearch-project/opensearch": "^2.2.0",
     "aws-opensearch-connector": "^1.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }
