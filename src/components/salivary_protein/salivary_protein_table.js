@@ -45,6 +45,8 @@ import { ReactComponent as Download_Logo } from "../table_icon/download.svg";
 import { ReactComponent as Left_Arrow } from "../table_icon/left_arrow.svg";
 import { ReactComponent as Right_Arrow } from "../table_icon/right_arrow.svg";
 import { ReactComponent as Search } from "../table_icon/search.svg";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 const styles = {
   transform: "translate(0, 0)",
@@ -898,7 +900,6 @@ function App() {
         setCount(2);
       });
     } else {
-      console.log(pageNum);
       const fetchData = async () => {
         const data = await fetch(
           "http://localhost:8000/saliva_protein_table/" +
@@ -906,7 +907,9 @@ function App() {
             "/" +
             pageNum
         );
+
         const json = data.json();
+
         return json;
       };
       const result = fetchData().catch(console.errror);
@@ -985,7 +988,7 @@ function App() {
     exclude,
     searchText,
   ]);
-
+  console.log(rowData);
   useEffect(() => {
     const fetchData = async () => {
       console.log("5");
@@ -1025,7 +1028,7 @@ function App() {
       headerCheckboxSelection: false,
       minWidth: "155",
       wordWrap: true,
-      autoHeight: true,
+
       cellStyle: { "word-break": "break-word" },
       headerClass: ["header-border"],
       cellClass: ["table-border"],
@@ -1036,7 +1039,7 @@ function App() {
       minWidth: "132",
       field: "Gene Symbol",
       wrapText: true,
-      autoHeight: true,
+
       headerClass: ["header-border"],
       cellClass: ["table-border"],
       cellStyle: { "word-break": "break-word" },
@@ -1049,14 +1052,14 @@ function App() {
       wrapText: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
-      autoHeight: true,
+
       cellStyle: { "word-break": "break-word" },
     },
     {
       headerName: "Expert Opinion",
       minWidth: "140",
       field: "expert_opinion",
-      autoHeight: true,
+
       cellRenderer: "opinionComponent",
       headerClass: ["header-border"],
       cellClass: ["table-border"],
@@ -1101,7 +1104,7 @@ function App() {
           cellClass: ["square_table"],
         },
       ],
-      autoHeight: true,
+
       wrapText: true,
       cellStyle: { textAlign: "center" },
     },
@@ -1109,7 +1112,7 @@ function App() {
       headerName: "IHC",
       field: "IHC",
       minWidth: "101",
-      autoHeight: true,
+
       wrapText: true,
       cellRenderer: "IHCComponent",
       headerClass: ["header-border"],
@@ -1119,7 +1122,7 @@ function App() {
       headerName: "mRNA",
       headerGroupComponent: CustomHeaderGroup,
       minWidth: "105",
-      autoHeight: true,
+
       wrapText: true,
       cellRenderer: "WSComponent",
       headerClass: ["header-border"],
@@ -1192,8 +1195,9 @@ function App() {
 
   const onBtNext = (event) => {
     if (count < docCount / pageSize) {
-      var x = gridRef.current.api.paginationGetCurrentPage();
-      setPageNum(x + count);
+      setPageNum(pageNum + 1);
+
+      // Increment the count if needed
       setCount(count + 1);
     }
   };
@@ -1212,7 +1216,6 @@ function App() {
     wrapHeaderText: true,
     wrapText: true,
     autoHeaderHeight: true,
-    autoHeight: true,
     headerStyle: { "word-break": "break-word" },
     initialWidth: 200,
     headerComponentParams: {
@@ -1347,6 +1350,7 @@ function App() {
 
   const handleNameChange = (e) => {
     const inputValue = e.target.value;
+    console.log(inputValue);
     if (inputValue === "") {
       console.log("wt");
       setNameC(false);
@@ -1786,7 +1790,27 @@ function App() {
     }
   };
 
-  const rowHeight = 20;
+  const rowHeight = 80;
+
+  const recordsPerPageList = [
+    {
+      value: 50,
+      label: 50,
+    },
+    {
+      value: 100,
+      label: 100,
+    },
+    {
+      value: 500,
+      label: 500,
+    },
+    {
+      value: 1000,
+      label: 1000,
+    },
+  ];
+
   return (
     <>
       <Container
@@ -1802,7 +1826,7 @@ function App() {
           sx={{
             backgroundColor: "#f9f8f7",
             width: "270px",
-            height: "0.75em",
+            height: "0.25em",
           }}
         >
           <h1
@@ -2321,7 +2345,7 @@ function App() {
                 size="small"
                 label="Search..."
                 value={searchText}
-                onChange={(e) => onFilterTextBoxChanged(e.target.value)}
+                onChange={(e) => setSearchText(e.target.value)}
                 onKeyPress={(e) => {
                   if (e.key === "Enter") {
                     onFilterTextBoxChanged(e.target.value);
@@ -2365,18 +2389,176 @@ function App() {
                 <SearchIcon sx={{ color: "white" }} />
               </button>
             </Box>
+            <Box
+              sx={{
+                textAlign: "right",
+                justifyContent: "flex-end", // To push content to the right
+                flexGrow: 1, // To make the right Box occupy remaining space
+              }}
+            >
+              <Typography
+                display="inline"
+                sx={{
+                  fontFamily: "Lato",
+                  fontSize: "18px",
+                  color: "#464646",
+                }}
+              >
+                Records Per Page
+              </Typography>
+              <TextField
+                select
+                size="small"
+                InputProps={{
+                  style: {
+                    borderRadius: "10px",
+                  },
+                }}
+                value={pageSize}
+                onChange={(event) => {
+                  setPageSize(event.target.value);
+                }}
+                sx={{ marginLeft: "10px", marginRight: "30px" }}
+              >
+                {recordsPerPageList.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <Typography
+                display="inline"
+                sx={{
+                  fontFamily: "Lato",
+                  fontSize: "18px",
+                  color: "#464646",
+                }}
+              >
+                Page
+              </Typography>
+              <TextField
+                select
+                size="small"
+                InputProps={{
+                  style: {
+                    borderRadius: "10px",
+                  },
+                }}
+                value={pageNum}
+                sx={{ marginLeft: "10px", marginRight: "10px" }}
+                onChange={(event) => {
+                  setPageNum(event.target.value);
+                }}
+              >
+                {Array.from(
+                  { length: Math.ceil(docCount / pageSize) },
+                  (_, index) => (
+                    <MenuItem key={index + 1} value={index + 1}>
+                      {index + 1}
+                    </MenuItem>
+                  )
+                )}
+              </TextField>
+              <Typography
+                display="inline"
+                sx={{
+                  fontFamily: "Lato",
+                  fontSize: "18px",
+                  color: "#464646",
+                  marginRight: "30px",
+                }}
+              >
+                out of {Math.ceil(docCount / pageSize)}
+              </Typography>
+              <button
+                onClick={onBtPrevious}
+                disabled={pageNum === 1}
+                style={{
+                  color: pageNum === 1 ? "#D3D3D3" : "#F6921E",
+                  background: "white",
+                  fontSize: "20px",
+                  border: "none",
+                  cursor: pageNum === 1 ? "default" : "pointer",
+                  transition: pageNum === 1 ? "none" : "background 0.3s",
+                  borderRadius: "5px",
+                  marginRight: "15px",
+                  pointerEvents: pageNum === 1 ? "none" : "auto",
+                  paddingBottom: "5px",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = "rgba(246, 146, 30, 0.2)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = "white")
+                }
+              >
+                <ArrowBackIosIcon
+                  style={{
+                    display: "inline",
+                    position: "relative",
+                    top: "0.2em",
+                    fontWeight: "bold",
+                  }}
+                />
+                prev
+              </button>
+              <button
+                onClick={onBtNext}
+                disabled={pageNum === Math.ceil(docCount / pageSize)}
+                style={{
+                  color:
+                    pageNum === Math.ceil(docCount / pageSize)
+                      ? "#D3D3D3"
+                      : "#F6921E",
+                  background: "white",
+                  fontSize: "20px",
+                  border: "none",
+                  cursor:
+                    pageNum === Math.ceil(docCount / pageSize)
+                      ? "default"
+                      : "pointer",
+                  transition:
+                    pageNum === Math.ceil(docCount / pageSize)
+                      ? "none"
+                      : "background 0.3s",
+                  borderRadius: "5px",
+                  pointerEvents:
+                    pageNum === Math.ceil(docCount / pageSize)
+                      ? "none"
+                      : "auto",
+                  paddingBottom: "5px",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(246, 146, 30, 0.2)";
+                }}
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = "white")
+                }
+              >
+                next
+                <ArrowForwardIosIcon
+                  style={{
+                    display: "inline",
+                    position: "relative",
+                    top: "0.2em",
+                    fontWeight: "bold",
+                  }}
+                />
+              </button>
+            </Box>
           </Box>
+
           <Box
             sx={{
               marginTop: "20px",
             }}
           >
             <div
-              className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
+              className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
               style={{ height: 600 }}
             >
               <AgGridReact
-                className="ag-cell-wrap-text"
+                className="ag-cell-wrap-text saliva_table"
                 rowData={rowData}
                 columnDefs={columns}
                 ref={gridRef}
@@ -2393,157 +2575,38 @@ function App() {
                 onGridReady={onGridReady}
                 pagination={true}
                 enableCellTextSelection={true}
-                paginationPageSize={50}
+                paginationPageSize={pageSize}
                 rowHeight={rowHeight}
                 suppressPaginationPanel={true}
               />
             </div>
+            <button
+              onClick={onBtExport}
+              style={{
+                fontWeight: "bold",
+                textAlign: "center",
+                marginTop: "10px",
+                color: "#F6921E",
+                background: "white",
+                fontSize: "20",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              <Download_Logo
+                style={{
+                  marginRight: "10px",
+                  paddingTop: "5px",
+                  display: "inline",
+                  position: "relative",
+                  top: "0.15em",
+                }}
+              />
+              Download Spreadsheet
+            </button>
           </Box>
         </Container>
       </Container>
-      <form
-        onSubmit={onSubmit}
-        style={{ display: "inline", position: "relative" }}
-      >
-        <input
-          type="search"
-          id="filter-text-box"
-          placeholder="Search..."
-          autoComplete="on"
-          onChange={onFilterTextBoxChanged}
-          style={{
-            width: "calc(30% - 30px)", // Adjust width to accommodate clear button
-            padding: "0.25rem 0.75rem",
-            borderRadius: "10px 0 0 10px",
-            borderColor: "#1463B9",
-            display: "inline",
-            position: "relative",
-          }}
-        />
-        {searchText && (
-          <button
-            type="button"
-            onClick={clearSearch}
-            style={{
-              position: "absolute",
-              right: 0,
-              top: 0,
-              bottom: 0,
-              backgroundColor: "#fff",
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            X
-          </button>
-        )}
-        <button
-          type="button" // Change type to "button" to prevent form submission
-          onClick={onFilterTextBoxChanged} // Use onClick event handler for the button
-          style={{
-            display: "inline",
-            position: "relative",
-            top: "0.3em",
-            backgroundColor: "#1463B9",
-            borderColor: "#1463B9",
-            cursor: "pointer",
-            width: "5%",
-            borderRadius: "0 10px 10px 0",
-          }}
-        >
-          <Search />
-        </button>
-      </form>
-      <text style={{ marginLeft: "5%" }}>Records Per Page</text>
-      <select onChange={onPageSizeChanged} value={pageSize} id="page-size">
-        <option value="50">50</option>
-        <option value="100">100</option>
-        <option value="500">500</option>
-        <option value="1000">1000</option>
-      </select>
-      <text style={{ marginLeft: "5%" }}>Page</text>
-      <select onChange={onPageNumChanged} value={pageNum} id="page-num">
-        {pageNumArr}
-      </select>
-      <text style={{ marginLeft: "1%" }}>
-        out of {Math.round(docCount / pageSize)}
-      </text>
-      <button
-        onClick={onBtPrevious}
-        style={{
-          marginLeft: "5%",
-          fontWeight: "bold",
-          marginLeft: "3%",
-          marginTop: "10px",
-          color: "#F6921E",
-          background: "white",
-          fontSize: "20",
-          padding: ".3em 2em",
-          border: "none",
-          cursor: "pointer",
-        }}
-      >
-        <Left_Arrow
-          style={{
-            marginRight: "10px",
-            paddingTop: "5px",
-            display: "inline",
-            position: "relative",
-            top: "0.15em",
-          }}
-        />
-        prev
-      </button>
-      <button
-        onClick={onBtNext}
-        style={{
-          fontWeight: "bold",
-          marginTop: "10px",
-          marginLeft: "1%",
-          color: "#F6921E",
-          background: "white",
-          fontSize: "20",
-          padding: "2em .3em ",
-          border: "none",
-          cursor: "pointer",
-        }}
-      >
-        next
-        <Right_Arrow
-          style={{
-            marginLeft: "10px",
-            paddingTop: "5px",
-            display: "inline",
-            position: "relative",
-            top: "0.15em",
-          }}
-        />
-      </button>
-
-      <button
-        onClick={onBtExport}
-        style={{
-          fontWeight: "bold",
-          textAlign: "center",
-          marginTop: "10px",
-          color: "#F6921E",
-          background: "white",
-          fontSize: "20",
-          border: "none",
-          cursor: "pointer",
-        }}
-      >
-        <Download_Logo
-          style={{
-            marginRight: "10px",
-            paddingTop: "5px",
-            display: "inline",
-            position: "relative",
-            top: "0.15em",
-          }}
-        />
-        Download Spreadsheet
-      </button>
     </>
   );
 }

@@ -310,7 +310,7 @@ function App() {
       inputValue !== ""
         ? {
             wildcard: {
-              CitationID: {
+              "PubMed ID": {
                 value: `${inputValue}*`,
                 case_insensitive: true,
               },
@@ -370,7 +370,7 @@ function App() {
       inputValue !== ""
         ? {
             wildcard: {
-              Journal: {
+              journal_title: {
                 value: `${inputValue}*`,
                 case_insensitive: true,
               },
