@@ -227,10 +227,13 @@ const Protein_Detail = (props) => {
     } else if (authorArr.length >= 3) {
       line = `${authorArr[0]}, et al.`;
     }
-    yearTitle = ` (${data[0]["_source"]["PubDate"]}) ${data[0]["_source"]["Title"]} `;
+    yearTitle = ` (${data[0]["_source"]["PubYear"]}) ${data[0]["_source"]["Title"]} `;
     setauthorName((prevLines) => [...prevLines, line]);
     setYear((prevLines) => [...prevLines, yearTitle]);
-    setJournal((prevLines) => [...prevLines, data[0]["_source"]["Journal"]]);
+    setJournal((prevLines) => [
+      ...prevLines,
+      data[0]["_source"]["journal_title"],
+    ]);
     setLoading(false);
   };
 
