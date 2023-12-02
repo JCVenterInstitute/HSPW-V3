@@ -9,7 +9,7 @@ import { ReactComponent as Left_Arrow } from "../table_icon/left_arrow.svg";
 import { ReactComponent as Right_Arrow } from "../table_icon/right_arrow.svg";
 import { ReactComponent as Search } from "../table_icon/search.svg";
 
-function LinkComponent(props: ICellRendererParams) {
+function LinkComponent(props) {
   return (
     <a
       target="_blank"
@@ -116,17 +116,19 @@ function App(props) {
       headerClass: ["header-border"],
       cellClass: ["table-border"],
       resizable: true,
+      autoHeight: true, // Make sure this is set
     },
     {
       headerName: "Evidences ID",
       field: "annotationDescription_source_id",
       wrapText: true,
       maxWidth: 195,
-      cellStyle: { "word-break": "break-word" },
+      cellStyle: { wordBreak: "break-word" },
       sortable: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
       resizable: true,
+
       cellRenderer: (params) => {
         const ids = Array.isArray(params.value) ? params.value : "";
         const links = ids.map((id, index) => (
@@ -263,7 +265,7 @@ function App(props) {
             <Search />
           </button>
         </form>
-        <text style={{ marginLeft: "5%" }}>Records Per Page</text>
+        <span style={{ marginLeft: "5%" }}>Records Per Page</span>
         <select id="page-size" onChange={onPageSizeChanged}>
           <option value="50">10</option>
           <option value="100">20</option>
@@ -338,7 +340,6 @@ function App(props) {
           rowData={rowData}
           columnDefs={columns}
           ref={gridRef}
-          defaultColDef={defColumnDefs}
           enableCellTextSelection={true}
           overlayNoRowsTemplate={
             '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
@@ -350,25 +351,6 @@ function App(props) {
           suppressPaginationPanel={true}
           frameworkComponents={{
             LinkComponent,
-          }}
-          domLayout="autoHeight"
-          getRowHeight={(params) => {
-            const lineHeight = 24; // Adjust this value as needed
-            const padding = 10; // Adjust this value as needed
-
-            // Consider the content of multiple columns for row height calculation
-            const columnsToCheck = [
-              "annotation_description",
-              "annotationDescription_source_id",
-            ];
-
-            const totalHeight = columnsToCheck.reduce((acc, col) => {
-              const text = params.data[col] || "";
-              const lineCount = Math.ceil(text.length / 50); // Adjust the divisor as needed
-              return acc + lineCount * lineHeight;
-            }, 0);
-
-            return totalHeight + padding;
           }}
         />
       </div>

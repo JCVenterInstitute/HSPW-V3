@@ -94,33 +94,6 @@ export const options = {
     ],
   },
 };
-const test_data = {
-  annotation_type: "Molecular component",
-  annotation_description: [
-    {
-      description: "GO:0005524 ATP binding",
-      evidences: [],
-    },
-    {
-      description: "GO:0016887 ATP hydrolysis activity",
-      evidences: [],
-    },
-    {
-      description: "GO:0003678 DNA helicase activity",
-      evidences: [
-        {
-          evidenceCode: "ECO:0000318",
-          source: "PubMed",
-          id: "21873635",
-        },
-      ],
-    },
-    {
-      description: "GO:0003676 nucleic acid binding",
-      evidences: [],
-    },
-  ],
-};
 
 export const data = {
   labels: ["0-4", "5-9", "10-14", "15-19", "20+"],
@@ -257,11 +230,9 @@ const Protein_Detail = (props) => {
         <TabList>
           <Tab>Protein</Tab>
           <Tab>Curation</Tab>
-          <Tab></Tab>
         </TabList>
 
         <TabPanel>
-          <feature_table data={test_data} />
           <div style={{ margin: "20px" }}>
             <h2
               style={{
@@ -332,12 +303,18 @@ const Protein_Detail = (props) => {
                   {data[0]["_source"]["salivary_proteins"][
                     "primary_gene_names"
                   ].map((child, i) => (
-                    <>
+                    <React.Fragment
+                      key={
+                        data[0]["_source"]["salivary_proteins"][
+                          "primary_gene_names"
+                        ].i
+                      }
+                    >
                       <span style={{ color: "black" }}>
                         {i + 1}. {child}
                       </span>
                       <br></br>
-                    </>
+                    </React.Fragment>
                   ))}
                 </TableCell>
               </TableRow>
@@ -722,6 +699,9 @@ const Protein_Detail = (props) => {
                         style={{
                           border: "1px solid #CACACA",
                         }}
+                        key={
+                          data[0]["_source"]["salivary_proteins"]["glycans"].i
+                        }
                       >
                         <TableCell
                           style={{
@@ -787,7 +767,7 @@ const Protein_Detail = (props) => {
                             </TableRow>
                             {value.source.map((val, j, arr) => {
                               return (
-                                <>
+                                <React.Fragment key={value.j}>
                                   <TableRow>
                                     <TableCell
                                       style={{
@@ -819,7 +799,7 @@ const Protein_Detail = (props) => {
                                       ></TableCell>
                                     )}
                                   </TableRow>
-                                </>
+                                </React.Fragment>
                               );
                             })}
                           </TableHead>
@@ -1136,7 +1116,13 @@ const Protein_Detail = (props) => {
                     "reference_sequence"
                   ].map((value, i, arr) => {
                     return (
-                      <>
+                      <React.Fragment
+                        key={
+                          data[0]["_source"]["salivary_proteins"][
+                            "reference_sequence"
+                          ].i
+                        }
+                      >
                         <a
                           href={
                             "https://www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=protein&id=" +
@@ -1158,7 +1144,7 @@ const Protein_Detail = (props) => {
                           />
                         </a>
                         <span>{i != arr.length - 1 ? ", " : ""}</span>
-                      </>
+                      </React.Fragment>
                     );
                   })}
                 </TableCell>
@@ -1183,7 +1169,13 @@ const Protein_Detail = (props) => {
                   {data[0]["_source"]["salivary_proteins"]["peptide_atlas"].map(
                     (value, i, arr) => {
                       return (
-                        <>
+                        <React.Fragment
+                          key={
+                            data[0]["_source"]["salivary_proteins"][
+                              "peptide_atlas"
+                            ].i
+                          }
+                        >
                           <a
                             href={
                               "https://db.systemsbiology.net/sbeams/cgi/PeptideAtlas/Search?action=GO&search_key=" +
@@ -1205,7 +1197,7 @@ const Protein_Detail = (props) => {
                             />
                           </a>
                           <span>{i != arr.length - 1 ? ", " : ""}</span>
-                        </>
+                        </React.Fragment>
                       );
                     }
                   )}
@@ -1232,7 +1224,11 @@ const Protein_Detail = (props) => {
                   {data[0]["_source"]["salivary_proteins"]["ensembl"].map(
                     (value, i, arr) => {
                       return (
-                        <>
+                        <React.Fragment
+                          key={
+                            data[0]["_source"]["salivary_proteins"]["ensembl"].i
+                          }
+                        >
                           <a
                             href={"http://www.ensembl.org/id/" + value}
                             style={{
@@ -1251,7 +1247,7 @@ const Protein_Detail = (props) => {
                             />
                           </a>
                           <span>{i != arr.length - 1 ? ", " : ""}</span>
-                        </>
+                        </React.Fragment>
                       );
                     }
                   )}
@@ -1295,7 +1291,13 @@ const Protein_Detail = (props) => {
                   {data[0]["_source"]["salivary_proteins"]["gene_cards"].map(
                     (value, i, arr) => {
                       return (
-                        <>
+                        <React.Fragment
+                          key={
+                            data[0]["_source"]["salivary_proteins"][
+                              "gene_cards"
+                            ].i
+                          }
+                        >
                           <a
                             href={
                               "https://www.genecards.org/cgi-bin/carddisp.pl?gene=" +
@@ -1317,7 +1319,7 @@ const Protein_Detail = (props) => {
                             />
                           </a>
                           <span>{i != arr.length - 1 ? ", " : ""}</span>
-                        </>
+                        </React.Fragment>
                       );
                     }
                   )}
@@ -1348,7 +1350,9 @@ const Protein_Detail = (props) => {
             {data[0]["_source"]["salivary_proteins"]["keywords"].map(
               (value, i, arr) => {
                 return (
-                  <>
+                  <React.Fragment
+                    key={data[0]["_source"]["salivary_proteins"]["keywords"].i}
+                  >
                     <a
                       href={"https://www.uniprot.org/keywords/" + value.id}
                       style={{
@@ -1367,7 +1371,7 @@ const Protein_Detail = (props) => {
                       />
                     </a>
                     <span>{i != arr.length - 1 ? ", " : ""}</span>
-                  </>
+                  </React.Fragment>
                 );
               }
             )}
@@ -1395,7 +1399,9 @@ const Protein_Detail = (props) => {
             {data[0]["_source"]["salivary_proteins"]["cites"].map(
               (value, i) => {
                 return (
-                  <>
+                  <React.Fragment
+                    key={data[0]["_source"]["salivary_proteins"]["cites"].i}
+                  >
                     <div key={value}>
                       <h4 style={{ display: "inline" }}>{i + 1}. </h4>
 
@@ -1419,7 +1425,7 @@ const Protein_Detail = (props) => {
                         ]
                       </a>
                     </div>
-                  </>
+                  </React.Fragment>
                 );
               }
             )}
