@@ -114,7 +114,7 @@ function App(props) {
       minWidth: 355,
       wrapText: true,
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
+      cellClass: ["table-border", "comment_table_description"],
       resizable: true,
       autoHeight: true, // Make sure this is set
     },

@@ -222,7 +222,7 @@ const Protein_Detail = (props) => {
     <>
       <script
         src="https://d3js.org/d3.v4.min.js"
-        charset="utf-8"
+        charSet="utf-8"
         defer
       ></script>
       <script src="https://cdn.jsdelivr.net/npm/protvista-uniprot@latest/dist/protvista-uniprot.js"></script>

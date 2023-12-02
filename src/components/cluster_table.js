@@ -67,7 +67,7 @@ function App() {
       sortable: true,
       wrapText: true,
       autoHeight: true,
-      cellStyle: { "word-break": "break-word" },
+      cellStyle: { wordBreak: "break-word" },
     },
     {
       headerName: "# of Members",

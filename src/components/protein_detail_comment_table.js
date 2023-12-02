@@ -171,7 +171,7 @@ function App(props) {
       minWidth: 185,
       wrapText: true,
       autoHeight: true,
-      cellStyle: { "word-break": "break-word" },
+      cellStyle: { wordBreak: "break-word" },
     },
     {
       headerName: "Description",
@@ -182,7 +182,7 @@ function App(props) {
       minWidth: 305,
       wrapText: true,
       autoHeight: true,
-      cellStyle: { "word-break": "break-word" },
+      cellStyle: { wordBreak: "break-word" },
     },
     {
       headerName: "Evidence Code",
@@ -190,7 +190,7 @@ function App(props) {
       cellRenderer: "LinkCode",
       wrapText: true,
       autoHeight: true,
-      cellStyle: { "word-break": "break-word" },
+      cellStyle: { wordBreak: "break-word" },
       minWidth: 165,
     },
     {

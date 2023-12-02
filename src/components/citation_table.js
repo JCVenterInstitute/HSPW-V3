@@ -195,7 +195,7 @@ function App() {
       field: "Title",
       wrapText: true,
       autoHeight: true,
-      cellStyle: { "word-break": "break-word" },
+      cellStyle: { wordBreak: "break-word" },
       sortable: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],

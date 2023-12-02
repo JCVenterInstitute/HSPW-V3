@@ -1195,6 +1195,7 @@ async function and_search(
   } else if (IHC === "n_a*") {
     IHC = "n\\/a*";
   }
+  console.log("end ss:", end_ss);
   var client = await getClient();
   const response = await client.search({
     index: "saliva_protein_test",

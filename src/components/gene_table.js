@@ -175,7 +175,7 @@ function App() {
       field: "Gene Name",
       wrapText: true,
       autoHeight: true,
-      cellStyle: { "word-break": "break-word" },
+      cellStyle: { wordBreak: "break-word" },
       headerClass: ["header-border"],
       cellClass: ["table-border"],
     },

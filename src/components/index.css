@@ -15,6 +15,12 @@
 
 body {
   font-family: sans-serif;
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+iframe#webpack-dev-server-client-overlay {
+  display: none !important;
 }
 
 #application,
@@ -35,14 +41,15 @@ body {
   margin-left: 0px;
 }
 /* Main page content wrapper and footer.  Applying the same padding as the header */
-#page-content, #footer .footer-top {
+#page-content,
+#footer .footer-top {
   padding-left: var(--fixed-padding);
   padding-right: var(--fixed-padding);
 }
 #page-content {
   padding-top: var(--header-height);
   margin-bottom: 3rem;
-  background-color: #F9F8F7;
+  background-color: #f9f8f7;
 }
 
 /* Overriding default padding with CSS variable for easier editing */
@@ -118,7 +125,8 @@ button span {
   margin-left: 3px;
 }
 
-.menu-items > a, .menu-items button {
+.menu-items > a,
+.menu-items button {
   text-align: left;
   padding: 0.7rem 1rem;
 }
@@ -181,18 +189,16 @@ button span {
   margin-right: 10px;
 }
 
-
 #footer {
-  background: #FFF;
+  background: #fff;
   font-size: 14px;
   /* box-shadow: 0px 2px 15px rgba(18, 66, 101, 0.08); */
   padding-bottom: 3rem;
-  height:350px;
+  height: 350px;
   margin-bottom: 3%;
 }
 
 #footer .footer-top {
-
 }
 
 #footer .footer-top .footer-contact {
@@ -284,13 +290,13 @@ button span {
   border: 1px solid #cde5f6;
 }
 
-#footer .footer-newsletter form input[type=email] {
+#footer .footer-newsletter form input[type="email"] {
   border: 0;
   padding: 4px 8px;
   width: calc(100% - 100px);
 }
 
-#footer .footer-newsletter form input[type=submit] {
+#footer .footer-newsletter form input[type="submit"] {
   position: absolute;
   top: -1px;
   right: -2px;
@@ -306,7 +312,7 @@ button span {
   box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
 }
 
-#footer .footer-newsletter form input[type=submit]:hover {
+#footer .footer-newsletter form input[type="submit"]:hover {
   background: #3194db;
 }
 
@@ -337,38 +343,40 @@ button span {
   text-decoration: none;
 }
 
-
 #footer-logos {
   text-align: center;
   margin-bottom: 3rem;
 }
 
 #footer-logos ul {
-    list-style-type: none;
-    padding: 0;
-    margin-left: 0;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
+  list-style-type: none;
+  padding: 0;
+  margin-left: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 
-.container{
+.container {
   margin-left: 5%;
   margin-right: 5%;
 }
 
-#footer-logos li, #footer-logos li a {
-    display: inline-block;
+#footer-logos li,
+#footer-logos li a {
+  display: inline-block;
 }
 
-#footer-text{
-  font-size: medium; margin-top: 10px; margin-bottom: 15px;
-    color: #3A3A3A;
-    margin-left: 3%;
+#footer-text {
+  font-size: medium;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  color: #3a3a3a;
+  margin-left: 3%;
 }
 
-#footer-text a{
-  color: #6C6C6C;
+#footer-text a {
+  color: #6c6c6c;
   font-family: Montserrat;
   font-size: 18px;
   font-style: normal;
@@ -377,35 +385,37 @@ button span {
   text-transform: uppercase;
 }
 
-#footer-text ul{
-    list-style-type: none;
-    margin: 10px;
+#footer-text ul {
+  list-style-type: none;
+  margin: 10px;
 }
 
-#footer-text li{
-    border-right: 1px solid #999999;
-    display: inline;
-    margin: 0;
-    padding: 0 0.5em;
+#footer-text li {
+  border-right: 1px solid #999999;
+  display: inline;
+  margin: 0;
+  padding: 0 0.5em;
 }
 
-#last_sentence{
-  font-size: medium; margin-top: 10px; margin-bottom: 35px;
+#last_sentence {
+  font-size: medium;
+  margin-top: 10px;
+  margin-bottom: 35px;
   text-align: center;
 }
-#footer-text li.last{
-    border-right: medium none;
-    margin-bottom: 35px;
+#footer-text li.last {
+  border-right: medium none;
+  margin-bottom: 35px;
 }
 
-.address{
-  color: rgba(90, 90, 90, 0.60);
-font-family: Montserrat;
-font-size: 16px;
-font-style: normal;
-font-weight: 500;
-line-height: 100%;
-border-right: none;
+.address {
+  color: rgba(90, 90, 90, 0.6);
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 100%;
+  border-right: none;
 }
 .toolTip {
   position: fixed;
@@ -414,19 +424,19 @@ border-right: none;
   border-radius: 5px;
 }
 
-.first_li{
+.first_li {
   margin-right: 65px;
 }
 
-.middle{
+.middle {
   margin-left: 65px;
   margin-right: 65px;
 }
 
-.last_li{
+.last_li {
   margin-left: 65px;
   border-right: none;
-    display: inline;
-    margin: 0;
-    padding: 0 0.5em;
+  display: inline;
+  margin: 0;
+  padding: 0 0.5em;
 }

@@ -61,6 +61,11 @@
   height: 100%;
 }
 
+.comment_table_description {
+  height: auto !important;
+  padding: 5px !important;
+}
+
 .ag-theme-material .ag-cell-value {
   --ag-header-column-separator-display: block;
 

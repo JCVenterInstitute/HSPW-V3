@@ -1529,7 +1529,7 @@ function App() {
             },
           }
         : null;
-
+    console.log(inputValue);
     setsubEnd(inputValue);
     if (orChecked === true) {
       updateQuery(newendSubQuery);
