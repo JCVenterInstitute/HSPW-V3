@@ -588,12 +588,12 @@ const Protein_Detail = (props) => {
             >
               Feature Map
             </h2>
-            <div style={{width:95%;}}>
-            <protvista-uniprot
-              accession={
-                data[0]["_source"]["salivary_proteins"]["uniprot_accession"]
-              }
-            ></protvista-uniprot>
+            <div style={{ width: "95%" }}>
+              <protvista-uniprot
+                accession={
+                  data[0]["_source"]["salivary_proteins"]["uniprot_accession"]
+                }
+              ></protvista-uniprot>
             </div>
             <Divider
               sx={{
@@ -622,8 +622,8 @@ const Protein_Detail = (props) => {
                 marginTop: "20px",
                 fontSize: "0.875rem",
                 textAlign: "left",
-                width:"100%",
-                overflow:"hidden"
+                width: "100%",
+                overflow: "hidden",
               }}
             >
               <TableHead>
