@@ -588,11 +588,13 @@ const Protein_Detail = (props) => {
             >
               Feature Map
             </h2>
+            <div style={{width:95%;}}>
             <protvista-uniprot
               accession={
                 data[0]["_source"]["salivary_proteins"]["uniprot_accession"]
               }
             ></protvista-uniprot>
+            </div>
             <Divider
               sx={{
                 marginBottom: "10px",
@@ -613,13 +615,15 @@ const Protein_Detail = (props) => {
               Glycans
             </h2>
 
-            <p
+            <div
               style={{
                 color: "black",
                 marginBottom: "20px",
                 marginTop: "20px",
                 fontSize: "0.875rem",
                 textAlign: "left",
+                width:"100%",
+                overflow:"hidden"
               }}
             >
               <TableHead>
@@ -809,7 +813,7 @@ const Protein_Detail = (props) => {
                   }
                 )}
               </TableHead>
-            </p>
+            </div>
             <Divider sx={{ marginBottom: "10px", borderColor: "#1463B9" }} />
             <h2
               style={{
