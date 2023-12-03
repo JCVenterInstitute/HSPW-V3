@@ -221,8 +221,19 @@ const Citation_detail = (props) => {
   if (isLoading === true) {
     return <h2>Loading</h2>;
   }
-  /*{authorName} ({year}) {data[0]["_source"]["Title"]}. {journalTitle}.{" "}
-          {journal}:{pgn}*/
+  const ArrayDisplay = ({ elements }) => {
+    return (
+      <div>
+        {/* Use map to iterate through the array and conditionally add commas */}
+        {elements.map((element, index) => (
+          <span key={index}>
+            {element}
+            {index !== elements.length - 1 && ", "}
+          </span>
+        ))}
+      </div>
+    );
+  };
   return (
     <>
       <div
@@ -321,8 +332,8 @@ const Citation_detail = (props) => {
                 border: "1px solid #CACACA",
               }}
             >
-              {data[0]["_source"]["Authors"].map((child, i) => (
-                <span>{data[0]["_source"]["Authors"][i]}</span>
+              {data[0]["_source"]["author_names"].map((child, i) => (
+                <span>{data[0]["_source"]["author_names"][i]}</span>
               ))}
             </TableCell>
           </TableRow>
@@ -348,7 +359,7 @@ const Citation_detail = (props) => {
                 border: "1px solid #CACACA",
               }}
             >
-              {affi}
+              {data[0]["_source"]["affiliation"]}
             </TableCell>
           </TableRow>
           <TableRow>
@@ -423,7 +434,7 @@ const Citation_detail = (props) => {
                 border: "1px solid #CACACA",
               }}
             >
-              {keyword}
+              <ArrayDisplay elements={data[0]["_source"]["keywords"]} />
             </TableCell>
           </TableRow>
           <TableRow style={{ border: "1px solid white" }}>
@@ -448,7 +459,7 @@ const Citation_detail = (props) => {
                 border: "1px solid #CACACA",
               }}
             >
-              <a href={interpro_link + data[0]["_source"]["PubMedID"]}>
+              <a href={interpro_link + data[0]["_source"]["PubMed_ID"]}>
                 PubMed
               </a>
             </TableCell>

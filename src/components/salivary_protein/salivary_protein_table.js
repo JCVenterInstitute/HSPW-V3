@@ -502,10 +502,10 @@ function App() {
 
   const globalSearch = async () => {
     const data = await fetch(
-      `http://localhost:8000/multi_search/saliva_protein_test/${searchText}`
+      `http://localhost:8000/multi_search/new_saliva_protein_test/${searchText}`
     );
     console.log(
-      `http://localhost:8000/multi_search/saliva_protein_test/${searchText}`
+      `http://localhost:8000/multi_search/new_saliva_protein_test/${searchText}`
     );
     const json = data.json();
     return json;

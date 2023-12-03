@@ -249,7 +249,7 @@ async function and_search_citation(size, from, wildQuery) {
   var query = {
     size: size,
     from: from,
-    sort: [{ "Date of Publication": { order: "desc" } }],
+    sort: [{ PubDate: { order: "desc" } }],
     query: {
       bool: {
         filter: wildQuery,
@@ -350,7 +350,7 @@ async function or_search(size, from, wildQuery) {
   var client = await getClient();
   console.log(JSON.stringify(wildQuery));
   const response = await client.search({
-    index: "saliva_protein_test",
+    index: "new_saliva_protein_test",
     body: {
       size: size,
       from: from,
@@ -387,7 +387,7 @@ async function multi_search(index, text) {
   var client = await getClient();
   var query;
   console.log(index);
-  if (index === "saliva_protein_test") {
+  if (index === "new_saliva_protein_test") {
     query = {
       query: {
         query_string: {
@@ -515,7 +515,7 @@ async function search_citation(size, from) {
   var query = {
     size: size,
     from: from,
-    sort: [{ Date: { order: "desc" } }],
+    sort: [{ PubDate: { order: "desc" } }],
     query: {
       match_all: {},
     },
@@ -539,7 +539,7 @@ app.get("/citation/:size/:from", (req, res) => {
 async function search_protein_count_SP() {
   var client = await getClient();
   const response = await client.search({
-    index: "saliva_protein_test", // Replace with your index name
+    index: "new_saliva_protein_test", // Replace with your index name
     body: {
       size: 0,
       aggs: {
@@ -564,7 +564,7 @@ async function search_protein_count_SB() {
   var client = await getClient();
 
   const response = await client.search({
-    index: "saliva_protein_test", // Replace with your index name
+    index: "new_saliva_protein_test", // Replace with your index name
     body: {
       size: 0,
       aggs: {
@@ -589,7 +589,7 @@ async function search_protein_count_SSS() {
   var client = await getClient();
 
   const response = await client.search({
-    index: "saliva_protein_test", // Replace with your index name
+    index: "new_saliva_protein_test", // Replace with your index name
     body: {
       size: 0,
       aggs: {
@@ -614,7 +614,7 @@ async function search_count_Pa() {
   var client = await getClient();
 
   const response = await client.search({
-    index: "saliva_protein_test", // Replace with your index name
+    index: "new_saliva_protein_test", // Replace with your index name
     body: {
       size: 0,
       aggs: {
@@ -636,7 +636,7 @@ async function search_count_S() {
   var client = await getClient();
 
   const response = await client.search({
-    index: "saliva_protein_test", // Replace with your index name
+    index: "new_saliva_protein_test", // Replace with your index name
     body: {
       size: 0,
       aggs: {
@@ -658,7 +658,7 @@ async function search_count_Pl() {
   var client = await getClient();
 
   const response = await client.search({
-    index: "saliva_protein_test", // Replace with your index name
+    index: "new_saliva_protein_test", // Replace with your index name
     body: {
       size: 0,
       aggs: {
@@ -680,7 +680,7 @@ async function search_count_SS() {
   var client = await getClient();
 
   const response = await client.search({
-    index: "saliva_protein_test", // Replace with your index name
+    index: "new_saliva_protein_test", // Replace with your index name
     body: {
       size: 0,
       aggs: {
@@ -702,7 +702,7 @@ async function search_protein_count_SSP() {
   var client = await getClient();
 
   const response = await client.search({
-    index: "saliva_protein_test", // Replace with your index name
+    index: "new_saliva_protein_test", // Replace with your index name
     body: {
       size: 0,
       aggs: {
@@ -729,7 +729,7 @@ async function search_protein_count_SSPa() {
   var client = await getClient();
 
   const response = await client.search({
-    index: "saliva_protein_test", // Replace with your index name
+    index: "new_saliva_protein_test", // Replace with your index name
     body: {
       size: 0,
       aggs: {
@@ -754,7 +754,7 @@ async function search_protein_count_PPa() {
   var client = await getClient();
 
   const response = await client.search({
-    index: "saliva_protein_test", // Replace with your index name
+    index: "new_saliva_protein_test", // Replace with your index name
     body: {
       size: 0,
       aggs: {
@@ -873,7 +873,7 @@ async function saliva_protein_count() {
 
   var response = await client.count({
     // required index
-    index: "saliva_protein_test",
+    index: "new_saliva_protein_test",
     body: {
       // you can count based on specific query or remove body at all
       query: { match_all: {} },
@@ -915,7 +915,7 @@ async function saliva_protein_table(size, from) {
   };
 
   var response = await client.search({
-    index: "saliva_protein_test",
+    index: "new_saliva_protein_test",
     body: query,
   });
   return response.body;
@@ -932,7 +932,7 @@ async function opCount() {
   var client = await getClient();
 
   const response = await client.search({
-    index: "saliva_protein_test", // Replace with your index name
+    index: "new_saliva_protein_test", // Replace with your index name
     body: {
       size: 0,
       aggs: {
@@ -970,7 +970,7 @@ async function searchOp(size, from, text) {
   };
 
   var response = await client.search({
-    index: "saliva_protein_test",
+    index: "new_saliva_protein_test",
     body: query,
   });
 
@@ -988,7 +988,7 @@ async function IHCCount() {
   var client = await getClient();
 
   const response = await client.search({
-    index: "saliva_protein_test", // Replace with your index name
+    index: "new_saliva_protein_test", // Replace with your index name
     body: {
       size: 0,
       aggs: {
@@ -1015,7 +1015,7 @@ async function WSVal() {
   var client = await getClient();
 
   const response = await client.search({
-    index: "saliva_protein_test", // Replace with your index name
+    index: "new_saliva_protein_test", // Replace with your index name
     body: {
       query: {
         range: {
@@ -1064,7 +1064,7 @@ async function and_search_exclude(
   }
   var client = await getClient();
   const response = await client.search({
-    index: "saliva_protein_test",
+    index: "new_saliva_protein_test",
     body: {
       size: size,
       from: from,
@@ -1198,7 +1198,7 @@ async function and_search(
   console.log("end ss:", end_ss);
   var client = await getClient();
   const response = await client.search({
-    index: "saliva_protein_test",
+    index: "new_saliva_protein_test",
     body: {
       size: size,
       from: from,
@@ -1329,7 +1329,7 @@ async function or_search_exclude(
   }
   var client = await getClient();
   const response = await client.search({
-    index: "saliva_protein_test",
+    index: "new_saliva_protein_test",
     body: {
       size: size,
       from: from,
@@ -1910,7 +1910,7 @@ async function search_opinion(opinion, size, from) {
   var client = await getClient();
 
   const response = await client.search({
-    index: "saliva_protein_test",
+    index: "new_saliva_protein_test",
     body: {
       size: size,
       from: from,

@@ -18,7 +18,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
-function LinkComponent(props: ICellRendererParams) {
+function LinkComponent(props) {
   return (
     <a
       target="_blank"
@@ -169,10 +169,11 @@ function App() {
     data1.push(message[i]["_source"]);
   }
 
+  const rowHeight = 80;
   const columns = [
     {
       headerName: "Citation",
-      field: "PubMed ID",
+      field: "PubMed_ID",
       cellRenderer: "LinkComponent",
       checkboxSelection: false,
       headerCheckboxSelection: false,
@@ -678,6 +679,7 @@ function App() {
             frameworkComponents={{
               LinkComponent,
             }}
+            rowHeight={rowHeight}
           />
         </div>
         <button
