@@ -587,6 +587,7 @@ const DifferentialExpression = () => {
           // Wait for 3 seconds before redirecting
           setTimeout(() => {
             window.location.href = `/differential-expression/results/${jobId}`;
+            Swal.close();
           }, 3000);
         });
     } else {
@@ -613,11 +614,10 @@ const DifferentialExpression = () => {
           // Wait for 3 seconds before redirecting
           setTimeout(() => {
             window.location.href = `/differential-expression/results/${jobId}`;
+            Swal.close();
           }, 3000);
         });
     }
-
-    Swal.close();
   };
 
   return (
