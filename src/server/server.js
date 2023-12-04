@@ -2192,6 +2192,11 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
     const { stdout } = await execPromise(command, {
       cwd: workingDirectory,
     });
+
+    // Compress the contents of the working directory
+    const compressCommand = `zip -r data_set.zip .`;
+    await execPromise(compressCommand, { cwd: workingDirectory });
+
     // S3 upload parameters
     const params = {
       bucketName: "differential-expression-result-dev",

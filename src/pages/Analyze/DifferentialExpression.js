@@ -561,9 +561,9 @@ const DifferentialExpression = () => {
     });
     Swal.showLoading();
 
-    if (fileName) {
-      await axios
-        .post(
+    try {
+      if (fileName) {
+        await axios.post(
           "http://localhost:8000/api/differential-expression/analyze-file",
           {
             inputData,
@@ -582,38 +582,41 @@ const DifferentialExpression = () => {
             formattedDate,
             workingDirectory,
           }
-        )
-        .then(
-          () =>
-            (window.location.href = `/differential-expression/results/${jobId}`)
         );
-    } else {
-      await axios
-        .post("http://localhost:8000/api/differential-expression/analyze", {
-          groupAData: groupARowData,
-          groupBData: groupBRowData,
-          logNorm,
-          foldChangeThreshold,
-          pValueThreshold,
-          pValueType,
-          timestamp: {
-            year,
-            month,
-            day,
-            hours,
-            minutes,
-            seconds,
-          },
-          formattedDate,
-          workingDirectory,
-        })
-        .then(
-          () =>
-            (window.location.href = `/differential-expression/results/${jobId}`)
+      } else {
+        await axios.post(
+          "http://localhost:8000/api/differential-expression/analyze",
+          {
+            groupAData: groupARowData,
+            groupBData: groupBRowData,
+            logNorm,
+            foldChangeThreshold,
+            pValueThreshold,
+            pValueType,
+            timestamp: {
+              year,
+              month,
+              day,
+              hours,
+              minutes,
+              seconds,
+            },
+            formattedDate,
+            workingDirectory,
+          }
         );
+      }
+    } catch (error) {
+      console.error("Error during API call", error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+      });
+    } finally {
+      window.location.href = `/differential-expression/results/${jobId}`;
+      Swal.close();
     }
-
-    Swal.close();
   };
 
   return (
