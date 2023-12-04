@@ -34,7 +34,6 @@ function Comment_Table(props) {
   const [pageNumArr, setPageNumArr] = useState([1]);
 
   useEffect(() => {
-    console.log(props.data);
     const jsonData = props.data;
 
     // Transform JSON data into Ag-Grid compatible format
@@ -214,6 +213,7 @@ function Comment_Table(props) {
 
   const onGridReady = (params) => {
     setGridApi(params);
+    gridRef.current.api.sizeColumnsToFit();
   };
 
   const gridRef = useRef();
@@ -272,13 +272,13 @@ function Comment_Table(props) {
           <option value="500">50</option>
           <option value="1000">100</option>
         </select>
-        <text style={{ marginLeft: "5%" }}>Page</text>
+        <span style={{ marginLeft: "5%" }}>Page</span>
         <select onChange={onPageNumChanged} value={pageNum} id="page-num">
           {pageNumArr}
         </select>
-        <text style={{ marginLeft: "1%" }}>
+        <span style={{ marginLeft: "1%" }}>
           out of {Math.round(docCount / pageSize)}
-        </text>
+        </span>
         <button
           onClick={onBtPrevious}
           style={{

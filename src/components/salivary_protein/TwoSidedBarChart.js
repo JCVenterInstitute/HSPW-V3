@@ -1,8 +1,12 @@
 import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
 
-const TwoSidedBarChart = (props) => {
+const TwoSidedBarChart = React.memo((props) => {
   const mapScoreToValue = (score) => {
+    if (score === "") {
+      return 0; // or handle it as needed
+    }
+
     switch (score) {
       case "Low":
         return 1;
@@ -14,6 +18,13 @@ const TwoSidedBarChart = (props) => {
         return 0; // Handle other cases or undefined scores
     }
   };
+  console.log(
+    "Data:",
+    props.data.map((d) => ({
+      score: d.score,
+      mappedValue: mapScoreToValue(d.score),
+    }))
+  );
   const chartRef = useRef(null);
   var color = d3
     .scaleOrdinal()
@@ -48,43 +59,8 @@ const TwoSidedBarChart = (props) => {
   var legendBulletOffset = 80;
   var legendTextOffset = 20;
   var ihBarOffset = 90;
+
   useEffect(() => {
-    var synchronizedMouseOver = function () {
-      var bar = d3.select(this);
-      var indexValue = bar.attr("index_value");
-
-      var barSelector = "." + "bars-" + "-bar-" + indexValue;
-      var selectedBar = d3.selectAll(barSelector);
-      selectedBar.style("fill", "Maroon");
-
-      //var bulletSelector = "." + "bars-" + chartID + "-legendBullet-" + indexValue;
-      //var selectedLegendBullet = d3.selectAll(bulletSelector);
-      //selectedLegendBullet.style("fill", "Maroon");
-
-      var textSelector = "." + "bars-" + "-legendText-" + indexValue;
-      var selectedLegendText = d3.selectAll(textSelector);
-      selectedLegendText.style("fill", "Maroon");
-    };
-
-    var synchronizedMouseOut = function () {
-      var bar = d3.select(this);
-      var indexValue = bar.attr("index_value");
-
-      var barSelector = "." + "bars-" + "-bar-" + indexValue;
-      var selectedBar = d3.selectAll(barSelector);
-      var colorValue = selectedBar.attr("color_value");
-      selectedBar.style("fill", colorValue);
-
-      //var bulletSelector = "." + "bars-" + chartID + "-legendBullet-" + indexValue;
-      //var selectedLegendBullet = d3.selectAll(bulletSelector);
-      //var colorValue = selectedLegendBullet.attr("color_value");
-      //selectedLegendBullet.style("fill", colorValue);
-
-      var textSelector = "." + "bars-" + "-legendText-" + indexValue;
-      var selectedLegendText = d3.selectAll(textSelector);
-      selectedLegendText.style("fill", "Black");
-    };
-
     const margin = { top: 20, right: 20, bottom: 30, left: 50 };
     const width = 600 - margin.left - margin.right + 800;
     const height = 300 - margin.top - margin.bottom;
@@ -92,55 +68,13 @@ const TwoSidedBarChart = (props) => {
     const svg = d3
       .select(chartRef.current)
       .append("svg")
-      .attr("width", canvasWidth)
-      .attr("height", canvasHeight)
+      .attr("width", canvasWidth + margin.left + margin.right) // Include both left and right margins
+      .attr("height", canvasHeight);
+
+    const chartGroup = svg
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    const data = [
-      {
-        name: "Duodenum",
-        left: -200.6,
-        right: 1,
-        gene: "ENSG00000211895",
-        id: "IGHA1",
-      },
-      {
-        name: "Colon",
-        left: -41.7,
-        right: 2,
-        gene: "ENSG00000211895",
-        id: "IGHA1",
-      },
-      {
-        name: "Adipose tissue",
-        left: -918.5,
-        right: 3,
-        gene: "ENSG00000211895",
-        id: "IGHA1",
-      },
-      {
-        name: "Appendix",
-        left: -953.5,
-        right: 0,
-        gene: "ENSG00000211895",
-        id: "IGHA1",
-      },
-      {
-        name: "Lung",
-        left: -5973.5,
-        right: 1,
-        gene: "ENSG00000211895",
-        id: "IGHA1",
-      },
-      {
-        name: "Liver",
-        left: -7111.2,
-        right: 0,
-        gene: "ENSG00000211895",
-        id: "IGHA1",
-      },
-    ];
     var maxV = Math.max.apply(
       Math,
       props.data.map(function (o) {
@@ -177,8 +111,8 @@ const TwoSidedBarChart = (props) => {
       .range([svgTopOffset, svgTopOffset + barsHeightTotal]);
 
     x.domain([
-      d3.min(data, (d) => (d.left < 0 ? d.left : 0)),
-      d3.max(data, (d) => (d.right > 0 ? d.right : 0)),
+      d3.min(props.data, (d) => (d.left < 0 ? d.left : 0)),
+      d3.max(props.data, (d) => (d.right > 0 ? d.right : 0)),
     ]);
 
     svg
@@ -273,11 +207,15 @@ const TwoSidedBarChart = (props) => {
       })
       .attr("height", barHeight)
       .attr("width", function (d) {
-        return d.score ? x2(mapScoreToValue(d.score)) : 0;
+        return d.score.split(",")[0]
+          ? x2(mapScoreToValue(d.score.split(",")[0]))
+          : 0;
       })
       .style("fill", "White")
       .style("fill", (d) => {
-        return d.score ? color(mapScoreToValue(d.score)) : color(0);
+        return d.score.split(",")[0]
+          ? color(mapScoreToValue(d.score.split(",")[0]))
+          : color(0);
       })
       .on("click", function (d) {
         window.open(
@@ -355,29 +293,34 @@ const TwoSidedBarChart = (props) => {
       .selectAll(".text-right")
       .data(props.data)
       .enter()
-      .filter((d) => d.score) // Filter out data with empty "score" values
+      .filter((d) => d.score.split(",")[0] !== undefined) // Include data with empty "score" values
       .append("text")
       .attr("class", "text-right")
-      .attr(
-        "x",
-        (d) =>
+      .attr("x", (d) => {
+        const mappedValue = mapScoreToValue(d.score.split(",")[0]);
+        return (
           barsWidthTotal +
           legendBulletOffset +
           legendTextOffset +
           ihBarOffset +
-          x2(mapScoreToValue(d.score)) +
+          x2(mappedValue) +
           5
-      )
-      .attr("y", (d, i) => y(i))
+        );
+      })
+      .attr("y", (d, i) => {
+        const calculatedY = y(i);
+        return calculatedY;
+      })
       .attr("dx", 5)
       .attr("dy", barHeight - 5)
       .attr("font-size", "10px")
       .attr("text-anchor", "start")
-      .text((d) => d.score)
+      .text((d) => d.score.split(",")[0])
+      .attr("key", (d, i) => "text-" + i)
       .attr("fill", "Black");
   }, []);
 
   return <div ref={chartRef}></div>;
-};
+});
 
-export default TwoSidedBarChart;
+export default React.memo(TwoSidedBarChart);

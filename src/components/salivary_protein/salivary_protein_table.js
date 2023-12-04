@@ -290,62 +290,64 @@ function IHCComponent(props) {
   } else if (d === "not detected") {
     return (
       <>
-        <div
+        <svg
           style={{
+            stroke: "black",
+            alignItems: "center",
             width: "100%",
             height: "100%",
-            backgroundColor: "rgb(250,250,250)",
-            color: "black",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "25%",
           }}
         >
-          n/a
-        </div>
+          <defs>
+            <pattern
+              id="stripe2"
+              patternUnits="userSpaceOnUse"
+              patternTransform="rotate(45)"
+              x="0"
+              y="0"
+              width="4"
+              height="4"
+              viewBox="0 0 10 10"
+            >
+              <rect
+                width="100%"
+                height={4}
+                fill={rgb(220, 220, 220)}
+                style={styles}
+              ></rect>
+              <rect
+                width="100%"
+                height={4}
+                fill={rgb(255, 255, 255)}
+                style={styles1}
+              ></rect>
+            </pattern>
+          </defs>
+          <rect
+            style={{ fill: "url(#stripe2)", width: "100%", height: "100%" }}
+          >
+            <title>Data not available</title>
+          </rect>
+        </svg>
       </>
     );
   } else {
     return (
-      <svg
+      <div
         style={{
-          stroke: "black",
-          alignItems: "center",
           width: "100%",
           height: "100%",
+          backgroundColor: "rgb(250,250,250)",
+          color: "black",
+          fontFamily: "Lato",
+          fontSize: "16px",
+          lineHeight: "24px",
+          textAlign: "center",
+          paddingTop: "25%",
         }}
       >
-        <defs>
-          <pattern
-            id="stripe2"
-            patternUnits="userSpaceOnUse"
-            patternTransform="rotate(45)"
-            x="0"
-            y="0"
-            width="4"
-            height="4"
-            viewBox="0 0 10 10"
-          >
-            <rect
-              width="100%"
-              height={4}
-              fill={rgb(220, 220, 220)}
-              style={styles}
-            ></rect>
-            <rect
-              width="100%"
-              height={4}
-              fill={rgb(255, 255, 255)}
-              style={styles1}
-            ></rect>
-          </pattern>
-        </defs>
-        <rect style={{ fill: "url(#stripe2)", width: "100%", height: "100%" }}>
-          <title>Data not available</title>
-        </rect>
-      </svg>
+        n/a
+      </div>
     );
   }
 }
@@ -433,7 +435,6 @@ function App() {
   const [rowData, setRowData] = useState([]);
   const [opinionVal, setopinionVal] = useState("");
   const [IHCVal, setIHCVal] = useState("*");
-  const [wsArr, setwsArr] = useState(["0", "20000"]);
   const [parStart, setparStart] = useState("0");
   const [parEnd, setparEnd] = useState("20000");
   const [subStart, setsubStart] = useState("0");
@@ -448,14 +449,8 @@ function App() {
   const [opArr, setOpArr] = useState([false, false]);
   const [orChecked, setorChecked] = useState(false);
   const [exclude, setExclude] = useState(false);
-  const [IHCArr, setIHCArr] = useState([
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ]);
+  const [IHCArr, setIHCArr] = useState([false, false, false, false, false]);
+
   const [searchText, setSearchText] = useState("");
   const [globalSC, setGlobalSC] = useState(false);
   useEffect(() => {
@@ -1407,26 +1402,22 @@ function App() {
   };
 
   const handleendWSChange = (e) => {
-    let inputValue = e.target.value;
-    if (inputValue === "") {
-      setwsC(false);
-      inputValue = 20000;
-    } else if (inputValue !== "") {
-      setwsC(true);
-    }
-    const newendWSQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [{ range: { saliva_abundance: { lte: inputValue } } }],
-            },
-          }
-        : null;
-    setwsEnd(inputValue);
+    const inputValue = e.target.value;
+    const parGlandAbundance = inputValue === "" ? 20000 : inputValue;
+    const newendParQuery = {
+      bool: {
+        must: [],
+        must_not: [],
+        filter: [{ range: { saliva_abundance: { lte: parGlandAbundance } } }],
+      },
+    };
+
+    setparC(inputValue !== ""); // Set parC based on whether inputValue is not empty
+
+    setparEnd(inputValue);
+
     if (orChecked === true) {
-      updateQuery(newendWSQuery);
+      updateQuery(newendParQuery);
     }
   };
 
@@ -1457,27 +1448,22 @@ function App() {
   };
 
   const handleendParChange = (e) => {
-    let inputValue = e.target.value;
-    if (inputValue === "") {
-      setparC(false);
-      inputValue = 20000;
-    } else if (inputValue !== "") {
-      setparC(true);
-    }
-    const newendParQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [
-                { range: { parotid_gland_abundance: { lte: inputValue } } },
-              ],
-            },
-          }
-        : null;
+    const inputValue = e.target.value;
+    const parGlandAbundance = inputValue === "" ? 20000 : inputValue;
+    const newendParQuery = {
+      bool: {
+        must: [],
+        must_not: [],
+        filter: [
+          { range: { parotid_gland_abundance: { lte: parGlandAbundance } } },
+        ],
+      },
+    };
+
+    setparC(inputValue !== ""); // Set parC based on whether inputValue is not empty
 
     setparEnd(inputValue);
+
     if (orChecked === true) {
       updateQuery(newendParQuery);
     }
@@ -1511,28 +1497,22 @@ function App() {
     }
   };
   const handleendSubChange = (e) => {
-    let inputValue = e.target.value;
-    if (inputValue === "") {
-      setsubC(false);
-      inputValue = 20000;
-    } else if (inputValue !== "") {
-      setsubC(true);
-    }
+    const inputValue = e.target.value;
+    const parGlandAbundance = inputValue === "" ? 20000 : inputValue;
+    const newendParQuery = {
+      bool: {
+        must: [],
+        must_not: [],
+        filter: [{ range: { "sm/sl_abundance": { lte: parGlandAbundance } } }],
+      },
+    };
 
-    const newendSubQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [{ range: { "sm/sl_abundance": { lte: inputValue } } }],
-            },
-          }
-        : null;
-    console.log(inputValue);
-    setsubEnd(inputValue);
+    setparC(inputValue !== ""); // Set parC based on whether inputValue is not empty
+
+    setparEnd(inputValue);
+
     if (orChecked === true) {
-      updateQuery(newendSubQuery);
+      updateQuery(newendParQuery);
     }
   };
 
@@ -1563,28 +1543,22 @@ function App() {
   };
 
   const handleendBChange = (e) => {
-    let inputValue = e.target.value;
-    if (inputValue === "") {
-      setplasmaC(false);
-      inputValue = 10;
-    } else if (inputValue !== "") {
-      setplasmaC(true);
-    }
+    const inputValue = e.target.value;
+    const parGlandAbundance = inputValue === "" ? 10 : inputValue;
+    const newendParQuery = {
+      bool: {
+        must: [],
+        must_not: [],
+        filter: [{ range: { plasma_abundance: { lte: parGlandAbundance } } }],
+      },
+    };
 
-    const newendBQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [{ range: { plasma_abundance: { lte: inputValue } } }],
-            },
-          }
-        : null;
+    setparC(inputValue !== ""); // Set parC based on whether inputValue is not empty
 
-    setpEnd(inputValue);
+    setparEnd(inputValue);
+
     if (orChecked === true) {
-      updateQuery(newendBQuery);
+      updateQuery(newendParQuery);
     }
   };
 
@@ -1673,133 +1647,46 @@ function App() {
       return updatedOpArr;
     });
   };
-
+  const IHCValues = ["medium", "not detected", "low", "n/a", "high"];
   const filterIHC = (event) => {
-    console.log(typeof event.target.value);
-    if (event.target.value === "medium") {
-      setIHCArr((prevIHCArr) => {
-        const updatedIHCArr = [
-          !prevIHCArr[0],
-          prevIHCArr[1],
-          prevIHCArr[2],
-          prevIHCArr[3],
-          prevIHCArr[4],
-          prevIHCArr[5],
-        ];
-        if (updatedIHCArr[0] === true) {
+    const { value } = event.target;
+
+    console.log("Clicked value:", value);
+    console.log("IHCValues array:", IHCValues);
+
+    setIHCArr((prevIHCArr) => {
+      let updatedIHCArr;
+
+      if (value === "not detected") {
+        // Special case for "not detected"
+        updatedIHCArr = [false, !prevIHCArr[1], false, false, false];
+        setihcC(!prevIHCArr[1]); // Update ihcC based on the second checkbox
+        setIHCVal(`not*`);
+      } else if (value === "n/a") {
+        // Special case for "n/a"
+        updatedIHCArr = [false, false, false, !prevIHCArr[3], false];
+        setihcC(!prevIHCArr[3]); // Update ihcC based on the fourth checkbox
+        setIHCVal(`*a*`);
+      } else {
+        updatedIHCArr = prevIHCArr.map((isChecked, index) =>
+          index === IHCValues.indexOf(value) ? !isChecked : isChecked
+        );
+
+        // Check if any checkbox is checked
+        const anyChecked = updatedIHCArr.some((isChecked) => isChecked);
+
+        // Update ihcC and IHCVal based on checked status
+        if (anyChecked) {
           setihcC(true);
-          setIHCVal("medium*");
-        } else if (
-          updatedIHCArr[0] === false &&
-          updatedIHCArr[1] === false &&
-          updatedIHCArr[2] === false &&
-          updatedIHCArr[3] === false &&
-          updatedIHCArr[4] === false &&
-          updatedIHCArr[5] === false
-        ) {
+          setIHCVal(`${value}*`);
+        } else {
           setihcC(false);
           setIHCVal("*");
         }
-        return updatedIHCArr;
-      });
-      console.log("diu:" + IHCArr);
-    } else if (event.target.value === "not detected") {
-      setIHCArr((prevIHCArr) => {
-        const updatedIHCArr = [
-          prevIHCArr[0],
-          !prevIHCArr[1],
-          prevIHCArr[2],
-          prevIHCArr[3],
-          prevIHCArr[4],
-        ];
-        if (updatedIHCArr[1] === true) {
-          setihcC(true);
-          setIHCVal("not_detected*");
-        } else if (
-          updatedIHCArr[0] === false &&
-          updatedIHCArr[1] === false &&
-          updatedIHCArr[2] === false &&
-          updatedIHCArr[3] === false &&
-          updatedIHCArr[4] === false
-        ) {
-          setihcC(false);
-          setIHCVal("*");
-        }
-        return updatedIHCArr;
-      });
-    } else if (event.target.value === "low") {
-      setIHCArr((prevIHCArr) => {
-        const updatedIHCArr = [
-          prevIHCArr[0],
-          prevIHCArr[1],
-          !prevIHCArr[2],
-          prevIHCArr[3],
-          prevIHCArr[4],
-        ];
-        if (updatedIHCArr[2] === true) {
-          setihcC(true);
-          setIHCVal("low*");
-        } else if (
-          updatedIHCArr[0] === false &&
-          updatedIHCArr[1] === false &&
-          updatedIHCArr[2] === false &&
-          updatedIHCArr[3] === false &&
-          updatedIHCArr[4] === false
-        ) {
-          setihcC(false);
-          setIHCVal("*");
-        }
-        return updatedIHCArr;
-      });
-    } else if (event.target.value === "n/a") {
-      setIHCArr((prevIHCArr) => {
-        const updatedIHCArr = [
-          prevIHCArr[0],
-          prevIHCArr[1],
-          prevIHCArr[2],
-          !prevIHCArr[3],
-          prevIHCArr[4],
-        ];
-        if (updatedIHCArr[3] === true) {
-          setihcC(true);
-          setIHCVal("n_a*");
-        } else if (
-          updatedIHCArr[0] === false &&
-          updatedIHCArr[1] === false &&
-          updatedIHCArr[2] === false &&
-          updatedIHCArr[3] === false &&
-          updatedIHCArr[4] === false
-        ) {
-          setihcC(false);
-          setIHCVal("*");
-        }
-        return updatedIHCArr;
-      });
-    } else if (event.target.value === "high") {
-      setIHCArr((prevIHCArr) => {
-        const updatedIHCArr = [
-          prevIHCArr[0],
-          prevIHCArr[1],
-          prevIHCArr[2],
-          prevIHCArr[3],
-          !prevIHCArr[4],
-        ];
-        if (updatedIHCArr[4] === true) {
-          setihcC(true);
-          setIHCVal("high*");
-        } else if (
-          updatedIHCArr[0] === false &&
-          updatedIHCArr[1] === false &&
-          updatedIHCArr[2] === false &&
-          updatedIHCArr[3] === false &&
-          updatedIHCArr[4] === false
-        ) {
-          setihcC(false);
-          setIHCVal("*");
-        }
-        return updatedIHCArr;
-      });
-    }
+      }
+
+      return updatedIHCArr;
+    });
   };
 
   const rowHeight = 80;
@@ -2043,7 +1930,7 @@ function App() {
                         <FormControlLabel
                           control={
                             <Checkbox
-                              checked={IHCArr[i]}
+                              checked={IHCArr[i]} // Set the checked attribute based on IHCArr
                               onChange={filterIHC}
                               value={child.key}
                             />

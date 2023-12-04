@@ -592,20 +592,20 @@ function App() {
               <Search />
             </button>
           </form>
-          <text style={{ marginLeft: "5%" }}>Records Per Page</text>
+          <span style={{ marginLeft: "5%" }}>Records Per Page</span>
           <select id="page-size">
             <option value="50">50</option>
             <option value="100">100</option>
             <option value="500">500</option>
             <option value="1000">1000</option>
           </select>
-          <text style={{ marginLeft: "5%" }}>Page</text>
+          <span style={{ marginLeft: "5%" }}>Page</span>
           <select onChange={onPageNumChanged} value={pageNum} id="page-num">
             {pageNumArr}
           </select>
-          <text style={{ marginLeft: "1%" }}>
+          <span style={{ marginLeft: "1%" }}>
             out of {Math.round(docCount / pageSize)}
-          </text>
+          </span>
           <button
             onClick={onBtPrevious}
             style={{

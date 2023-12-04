@@ -2,15 +2,7 @@ import React from "react";
 
 import "../style.css";
 import { useState, useEffect } from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
 
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-
-import { rgb } from "d3";
 import Protein from "../../components/salivary_protein/salivary_protein_table.js";
 import Legend from "../../components/salivary_protein/Legend.js";
 import main_feature from "../../components/hero.jpeg";

@@ -32,88 +32,86 @@ const LinkRenderer = ({ value }) => (
 );
 
 const SourceRenderer = ({ value }) => (
-  <div>
-    <TableHead>
-      <TableRow>
-        <TableCell
-          sx={th}
-          style={{
-            backgroundColor: "#1463B9",
-            color: "white",
-            fontFamily: "Montserrat",
-            fontSize: "17px",
-            fontWeight: "bold",
-            border: "1px solid #3592E4",
-            borderTopLeftRadius: "10px",
-          }}
-        >
-          id
-        </TableCell>
-        <TableCell
-          sx={th}
-          style={{
-            backgroundColor: "#1463B9",
-            color: "white",
-            fontFamily: "Montserrat",
-            fontSize: "17px",
-            fontWeight: "bold",
-            border: "1px solid #3592E4",
-          }}
-        >
-          Database
-        </TableCell>
-        <TableCell
-          sx={th}
-          style={{
-            backgroundColor: "#1463B9",
-            color: "white",
-            fontFamily: "Montserrat",
-            fontSize: "17px",
-            fontWeight: "bold",
-            border: "1px solid #3592E4",
-            borderTopRightRadius: "10px",
-          }}
-        >
-          url
-        </TableCell>
-      </TableRow>
-      {value.map((val, index) => (
-        <React.Fragment key={index}>
-          <TableRow>
+  <TableHead>
+    <TableRow>
+      <TableCell
+        sx={th}
+        style={{
+          backgroundColor: "#1463B9",
+          color: "white",
+          fontFamily: "Montserrat",
+          fontSize: "17px",
+          fontWeight: "bold",
+          border: "1px solid #3592E4",
+          borderTopLeftRadius: "10px",
+        }}
+      >
+        id
+      </TableCell>
+      <TableCell
+        sx={th}
+        style={{
+          backgroundColor: "#1463B9",
+          color: "white",
+          fontFamily: "Montserrat",
+          fontSize: "17px",
+          fontWeight: "bold",
+          border: "1px solid #3592E4",
+        }}
+      >
+        Database
+      </TableCell>
+      <TableCell
+        sx={th}
+        style={{
+          backgroundColor: "#1463B9",
+          color: "white",
+          fontFamily: "Montserrat",
+          fontSize: "17px",
+          fontWeight: "bold",
+          border: "1px solid #3592E4",
+          borderTopRightRadius: "10px",
+        }}
+      >
+        url
+      </TableCell>
+    </TableRow>
+    {value.map((val, index) => (
+      <React.Fragment key={index}>
+        <TableRow>
+          <TableCell
+            style={{
+              border: "1px solid #CACACA",
+            }}
+          >
+            {val.id}
+          </TableCell>
+          <TableCell
+            style={{
+              border: "1px solid #CACACA",
+            }}
+          >
+            {val.database}
+          </TableCell>
+          {val.url ? (
             <TableCell
               style={{
                 border: "1px solid #CACACA",
               }}
             >
-              {val.id}
+              <a href={val.url}>{val.url}</a>
             </TableCell>
+          ) : (
             <TableCell
               style={{
                 border: "1px solid #CACACA",
               }}
-            >
-              {val.database}
-            </TableCell>
-            {val.url ? (
-              <TableCell
-                style={{
-                  border: "1px solid #CACACA",
-                }}
-              >
-                <a href={val.url}>{val.url}</a>
-              </TableCell>
-            ) : (
-              <TableCell
-                style={{
-                  border: "1px solid #CACACA",
-                }}
-              ></TableCell>
-            )}
-          </TableRow>
-        </React.Fragment>
-      ))}
-    </TableHead>
-  </div>
+            ></TableCell>
+          )}
+        </TableRow>
+      </React.Fragment>
+    ))}
+  </TableHead>
 );
 
 function LinkComponent(props) {
@@ -155,7 +153,8 @@ function Glycan_Table(props) {
     {
       headerName: "Image",
       field: "image",
-      minWidth: 415,
+      minWidth: 425,
+      wrapText: true,
       cellRendererFramework: ImageRenderer,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
@@ -163,6 +162,7 @@ function Glycan_Table(props) {
     {
       headerName: "Type",
       field: "type",
+      wrapText: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
     },
@@ -172,6 +172,7 @@ function Glycan_Table(props) {
       field: "mass",
       headerClass: ["header-border"],
       cellClass: ["table-border"],
+      wrapText: true,
     },
     {
       headerName: "Source",
@@ -179,6 +180,7 @@ function Glycan_Table(props) {
       headerClass: ["header-border"],
       cellClass: ["table-border"],
       minWidth: 800,
+      wrapText: true,
       autoHeight: true,
       cellRendererFramework: SourceRenderer,
     },

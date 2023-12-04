@@ -77,7 +77,7 @@ const DATA = [
   },
 ];
 
-function LinkDescription(props: ICellRendererParams) {
+function LinkDescription(props) {
   if (props.value.includes("GO")) {
     let id = props.value.substring(0, 11);
     return (
@@ -119,7 +119,7 @@ function LinkDescription(props: ICellRendererParams) {
   }
 }
 
-function LinkCode(props: ICellRendererParams) {
+function LinkCode(props) {
   return (
     <a
       target="_blank"
@@ -131,7 +131,7 @@ function LinkCode(props: ICellRendererParams) {
   );
 }
 
-function LinkRef(props: ICellRendererParams) {
+function LinkRef(props) {
   if (props.value.includes("PubMed")) {
     let id = props.value.split(" ")[1];
     return (

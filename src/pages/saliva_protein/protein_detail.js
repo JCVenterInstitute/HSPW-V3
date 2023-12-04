@@ -198,7 +198,7 @@ const Protein_Detail = (props) => {
       throw new Error(message);
     }
     const data = await response.json();
-    console.log(data[0]["_source"]);
+
     authorArr = data[0]["_source"]["author_names"];
     if (authorArr.length === 2) {
       line = `${authorArr[0]} and ${authorArr[1]}`;
@@ -212,10 +212,11 @@ const Protein_Detail = (props) => {
       ...prevLines,
       data[0]["_source"]["journal_title"],
     ]);
-    setLoading(false);
   };
 
   useEffect(() => {
+    console.log("Effect is running");
+    console.log("Component rendering...");
     processData();
   }, []);
 
@@ -312,13 +313,7 @@ const Protein_Detail = (props) => {
                   {data[0]["_source"]["salivary_proteins"][
                     "primary_gene_names"
                   ].map((child, i) => (
-                    <React.Fragment
-                      key={
-                        data[0]["_source"]["salivary_proteins"][
-                          "primary_gene_names"
-                        ].i - i
-                      }
-                    >
+                    <React.Fragment key={i}>
                       <span style={{ color: "black" }}>
                         {i + 1}. {child}
                       </span>
@@ -931,13 +926,7 @@ const Protein_Detail = (props) => {
                     "reference_sequence"
                   ].map((value, i, arr) => {
                     return (
-                      <React.Fragment
-                        key={
-                          data[0]["_source"]["salivary_proteins"][
-                            "reference_sequence"
-                          ].i - i
-                        }
-                      >
+                      <React.Fragment key={i}>
                         <a
                           href={
                             "https://www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=protein&id=" +
@@ -984,13 +973,7 @@ const Protein_Detail = (props) => {
                   {data[0]["_source"]["salivary_proteins"]["peptide_atlas"].map(
                     (value, i, arr) => {
                       return (
-                        <React.Fragment
-                          key={
-                            data[0]["_source"]["salivary_proteins"][
-                              "peptide_atlas"
-                            ].i - i
-                          }
-                        >
+                        <React.Fragment key={i}>
                           <a
                             href={
                               "https://db.systemsbiology.net/sbeams/cgi/PeptideAtlas/Search?action=GO&search_key=" +
@@ -1039,12 +1022,7 @@ const Protein_Detail = (props) => {
                   {data[0]["_source"]["salivary_proteins"]["ensembl"].map(
                     (value, i, arr) => {
                       return (
-                        <React.Fragment
-                          key={
-                            data[0]["_source"]["salivary_proteins"]["ensembl"]
-                              .i - i
-                          }
-                        >
+                        <React.Fragment key={i}>
                           <a
                             href={"http://www.ensembl.org/id/" + value}
                             style={{
@@ -1107,13 +1085,7 @@ const Protein_Detail = (props) => {
                   {data[0]["_source"]["salivary_proteins"]["gene_cards"].map(
                     (value, i, arr) => {
                       return (
-                        <React.Fragment
-                          key={
-                            data[0]["_source"]["salivary_proteins"][
-                              "gene_cards"
-                            ].i - i
-                          }
-                        >
+                        <React.Fragment key={i}>
                           <a
                             href={
                               "https://www.genecards.org/cgi-bin/carddisp.pl?gene=" +
@@ -1166,11 +1138,7 @@ const Protein_Detail = (props) => {
             {data[0]["_source"]["salivary_proteins"]["keywords"].map(
               (value, i, arr) => {
                 return (
-                  <React.Fragment
-                    key={
-                      data[0]["_source"]["salivary_proteins"]["keywords"].i - i
-                    }
-                  >
+                  <React.Fragment key={i}>
                     <a
                       href={"https://www.uniprot.org/keywords/" + value.id}
                       style={{
@@ -1217,9 +1185,7 @@ const Protein_Detail = (props) => {
             {data[0]["_source"]["salivary_proteins"]["cites"].map(
               (value, i) => {
                 return (
-                  <React.Fragment
-                    key={data[0]["_source"]["salivary_proteins"]["cites"].i - i}
-                  >
+                  <React.Fragment key={i}>
                     <div>
                       <h4 style={{ display: "inline" }}>{i + 1}. </h4>
 
