@@ -583,10 +583,12 @@ const DifferentialExpression = () => {
             workingDirectory,
           }
         )
-        .then(
-          () =>
-            (window.location.href = `/differential-expression/results/${jobId}`)
-        );
+        .then(() => {
+          // Wait for 3 seconds before redirecting
+          setTimeout(() => {
+            window.location.href = `/differential-expression/results/${jobId}`;
+          }, 3000);
+        });
     } else {
       await axios
         .post("http://localhost:8000/api/differential-expression/analyze", {
@@ -607,10 +609,12 @@ const DifferentialExpression = () => {
           formattedDate,
           workingDirectory,
         })
-        .then(
-          () =>
-            (window.location.href = `/differential-expression/results/${jobId}`)
-        );
+        .then(() => {
+          // Wait for 3 seconds before redirecting
+          setTimeout(() => {
+            window.location.href = `/differential-expression/results/${jobId}`;
+          }, 3000);
+        });
     }
 
     Swal.close();
