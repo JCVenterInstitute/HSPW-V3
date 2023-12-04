@@ -1498,18 +1498,18 @@ function App() {
   };
   const handleendSubChange = (e) => {
     const inputValue = e.target.value;
-    const parGlandAbundance = inputValue === "" ? 20000 : inputValue;
+    const subAbundance = inputValue === "" ? 20000 : inputValue;
     const newendParQuery = {
       bool: {
         must: [],
         must_not: [],
-        filter: [{ range: { "sm/sl_abundance": { lte: parGlandAbundance } } }],
+        filter: [{ range: { "sm/sl_abundance": { lte: subAbundance } } }],
       },
     };
 
-    setparC(inputValue !== ""); // Set parC based on whether inputValue is not empty
+    setsubC(inputValue !== ""); // Set parC based on whether inputValue is not empty
 
-    setparEnd(inputValue);
+    setsubEnd(inputValue);
 
     if (orChecked === true) {
       updateQuery(newendParQuery);
@@ -1544,18 +1544,18 @@ function App() {
 
   const handleendBChange = (e) => {
     const inputValue = e.target.value;
-    const parGlandAbundance = inputValue === "" ? 10 : inputValue;
+    const plasmaAbundance = inputValue === "" ? 10 : inputValue;
     const newendParQuery = {
       bool: {
         must: [],
         must_not: [],
-        filter: [{ range: { plasma_abundance: { lte: parGlandAbundance } } }],
+        filter: [{ range: { plasma_abundance: { lte: plasmaAbundance } } }],
       },
     };
 
-    setparC(inputValue !== ""); // Set parC based on whether inputValue is not empty
+    setplasmaC(inputValue !== ""); // Set parC based on whether inputValue is not empty
 
-    setparEnd(inputValue);
+    setpEnd(inputValue);
 
     if (orChecked === true) {
       updateQuery(newendParQuery);
@@ -1589,23 +1589,24 @@ function App() {
 
   const handleendmRNAChange = (e) => {
     const inputValue = e.target.value;
+    const parGlandAbundance = inputValue === "" ? 20000 : inputValue;
+    const newendmRNAQuery = {
+      bool: {
+        must: [],
+        must_not: [],
+        filter: [{ range: { mRNA: { lte: parGlandAbundance } } }],
+      },
+    };
+
+    setparC(inputValue !== ""); // Set parC based on whether inputValue is not empty
+
     if (inputValue === "") {
       setmRNAC(false);
     } else if (inputValue !== "") {
       setmRNAC(true);
     }
 
-    const newendmRNAQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [{ range: { mRNA: { lte: inputValue } } }],
-            },
-          }
-        : null;
-    setmRNAEnd(inputValue);
+    setmRNAEnd(inputValue !== "");
     if (orChecked === true) {
       updateQuery(newendmRNAQuery);
     }
@@ -1653,7 +1654,7 @@ function App() {
 
     console.log("Clicked value:", value);
     console.log("IHCValues array:", IHCValues);
-
+    console.log("IHC Array:" + IHCArr);
     setIHCArr((prevIHCArr) => {
       let updatedIHCArr;
 
