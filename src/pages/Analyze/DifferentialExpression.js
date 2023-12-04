@@ -566,6 +566,7 @@ const DifferentialExpression = () => {
         .post(
           "http://localhost:8000/api/differential-expression/analyze-file",
           {
+            inputData,
             logNorm,
             foldChangeThreshold,
             pValueThreshold,
