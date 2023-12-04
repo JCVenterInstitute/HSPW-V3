@@ -489,7 +489,7 @@ const DifferentialExpressionResults = () => {
                     </Grid>
                     {Object.entries(fileDownloadOption).map(
                       ([key, fileName]) => {
-                        fileName !== "data_set.zip" && (
+                        return fileName !== "data_set.zip" ? (
                           <Grid item xs={6} key={key}>
                             <Box sx={{ ml: 3 }}>
                               <Button
@@ -514,7 +514,7 @@ const DifferentialExpressionResults = () => {
                               </Button>
                             </Box>
                           </Grid>
-                        );
+                        ) : null;
                       }
                     )}
                   </Grid>
