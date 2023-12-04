@@ -1,13 +1,120 @@
 import "../filter.css";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
-
+import Table from "@mui/material/Table";
+import Paper from "@mui/material/Paper";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { ReactComponent as Download_Logo } from "../table_icon/download.svg";
 import { ReactComponent as Left_Arrow } from "../table_icon/left_arrow.svg";
 import { ReactComponent as Right_Arrow } from "../table_icon/right_arrow.svg";
 import { ReactComponent as Search } from "../table_icon/search.svg";
+
+const th = {
+  background: "#f2f2f2",
+  textAlign: "center",
+  border: "1px solid #aaa",
+  fontWeight: "bold",
+  fontSize: "20px",
+  padding: "0.2em",
+  maxWidth: "1000px",
+};
+
+const ImageRenderer = ({ value }) => <img src={value} alt="Glygen" />;
+const LinkRenderer = ({ value }) => (
+  <a target="_blank" rel="noopener noreferrer" href={value}>
+    {value}
+  </a>
+);
+
+const SourceRenderer = ({ value }) => (
+  <div>
+    <TableHead>
+      <TableRow>
+        <TableCell
+          sx={th}
+          style={{
+            backgroundColor: "#1463B9",
+            color: "white",
+            fontFamily: "Montserrat",
+            fontSize: "17px",
+            fontWeight: "bold",
+            border: "1px solid #3592E4",
+            borderTopLeftRadius: "10px",
+          }}
+        >
+          id
+        </TableCell>
+        <TableCell
+          sx={th}
+          style={{
+            backgroundColor: "#1463B9",
+            color: "white",
+            fontFamily: "Montserrat",
+            fontSize: "17px",
+            fontWeight: "bold",
+            border: "1px solid #3592E4",
+          }}
+        >
+          Database
+        </TableCell>
+        <TableCell
+          sx={th}
+          style={{
+            backgroundColor: "#1463B9",
+            color: "white",
+            fontFamily: "Montserrat",
+            fontSize: "17px",
+            fontWeight: "bold",
+            border: "1px solid #3592E4",
+            borderTopRightRadius: "10px",
+          }}
+        >
+          url
+        </TableCell>
+      </TableRow>
+      {value.map((val, index) => (
+        <React.Fragment key={index}>
+          <TableRow>
+            <TableCell
+              style={{
+                border: "1px solid #CACACA",
+              }}
+            >
+              {val.id}
+            </TableCell>
+            <TableCell
+              style={{
+                border: "1px solid #CACACA",
+              }}
+            >
+              {val.database}
+            </TableCell>
+            {val.url ? (
+              <TableCell
+                style={{
+                  border: "1px solid #CACACA",
+                }}
+              >
+                <a href={val.url}>{val.url}</a>
+              </TableCell>
+            ) : (
+              <TableCell
+                style={{
+                  border: "1px solid #CACACA",
+                }}
+              ></TableCell>
+            )}
+          </TableRow>
+        </React.Fragment>
+      ))}
+    </TableHead>
+  </div>
+);
 
 function LinkComponent(props) {
   return (
@@ -21,10 +128,9 @@ function LinkComponent(props) {
   );
 }
 
-function Comment_Table(props) {
-  const [message, setMessage] = useState("");
+function Glycan_Table(props) {
   const [rowData, setRowData] = useState([]);
-
+  const [message, setMessage] = useState("");
   const [gridApi, setGridApi] = useState();
   const [pageSize, setPageSize] = useState(50);
   const [pageNum, setPageNum] = useState(0);
@@ -34,62 +140,8 @@ function Comment_Table(props) {
   const [pageNumArr, setPageNumArr] = useState([1]);
 
   useEffect(() => {
-    console.log(props.data);
+    console.log("49:" + props.data);
     const jsonData = props.data;
-
-    // Transform JSON data into Ag-Grid compatible format
-    const transformedData = jsonData.flatMap((annotation) => {
-      const { annotation_type, annotation_description, features } = annotation;
-
-      return annotation_description.map((description) => {
-        const { description: annotation_description_text, evidences = [] } =
-          description;
-
-        const uniqueEvidenceCodes = Array.from(
-          new Set(evidences.map((evidence) => evidence.evidenceCode))
-        );
-        const annotationDescription_evidences1 = uniqueEvidenceCodes.map(
-          (evidenceCode) => ({
-            source:
-              evidences.find(
-                (evidence) => evidence.evidenceCode === evidenceCode
-              )?.source || "",
-            id: evidences
-              .filter((evidence) => evidence.evidenceCode === evidenceCode)
-              .map((evidence) => evidence.id)
-              .join(", "),
-            evidenceCode: evidenceCode || "",
-          })
-        );
-        const annotationDescription_evidences = evidences.map((evidence) => ({
-          source: evidence.source || "",
-          id: evidence.id || "",
-          evidenceCode: evidence.evidenceCode || "",
-        }));
-
-        const annotationDescription_source_id =
-          annotationDescription_evidences.map((evidence) => {
-            // Check if evidence.source and evidence.id are empty, if yes, return an empty string
-            if (!evidence.source && !evidence.id) {
-              return "";
-            }
-
-            // Concatenate source and id with a colon
-            return `${evidence.source}:${evidence.id}`;
-          });
-
-        return {
-          annotation_type,
-          annotation_description: annotation_description_text || "",
-          annotationDescription_source_id,
-          annotationDescription_evidenceCode: annotationDescription_evidences1
-            .map((evidence) => evidence.evidenceCode)
-            .join(", "),
-        };
-      });
-    });
-
-    setRowData(transformedData);
   }, []);
 
   let data1 = [];
@@ -97,78 +149,38 @@ function Comment_Table(props) {
     data1.push(message[i]["_source"]);
   }
 
+  const rowHeight = 500;
   const columns = [
+    { headerName: "Accession", field: "glytoucan_accession" },
     {
-      headerName: "Annotation Type",
-      field: "annotation_type",
-      checkboxSelection: false,
-      headerCheckboxSelection: false,
-      maxWidth: 195,
-      wrapText: true,
+      headerName: "Image",
+      field: "image",
+      minWidth: 415,
+      cellRendererFramework: ImageRenderer,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
     },
     {
-      headerName: "Description",
-      field: "annotation_description",
-      minWidth: 355,
-      wrapText: true,
-      headerClass: ["header-border"],
-      cellClass: ["table-border", "comment_table_description"],
-      resizable: true,
-      autoHeight: true, // Make sure this is set
-    },
-    {
-      headerName: "Evidences ID",
-      field: "annotationDescription_source_id",
-      wrapText: true,
-      maxWidth: 195,
-      cellStyle: { wordBreak: "break-word" },
-      sortable: true,
+      headerName: "Type",
+      field: "type",
       headerClass: ["header-border"],
       cellClass: ["table-border"],
-      resizable: true,
+    },
 
-      cellRenderer: (params) => {
-        const ids = Array.isArray(params.value) ? params.value : "";
-        const links = ids.map((id, index) => (
-          <React.Fragment key={index}>
-            <a href={`${id}`} target="_blank">
-              {id}
-            </a>
-            {index < ids.length - 1 && <br />}{" "}
-            {/* Add line break if it's not the last element */}
-          </React.Fragment>
-        ));
-        return <>{links}</>;
-      },
-    },
     {
-      headerName: "Evidences Code",
-      field: "annotationDescription_evidenceCode",
-      wrapText: true,
-      maxWidth: 155,
-      sortable: true,
+      headerName: "Mass",
+      field: "mass",
       headerClass: ["header-border"],
       cellClass: ["table-border"],
     },
     {
-      headerName: "Features Type",
-      field: "features_type",
-      wrapText: true,
-      maxWidth: 145,
-      sortable: true,
+      headerName: "Source",
+      field: "source",
       headerClass: ["header-border"],
       cellClass: ["table-border"],
-    },
-    {
-      headerName: "Features Position",
-      field: "features_position",
-      wrapText: true,
-      maxWidth: 145,
-      sortable: true,
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
+      minWidth: 800,
+      autoHeight: true,
+      cellRendererFramework: SourceRenderer,
     },
   ];
 
@@ -176,11 +188,10 @@ function Comment_Table(props) {
     return "[" + params.value.toLocaleString() + "]";
   }, []);
 
-  const defColumnDefs = {
-    flex: 1,
+  const defaultColDef = {
+    sortable: true,
+    resizable: true,
     filter: true,
-    wrapHeaderText: true,
-    autoHeaderHeight: true,
   };
 
   const onBtNext = (event) => {
@@ -272,13 +283,13 @@ function Comment_Table(props) {
           <option value="500">50</option>
           <option value="1000">100</option>
         </select>
-        <text style={{ marginLeft: "5%" }}>Page</text>
+        <span style={{ marginLeft: "5%" }}>Page</span>
         <select onChange={onPageNumChanged} value={pageNum} id="page-num">
           {pageNumArr}
         </select>
-        <text style={{ marginLeft: "1%" }}>
+        <span style={{ marginLeft: "1%" }}>
           out of {Math.round(docCount / pageSize)}
-        </text>
+        </span>
         <button
           onClick={onBtPrevious}
           style={{
@@ -337,7 +348,7 @@ function Comment_Table(props) {
       >
         <AgGridReact
           className="ag-cell-wrap-text"
-          rowData={rowData}
+          rowData={props.data[0]._source.salivary_proteins.glycans}
           columnDefs={columns}
           ref={gridRef}
           enableCellTextSelection={true}
@@ -352,6 +363,8 @@ function Comment_Table(props) {
           frameworkComponents={{
             LinkComponent,
           }}
+          defaultColDef={defaultColDef}
+          rowHeight={rowHeight}
         />
       </div>
       <button
@@ -381,4 +394,4 @@ function Comment_Table(props) {
   );
 }
 
-export default Comment_Table;
+export default Glycan_Table;

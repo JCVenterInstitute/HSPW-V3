@@ -6,18 +6,23 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { HashLink as Link } from "react-router-hash-link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import "../style.css";
 import Divider from "@mui/material/Divider";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import FontAwesome from "react-fontawesome";
 import "font-awesome/css/font-awesome.min.css";
 import Comment_Table from "../../components/salivary_protein/comment_table";
+import Glycan_Table from "../../components/salivary_protein/Glycan_Table";
 import { useParams } from "react-router";
 import ProtvistaUniprot from "protvista-uniprot";
 import axios from "axios";
 import BChart from "../../components/salivary_protein/TwoSidedBarChart";
 import "resize-observer-polyfill";
+import LinearProgress from "@mui/material/LinearProgress";
+import Box from "@mui/material/Box";
+import CustomLoadingOverlay from "../Loading/CustomLoadingOverlay";
+import CustomNoRowsOverlay from "../Loading/CustomNoRowsOverlay";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -215,7 +220,11 @@ const Protein_Detail = (props) => {
   }, []);
 
   if (isLoading === true) {
-    return <h2>Loading</h2>;
+    return (
+      <Box sx={{ width: "100%" }}>
+        <LinearProgress sx={{ mb: "500px", margin: "20px" }} />
+      </Box>
+    );
   }
 
   return (
@@ -307,7 +316,7 @@ const Protein_Detail = (props) => {
                       key={
                         data[0]["_source"]["salivary_proteins"][
                           "primary_gene_names"
-                        ].i
+                        ].i - i
                       }
                     >
                       <span style={{ color: "black" }}>
@@ -614,206 +623,8 @@ const Protein_Detail = (props) => {
             >
               Glycans
             </h2>
+            <Glycan_Table data={data} />
 
-            <div
-              style={{
-                color: "black",
-                marginBottom: "20px",
-                marginTop: "20px",
-                fontSize: "0.875rem",
-                textAlign: "left",
-                width: "100%",
-                overflow: "hidden",
-              }}
-            >
-              <TableHead>
-                <TableRow sx={{ border: "1px solid black" }}>
-                  <TableCell
-                    sx={th}
-                    style={{
-                      backgroundColor: "#1463B9",
-                      color: "white",
-                      fontFamily: "Montserrat",
-                      fontSize: "17px",
-                      fontWeight: "bold",
-                      border: "1px solid #3592E4",
-                      borderTopLeftRadius: "10px",
-                    }}
-                  >
-                    Accession
-                  </TableCell>
-                  <TableCell
-                    sx={th}
-                    style={{
-                      backgroundColor: "#1463B9",
-                      color: "white",
-                      fontFamily: "Montserrat",
-                      fontSize: "17px",
-                      fontWeight: "bold",
-                      border: "1px solid #3592E4",
-                    }}
-                  >
-                    Image
-                  </TableCell>
-                  <TableCell
-                    sx={th}
-                    style={{
-                      backgroundColor: "#1463B9",
-                      color: "white",
-                      fontFamily: "Montserrat",
-                      fontSize: "17px",
-                      fontWeight: "bold",
-                      border: "1px solid #3592E4",
-                    }}
-                  >
-                    Type
-                  </TableCell>
-                  <TableCell
-                    sx={th}
-                    style={{
-                      backgroundColor: "#1463B9",
-                      color: "white",
-                      fontFamily: "Montserrat",
-                      fontSize: "17px",
-                      fontWeight: "bold",
-                      border: "1px solid #3592E4",
-                    }}
-                  >
-                    Mass
-                  </TableCell>
-                  <TableCell
-                    sx={th}
-                    style={{
-                      backgroundColor: "#1463B9",
-                      color: "white",
-                      fontFamily: "Montserrat",
-                      fontSize: "17px",
-                      fontWeight: "bold",
-                      border: "1px solid #3592E4",
-                      borderTopRightRadius: "10px",
-                    }}
-                  >
-                    Source
-                  </TableCell>
-                </TableRow>
-                {data[0]["_source"]["salivary_proteins"]["glycans"].map(
-                  (value, i, arr) => {
-                    return (
-                      <TableRow
-                        style={{
-                          border: "1px solid #CACACA",
-                        }}
-                        key={
-                          data[0]["_source"]["salivary_proteins"]["glycans"].i
-                        }
-                      >
-                        <TableCell
-                          style={{
-                            border: "1px solid #CACACA",
-                          }}
-                        >
-                          {value.glytoucan_accession}
-                        </TableCell>
-                        <TableCell style={{ border: "1px solid #CACACA" }}>
-                          <img src={value.image} alt="Glygen" />
-                        </TableCell>
-
-                        <TableCell style={{ border: "1px solid #CACACA" }}>
-                          {value.type}
-                        </TableCell>
-                        <TableCell style={{ border: "1px solid #CACACA" }}>
-                          {value.mass}
-                        </TableCell>
-                        <TableCell style={{ border: "1px solid #CACACA" }}>
-                          <TableHead>
-                            <TableRow>
-                              <TableCell
-                                sx={th}
-                                style={{
-                                  backgroundColor: "#1463B9",
-                                  color: "white",
-                                  fontFamily: "Montserrat",
-                                  fontSize: "17px",
-                                  fontWeight: "bold",
-                                  border: "1px solid #3592E4",
-                                  borderTopLeftRadius: "10px",
-                                }}
-                              >
-                                id
-                              </TableCell>
-                              <TableCell
-                                sx={th}
-                                style={{
-                                  backgroundColor: "#1463B9",
-                                  color: "white",
-                                  fontFamily: "Montserrat",
-                                  fontSize: "17px",
-                                  fontWeight: "bold",
-                                  border: "1px solid #3592E4",
-                                }}
-                              >
-                                Database
-                              </TableCell>
-                              <TableCell
-                                sx={th}
-                                style={{
-                                  backgroundColor: "#1463B9",
-                                  color: "white",
-                                  fontFamily: "Montserrat",
-                                  fontSize: "17px",
-                                  fontWeight: "bold",
-                                  border: "1px solid #3592E4",
-                                  borderTopRightRadius: "10px",
-                                }}
-                              >
-                                url
-                              </TableCell>
-                            </TableRow>
-                            {value.source.map((val, j, arr) => {
-                              return (
-                                <React.Fragment key={value.j}>
-                                  <TableRow>
-                                    <TableCell
-                                      style={{
-                                        border: "1px solid #CACACA",
-                                      }}
-                                    >
-                                      {val.id}
-                                    </TableCell>
-                                    <TableCell
-                                      style={{
-                                        border: "1px solid #CACACA",
-                                      }}
-                                    >
-                                      {val.database}
-                                    </TableCell>
-                                    {val.url ? (
-                                      <TableCell
-                                        style={{
-                                          border: "1px solid #CACACA",
-                                        }}
-                                      >
-                                        <a href={val.url}>{val.url}</a>
-                                      </TableCell>
-                                    ) : (
-                                      <TableCell
-                                        style={{
-                                          border: "1px solid #CACACA",
-                                        }}
-                                      ></TableCell>
-                                    )}
-                                  </TableRow>
-                                </React.Fragment>
-                              );
-                            })}
-                          </TableHead>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  }
-                )}
-              </TableHead>
-            </div>
             <Divider sx={{ marginBottom: "10px", borderColor: "#1463B9" }} />
             <h2
               style={{
@@ -1124,7 +935,7 @@ const Protein_Detail = (props) => {
                         key={
                           data[0]["_source"]["salivary_proteins"][
                             "reference_sequence"
-                          ].i
+                          ].i - i
                         }
                       >
                         <a
@@ -1177,7 +988,7 @@ const Protein_Detail = (props) => {
                           key={
                             data[0]["_source"]["salivary_proteins"][
                               "peptide_atlas"
-                            ].i
+                            ].i - i
                           }
                         >
                           <a
@@ -1230,7 +1041,8 @@ const Protein_Detail = (props) => {
                       return (
                         <React.Fragment
                           key={
-                            data[0]["_source"]["salivary_proteins"]["ensembl"].i
+                            data[0]["_source"]["salivary_proteins"]["ensembl"]
+                              .i - i
                           }
                         >
                           <a
@@ -1299,7 +1111,7 @@ const Protein_Detail = (props) => {
                           key={
                             data[0]["_source"]["salivary_proteins"][
                               "gene_cards"
-                            ].i
+                            ].i - i
                           }
                         >
                           <a
@@ -1355,7 +1167,9 @@ const Protein_Detail = (props) => {
               (value, i, arr) => {
                 return (
                   <React.Fragment
-                    key={data[0]["_source"]["salivary_proteins"]["keywords"].i}
+                    key={
+                      data[0]["_source"]["salivary_proteins"]["keywords"].i - i
+                    }
                   >
                     <a
                       href={"https://www.uniprot.org/keywords/" + value.id}
@@ -1404,9 +1218,9 @@ const Protein_Detail = (props) => {
               (value, i) => {
                 return (
                   <React.Fragment
-                    key={data[0]["_source"]["salivary_proteins"]["cites"].i}
+                    key={data[0]["_source"]["salivary_proteins"]["cites"].i - i}
                   >
-                    <div key={value}>
+                    <div>
                       <h4 style={{ display: "inline" }}>{i + 1}. </h4>
 
                       <b style={{ color: "#1463B9" }}>{authorName[i]}</b>

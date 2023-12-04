@@ -5,8 +5,6 @@ import { Chart } from "react-google-charts";
 import { useState, useEffect, useCallback, useRef } from "react";
 import main_feature from "../components/hero.jpeg";
 
-import PChart from "../components/piechart_d3.js";
-
 export const data = [
   [
     "Types of Protein Signatures Detected in Salivary Proteins",
