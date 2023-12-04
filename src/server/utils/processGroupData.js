@@ -71,9 +71,9 @@ exports.processGroupData = async (
   console.log("> Processing Group Data");
 
   const { processedSamples: processedGroupA, proteinIds: proteinIdsA } =
-    await processSamples(groupAData, "HP");
+    await processSamples(groupAData, "A");
   const { processedSamples: processedGroupB, proteinIds: proteinIdsB } =
-    await processSamples(groupBData, "CP");
+    await processSamples(groupBData, "B");
 
   const combinedData = [...processedGroupA, ...processedGroupB];
 
