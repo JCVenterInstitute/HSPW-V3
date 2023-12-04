@@ -69,6 +69,7 @@ const DifferentialExpressionResults = () => {
     "Normalization Plot": "norm_0_dpi72.png",
     "Normalization Data": "data_normalized.csv",
     "Result Data": "all_data.tsv",
+    "All Data Set": "data_set.zip",
   };
 
   const handleAlignment = (event, newAlignment) => {
@@ -467,7 +468,7 @@ const DifferentialExpressionResults = () => {
                     <Grid item xs={12} key="downloadAll">
                       <Box sx={{ ml: 3 }}>
                         <Button
-                          // onClick={() => handleDownload(jobId, fileName)}
+                          onClick={() => handleDownload(jobId, "data_set.zip")}
                           startIcon={<DownloadIcon sx={{ color: "#1463B9" }} />}
                           sx={{
                             textTransform: "none", // Keeps the button text style similar to Typography
@@ -487,32 +488,34 @@ const DifferentialExpressionResults = () => {
                       </Box>
                     </Grid>
                     {Object.entries(fileDownloadOption).map(
-                      ([key, fileName]) => (
-                        <Grid item xs={6} key={key}>
-                          <Box sx={{ ml: 3 }}>
-                            <Button
-                              onClick={() => handleDownload(jobId, fileName)}
-                              startIcon={
-                                <DownloadIcon sx={{ color: "#1463B9" }} />
-                              }
-                              sx={{
-                                textTransform: "none", // Keeps the button text style similar to Typography
-                                color: "#1463B9", // Sets the color of the text
-                              }}
-                            >
-                              <Typography
-                                variant="body1"
+                      ([key, fileName]) => {
+                        fileName !== "data_set.zip" && (
+                          <Grid item xs={6} key={key}>
+                            <Box sx={{ ml: 3 }}>
+                              <Button
+                                onClick={() => handleDownload(jobId, fileName)}
+                                startIcon={
+                                  <DownloadIcon sx={{ color: "#1463B9" }} />
+                                }
                                 sx={{
-                                  textDecoration: "underline",
-                                  color: "#1463B9",
+                                  textTransform: "none", // Keeps the button text style similar to Typography
+                                  color: "#1463B9", // Sets the color of the text
                                 }}
                               >
-                                {key}
-                              </Typography>
-                            </Button>
-                          </Box>
-                        </Grid>
-                      )
+                                <Typography
+                                  variant="body1"
+                                  sx={{
+                                    textDecoration: "underline",
+                                    color: "#1463B9",
+                                  }}
+                                >
+                                  {key}
+                                </Typography>
+                              </Button>
+                            </Box>
+                          </Grid>
+                        );
+                      }
                     )}
                   </Grid>
                 </Box>
