@@ -178,9 +178,10 @@ const DifferentialExpression = () => {
       .then((sourceData) => {
         setRowData(sourceData);
         setTotalRecordCount(sourceData.length);
+        return sourceData.length;
       })
-      .then(() => {
-        setTotalPageNumber(params.api.paginationProxy.totalPages);
+      .then((totalCount) => {
+        setTotalPageNumber(Math.ceil(totalCount / recordsPerPage));
         setGridApi(params.api);
       });
   }, []);
@@ -250,6 +251,7 @@ const DifferentialExpression = () => {
       wrapText: true,
       minWidth: 230,
       headerClass: ["header-border"],
+      cellClass: ["differential-cell"],
       checkboxSelection: true,
       headerCheckboxSelection: true,
       sort: "asc",
@@ -258,32 +260,38 @@ const DifferentialExpression = () => {
       headerName: "Sample Title",
       field: "experiment_title",
       wrapText: true,
-      minWidth: 500,
+      minWidth: 440,
       headerClass: ["header-border"],
+      cellClass: ["differential-cell"],
     },
     {
       headerName: "Tissue Type",
       field: "sample_type",
       wrapText: true,
       headerClass: ["header-border"],
+      cellClass: ["differential-cell"],
     },
     {
       headerName: "Institution",
       field: "institution",
       wrapText: true,
       headerClass: ["header-border"],
+      cellClass: ["differential-cell"],
     },
     {
       headerName: "Disease",
       field: "condition_type",
       wrapText: true,
       headerClass: ["header-border"],
+      cellClass: ["differential-cell"],
     },
     {
       headerName: "Protein Count",
       field: "experiment_protein_count",
       wrapText: true,
+      minWidth: 230,
       headerClass: ["header-border"],
+      cellClass: ["differential-cell"],
       filter: "agNumberColumnFilter",
     },
   ];
@@ -297,7 +305,7 @@ const DifferentialExpression = () => {
         {
           headerName: "Sample ID",
           field: "experiment_id_key",
-          minWidth: "220",
+          minWidth: "240",
           headerClass: ["header-border"],
           checkboxSelection: true,
           headerCheckboxSelection: true,
@@ -324,7 +332,7 @@ const DifferentialExpression = () => {
         {
           headerName: "Sample ID",
           field: "experiment_id_key",
-          minWidth: "220",
+          minWidth: "240",
           headerClass: ["header-border"],
           checkboxSelection: true,
           headerCheckboxSelection: true,
@@ -346,7 +354,7 @@ const DifferentialExpression = () => {
     flex: 1,
     resizable: true,
     sortable: true,
-    minWidth: 150,
+    minWidth: 170,
     autoHeight: true,
     filter: "agTextColumnFilter",
   };
@@ -695,9 +703,10 @@ const DifferentialExpression = () => {
           >
             Reset Filter
           </Button>
-          {filterList.map((filter) => {
+          {filterList.map((filter, index) => {
             return (
               <Accordion
+                key={filter}
                 expanded={expanded.includes(filter)}
                 onChange={handleChange(filter)}
               >
@@ -737,8 +746,9 @@ const DifferentialExpression = () => {
                     />
                   ) : filter === "Tissue Type" ? (
                     <FormGroup>
-                      {tissueTypeFilterList.map((option) => (
+                      {tissueTypeFilterList.map((option, subIndex) => (
                         <FormControlLabel
+                          key={`${option}-${index}-${subIndex}`}
                           control={
                             <Checkbox
                               checked={tissueTypeFilter === option.key}
@@ -764,8 +774,9 @@ const DifferentialExpression = () => {
                     </FormGroup>
                   ) : filter === "Institution" ? (
                     <FormGroup>
-                      {institutionFilterList.map((option) => (
+                      {institutionFilterList.map((option, subIndex) => (
                         <FormControlLabel
+                          key={`${option}-${index}-${subIndex}`}
                           control={
                             <Checkbox
                               checked={institutionFilter === option.key}
@@ -791,8 +802,9 @@ const DifferentialExpression = () => {
                     </FormGroup>
                   ) : filter === "Disease" ? (
                     <FormGroup>
-                      {diseaseFilterList.map((option) => (
+                      {diseaseFilterList.map((option, subIndex) => (
                         <FormControlLabel
+                          key={`${option}-${index}-${subIndex}`}
                           control={
                             <Checkbox
                               checked={diseaseFilter === option.key}
