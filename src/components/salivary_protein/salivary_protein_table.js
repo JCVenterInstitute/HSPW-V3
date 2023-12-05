@@ -1153,24 +1153,20 @@ function App() {
 
   const updateQuery = (newQuery) => {
     setQueryArr((prevArray) => {
+      // If newQuery is null, remove only the corresponding type of query from the array
       if (newQuery === null) {
-        // Remove only the corresponding type of query from the array
-        const targetType = findEmptyField(prevArray);
-
-        if (targetType) {
+        const targetTypePrev = findEmptyField(prevArray);
+        console.log("TargetType (null case):", targetTypePrev);
+        if (targetTypePrev) {
+          // Remove only the corresponding type of query from the array
           const updatedArray = prevArray.filter(
             (p) =>
               p.bool &&
               p.bool.filter &&
-              p.bool.filter.length > 0 &&
-              p.bool.filter.some(
-                (filter) =>
-                  filter.wildcard &&
-                  Object.keys(filter.wildcard)[0] !== targetType
-              )
+              p.bool.filter[0].wildcard &&
+              Object.keys(p.bool.filter[0].wildcard)[0] !== targetTypePrev
           );
 
-          console.log("TargetType (null case):", targetType);
           console.log("Updated Array (null case):", updatedArray);
           return updatedArray;
         } else {
@@ -1179,24 +1175,43 @@ function App() {
         }
       }
 
-      // Remove queries with empty values for the specific field
-      const updatedArray = prevArray.filter((query) => {
-        const targetType = findEmptyField(query);
+      // Remove queries with empty values for the specific field in newQuery
+      const targetTypeNew = findEmptyField(newQuery);
+
+      const nonEmptyQueries = prevArray.filter((query) => {
+        const wildcardProperty =
+          query.bool &&
+          query.bool.filter &&
+          query.bool.filter[0].wildcard &&
+          Object.keys(query.bool.filter[0].wildcard)[0];
 
         // Check if the field is not empty in the new query
         return !(
-          targetType &&
+          wildcardProperty &&
           newQuery.bool.filter &&
-          newQuery.bool.filter.length > 0 &&
           newQuery.bool.filter[0].wildcard &&
-          newQuery.bool.filter[0].wildcard[targetType] === ""
+          Object.keys(newQuery.bool.filter[0].wildcard)[0] ===
+            wildcardProperty &&
+          newQuery.bool.filter[0].wildcard[wildcardProperty] === ""
         );
+      });
+
+      console.log("Non-empty Queries:", nonEmptyQueries);
+
+      const updatedArray = nonEmptyQueries.map((p) => {
+        const isSame = isSameType(p, newQuery);
+        console.log(
+          `Comparing: ${JSON.stringify(p)} and ${JSON.stringify(
+            newQuery
+          )} => ${isSame}`
+        );
+        return isSame ? newQuery : p;
       });
 
       console.log("Updated Array (non-null case):", updatedArray);
 
       // If the new query does not exist, add it to the array
-      if (!updatedArray.some((p) => isSameType(p, newQuery))) {
+      if (!nonEmptyQueries.some((p) => isSameType(p, newQuery))) {
         updatedArray.push(newQuery);
         console.log("New Query Added:", updatedArray);
       }
@@ -1255,7 +1270,22 @@ function App() {
               ],
             },
           }
-        : null;
+        : {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  wildcard: {
+                    uniprot_accession: {
+                      value: ``,
+                      case_insensitive: true,
+                    },
+                  },
+                },
+              ],
+            },
+          };
 
     setPrefix(inputValue);
 
