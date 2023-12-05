@@ -446,6 +446,7 @@ function App() {
   const [mRNAStart, setmRNAStart] = useState("0");
   const [mRNAEnd, setmRNAEnd] = useState("20000");
   const [queryArr, setQueryArr] = useState([]);
+  const [andQueryArr, setAndQueryArr] = useState([]);
   const [opArr, setOpArr] = useState([false, false]);
   const [orChecked, setorChecked] = useState(false);
   const [exclude, setExclude] = useState(false);
@@ -505,91 +506,24 @@ function App() {
     const json = data.json();
     return json;
   };
-
+  const customHeaders = {
+    "Content-Type": "application/json",
+  };
   const fetchAndData = async () => {
-    console.log(
-      "a:" +
-        "http://localhost:8000/and_search/" +
-        pageSize +
-        "/" +
-        pageNum +
-        "/" +
-        prefix +
-        "*/" +
-        genePrefix +
-        "*/" +
-        namePrefix +
-        "*/" +
-        opinionVal +
-        "*/" +
-        wsStart +
-        "/" +
-        wsEnd +
-        "/" +
-        parStart +
-        "/" +
-        parEnd +
-        "/" +
-        pStart +
-        "/" +
-        pEnd +
-        "/" +
-        subStart +
-        "/" +
-        subEnd +
-        "/" +
-        mRNAStart +
-        "/" +
-        mRNAEnd +
-        "," +
-        IHCVal
-    );
+    console.log("123", JSON.stringify(queryArr));
     const data = await fetch(
-      "http://localhost:8000/and_search/" +
-        pageSize +
-        "/" +
-        pageNum +
-        "/" +
-        prefix +
-        "*/" +
-        genePrefix +
-        "*/" +
-        namePrefix +
-        "*/" +
-        opinionVal +
-        "*/" +
-        wsStart +
-        "/" +
-        wsEnd +
-        "/" +
-        parStart +
-        "/" +
-        parEnd +
-        "/" +
-        pStart +
-        "/" +
-        pEnd +
-        "/" +
-        subStart +
-        "/" +
-        subEnd +
-        "/" +
-        mRNAStart +
-        "/" +
-        mRNAEnd +
-        "," +
-        IHCVal
+      `http://localhost:8000/and_search/${pageSize}/${pageNum}/`,
+      {
+        method: "POST",
+        headers: customHeaders,
+        body: JSON.stringify(queryArr),
+      }
     );
     const json = data.json();
     return json;
   };
 
-  const customHeaders = {
-    "Content-Type": "application/json",
-  };
   const fetchOrData = async () => {
-    console.log("a:" + wsStart + wsEnd);
-
     const data = await fetch(
       `http://localhost:8000/or_search/${pageSize}/${pageNum}/`,
       {
@@ -599,12 +533,9 @@ function App() {
       }
     );
     const json = data.json();
-    console.log("73" + JSON.stringify(json));
-    console.log("583" + JSON.stringify(queryArr));
     return json;
   };
   const fetchAndExcludeData = async () => {
-    console.log("a:" + wsStart + wsEnd);
     const data = await fetch(
       "http://localhost:8000/and_search_exclude/" +
         pageSize +
@@ -983,12 +914,11 @@ function App() {
     exclude,
     searchText,
   ]);
-  console.log(rowData);
+
   useEffect(() => {
     const fetchData = async () => {
-      console.log("5");
       const data = await fetch(
-        "http://localhost:8000/saliva_protein_table/" + pageSize + "/" + pageNum
+        `http://localhost:8000/saliva_protein_table/${pageSize}/${pageNum}`
       );
       const json = data.json();
       return json;
@@ -996,12 +926,11 @@ function App() {
     const result = fetchData().catch(console.errror);
     result.then((value) => {
       if (value.hits.hits) {
-        console.log(value);
         let data1 = [];
         for (let i = 0; i < value.hits.hits.length; i++) {
           data1.push(value.hits.hits[i]["_source"]);
         }
-        console.log(data1);
+
         setRowData(data1);
       }
     });
@@ -1150,17 +1079,6 @@ function App() {
   ];
   const gridRef = useRef();
 
-  const onPageSizeChanged = (event) => {
-    var value = document.getElementById("page-size").value;
-    gridRef.current.api.paginationSetPageSize(Number(value));
-    setPageSize(value);
-  };
-
-  const onPageNumChanged = (event) => {
-    var value = document.getElementById("page-num").value;
-    setPageNum(value);
-  };
-
   const onBtExport = useCallback(() => {
     gridRef.current.api.exportDataAsExcel();
   }, []);
@@ -1235,43 +1153,78 @@ function App() {
 
   const updateQuery = (newQuery) => {
     setQueryArr((prevArray) => {
-      // Remove existing queries of the same type (InterPro ID or Name)
-      const wildcardProperty =
-        newQuery.bool.filter[0].wildcard &&
-        Object.keys(newQuery.bool.filter[0].wildcard)[0];
+      if (newQuery === null) {
+        // Remove only the corresponding type of query from the array
+        const targetType = findEmptyField(prevArray);
 
-      const rangeProperty =
-        newQuery.bool.filter[0].range &&
-        Object.keys(newQuery.bool.filter[0].range)[0];
+        if (targetType) {
+          const updatedArray = prevArray.filter(
+            (p) =>
+              p.bool &&
+              p.bool.filter &&
+              p.bool.filter.length > 0 &&
+              p.bool.filter.some(
+                (filter) =>
+                  filter.wildcard &&
+                  Object.keys(filter.wildcard)[0] !== targetType
+              )
+          );
 
-      const filteredArray = prevArray.filter((p) => {
-        const boolFilter = p && p.bool && p.bool.filter;
-        const wildcardProperty =
-          boolFilter &&
-          boolFilter[0] &&
-          boolFilter[0].wildcard &&
-          Object.keys(boolFilter[0].wildcard)[0];
+          console.log("TargetType (null case):", targetType);
+          console.log("Updated Array (null case):", updatedArray);
+          return updatedArray;
+        } else {
+          console.log("No targetType found:", prevArray);
+          return prevArray;
+        }
+      }
 
-        const rangeProperty =
-          boolFilter &&
-          boolFilter[0] &&
-          boolFilter[0].range &&
-          Object.keys(boolFilter[0].range)[0];
+      // Remove queries with empty values for the specific field
+      const updatedArray = prevArray.filter((query) => {
+        const targetType = findEmptyField(query);
 
+        // Check if the field is not empty in the new query
         return !(
-          newQuery &&
-          wildcardProperty &&
-          boolFilter[0].wildcard &&
-          boolFilter[0].wildcard.hasOwnProperty(wildcardProperty) &&
-          rangeProperty &&
-          boolFilter[0].range &&
-          boolFilter[0].range.hasOwnProperty(rangeProperty)
+          targetType &&
+          newQuery.bool.filter &&
+          newQuery.bool.filter.length > 0 &&
+          newQuery.bool.filter[0].wildcard &&
+          newQuery.bool.filter[0].wildcard[targetType] === ""
         );
       });
 
-      // Add the new query to the filtered array
-      return newQuery ? [...filteredArray, newQuery] : filteredArray;
+      console.log("Updated Array (non-null case):", updatedArray);
+
+      // If the new query does not exist, add it to the array
+      if (!updatedArray.some((p) => isSameType(p, newQuery))) {
+        updatedArray.push(newQuery);
+        console.log("New Query Added:", updatedArray);
+      }
+
+      return updatedArray;
     });
+  };
+
+  const findEmptyField = (query) => {
+    const filter =
+      query.bool &&
+      query.bool.filter &&
+      query.bool.filter.length > 0 &&
+      query.bool.filter.find((f) => f.wildcard);
+
+    return filter ? Object.keys(filter.wildcard)[0] : null;
+  };
+
+  // Helper function to check if two queries have the same wildcard type
+  const isSameType = (query1, query2) => {
+    const type1 = query1.bool?.filter?.[0]?.wildcard
+      ? Object.keys(query1.bool.filter[0].wildcard)[0]
+      : null;
+    const type2 = query2.bool?.filter?.[0]?.wildcard
+      ? Object.keys(query2.bool.filter[0].wildcard)[0]
+      : null;
+
+    return type1 === type2;
   };
 
   const handleAccessionChange = (e) => {
@@ -1284,7 +1237,7 @@ function App() {
     setPageNum(0);
     if (orChecked === true) {
     }
-    const newIDQuery =
+    const newAccessionQuery =
       inputValue !== ""
         ? {
             bool: {
@@ -1303,20 +1256,21 @@ function App() {
             },
           }
         : null;
+
     setPrefix(inputValue);
-    if (orChecked === true) {
-      updateQuery(newIDQuery);
-    }
+
+    updateQuery(newAccessionQuery);
   };
 
   const handleGeneChange = (e) => {
     const inputValue = e.target.value;
     if (inputValue === "") {
-      console.log("wt");
+      updateQuery(null); // Passing null to remove gene symbol query
       setGeneC(false);
     } else if (inputValue !== "") {
       setGeneC(true);
     }
+
     const newGeneQuery =
       inputValue !== ""
         ? {
@@ -1338,9 +1292,8 @@ function App() {
         : null;
 
     setGenePrefix(inputValue);
-    if (orChecked === true) {
-      updateQuery(newGeneQuery);
-    }
+    console.log("input:", newGeneQuery);
+    updateQuery(newGeneQuery);
   };
 
   const handleNameChange = (e) => {
@@ -1652,9 +1605,6 @@ function App() {
   const filterIHC = (event) => {
     const { value } = event.target;
 
-    console.log("Clicked value:", value);
-    console.log("IHCValues array:", IHCValues);
-    console.log("IHC Array:" + IHCArr);
     setIHCArr((prevIHCArr) => {
       let updatedIHCArr;
 
@@ -1936,7 +1886,7 @@ function App() {
                               value={child.key}
                             />
                           }
-                          label={child.key + " (" + (child.doc_count - 1) + ")"}
+                          label={child.key + " (" + child.doc_count + ")"}
                         />
                       </FormGroup>
                     ) : null
