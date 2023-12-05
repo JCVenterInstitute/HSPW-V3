@@ -1066,6 +1066,7 @@ const DifferentialExpression = () => {
             }}
           >
             <div
+              id="differential"
               className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
               style={{ height: 620 }}
             >
@@ -1100,6 +1101,7 @@ const DifferentialExpression = () => {
                 </Stack>
               </Box>
               <div
+                id="differential"
                 className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
                 style={{
                   height: 400,
@@ -1133,6 +1135,7 @@ const DifferentialExpression = () => {
                 </Stack>
               </Box>
               <div
+                id="differential"
                 className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
                 style={{
                   height: 400,
