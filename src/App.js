@@ -29,6 +29,8 @@ import PSIBlastResults from "./pages/Analyze/PSIBlastResults";
 import PSIBlast from "./pages/Analyze/PSIBlast";
 import About from "./pages/Help/About";
 import Team from "./pages/Help/Team";
+import DifferentialExpression from "./pages/Analyze/DifferentialExpression.js";
+import DifferentialExpressionResults from "./pages/Analyze/DifferentialExpressionResults.js";
 
 function App() {
   return (
@@ -66,6 +68,14 @@ function App() {
         <Route path="/iprscan5" element={<InterProScan />} />
         <Route path="/psiblast/results/:jobId" element={<PSIBlastResults />} />
         <Route path="/psiblast" element={<PSIBlast />} />
+        <Route
+          path="/differential-expression/results/:jobId"
+          element={<DifferentialExpressionResults />}
+        />
+        <Route
+          path="/differential-expression"
+          element={<DifferentialExpression />}
+        />
         <Route path="/citation" element={<Citation />} />
         <Route path="/citation/:citationid" element={<Citation_Detail />} />
         <Route path="/Basic_Search" element={<Basic_Search />} />
