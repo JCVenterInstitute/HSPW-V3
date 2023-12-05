@@ -1270,22 +1270,7 @@ function App() {
               ],
             },
           }
-        : {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [
-                {
-                  wildcard: {
-                    uniprot_accession: {
-                      value: ``,
-                      case_insensitive: true,
-                    },
-                  },
-                },
-              ],
-            },
-          };
+        : null;
 
     setPrefix(inputValue);
 
