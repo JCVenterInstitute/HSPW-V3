@@ -1,10 +1,7 @@
 import "../filter.css";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
-import Table from "@mui/material/Table";
-import Paper from "@mui/material/Paper";
 import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -13,6 +10,7 @@ import { ReactComponent as Download_Logo } from "../table_icon/download.svg";
 import { ReactComponent as Left_Arrow } from "../table_icon/left_arrow.svg";
 import { ReactComponent as Right_Arrow } from "../table_icon/right_arrow.svg";
 import { ReactComponent as Search } from "../table_icon/search.svg";
+import FontAwesome from "react-fontawesome";
 
 const th = {
   background: "#f2f2f2",
@@ -24,9 +22,18 @@ const th = {
   maxWidth: "1000px",
 };
 
-const ImageRenderer = ({ value }) => <img src={value} alt="Glygen" />;
+const ImageRenderer = ({ value }) => (
+  <img
+    src={value}
+    alt="Glygen"
+  />
+);
 const LinkRenderer = ({ value }) => (
-  <a target="_blank" rel="noopener noreferrer" href={value}>
+  <a
+    target="_blank"
+    rel="noopener noreferrer"
+    href={value}
+  >
     {value}
   </a>
 );
@@ -46,7 +53,7 @@ const SourceRenderer = ({ value }) => (
           borderTopLeftRadius: "10px",
         }}
       >
-        id
+        ID
       </TableCell>
       <TableCell
         sx={th}
@@ -61,20 +68,6 @@ const SourceRenderer = ({ value }) => (
       >
         Database
       </TableCell>
-      <TableCell
-        sx={th}
-        style={{
-          backgroundColor: "#1463B9",
-          color: "white",
-          fontFamily: "Montserrat",
-          fontSize: "17px",
-          fontWeight: "bold",
-          border: "1px solid #3592E4",
-          borderTopRightRadius: "10px",
-        }}
-      >
-        url
-      </TableCell>
     </TableRow>
     {value.map((val, index) => (
       <React.Fragment key={index}>
@@ -84,7 +77,22 @@ const SourceRenderer = ({ value }) => (
               border: "1px solid #CACACA",
             }}
           >
-            {val.id}
+            {val.url ? (
+              <>
+                <a href={val.url}>{val.id}</a>{" "}
+                <a href={val.url}>
+                  <FontAwesome
+                    className="super-crazy-colors"
+                    name="external-link"
+                    style={{
+                      textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                    }}
+                  />
+                </a>
+              </>
+            ) : (
+              val.id
+            )}
           </TableCell>
           <TableCell
             style={{
@@ -93,21 +101,6 @@ const SourceRenderer = ({ value }) => (
           >
             {val.database}
           </TableCell>
-          {val.url ? (
-            <TableCell
-              style={{
-                border: "1px solid #CACACA",
-              }}
-            >
-              <a href={val.url}>{val.url}</a>
-            </TableCell>
-          ) : (
-            <TableCell
-              style={{
-                border: "1px solid #CACACA",
-              }}
-            ></TableCell>
-          )}
         </TableRow>
       </React.Fragment>
     ))}
@@ -243,7 +236,10 @@ function Glycan_Table(props) {
 
   return (
     <>
-      <div className="example-header" style={{ marginLeft: "35px" }}>
+      <div
+        className="example-header"
+        style={{ marginLeft: "35px" }}
+      >
         <form
           onSubmit={onFilterTextBoxChanged}
           style={{ display: "inline", position: "relative" }}
@@ -279,14 +275,21 @@ function Glycan_Table(props) {
           </button>
         </form>
         <span style={{ marginLeft: "5%" }}>Records Per Page</span>
-        <select id="page-size" onChange={onPageSizeChanged}>
+        <select
+          id="page-size"
+          onChange={onPageSizeChanged}
+        >
           <option value="50">10</option>
           <option value="100">20</option>
           <option value="500">50</option>
           <option value="1000">100</option>
         </select>
         <span style={{ marginLeft: "5%" }}>Page</span>
-        <select onChange={onPageNumChanged} value={pageNum} id="page-num">
+        <select
+          onChange={onPageNumChanged}
+          value={pageNum}
+          id="page-num"
+        >
           {pageNumArr}
         </select>
         <span style={{ marginLeft: "1%" }}>
