@@ -1614,7 +1614,7 @@ function App() {
       setplasmaC(true);
     }
 
-    const newstartBQuery =
+    let newstartBQuery =
       inputValue !== ""
         ? {
             bool: {
@@ -1628,6 +1628,21 @@ function App() {
         : null;
 
     setpStart(inputValue);
+    if (exclude === true) {
+      newstartBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [
+                  {
+                    range: { plasma_abundance: { gte: inputValue, lte: pEnd } },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
     updateQuery(newstartBQuery, "plasma_abundance");
   };
 
@@ -1649,7 +1664,23 @@ function App() {
     setplasmaC(inputValue !== ""); // Set parC based on whether inputValue is not empty
 
     setpEnd(inputValue);
-
+    if (exclude === true) {
+      newstartBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [
+                  {
+                    range: {
+                      plasma_abundance: { lte: inputValue, gte: pStart },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
     updateQuery(newendBQuery, "plasma_abundance");
   };
 
