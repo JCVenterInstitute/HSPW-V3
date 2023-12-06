@@ -255,10 +255,12 @@ const Protein_Detail = (props) => {
             >
               Names and Origin
             </h2>
-            <Table
+            <TableHead
               style={{
                 borderTopLeftRadius: "10px",
                 borderTopRightRadius: "10px",
+                maxWidth: "70%",
+                borderRadius: "10px 0 0 10px",
               }}
             >
               <TableRow>
@@ -273,16 +275,20 @@ const Protein_Detail = (props) => {
                     border: "1px solid #3592E4",
                     borderTopLeftRadius: "10px",
                     border: "none",
+                    width: "10%",
                   }}
                 >
                   Primary Accession
                 </TableCell>
                 <TableCell
-                  sx={{
+                  style={{
+                    fontWeight: "bold",
+                    border: "1px solid, #3592E4",
                     borderTopRightRadius: "10px",
+                  }}
+                  sx={{
                     fontSize: "0.875rem",
                     border: "1px solid #CACACA",
-                    borderTopRightRadius: "10px",
                     fontFamily: "Lato",
                   }}
                 >
@@ -300,6 +306,8 @@ const Protein_Detail = (props) => {
                     fontFamily: "Montserrat",
                     fontSize: "14px",
                     border: "1px solid #3592E4",
+                    borderLeft: "none",
+                    borderRight: "none",
                   }}
                 >
                   Genes
@@ -333,7 +341,6 @@ const Protein_Detail = (props) => {
                     color: "white",
                     fontFamily: "Montserrat",
                     fontSize: "14px",
-                    border: "1px solid #3592E4",
                   }}
                 >
                   Organism
@@ -354,7 +361,7 @@ const Protein_Detail = (props) => {
                   </a>
                 </TableCell>
               </TableRow>
-            </Table>
+            </TableHead>
 
             <Divider
               sx={{
