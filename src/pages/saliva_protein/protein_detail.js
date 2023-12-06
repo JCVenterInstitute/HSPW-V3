@@ -2,7 +2,6 @@ import React from "react";
 import Table from "@mui/material/Table";
 import Paper from "@mui/material/Paper";
 import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { HashLink as Link } from "react-router-hash-link";
@@ -134,24 +133,15 @@ const td = {
 };
 
 const Protein_Detail = (props) => {
-  const [message, setMessage] = useState("");
   const params = useParams();
   let url = "http://localhost:8000/protein/" + params["proteinid"];
 
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");
-  const [data1, setData1] = useState("");
-  const [p, setP] = useState("");
-  const [o, setO] = useState("");
-  const [fS, setFS] = useState("");
+
   const [authorName, setauthorName] = useState("");
   const [year, setYear] = useState("");
   const [journal, setJournal] = useState("");
-  const [v, setV] = useState("");
-  const [j, setJ] = useState("");
-  const [sS, setSS] = useState("");
-  const [checkData, setCheckData] = useState(false);
-  const [annotation, setAnnotation] = useState("");
 
   const fetchProtein = async () => {
     console.log(url);
@@ -182,7 +172,6 @@ const Protein_Detail = (props) => {
       }
 
       setLoading(false);
-      setCheckData(true);
     }
   };
 
@@ -255,10 +244,16 @@ const Protein_Detail = (props) => {
             >
               Names and Origin
             </h2>
+<<<<<<< HEAD
             <TableHead
+=======
+            <div
+>>>>>>> 1ea84e7 (update feature table on protein detail)
               style={{
+                width: "100%",
                 borderTopLeftRadius: "10px",
                 borderTopRightRadius: "10px",
+<<<<<<< HEAD
                 maxWidth: "70%",
                 borderRadius: "10px 0 0 10px",
               }}
@@ -267,13 +262,24 @@ const Protein_Detail = (props) => {
                 <TableCell
                   variant="header"
                   sx={th}
+=======
+                overflow: "hidden",
+                boxSizing: "border-box",
+              }}
+            >
+              <Table
+                style={{
+                  width: "40%",
+                  borderTopLeftRadius: "10px",
+                  borderTopRightRadius: "10px",
+                  border: "1px solid black",
+                }}
+              >
+                <TableHead
+>>>>>>> 1ea84e7 (update feature table on protein detail)
                   style={{
-                    backgroundColor: "#1463B9",
-                    color: "white",
-                    fontFamily: "Montserrat",
-                    fontSize: "14px",
-                    border: "1px solid #3592E4",
                     borderTopLeftRadius: "10px",
+<<<<<<< HEAD
                     border: "none",
                     width: "10%",
                   }}
@@ -290,12 +296,43 @@ const Protein_Detail = (props) => {
                     fontSize: "0.875rem",
                     border: "1px solid #CACACA",
                     fontFamily: "Lato",
+=======
+                    borderTopRightRadius: "10px",
+>>>>>>> 1ea84e7 (update feature table on protein detail)
                   }}
                 >
-                  {data[0]["_source"]["salivary_proteins"]["uniprot_accession"]}
-                </TableCell>
-              </TableRow>
+                  <TableRow style={{ borderTopRightRadius: "10px" }}>
+                    <TableCell
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "14px",
+                        border: "1px solid #3592E4",
+                        borderTopLeftRadius: "10px",
+                        borderTopRightRadius: "10px", // Added borderTopRightRadius here
+                        width: "30%",
+                      }}
+                    >
+                      Primary Accession
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontSize: "0.875rem",
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                        borderTopRightRadius: "10px", // Added borderTopRightRadius here
+                      }}
+                    >
+                      {
+                        data[0]["_source"]["salivary_proteins"][
+                          "uniprot_accession"
+                        ]
+                      }
+                    </TableCell>
+                  </TableRow>
 
+<<<<<<< HEAD
               <TableRow>
                 <TableCell
                   sx={th}
@@ -362,7 +399,74 @@ const Protein_Detail = (props) => {
                 </TableCell>
               </TableRow>
             </TableHead>
+=======
+                  <TableRow>
+                    <TableCell
+                      sx={th}
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "14px",
+>>>>>>> 1ea84e7 (update feature table on protein detail)
 
+                        border: "1px solid #3592E4",
+                      }}
+                    >
+                      Genes
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontSize: "0.875rem",
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                        fontSize: "14px",
+                      }}
+                    >
+                      {data[0]["_source"]["salivary_proteins"][
+                        "primary_gene_names"
+                      ].map((child, i) => (
+                        <React.Fragment key={i}>
+                          <span style={{ color: "black" }}>
+                            {i + 1}. {child}
+                          </span>
+                          <br></br>
+                        </React.Fragment>
+                      ))}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell
+                      sx={th}
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "14px",
+                        border: "1px solid #3592E4",
+                      }}
+                    >
+                      Organism
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontSize: "0.875rem",
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                        fontSize: "14px",
+                      }}
+                    >
+                      <a
+                        style={{ color: "/*#116988*/#0b5989" }}
+                        href="https://www.uniprot.org/taxonomy/9606 "
+                      >
+                        Homo sapiens
+                      </a>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+              </Table>
+            </div>
             <Divider
               sx={{
                 marginBottom: "10px",
@@ -1217,7 +1321,6 @@ const Protein_Detail = (props) => {
                             textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
                           }}
                         />
-                        ]
                       </a>
                     </div>
                   </React.Fragment>
@@ -1358,10 +1461,7 @@ const Protein_Detail = (props) => {
                   </TableCell>
                 </TableRow>
                 <TableRow sx={{ border: "1px solid black" }}>
-                  <TableCell
-                    sx={th}
-                    style={{ maxWidth: "20%" }}
-                  >
+                  <TableCell sx={th} style={{ maxWidth: "20%" }}>
                     Abundance level
                   </TableCell>
                   <TableCell
@@ -1370,10 +1470,7 @@ const Protein_Detail = (props) => {
                   ></TableCell>
                 </TableRow>
                 <TableRow sx={{ border: "1px solid black" }}>
-                  <TableCell
-                    sx={th}
-                    style={{ maxWidth: "20%" }}
-                  >
+                  <TableCell sx={th} style={{ maxWidth: "20%" }}>
                     Curator
                   </TableCell>
                   <TableCell

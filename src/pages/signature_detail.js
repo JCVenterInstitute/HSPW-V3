@@ -43,7 +43,7 @@ const Signature_detail = (props) => {
   const [abstract, setAbstract] = useState("");
   const [PROFILE, setPROFILE] = useState("");
   const [SMART, setSMART] = useState("");
-  const [reference1, setReference] = useState("");
+  const [reference1, setReference] = useState([]);
   let gene_id = 0;
   let interpro_link = "https://www.ebi.ac.uk/interpro/entry/InterPro/";
   console.log(url);
@@ -450,14 +450,14 @@ const Signature_detail = (props) => {
                     paddingLeft: "1%",
                   }}
                 >
-                  {reference1.map((val, j, arr) => {
-                    return (
-                      <>
-                        {j + 1}. {val}
-                        <br></br>
-                      </>
-                    );
-                  })}
+                  {reference1.length !== 0
+                    ? reference1.map((val, j) => (
+                        <React.Fragment key={j}>
+                          {j + 1}. {val}
+                          <br />
+                        </React.Fragment>
+                      ))
+                    : null}
                 </TableCell>
               </TableRow>
               <TableRow>
