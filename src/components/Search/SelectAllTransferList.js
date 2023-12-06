@@ -11,6 +11,8 @@ import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
 import { Typography } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
 
 function not(a, b) {
   return a.filter((value) => b.indexOf(value) === -1);
@@ -28,9 +30,27 @@ export default function SelectAllTransferList({ properties }) {
   const [checked, setChecked] = useState([]);
   const [left, setLeft] = useState(properties);
   const [right, setRight] = useState([]);
+  const [leftSearch, setLeftSearch] = useState("");
+  const [rightSearch, setRightSearch] = useState("");
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
+
+  const filteredLeft = useMemo(
+    () =>
+      left.filter((item) =>
+        item.toLowerCase().includes(leftSearch.toLowerCase())
+      ),
+    [left, leftSearch]
+  );
+
+  const filteredRight = useMemo(
+    () =>
+      right.filter((item) =>
+        item.toLowerCase().includes(rightSearch.toLowerCase())
+      ),
+    [right, rightSearch]
+  );
 
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
@@ -155,7 +175,7 @@ export default function SelectAllTransferList({ properties }) {
         spacing={2}
         justifyContent="center"
         alignItems="center"
-        sx={{ mt: 0.5, mb: 1 }}
+        sx={{ mb: 1 }}
       >
         <Grid item xs={5.5}>
           <Typography
@@ -171,15 +191,54 @@ export default function SelectAllTransferList({ properties }) {
             variant="h6"
             sx={{ fontFamily: "Lato", textAlign: "center" }}
           >
-            Not Display
+            Don't Display
           </Typography>
+        </Grid>
+      </Grid>
+      <Grid
+        container
+        spacing={2}
+        justifyContent="center"
+        alignItems="center"
+        sx={{ mb: 1 }}
+      >
+        <Grid item xs={5.5}>
+          <Autocomplete
+            options={left}
+            getOptionLabel={(option) => option}
+            renderInput={(params) => (
+              <TextField {...params} label="Search..." />
+            )}
+            onInputChange={(event, newInputValue) => {
+              setLeftSearch(newInputValue);
+            }}
+            freeSolo
+            size="small"
+            open={false}
+          />
+        </Grid>
+        <Grid item xs={1}></Grid>
+        <Grid item xs={5.5}>
+          <Autocomplete
+            options={right}
+            getOptionLabel={(option) => option}
+            renderInput={(params) => (
+              <TextField {...params} label="Search..." />
+            )}
+            onInputChange={(event, newInputValue) => {
+              setRightSearch(newInputValue);
+            }}
+            freeSolo
+            size="small"
+            open={false}
+          />
         </Grid>
       </Grid>
       <Grid container spacing={2} justifyContent="center" alignItems="center">
         <Grid item xs={5.5}>
-          {customList("Chosen", left)}
+          {customList("Select All", filteredLeft)}
         </Grid>
-        <Grid item>
+        <Grid item xs={1}>
           <Grid container direction="column" alignItems="center">
             <Button
               sx={{ my: 0.5 }}
@@ -204,7 +263,7 @@ export default function SelectAllTransferList({ properties }) {
           </Grid>
         </Grid>
         <Grid item xs={5.5}>
-          {customList("Chosen", right)}
+          {customList("Select All", filteredRight)}
         </Grid>
       </Grid>
     </>

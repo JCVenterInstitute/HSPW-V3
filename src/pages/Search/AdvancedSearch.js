@@ -278,9 +278,6 @@ const AdvancedSearch = () => {
           >
             STEP 3 - Choose the properties that you want to display
           </legend>
-          <Typography sx={{ color: "black" }}>
-            Display the properties on the left box for each search result:
-          </Typography>
           {properties.length !== 0 && (
             <SelectAllTransferList properties={properties} />
           )}
