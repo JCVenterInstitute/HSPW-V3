@@ -1152,28 +1152,38 @@ function App() {
   };
 
   const updateQuery = (newQuery, fieldName) => {
-    console.log(newQuery);
     setQueryArr((prevArray) => {
       // If newQuery is null, remove only the corresponding type of query from the array
       if (newQuery === null) {
         const targetTypePrev = findEmptyField(prevArray, fieldName);
         console.log("TargetType (null case):", targetTypePrev);
-        if (targetTypePrev) {
-          // Remove only the corresponding type of query from the array
-          const updatedArray = prevArray.filter(
-            (p) =>
-              p.bool &&
-              p.bool.filter &&
-              p.bool.filter[0].wildcard &&
-              Object.keys(p.bool.filter[0].wildcard)[0] !== targetTypePrev
-          );
 
-          console.log("Updated Array (null case):", updatedArray);
-          return updatedArray;
-        } else {
-          console.log("No targetType found:", prevArray);
-          return prevArray;
-        }
+        const updatedArray = prevArray.filter((p) => {
+          const hasWildcard =
+            p &&
+            p.bool &&
+            p.bool.filter &&
+            p.bool.filter[0] &&
+            p.bool.filter[0].wildcard;
+
+          const wildcardProperty =
+            hasWildcard && Object.keys(p.bool.filter[0].wildcard)[0];
+
+          // Adjust the condition based on the targetTypePrev boolean value
+          return hasWildcard || p.bool.filter[0].query_string
+            ? targetTypePrev
+              ? wildcardProperty !== fieldName &&
+                Object.keys(p.bool.filter[0].query_string)[0] !== undefined &&
+                Object.keys(p.bool.filter[0].query_string)[0] !== fieldName
+              : wildcardProperty === fieldName ||
+                (Object.keys(p.bool.filter[0].query_string)[0] !== undefined &&
+                  Object.keys(p.bool.filter[0].query_string)[0] === fieldName)
+            : true;
+        });
+
+        console.log("Updated Array (null case):", updatedArray);
+
+        return updatedArray;
       }
 
       const nonEmptyQueries = prevArray.filter((query) => {
@@ -1213,8 +1223,27 @@ function App() {
         !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
         !(newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value === "")
       ) {
-        updatedArray.push(newQuery);
-        console.log("New Query Added:", updatedArray);
+        // Check if there's an existing query for the same field and remove it
+        const updatedArrayWithoutExisting = updatedArray.filter((p) => {
+          if (
+            p.bool &&
+            p.bool.filter &&
+            p.bool.filter[0].wildcard &&
+            Object.keys(p.bool.filter[0].wildcard)[0] === fieldName
+          ) {
+            // Remove the existing query if the new query is not empty
+            return newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value !== "";
+          }
+          return true;
+        });
+
+        // Add the new query only if it's not an empty wildcard
+        if (newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value !== "") {
+          updatedArrayWithoutExisting.push(newQuery);
+          console.log("New Query Added:", updatedArrayWithoutExisting);
+        }
+
+        return updatedArrayWithoutExisting;
       } else if (
         (!nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
           !(newQuery.bool.filter[0]?.range?.[fieldName]?.gte === "")) ||
@@ -1229,6 +1258,7 @@ function App() {
         updatedArray.push(newQuery);
         console.log("New Query Added Query String:", updatedArray);
       }
+
       return updatedArray;
     });
   };
@@ -1243,28 +1273,22 @@ function App() {
       } else if (filter.range) {
         return filter && filter.range && filter.range[fieldName];
       } else if (filter.query_string) {
+        console.log("1272", filter.query_string);
         return filter.query_string; // Directly return the found filter
       }
     };
 
     const searchQuery = (query) => {
-      if (query.bool && query.bool.filter) {
-        const foundFilter = query.bool.filter.find(findFieldInFilter);
-        if (foundFilter) {
-          console.log("Found Field in Filter:", foundFilter);
-          return foundFilter;
-        }
+      if (query && query.bool && query.bool.filter) {
+        return query.bool.filter.some(findFieldInFilter);
       }
 
-      return null;
+      return false;
     };
 
-    const result = queries.reduce((acc, query) => {
-      const fieldFound = searchQuery(query);
-      return acc || fieldFound;
-    }, null);
+    const result = queries.some(searchQuery); // Use some instead of find
 
-    console.log(result !== null ? "Field Found:" : "Field Not Found:", result);
+    console.log(result ? "Field Found:" : "Field Not Found");
 
     return result;
   };
@@ -1278,7 +1302,13 @@ function App() {
       ? Object.keys(query2.bool.filter[0].wildcard)[0]
       : null;
 
-    console.log("1281", type1 === type2);
+    // Check both type and value for wildcard queries
+    if (type1 === type2 && type1 === "wildcard") {
+      const value1 = query1.bool.filter[0].wildcard[type1].value;
+      const value2 = query2.bool.filter[0].wildcard[type2].value;
+      return value1 === value2;
+    }
+
     return type1 === type2;
   };
 
@@ -1544,7 +1574,7 @@ function App() {
 
     setsubEnd(inputValue);
 
-    updateQuery(newstartSubQuery, "sm/sl_abundance");
+    updateQuery(newendParQuery, "sm/sl_abundance");
   };
 
   const handlestartBChange = (e) => {
@@ -1667,6 +1697,7 @@ function App() {
               },
             }
           : null;
+
       updateQuery(opQuery, "expert_opinion");
       return updatedOpArr;
     });
@@ -1705,6 +1736,7 @@ function App() {
               },
             }
           : null;
+
       updateQuery(opQuery, "expert_opinion");
       return updatedOpArr;
     });
@@ -1731,10 +1763,11 @@ function App() {
                   must_not: [],
                   filter: [
                     {
-                      query_string: {
-                        fields: ["IHC.keyword"],
-                        query: "not*",
-                        analyzer: "keyword",
+                      wildcard: {
+                        IHC: {
+                          value: "*not*",
+                          case_insensitive: true,
+                        },
                       },
                     },
                   ],
@@ -1755,10 +1788,11 @@ function App() {
                   must_not: [],
                   filter: [
                     {
-                      query_string: {
-                        fields: ["IHC.keyword"],
-                        query: "*a*",
-                        analyzer: "keyword",
+                      wildcard: {
+                        IHC: {
+                          value: "*a*",
+                          case_insensitive: true,
+                        },
                       },
                     },
                   ],
@@ -1786,10 +1820,11 @@ function App() {
                     must_not: [],
                     filter: [
                       {
-                        query_string: {
-                          fields: ["IHC.keyword"],
-                          query: `${value}*`,
-                          analyzer: "keyword",
+                        wildcard: {
+                          IHC: {
+                            value: `${value}`,
+                            case_insensitive: true,
+                          },
                         },
                       },
                     ],
@@ -1807,10 +1842,11 @@ function App() {
                     must_not: [],
                     filter: [
                       {
-                        query_string: {
-                          fields: ["IHC.keyword"],
-                          query: `${value}*`,
-                          analyzer: "keyword",
+                        wildcard: {
+                          IHC: {
+                            value: `${value}`,
+                            case_insensitive: true,
+                          },
                         },
                       },
                     ],
@@ -2027,7 +2063,7 @@ function App() {
                           control={
                             <Checkbox checked={opArr[1]} onChange={filterOpC} />
                           }
-                          label={"C (" + child.doc_count + ")"}
+                          label={"C (" + (child.doc_count - 1) + ")"}
                         />
                       )}
                     </FormGroup>
@@ -2482,7 +2518,7 @@ function App() {
                     borderRadius: "10px",
                   },
                 }}
-                value={pageNum}
+                value={pageNum ? pageNum : 1}
                 sx={{ marginLeft: "10px", marginRight: "10px" }}
                 onChange={(event) => {
                   setPageNum(event.target.value);
