@@ -651,7 +651,7 @@ const Protein_Detail = (props) => {
                   data[0]["_source"]["salivary_proteins"]["ensembl_g"]
                 }
               >
-                Human Protein Atlas
+                Human Protein Atlas{" "}
                 <FontAwesome
                   className="super-crazy-colors"
                   name="external-link"
@@ -938,7 +938,7 @@ const Protein_Detail = (props) => {
                             fontFamily: "Lato",
                           }}
                         >
-                          {value}
+                          {`${value} `}
                           <FontAwesome
                             className="super-crazy-colors"
                             name="external-link"
@@ -985,7 +985,7 @@ const Protein_Detail = (props) => {
                               fontFamily: "Lato",
                             }}
                           >
-                            {value}
+                            {`${value} `}
                             <FontAwesome
                               className="super-crazy-colors"
                               name="external-link"
@@ -1021,6 +1021,8 @@ const Protein_Detail = (props) => {
                 >
                   {data[0]["_source"]["salivary_proteins"]["ensembl"].map(
                     (value, i, arr) => {
+                      console.log("> Value", value);
+
                       return (
                         <React.Fragment key={i}>
                           <a
@@ -1031,7 +1033,7 @@ const Protein_Detail = (props) => {
                               fontFamily: "Lato",
                             }}
                           >
-                            {value}
+                            {`${value} `}
                             <FontAwesome
                               className="super-crazy-colors"
                               name="external-link"
@@ -1056,7 +1058,7 @@ const Protein_Detail = (props) => {
                       fontFamily: "Lato",
                     }}
                   >
-                    , {data[0]["_source"]["salivary_proteins"]["ensemgl_g"]}
+                    {`, ${data[0]["_source"]["salivary_proteins"]["ensembl_g"]} `}
                     <FontAwesome
                       className="super-crazy-colors"
                       name="external-link"
@@ -1147,7 +1149,7 @@ const Protein_Detail = (props) => {
                         color: "#000",
                       }}
                     >
-                      {value.keyword}
+                      {`${value.keyword} `}
                       <FontAwesome
                         className="super-crazy-colors"
                         name="external-link"
@@ -1197,8 +1199,7 @@ const Protein_Detail = (props) => {
                         href={"https://pubmed.ncbi.nlm.nih.gov/" + value}
                         style={{ color: "#777777" }}
                       >
-                        {" "}
-                        [{value}
+                        {` ${value} `}
                         <FontAwesome
                           className="super-crazy-colors"
                           name="external-link"
@@ -1347,7 +1348,10 @@ const Protein_Detail = (props) => {
                   </TableCell>
                 </TableRow>
                 <TableRow sx={{ border: "1px solid black" }}>
-                  <TableCell sx={th} style={{ maxWidth: "20%" }}>
+                  <TableCell
+                    sx={th}
+                    style={{ maxWidth: "20%" }}
+                  >
                     Abundance level
                   </TableCell>
                   <TableCell
@@ -1356,7 +1360,10 @@ const Protein_Detail = (props) => {
                   ></TableCell>
                 </TableRow>
                 <TableRow sx={{ border: "1px solid black" }}>
-                  <TableCell sx={th} style={{ maxWidth: "20%" }}>
+                  <TableCell
+                    sx={th}
+                    style={{ maxWidth: "20%" }}
+                  >
                     Curator
                   </TableCell>
                   <TableCell
