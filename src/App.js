@@ -31,6 +31,7 @@ import About from "./pages/Help/About";
 import Team from "./pages/Help/Team";
 import DifferentialExpression from "./pages/Analyze/DifferentialExpression.js";
 import DifferentialExpressionResults from "./pages/Analyze/DifferentialExpressionResults.js";
+import AdvancedSearch from "./pages/Search/AdvancedSearch.js";
 
 function App() {
   return (
@@ -79,6 +80,7 @@ function App() {
         <Route path="/citation" element={<Citation />} />
         <Route path="/citation/:citationid" element={<Citation_Detail />} />
         <Route path="/Basic_Search" element={<Basic_Search />} />
+        <Route path="/advanced-search" element={<AdvancedSearch />}></Route>
         <Route path="/Experiment_Search" element={<Experiment_Search />} />
         <Route path="/Protein_Set_Search" element={<Protein_Set_Search />} />
         <Route path="/About" element={<About />} />
