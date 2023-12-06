@@ -405,7 +405,7 @@ function LinkComponent(props) {
 function App() {
   const [pageSize, setPageSize] = useState(50);
   const [pageNum, setPageNum] = useState(0);
-
+  const [gridApi, setGridApi] = useState("");
   const [count, setCount] = useState(2);
   const [docCount, setDocCount] = useState(0);
   const [pageNumArr, setPageNumArr] = useState([1]);
@@ -428,15 +428,15 @@ function App() {
   const [opinionVal, setopinionVal] = useState("");
   const [IHCVal, setIHCVal] = useState("*");
   const [parStart, setparStart] = useState("0");
-  const [parEnd, setparEnd] = useState("20000");
+  const [parEnd, setparEnd] = useState("");
   const [subStart, setsubStart] = useState("0");
-  const [subEnd, setsubEnd] = useState("20000");
+  const [subEnd, setsubEnd] = useState("");
   const [pStart, setpStart] = useState("0");
-  const [pEnd, setpEnd] = useState("10");
+  const [pEnd, setpEnd] = useState("");
   const [wsStart, setwsStart] = useState("0");
-  const [wsEnd, setwsEnd] = useState("20000");
+  const [wsEnd, setwsEnd] = useState("");
   const [mRNAStart, setmRNAStart] = useState("0");
-  const [mRNAEnd, setmRNAEnd] = useState("20000");
+  const [mRNAEnd, setmRNAEnd] = useState("");
   const [queryArr, setQueryArr] = useState([]);
   const [opArr, setOpArr] = useState([false, false]);
   const [orChecked, setorChecked] = useState(false);
@@ -620,8 +620,7 @@ function App() {
         subC === true ||
         plasmaC === true ||
         mRNAC === true) &&
-      orChecked === false &&
-      exclude === false
+      orChecked === false
     ) {
       console.log("1");
       const result = fetchAndData().catch(console.errror);
@@ -1101,11 +1100,11 @@ function App() {
         );
         return isSame ? newQuery : p;
       });
-
-      console.log("Updated Array (non-null case):", newQuery.bool.filter[0]);
+      console.log("1105", newQuery);
 
       // If the new query does not exist or has an empty value, remove it from the array
       if (
+        newQuery.bool.filter !== undefined &&
         !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
         !(newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value === "")
       ) {
@@ -1131,20 +1130,29 @@ function App() {
 
         return updatedArrayWithoutExisting;
       } else if (
-        (!nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
-          !(newQuery.bool.filter[0]?.range?.[fieldName]?.gte === "")) ||
-        !(newQuery.bool.filter[0]?.range?.[fieldName]?.lte === "")
+        newQuery.bool.filter !== undefined &&
+        !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
+        (!(newQuery.bool.filter[0]?.range?.[fieldName]?.gte === "") ||
+          !(newQuery.bool.filter[0]?.range?.[fieldName]?.lte === ""))
       ) {
         updatedArray.push(newQuery);
         console.log("New Query Added:", updatedArray);
       } else if (
+        newQuery.bool.filter !== undefined &&
         !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
         !(newQuery.bool.filter[0]?.query_string?.query === "")
       ) {
         updatedArray.push(newQuery);
         console.log("New Query Added Query String:", updatedArray);
+      } else if (
+        newQuery.bool.must_not !== undefined &&
+        !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
+        (!(newQuery.bool.must_not[0]?.range?.[fieldName]?.gte === "") ||
+          !(newQuery.bool.must_not[0]?.range?.[fieldName]?.lte === ""))
+      ) {
+        updatedArray.push(newQuery);
       }
-
+      console.log("1157", updatedArray);
       return updatedArray;
     });
   };
@@ -1507,7 +1515,7 @@ function App() {
   const handleendBChange = (e) => {
     const inputValue = e.target.value;
     const plasmaAbundance = inputValue === "" ? 10 : inputValue;
-    const newendBQuery = {
+    let newendBQuery = {
       bool: {
         must: [],
         must_not: [],
@@ -1523,7 +1531,7 @@ function App() {
 
     setpEnd(inputValue);
     if (exclude === true) {
-      newstartBQuery =
+      newendBQuery =
         inputValue !== ""
           ? {
               bool: {
@@ -1538,6 +1546,7 @@ function App() {
               },
             }
           : null;
+      console.log("1541:", newendBQuery);
     }
     updateQuery(newendBQuery, "plasma_abundance");
   };

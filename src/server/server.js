@@ -1172,7 +1172,7 @@ app.get(
 );
 
 async function and_search(size, from, wildQuery) {
-  console.log(wildQuery);
+  console.log(JSON.stringify(wildQuery));
   var client = await getClient();
   const response = await client.search({
     index: "new_saliva_protein_test",
