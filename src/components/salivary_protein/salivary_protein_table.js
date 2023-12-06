@@ -50,7 +50,12 @@ const styles1 = {
 };
 
 const Accordion = styled((props) => (
-  <MuiAccordion disableGutters elevation={0} square {...props} />
+  <MuiAccordion
+    disableGutters
+    elevation={0}
+    square
+    {...props}
+  />
 ))(({ theme }) => ({
   marginBottom: "15px",
   "&:not(:last-child)": {
@@ -164,7 +169,11 @@ function WSComponent(props) {
         height={18}
         style={{ stroke: "black", alignItems: "center" }}
       >
-        <rect width={18} height={18} fill="rgb(255,255,255)">
+        <rect
+          width={18}
+          height={18}
+          fill="rgb(255,255,255)"
+        >
           <title>Not uniquely observed</title>
         </rect>
       </svg>
@@ -201,7 +210,11 @@ function WSComponent(props) {
             ></rect>
           </pattern>
         </defs>
-        <rect width={18} height={18} style={{ fill: "url(#stripe2)" }}>
+        <rect
+          width={18}
+          height={18}
+          style={{ fill: "url(#stripe2)" }}
+        >
           <title>Data not available</title>
         </rect>
       </svg>
@@ -478,7 +491,10 @@ function App() {
         const newOptions = [];
         for (let i = 1; i <= Math.round(data.count / pageSize); i++) {
           newOptions.push(
-            <option key={i} value={i}>
+            <option
+              key={i}
+              value={i}
+            >
               {i}
             </option>
           );
@@ -642,7 +658,10 @@ function App() {
           i++
         ) {
           newOptions.push(
-            <option key={i} value={i}>
+            <option
+              key={i}
+              value={i}
+            >
               {i}
             </option>
           );
@@ -673,7 +692,10 @@ function App() {
           i++
         ) {
           newOptions.push(
-            <option key={i} value={i}>
+            <option
+              key={i}
+              value={i}
+            >
               {i}
             </option>
           );
@@ -713,7 +735,10 @@ function App() {
           i++
         ) {
           newOptions.push(
-            <option key={i} value={i}>
+            <option
+              key={i}
+              value={i}
+            >
               {i}
             </option>
           );
@@ -858,7 +883,7 @@ function App() {
           minWidth: "98",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
-          cellClass: ["square_table"],
+          cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
         {
           headerName: "Par",
@@ -866,7 +891,7 @@ function App() {
           minWidth: "97",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
-          cellClass: ["square_table"],
+          cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
         {
           headerName: "Sub",
@@ -874,7 +899,7 @@ function App() {
           minWidth: "101",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
-          cellClass: ["square_table"],
+          cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
         {
           headerName: "B",
@@ -882,7 +907,7 @@ function App() {
           minWidth: "95",
           cellRenderer: "LinkComponent",
           headerClass: ["header-border"],
-          cellClass: ["square_table"],
+          cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
       ],
 
@@ -1838,7 +1863,11 @@ function App() {
             Filters
           </h1>
           <FormGroup style={{ marginLeft: "18%" }}>
-            <Stack direction="row" spacing={1} alignItems="center">
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+            >
               <Typography color="common.black">And</Typography>
               <Switch
                 checked={orChecked}
@@ -1971,7 +2000,10 @@ function App() {
                   child.key !== "" &&
                   child.key !== "D.D.S." &&
                   child.key != "Unknown" ? (
-                    <FormGroup key={key} sx={{ ml: "10px" }}>
+                    <FormGroup
+                      key={key}
+                      sx={{ ml: "10px" }}
+                    >
                       {child.key === "Unsubstantiated" ? (
                         <FormControlLabel
                           control={
@@ -1985,7 +2017,10 @@ function App() {
                       ) : (
                         <FormControlLabel
                           control={
-                            <Checkbox checked={opArr[1]} onChange={filterOpC} />
+                            <Checkbox
+                              checked={opArr[1]}
+                              onChange={filterOpC}
+                            />
                           }
                           label={"C (" + (child.doc_count - 1) + ")"}
                         />
@@ -2022,7 +2057,10 @@ function App() {
                 >
                   {IHCCount.map((child, i) =>
                     child.key !== "?" ? (
-                      <FormGroup key={i} sx={{ ml: "10px" }}>
+                      <FormGroup
+                        key={i}
+                        sx={{ ml: "10px" }}
+                      >
                         <FormControlLabel
                           control={
                             <Checkbox
@@ -2228,7 +2266,11 @@ function App() {
               </AccordionSummary>
               <AccordionDetails>
                 <FormGroup style={{ marginLeft: "5%" }}>
-                  <Stack direction="row" spacing={1} alignItems="center">
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                  >
                     <Typography color="common.black">Include</Typography>
                     <Switch
                       checked={exclude}
@@ -2335,7 +2377,10 @@ function App() {
           </div>
         </Box>
 
-        <Container maxWidth="xl" sx={{ marginTop: "30px", marginLeft: "20px" }}>
+        <Container
+          maxWidth="xl"
+          sx={{ marginTop: "30px", marginLeft: "20px" }}
+        >
           <Box sx={{ display: "flex" }}>
             <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
               <TextField
@@ -2419,7 +2464,10 @@ function App() {
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
               >
                 {recordsPerPageList.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
+                  <MenuItem
+                    key={option.value}
+                    value={option.value}
+                  >
                     {option.label}
                   </MenuItem>
                 ))}
@@ -2451,7 +2499,10 @@ function App() {
                 {Array.from(
                   { length: Math.ceil(docCount / pageSize) },
                   (_, index) => (
-                    <MenuItem key={index + 1} value={index + 1}>
+                    <MenuItem
+                      key={index + 1}
+                      value={index + 1}
+                    >
                       {index + 1}
                     </MenuItem>
                   )
