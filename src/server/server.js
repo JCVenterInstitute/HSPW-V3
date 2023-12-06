@@ -2224,6 +2224,38 @@ app.get("/api/s3Download/:jobId/:fileName", async (req, res) => {
   }
 });
 
+const getProperties = async (index) => {
+  // Initialize the client.
+  const client = await getClient();
+
+  try {
+    // Get the mapping of the specified index.
+    const response = await client.indices.getMapping({ index: index });
+    return response.body[`${index}`].mappings.properties;
+  } catch (error) {
+    // Handle any errors that occur during the API call.
+    console.error("Error getting mapping:", error);
+    throw error;
+  }
+};
+
+app.get("/api/properties/:entity", async (req, res) => {
+  const entity = req.params.entity;
+  console.log(`Getting properties for entity: ${entity}`);
+
+  const entityIndexMapping = {
+    Genes: "genes",
+    "Protein Clusters": "protein_cluster",
+    "Protein Signatures": "protein_signature",
+    Proteins: "protein",
+    "PubMed Citations": "citation",
+  };
+
+  await getProperties(entityIndexMapping[entity]).then((properties) =>
+    res.json(properties)
+  );
+});
+
 app.listen(8000, () => {
   console.log(`Server is running on port 8000.`);
 });
