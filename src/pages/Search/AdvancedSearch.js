@@ -9,6 +9,7 @@ import {
   Grid,
   IconButton,
   TextField,
+  Button,
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
@@ -277,9 +278,23 @@ const AdvancedSearch = () => {
           >
             STEP 3 - Choose the properties that you want to display
           </legend>
+          <Typography sx={{ color: "black" }}>
+            Display the properties on the left box for each search result:
+          </Typography>
           {properties.length !== 0 && (
             <SelectAllTransferList properties={properties} />
           )}
+        </Box>
+        <Box
+          sx={{
+            mt: 4,
+            display: "flex",
+            justifyContent: "center", // Centers the buttons horizontally
+            gap: 2,
+          }}
+        >
+          <Button variant="contained">Search</Button>
+          <Button variant="outlined">Reset</Button>
         </Box>
         <Box component="fieldset" sx={{ p: 2, mb: 2, mt: 3 }}>
           <legend
@@ -291,7 +306,7 @@ const AdvancedSearch = () => {
               border: "2px solid #d8d8d8",
             }}
           >
-            STEP 4 - Press Search to display the results
+            Search Results
           </legend>
         </Box>
       </Container>

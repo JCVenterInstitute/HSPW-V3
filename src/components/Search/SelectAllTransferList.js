@@ -1,4 +1,5 @@
-import * as React from "react";
+import React from "react";
+import { useState, useMemo } from "react";
 import Grid from "@mui/material/Grid";
 import List from "@mui/material/List";
 import Card from "@mui/material/Card";
@@ -9,6 +10,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
+import { Typography } from "@mui/material";
 
 function not(a, b) {
   return a.filter((value) => b.indexOf(value) === -1);
@@ -23,9 +25,9 @@ function union(a, b) {
 }
 
 export default function SelectAllTransferList({ properties }) {
-  const [checked, setChecked] = React.useState([]);
-  const [left, setLeft] = React.useState(properties);
-  const [right, setRight] = React.useState([]);
+  const [checked, setChecked] = useState([]);
+  const [left, setLeft] = useState(properties);
+  const [right, setRight] = useState([]);
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
@@ -53,20 +55,34 @@ export default function SelectAllTransferList({ properties }) {
     }
   };
 
+  const originalOrder = useMemo(() => properties, [properties]);
+
+  const sortBasedOnOriginalOrder = (items) => {
+    return items.sort(
+      (a, b) => originalOrder.indexOf(a) - originalOrder.indexOf(b)
+    );
+  };
+
   const handleCheckedRight = () => {
-    setRight(right.concat(leftChecked));
-    setLeft(not(left, leftChecked));
+    const newRight = sortBasedOnOriginalOrder(right.concat(leftChecked));
+    const newLeft = sortBasedOnOriginalOrder(not(left, leftChecked));
+
+    setRight(newRight);
+    setLeft(newLeft);
     setChecked(not(checked, leftChecked));
   };
 
   const handleCheckedLeft = () => {
-    setLeft(left.concat(rightChecked));
-    setRight(not(right, rightChecked));
+    const newLeft = sortBasedOnOriginalOrder(left.concat(rightChecked));
+    const newRight = sortBasedOnOriginalOrder(not(right, rightChecked));
+
+    setLeft(newLeft);
+    setRight(newRight);
     setChecked(not(checked, rightChecked));
   };
 
   const customList = (title, items) => (
-    <Card>
+    <Card elevation={4} sx={{ mb: 2 }}>
       <CardHeader
         sx={{ px: 2, py: 1 }}
         avatar={
@@ -91,8 +107,8 @@ export default function SelectAllTransferList({ properties }) {
       <Divider />
       <List
         sx={{
-          width: 200,
-          height: 230,
+          width: "100%",
+          height: 300,
           bgcolor: "background.paper",
           overflow: "auto",
         }}
@@ -120,7 +136,11 @@ export default function SelectAllTransferList({ properties }) {
                   }}
                 />
               </ListItemIcon>
-              <ListItemText id={labelId} primary={value} />
+              <ListItemText
+                id={labelId}
+                primary={value}
+                primaryTypographyProps={{ fontSize: "1rem" }}
+              />
             </ListItem>
           );
         })}
@@ -129,37 +149,64 @@ export default function SelectAllTransferList({ properties }) {
   );
 
   return (
-    <Grid container spacing={2} justifyContent="center" alignItems="center">
-      <Grid item xs={4}>
-        {customList("Choices", left)}
-      </Grid>
-      <Grid item>
-        <Grid container direction="column" alignItems="center">
-          <Button
-            sx={{ my: 0.5 }}
-            variant="outlined"
-            size="small"
-            onClick={handleCheckedRight}
-            disabled={leftChecked.length === 0}
-            aria-label="move selected right"
+    <>
+      <Grid
+        container
+        spacing={2}
+        justifyContent="center"
+        alignItems="center"
+        sx={{ mt: 0.5, mb: 1 }}
+      >
+        <Grid item xs={5.5}>
+          <Typography
+            variant="h6"
+            sx={{ fontFamily: "Lato", textAlign: "center" }}
           >
-            &gt;
-          </Button>
-          <Button
-            sx={{ my: 0.5 }}
-            variant="outlined"
-            size="small"
-            onClick={handleCheckedLeft}
-            disabled={rightChecked.length === 0}
-            aria-label="move selected left"
+            Display
+          </Typography>
+        </Grid>
+        <Grid item xs={1}></Grid>
+        <Grid item xs={5.5}>
+          <Typography
+            variant="h6"
+            sx={{ fontFamily: "Lato", textAlign: "center" }}
           >
-            &lt;
-          </Button>
+            Not Display
+          </Typography>
         </Grid>
       </Grid>
-      <Grid item xs={4}>
-        {customList("Chosen", right)}
+      <Grid container spacing={2} justifyContent="center" alignItems="center">
+        <Grid item xs={5.5}>
+          {customList("Chosen", left)}
+        </Grid>
+        <Grid item>
+          <Grid container direction="column" alignItems="center">
+            <Button
+              sx={{ my: 0.5 }}
+              variant="outlined"
+              size="small"
+              onClick={handleCheckedRight}
+              disabled={leftChecked.length === 0}
+              aria-label="move selected right"
+            >
+              &gt;
+            </Button>
+            <Button
+              sx={{ my: 0.5 }}
+              variant="outlined"
+              size="small"
+              onClick={handleCheckedLeft}
+              disabled={rightChecked.length === 0}
+              aria-label="move selected left"
+            >
+              &lt;
+            </Button>
+          </Grid>
+        </Grid>
+        <Grid item xs={5.5}>
+          {customList("Chosen", right)}
+        </Grid>
       </Grid>
-    </Grid>
+    </>
   );
 }
