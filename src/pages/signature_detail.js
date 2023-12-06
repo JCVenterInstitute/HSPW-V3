@@ -12,7 +12,7 @@ import { useParams } from "react-router";
 import main_feature from "../components/hero.jpeg";
 import parse from "html-react-parser";
 import "./style.css";
-
+import FontAwesome from "react-fontawesome";
 const th = {
   background: "#f2f2f2",
   textAlign: "center",
@@ -43,7 +43,10 @@ const Signature_detail = (props) => {
   const [abstract, setAbstract] = useState("");
   const [PROFILE, setPROFILE] = useState("");
   const [SMART, setSMART] = useState("");
-  const [reference1, setReference] = useState("");
+  const [reference1, setReference] = useState([]);
+  const [authorName, setauthorName] = useState("");
+  const [year, setYear] = useState("");
+  const [journal, setJournal] = useState("");
   let gene_id = 0;
   let interpro_link = "https://www.ebi.ac.uk/interpro/entry/InterPro/";
   console.log(url);
@@ -76,6 +79,7 @@ const Signature_detail = (props) => {
           setReference(signature[0]["_source"]["ReferencesID"].split(","));
         }
         setAbstract(signature[0]["_source"]["Abstract"]);
+
         setLoading(false);
       }
     });
@@ -373,59 +377,62 @@ const Signature_detail = (props) => {
                       margin: "10px",
                     }}
                   >
-                    <TableHead>
-                      <TableRow style={{ borderTopRightRadius: "10px" }}>
-                        <TableCell
-                          style={{
-                            backgroundColor: "#1463B9",
-                            color: "white",
-                            fontFamily: "Montserrat",
-                            fontSize: "17px",
-                            fontWeight: "bold",
+                    {data[0]["_source"]["GO Annotations"].split(",").length !==
+                    0 ? (
+                      <TableHead>
+                        <TableRow style={{ borderTopRightRadius: "10px" }}>
+                          <TableCell
+                            style={{
+                              backgroundColor: "#1463B9",
+                              color: "white",
+                              fontFamily: "Montserrat",
+                              fontSize: "17px",
+                              fontWeight: "bold",
 
-                            borderTopLeftRadius: "10px",
-                          }}
-                        >
-                          Functions
-                        </TableCell>
-                        <TableCell
-                          sx={td}
-                          style={{
-                            maxWidth: "100%",
-                            border: "1px solid #CACACA",
-                            borderTopRightRadius: "10px",
-                            fontFamily: "Lato",
-                            fontSize: "14px",
-                          }}
-                        >
-                          {data[0]["_source"]["GO Annotations"].split(",")[0]}
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell
-                          sx={th}
-                          style={{
-                            backgroundColor: "#1463B9",
-                            color: "white",
-                            fontFamily: "Montserrat",
-                            fontSize: "16px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Processes
-                        </TableCell>
-                        <TableCell
-                          sx={td}
-                          style={{
-                            fontFamily: "Lato",
-                            fontSize: "14px",
-                            border: "1px solid #CACACA",
-                          }}
-                        >
-                          {data[0]["_source"]["GO Annotations"].split(",")[1]}
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
+                              borderTopLeftRadius: "10px",
+                            }}
+                          >
+                            Functions
+                          </TableCell>
+                          <TableCell
+                            sx={td}
+                            style={{
+                              maxWidth: "100%",
+                              border: "1px solid #CACACA",
+                              borderTopRightRadius: "10px",
+                              fontFamily: "Lato",
+                              fontSize: "14px",
+                            }}
+                          >
+                            {data[0]["_source"]["GO Annotations"].split(",")[0]}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell
+                            sx={th}
+                            style={{
+                              backgroundColor: "#1463B9",
+                              color: "white",
+                              fontFamily: "Montserrat",
+                              fontSize: "16px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Processes
+                          </TableCell>
+                          <TableCell
+                            sx={td}
+                            style={{
+                              fontFamily: "Lato",
+                              fontSize: "14px",
+                              border: "1px solid #CACACA",
+                            }}
+                          >
+                            {data[0]["_source"]["GO Annotations"].split(",")[1]}
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                    ) : null}
                   </TableContainer>
                 </TableCell>
               </TableRow>
@@ -450,14 +457,29 @@ const Signature_detail = (props) => {
                     paddingLeft: "1%",
                   }}
                 >
-                  {reference1.map((val, j, arr) => {
-                    return (
-                      <>
-                        {j + 1}. {val}
-                        <br></br>
-                      </>
-                    );
-                  })}
+                  {reference1.length !== 0
+                    ? reference1.map((value, i) => (
+                        <React.Fragment key={i}>
+                          <div>
+                            <h4 style={{ display: "inline" }}>{i + 1}. </h4>
+
+                            <a
+                              href={"https://pubmed.ncbi.nlm.nih.gov/" + value}
+                              style={{ color: "#777777" }}
+                            >
+                              {` ${value} `}
+                              <FontAwesome
+                                className="super-crazy-colors"
+                                name="external-link"
+                                style={{
+                                  textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                                }}
+                              />
+                            </a>
+                          </div>
+                        </React.Fragment>
+                      ))
+                    : null}
                 </TableCell>
               </TableRow>
               <TableRow>
