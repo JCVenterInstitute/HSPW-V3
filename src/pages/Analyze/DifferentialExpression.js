@@ -252,6 +252,7 @@ const DifferentialExpression = () => {
       headerClass: ["header-border"],
       checkboxSelection: true,
       headerCheckboxSelection: true,
+      headerCheckboxSelectionFilteredOnly: true,
       sort: "asc",
     },
     {
