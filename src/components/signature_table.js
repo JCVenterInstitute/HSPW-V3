@@ -180,7 +180,7 @@ function App() {
   }, [pageSize, pageNum, queryArr, typeArr, name, startMember, searchText]);
 
   const [gridApi, setGridApi] = useState();
-  function LinkComponent(props: ICellRendererParams) {
+  function LinkComponent(props) {
     return (
       <a
         target="_blank"

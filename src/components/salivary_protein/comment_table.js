@@ -195,7 +195,7 @@ function Comment_Table(props) {
 
   const onBtNext = (event) => {
     if (pageNum < totalPageNumber) {
-      const newPageNumber = pageNumber + 1;
+      const newPageNumber = pageNum + 1;
       setPageNum(newPageNumber);
       if (gridApi) {
         gridRef.current.api.paginationGoToPage(newPageNumber - 1);
@@ -487,7 +487,7 @@ function Comment_Table(props) {
           }
           onGridReady={onGridReady}
           pagination={true}
-          paginationPageSize={20}
+          paginationPageSize={10}
           paginationNumberFormatter={paginationNumberFormatter}
           suppressPaginationPanel={true}
           frameworkComponents={{

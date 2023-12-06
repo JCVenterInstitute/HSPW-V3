@@ -2,6 +2,7 @@ import React from "react";
 import Table from "@mui/material/Table";
 import Paper from "@mui/material/Paper";
 import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { HashLink as Link } from "react-router-hash-link";
@@ -22,98 +23,12 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 import CustomLoadingOverlay from "../Loading/CustomLoadingOverlay";
 import CustomNoRowsOverlay from "../Loading/CustomNoRowsOverlay";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
+
 import main_feature from "../../components/hero.jpeg";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
 let i = 0;
 
 window.customElements.define("protvista-uniprot", ProtvistaUniprot);
-export const options = {
-  indexAxis: "y",
-  responsive: true,
-  title: {
-    display: true,
-    text: "Data Pasien Keluar Masuk",
-    fontSize: 20,
-  },
-  legend: {
-    position: "bottom",
-  },
-  plugins: {
-    tooltip: {
-      callbacks: {
-        label: function (context) {
-          let label = 0;
-          if (context.parsed.x) {
-            label = Math.abs(context.parsed.x);
-          }
-          return label;
-        },
-      },
-    },
-  },
-  scales: {
-    xAxes: [
-      {
-        stacked: true,
-        ticks: {
-          callback: (value) => Math.abs(value),
-        },
-      },
-    ],
-    yAxes: [
-      {
-        stacked: true,
-        ticks: {
-          reverse: true,
-        },
-      },
-      {
-        type: "category",
-        position: "right",
-        offset: true,
-        ticks: {
-          reverse: true,
-        },
-        gridLines: {
-          display: false,
-        },
-      },
-    ],
-  },
-};
-
-export const data = {
-  labels: ["0-4", "5-9", "10-14", "15-19", "20+"],
-  datasets: [
-    {
-      label: "Pasien Masuk",
-      data: [100, 90, 80, 70, 60000],
-      backgroundColor: "red",
-    },
-    {
-      label: "Pasien Keluar",
-      data: [-100, -75, -60, -75, -70],
-      backgroundColor: "blue",
-    },
-  ],
-};
 
 const th = {
   background: "#f2f2f2",
@@ -133,15 +48,24 @@ const td = {
 };
 
 const Protein_Detail = (props) => {
+  const [message, setMessage] = useState("");
   const params = useParams();
   let url = "http://localhost:8000/protein/" + params["proteinid"];
 
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");
-
+  const [data1, setData1] = useState("");
+  const [p, setP] = useState("");
+  const [o, setO] = useState("");
+  const [fS, setFS] = useState("");
   const [authorName, setauthorName] = useState("");
   const [year, setYear] = useState("");
   const [journal, setJournal] = useState("");
+  const [v, setV] = useState("");
+  const [j, setJ] = useState("");
+  const [sS, setSS] = useState("");
+  const [checkData, setCheckData] = useState(false);
+  const [annotation, setAnnotation] = useState("");
 
   const fetchProtein = async () => {
     console.log(url);
@@ -172,6 +96,7 @@ const Protein_Detail = (props) => {
       }
 
       setLoading(false);
+      setCheckData(true);
     }
   };
 
@@ -244,16 +169,10 @@ const Protein_Detail = (props) => {
             >
               Names and Origin
             </h2>
-<<<<<<< HEAD
             <TableHead
-=======
-            <div
->>>>>>> 1ea84e7 (update feature table on protein detail)
               style={{
-                width: "100%",
                 borderTopLeftRadius: "10px",
                 borderTopRightRadius: "10px",
-<<<<<<< HEAD
                 maxWidth: "70%",
                 borderRadius: "10px 0 0 10px",
               }}
@@ -262,24 +181,13 @@ const Protein_Detail = (props) => {
                 <TableCell
                   variant="header"
                   sx={th}
-=======
-                overflow: "hidden",
-                boxSizing: "border-box",
-              }}
-            >
-              <Table
-                style={{
-                  width: "40%",
-                  borderTopLeftRadius: "10px",
-                  borderTopRightRadius: "10px",
-                  border: "1px solid black",
-                }}
-              >
-                <TableHead
->>>>>>> 1ea84e7 (update feature table on protein detail)
                   style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "14px",
+                    border: "1px solid #3592E4",
                     borderTopLeftRadius: "10px",
-<<<<<<< HEAD
                     border: "none",
                     width: "10%",
                   }}
@@ -296,43 +204,12 @@ const Protein_Detail = (props) => {
                     fontSize: "0.875rem",
                     border: "1px solid #CACACA",
                     fontFamily: "Lato",
-=======
-                    borderTopRightRadius: "10px",
->>>>>>> 1ea84e7 (update feature table on protein detail)
                   }}
                 >
-                  <TableRow style={{ borderTopRightRadius: "10px" }}>
-                    <TableCell
-                      style={{
-                        backgroundColor: "#1463B9",
-                        color: "white",
-                        fontFamily: "Montserrat",
-                        fontSize: "14px",
-                        border: "1px solid #3592E4",
-                        borderTopLeftRadius: "10px",
-                        borderTopRightRadius: "10px", // Added borderTopRightRadius here
-                        width: "30%",
-                      }}
-                    >
-                      Primary Accession
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        fontSize: "0.875rem",
-                        border: "1px solid #CACACA",
-                        fontFamily: "Lato",
-                        borderTopRightRadius: "10px", // Added borderTopRightRadius here
-                      }}
-                    >
-                      {
-                        data[0]["_source"]["salivary_proteins"][
-                          "uniprot_accession"
-                        ]
-                      }
-                    </TableCell>
-                  </TableRow>
+                  {data[0]["_source"]["salivary_proteins"]["uniprot_accession"]}
+                </TableCell>
+              </TableRow>
 
-<<<<<<< HEAD
               <TableRow>
                 <TableCell
                   sx={th}
@@ -399,74 +276,7 @@ const Protein_Detail = (props) => {
                 </TableCell>
               </TableRow>
             </TableHead>
-=======
-                  <TableRow>
-                    <TableCell
-                      sx={th}
-                      style={{
-                        backgroundColor: "#1463B9",
-                        color: "white",
-                        fontFamily: "Montserrat",
-                        fontSize: "14px",
->>>>>>> 1ea84e7 (update feature table on protein detail)
 
-                        border: "1px solid #3592E4",
-                      }}
-                    >
-                      Genes
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        fontSize: "0.875rem",
-                        border: "1px solid #CACACA",
-                        fontFamily: "Lato",
-                        fontSize: "14px",
-                      }}
-                    >
-                      {data[0]["_source"]["salivary_proteins"][
-                        "primary_gene_names"
-                      ].map((child, i) => (
-                        <React.Fragment key={i}>
-                          <span style={{ color: "black" }}>
-                            {i + 1}. {child}
-                          </span>
-                          <br></br>
-                        </React.Fragment>
-                      ))}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      sx={th}
-                      style={{
-                        backgroundColor: "#1463B9",
-                        color: "white",
-                        fontFamily: "Montserrat",
-                        fontSize: "14px",
-                        border: "1px solid #3592E4",
-                      }}
-                    >
-                      Organism
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        fontSize: "0.875rem",
-                        border: "1px solid #CACACA",
-                        fontFamily: "Lato",
-                        fontSize: "14px",
-                      }}
-                    >
-                      <a
-                        style={{ color: "/*#116988*/#0b5989" }}
-                        href="https://www.uniprot.org/taxonomy/9606 "
-                      >
-                        Homo sapiens
-                      </a>
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-              </Table>
-            </div>
             <Divider
               sx={{
                 marginBottom: "10px",
@@ -533,12 +343,7 @@ const Protein_Detail = (props) => {
                     borderTopLeftRadius: "10px",
                   }}
                 >
-                  <a
-                    style={{ color: "white" }}
-                    href="https://salivaryproteome.org/public/index.php/Property:Has_accession_number"
-                  >
-                    Identifier
-                  </a>
+                  Identifier
                 </TableCell>
                 <TableCell
                   style={{
@@ -550,12 +355,20 @@ const Protein_Detail = (props) => {
                     border: "1px solid #3592E4",
                   }}
                 >
-                  <a
-                    style={{ color: "white" }}
-                    href="https://salivaryproteome.org/public/index.php/Property:Known_officially_as"
-                  >
-                    Name
-                  </a>
+                  Name
+                </TableCell>
+
+                <TableCell
+                  style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "17px",
+                    fontWeight: "bold",
+                    border: "1px solid #3592E4",
+                  }}
+                >
+                  Sequence Length
                 </TableCell>
                 <TableCell
                   style={{
@@ -567,46 +380,7 @@ const Protein_Detail = (props) => {
                     border: "1px solid #3592E4",
                   }}
                 >
-                  <a
-                    style={{ color: "white" }}
-                    href="https://salivaryproteome.org/public/index.php/Property:Known_officially_as"
-                  >
-                    Aliases
-                  </a>
-                </TableCell>
-                <TableCell
-                  style={{
-                    backgroundColor: "#1463B9",
-                    color: "white",
-                    fontFamily: "Montserrat",
-                    fontSize: "17px",
-                    fontWeight: "bold",
-                    border: "1px solid #3592E4",
-                  }}
-                >
-                  <a
-                    style={{ color: "white" }}
-                    href="https://salivaryproteome.org/public/index.php/Property:Known_officially_as"
-                  >
-                    Sequence length
-                  </a>
-                </TableCell>
-                <TableCell
-                  style={{
-                    backgroundColor: "#1463B9",
-                    color: "white",
-                    fontFamily: "Montserrat",
-                    fontSize: "17px",
-                    fontWeight: "bold",
-                    border: "1px solid #3592E4",
-                  }}
-                >
-                  <a
-                    style={{ color: "white" }}
-                    href="https://salivaryproteome.org/public/index.php/Property:Known_officially_as"
-                  >
-                    Molecular mass
-                  </a>
+                  Molecular Mass
                 </TableCell>
                 <TableCell
                   style={{
@@ -619,12 +393,7 @@ const Protein_Detail = (props) => {
                     borderTopRightRadius: "10px",
                   }}
                 >
-                  <a
-                    style={{ color: "white" }}
-                    href="https://salivaryproteome.org/public/index.php/Property:Known_officially_as"
-                  >
-                    Sequence
-                  </a>
+                  Sequence
                 </TableCell>
               </TableRow>
               <TableRow
@@ -643,7 +412,6 @@ const Protein_Detail = (props) => {
                 <TableCell style={{ border: "1px solid #CACACA" }}>
                   Canonical sequence
                 </TableCell>
-                <TableCell style={{ border: "1px solid #CACACA" }}></TableCell>
                 <TableCell style={{ border: "1px solid #CACACA" }}>
                   {
                     data[0]["_source"]["salivary_proteins"][
@@ -657,9 +425,13 @@ const Protein_Detail = (props) => {
                 <TableCell style={{ border: "1px solid #CACACA" }}>
                   <a
                     style={{ color: "#116988" }}
-                    href="https://salivaryproteome.org/public/index.php/HSPW:PE90567/1"
+                    href={
+                      window.location.origin +
+                      "/protein_sequence/" +
+                      params["proteinid"]
+                    }
                   >
-                    HSPW:PE90567/1
+                    Sequence
                   </a>
                 </TableCell>
               </TableRow>
