@@ -1169,15 +1169,43 @@ function App() {
           const wildcardProperty =
             hasWildcard && Object.keys(p.bool.filter[0].wildcard)[0];
 
+          const hasQueryString =
+            p.bool &&
+            p.bool.filter &&
+            p.bool.filter[0] &&
+            p.bool.filter[0].query_string;
+
+          // Check if it's a "Gene Symbol" query with an empty value
+          const isGeneSymbolQuery =
+            hasWildcard &&
+            wildcardProperty === "Gene Symbol" &&
+            p.bool.filter[0].wildcard["Gene Symbol"].value === "";
+
+          const isProteinNameQuery =
+            hasWildcard &&
+            wildcardProperty === "Protein Name" &&
+            p.bool.filter[0].wildcard["Protein Name"].value === "";
+
+          const isIHCQuery =
+            hasWildcard &&
+            wildcardProperty === "IHC" &&
+            p.bool.filter[0].wildcard["IHC"].value === "";
           // Adjust the condition based on the targetTypePrev boolean value
-          return hasWildcard || p.bool.filter[0].query_string
+          return hasWildcard || hasQueryString
             ? targetTypePrev
               ? wildcardProperty !== fieldName &&
-                Object.keys(p.bool.filter[0].query_string)[0] !== undefined &&
-                Object.keys(p.bool.filter[0].query_string)[0] !== fieldName
-              : wildcardProperty === fieldName ||
-                (Object.keys(p.bool.filter[0].query_string)[0] !== undefined &&
-                  Object.keys(p.bool.filter[0].query_string)[0] === fieldName)
+                !(
+                  isGeneSymbolQuery &&
+                  isProteinNameQuery &&
+                  isIHCQuery &&
+                  p.bool.filter[0].query_string[fieldName] !== undefined
+                )
+              : isGeneSymbolQuery ||
+                isProteinNameQuery ||
+                isIHCQuery ||
+                wildcardProperty === fieldName ||
+                (hasQueryString &&
+                  p.bool.filter[0].query_string[fieldName] !== undefined)
             : true;
         });
 
@@ -1774,7 +1802,6 @@ function App() {
                 },
               }
             : null;
-        console.log("321", IHCQuery);
       } else if (value === "n/a") {
         // Special case for "n/a"
         updatedIHCArr = [false, false, false, !prevIHCArr[3], false];
@@ -1799,7 +1826,6 @@ function App() {
                 },
               }
             : null;
-        console.log("3211", IHCQuery);
       } else {
         updatedIHCArr = prevIHCArr.map((isChecked, index) =>
           index === IHCValues.indexOf(value) ? !isChecked : isChecked
@@ -1856,7 +1882,7 @@ function App() {
         }
       }
       console.log(IHCQuery);
-      updateQuery(IHCQuery, "");
+      updateQuery(IHCQuery, "IHC");
       return updatedIHCArr;
     });
   };
