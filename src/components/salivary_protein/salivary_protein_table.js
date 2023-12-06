@@ -1,6 +1,5 @@
 import "../filter.css";
 import List from "@material-ui/core/List";
-import { Link } from "react-router-dom";
 import CustomLoadingOverlay from "../customLoadingOverlay.jsx";
 import CustomNoRowsOverlay from "../customNoRowsOverlay.jsx";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -32,19 +31,13 @@ import {
   TextField,
   Box,
   MenuItem,
-  Grid,
-  Button,
   Stack,
   Checkbox,
   InputAdornment,
   IconButton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { ICellRendererParams } from "ag-grid-community";
 import { ReactComponent as Download_Logo } from "../table_icon/download.svg";
-import { ReactComponent as Left_Arrow } from "../table_icon/left_arrow.svg";
-import { ReactComponent as Right_Arrow } from "../table_icon/right_arrow.svg";
-import { ReactComponent as Search } from "../table_icon/search.svg";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
@@ -410,10 +403,9 @@ function LinkComponent(props) {
 }
 
 function App() {
-  const [gridApi, setGridApi] = useState();
   const [pageSize, setPageSize] = useState(50);
   const [pageNum, setPageNum] = useState(0);
-  const [message, setMessage] = useState("");
+
   const [count, setCount] = useState(2);
   const [docCount, setDocCount] = useState(0);
   const [pageNumArr, setPageNumArr] = useState([1]);
@@ -446,7 +438,6 @@ function App() {
   const [mRNAStart, setmRNAStart] = useState("0");
   const [mRNAEnd, setmRNAEnd] = useState("20000");
   const [queryArr, setQueryArr] = useState([]);
-  const [andQueryArr, setAndQueryArr] = useState([]);
   const [opArr, setOpArr] = useState([false, false]);
   const [orChecked, setorChecked] = useState(false);
   const [exclude, setExclude] = useState(false);
@@ -634,139 +625,6 @@ function App() {
     ) {
       console.log("1");
       const result = fetchAndData().catch(console.errror);
-      result.then((value) => {
-        if (value.hits.hits) {
-          console.log(value);
-          let data1 = [];
-          for (let i = 0; i < value.hits.hits.length; i++) {
-            data1.push(value.hits.hits[i]["_source"]);
-          }
-          console.log(data1);
-          setRowData(data1);
-        }
-        setDocCount(value.hits.total.value);
-        const newOptions = [];
-        for (
-          let i = 1;
-          i <= Math.round(value.hits.total.value / pageSize);
-          i++
-        ) {
-          newOptions.push(
-            <option key={i} value={i}>
-              {i}
-            </option>
-          );
-        }
-
-        setPageNumArr(newOptions);
-        setCount(2);
-        setOpCount(value.aggregations.expert_opinion.buckets);
-        setIHCCount(value.aggregations.IHC.buckets);
-      });
-    } else if (
-      (accessionC === true ||
-        geneC === true ||
-        nameC === true ||
-        eoC === true ||
-        ihcC === true ||
-        wsC === true ||
-        parC === true ||
-        subC === true ||
-        plasmaC === true ||
-        mRNAC === true) &&
-      orChecked === true &&
-      exclude === false
-    ) {
-      const result = fetchOrData().catch(console.errror);
-      result.then((value) => {
-        if (value.hits.hits) {
-          console.log(value);
-          let data1 = [];
-          for (let i = 0; i < value.hits.hits.length; i++) {
-            data1.push(value.hits.hits[i]["_source"]);
-          }
-          console.log(data1);
-          setRowData(data1);
-        }
-        setDocCount(value.hits.total.value);
-        const newOptions = [];
-        for (
-          let i = 1;
-          i <= Math.round(value.hits.total.value / pageSize);
-          i++
-        ) {
-          newOptions.push(
-            <option key={i} value={i}>
-              {i}
-            </option>
-          );
-        }
-
-        setPageNumArr(newOptions);
-        setCount(2);
-        setOpCount(value.aggregations.expert_opinion.buckets);
-        setIHCCount(value.aggregations.IHC.buckets);
-      });
-    } else if (
-      (accessionC === true ||
-        geneC === true ||
-        nameC === true ||
-        eoC === true ||
-        ihcC === true ||
-        wsC === true ||
-        parC === true ||
-        subC === true ||
-        plasmaC === true ||
-        mRNAC === true) &&
-      orChecked === false &&
-      exclude === true
-    ) {
-      const result = fetchAndExcludeData().catch(console.errror);
-      result.then((value) => {
-        if (value.hits.hits) {
-          console.log(value);
-          let data1 = [];
-          for (let i = 0; i < value.hits.hits.length; i++) {
-            data1.push(value.hits.hits[i]["_source"]);
-          }
-          console.log(data1);
-          setRowData(data1);
-        }
-        setDocCount(value.hits.total.value);
-        const newOptions = [];
-        for (
-          let i = 1;
-          i <= Math.round(value.hits.total.value / pageSize);
-          i++
-        ) {
-          newOptions.push(
-            <option key={i} value={i}>
-              {i}
-            </option>
-          );
-        }
-
-        setPageNumArr(newOptions);
-        setCount(2);
-        setOpCount(value.aggregations.expert_opinion.buckets);
-        setIHCCount(value.aggregations.IHC.buckets);
-      });
-    } else if (
-      (accessionC === true ||
-        geneC === true ||
-        nameC === true ||
-        eoC === true ||
-        ihcC === true ||
-        wsC === true ||
-        parC === true ||
-        subC === true ||
-        plasmaC === true ||
-        mRNAC === true) &&
-      orChecked === true &&
-      exclude === true
-    ) {
-      console.log("4");
-      const result = fetchOrExcludeData().catch(console.errror);
       result.then((value) => {
         if (value.hits.hits) {
           console.log(value);
