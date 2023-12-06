@@ -533,6 +533,13 @@ const DifferentialExpression = () => {
           text: "GroupA and/or GroupB cannot be empty. Please try again.",
         });
         return;
+      } else if (groupARowData.length < 3 || groupBRowData.length < 3) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "GroupA and/or GroupB need to have at least 3 samples. Please try again.",
+        });
+        return;
       }
 
       const checkDuplicate = new Set();
