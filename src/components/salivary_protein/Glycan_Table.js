@@ -130,11 +130,6 @@ function Glycan_Table(props) {
 
   const [pageNumArr, setPageNumArr] = useState([1]);
 
-  useEffect(() => {
-    console.log("49:" + props.data);
-    const jsonData = props.data;
-  }, []);
-
   let data1 = [];
   for (let i = 0; i < message.length; i++) {
     data1.push(message[i]["_source"]);
@@ -353,7 +348,9 @@ function Glycan_Table(props) {
       >
         <AgGridReact
           className="ag-cell-wrap-text"
-          rowData={props.data[0]._source.salivary_proteins.glycans}
+          rowData={props.data[0]._source.salivary_proteins.glycans.filter(
+            (glycan) => glycan.glytoucan_accession !== ""
+          )}
           columnDefs={columns}
           ref={gridRef}
           enableCellTextSelection={true}
