@@ -157,6 +157,85 @@ const Protein_Detail = (props) => {
         </TabList>
 
         <TabPanel>
+          <div
+            style={{
+              backgroundImage: `url(${main_feature})`,
+            }}
+            className="head_background"
+          >
+            <h1 className="head_title" align="left">
+              Protein: {data[0]["_source"]["salivary_proteins"]["protein_name"]}
+            </h1>
+            <p
+              style={{
+                textAlign: "left",
+                color: "white",
+                paddingBottom: "15px",
+                marginLeft: "20px",
+                marginRight: "20px",
+              }}
+              className="head_text"
+            >
+              Altername Names:{" "}
+              {
+                data[0]["_source"]["salivary_proteins"][
+                  "protein_alternate_names"
+                ][0]
+              }
+            </p>
+          </div>
+          <div id="hero-section">
+            <span id="hero-text">Jump To Section</span>
+            <div
+              style={{
+                marginLeft: "10px",
+              }}
+            >
+              <Link
+                to="#names-and-origin"
+                className="hero-link"
+                style={{ marginLeft: "0px" }}
+              >
+                Names and Origin
+              </Link>
+              |
+              <Link to="#sequence-attributes" className="hero-link">
+                Sequence Attributes
+              </Link>
+              |
+              <Link to="#feature-map" className="hero-link">
+                Feature Map
+              </Link>
+              |
+              <Link to="#expression" className="hero-link">
+                Expression
+              </Link>
+              |
+              <Link to="#glycan" className="hero-link">
+                Glycan
+              </Link>
+              |
+              <Link to="#proteomics" className="hero-link">
+                Proteomics
+              </Link>
+              |
+              <Link to="#cross-reference" className="hero-link">
+                Cross References
+              </Link>
+              |
+              <Link to="#keywords" className="hero-link">
+                Keywords
+              </Link>
+              |
+              <Link to="#references" className="hero-link">
+                References
+              </Link>
+              |
+              <Link to="#entry-info" className="hero-link">
+                Entry Info
+              </Link>
+            </div>
+          </div>
           <div style={{ margin: "20px" }}>
             <h2
               style={{
