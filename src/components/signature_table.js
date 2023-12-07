@@ -59,6 +59,7 @@ function App() {
   }, []);
 
   useEffect(() => {
+    console.log("123", JSON.stringify(queryArr));
     const fetchData = async () => {
       const data = await fetch(
         "http://localhost:8000/protein_signature/" + pageSize + "/" + pageNum
@@ -90,8 +91,7 @@ function App() {
 
     if (typeC === true || nameC === true || memberC === true || idC === true) {
       queryResult.then((value) => {
-        if (value.hits.hits) {
-          console.log(value);
+        if (value) {
           let data1 = [];
           for (let i = 0; i < value.hits.hits.length; i++) {
             data1.push(value.hits.hits[i]["_source"]);
@@ -327,184 +327,76 @@ function App() {
     // You can use the searchText state here for searching/filtering data
   };
 
+  const typeValues = [
+    "Protein Families",
+    "Protein Domains",
+    "Protein Repeats",
+    "Protein Sites",
+  ];
+
   const filterType = (event) => {
-    console.log(event.target.value);
-    if (event.target.value === "Protein Families") {
-      settypeArr((prevTypeArr) => {
-        const updatedTypeArr = [
-          !prevTypeArr[0],
-          prevTypeArr[1],
-          prevTypeArr[2],
-          prevTypeArr[3],
-        ];
+    let { value } = event.target;
 
-        if (updatedTypeArr[0] === true) {
-          settypeC(true);
-          setQueryArr((prevArray) => [
-            ...prevArray,
-            {
-              wildcard: {
-                Type: {
-                  value: "families*",
-                  case_insensitive: true,
+    const inputValue = value;
+    settypeArr((prevtypeArr) => {
+      let updatedtypeArr;
+      let typeQuery;
+      updatedtypeArr = prevtypeArr.map((isChecked, index) =>
+        index === typeValues.indexOf(value) ? !isChecked : isChecked
+      );
+
+      // Check if any checkbox is checked
+      const anyChecked = updatedtypeArr.some((isChecked) => isChecked);
+
+      // Update ihcC and IHCVal based on checked status
+      if (anyChecked) {
+        settypeC(true);
+        settypeVal(`${value}*`);
+        typeQuery =
+          prevtypeArr[typeValues.indexOf(value)] === false
+            ? {
+                bool: {
+                  must: [],
+                  must_not: [],
+                  filter: [
+                    {
+                      wildcard: {
+                        "Type.keyword": {
+                          value: `*${value}*`,
+                          case_insensitive: true,
+                        },
+                      },
+                    },
+                  ],
                 },
-              },
-            },
-          ]);
-        } else if (updatedTypeArr[0] === false) {
-          console.log(false);
-          var idx = queryArr.findIndex(
-            (p) => p.wildcard.Type.value == "families*"
-          );
-
-          console.log(idx);
-          if (idx != -1) {
-            queryArr.splice(idx, 1);
-            console.log(queryArr);
-          }
-          console.log(queryArr);
-        } else if (
-          updatedTypeArr[0] === false &&
-          updatedTypeArr[1] === false &&
-          updatedTypeArr[2] === false &&
-          updatedTypeArr[3] === false
-        ) {
-          console.log("321");
-          settypeC(false);
-        }
-        return updatedTypeArr;
-      });
-    } else if (event.target.value === "Protein Domains") {
-      settypeArr((prevTypeArr) => {
-        const updatedTypeArr = [
-          prevTypeArr[0],
-          !prevTypeArr[1],
-          prevTypeArr[2],
-          prevTypeArr[3],
-        ];
-        if (updatedTypeArr[1] === true) {
-          settypeC(true);
-          setQueryArr((prevArray) => [
-            ...prevArray,
-            {
-              wildcard: {
-                Type: {
-                  value: "domains*",
-                  case_insensitive: true,
+              }
+            : null;
+      } else {
+        settypeC(false);
+        settypeVal("");
+        typeQuery =
+          prevtypeArr[typeValues.indexOf(value)] === false
+            ? {
+                bool: {
+                  must: [],
+                  must_not: [],
+                  filter: [
+                    {
+                      wildcard: {
+                        "Type.keyword": {
+                          value: `*${value}*`,
+                          case_insensitive: true,
+                        },
+                      },
+                    },
+                  ],
                 },
-              },
-            },
-          ]);
-        } else if (updatedTypeArr[1] === false) {
-          console.log(queryArr);
-          var idx = queryArr.findIndex(
-            (p) => p.wildcard.Type.value === "domains*"
-          );
-
-          console.log(idx);
-          if (idx != -1) {
-            queryArr.splice(idx, 1);
-            console.log(queryArr);
-          }
-          console.log(queryArr);
-        } else if (
-          updatedTypeArr[0] === false &&
-          updatedTypeArr[1] === false &&
-          updatedTypeArr[2] === false &&
-          updatedTypeArr[3] === false
-        ) {
-          settypeC(false);
-        }
-        return updatedTypeArr;
-      });
-    } else if (event.target.value === "Protein Repeats") {
-      settypeArr((prevTypeArr) => {
-        const updatedTypeArr = [
-          prevTypeArr[0],
-          prevTypeArr[1],
-          !prevTypeArr[2],
-          prevTypeArr[3],
-        ];
-        if (updatedTypeArr[2] === true) {
-          settypeC(true);
-          setQueryArr((prevArray) => [
-            ...prevArray,
-            {
-              wildcard: {
-                Type: {
-                  value: "repeats*",
-                  case_insensitive: true,
-                },
-              },
-            },
-          ]);
-        } else if (updatedTypeArr[2] === false) {
-          console.log(false);
-          var idx = queryArr.findIndex(
-            (p) => p.wildcard.Type.value === "repeats*"
-          );
-
-          console.log(idx);
-          if (idx != -1) {
-            queryArr.splice(idx, 1);
-            console.log(queryArr);
-          }
-          console.log(queryArr);
-        } else if (
-          updatedTypeArr[0] === false &&
-          updatedTypeArr[1] === false &&
-          updatedTypeArr[2] === false &&
-          updatedTypeArr[3] === false
-        ) {
-          settypeC(false);
-          settypeVal("*");
-        }
-        return updatedTypeArr;
-      });
-    } else if (event.target.value === "Protein Sites") {
-      settypeArr((prevTypeArr) => {
-        const updatedTypeArr = [
-          prevTypeArr[0],
-          prevTypeArr[1],
-          prevTypeArr[2],
-          !prevTypeArr[3],
-        ];
-        if (updatedTypeArr[3] === true) {
-          settypeC(true);
-          setQueryArr((prevArray) => [
-            ...prevArray,
-            {
-              wildcard: {
-                Type: {
-                  value: "sites*",
-                  case_insensitive: true,
-                },
-              },
-            },
-          ]);
-        } else if (updatedTypeArr[3] === false) {
-          console.log(false);
-          var idx = queryArr.findIndex(
-            (p) => p.wildcard.Type.value === "sites*"
-          );
-
-          console.log(idx);
-          if (idx != -1) {
-            queryArr.splice(idx, 1);
-            console.log(queryArr);
-          }
-          console.log(queryArr);
-        } else if (
-          updatedTypeArr[0] === false &&
-          updatedTypeArr[1] === false &&
-          updatedTypeArr[2] === false &&
-          updatedTypeArr[3] === false
-        ) {
-          settypeC(false);
-        }
-        return updatedTypeArr;
-      });
-    }
+              }
+            : null;
+      }
+      updateQuery(typeQuery, "Type");
+      return updatedtypeArr;
+    });
   };
 
   const handleIDChange = (e) => {
@@ -520,17 +412,25 @@ function App() {
     const newIDQuery =
       inputValue !== ""
         ? {
-            wildcard: {
-              "InterPro ID": {
-                value: `*${inputValue}*`,
-                case_insensitive: true,
-              },
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  wildcard: {
+                    "InterPro ID": {
+                      value: `${inputValue}*`,
+                      case_insensitive: true,
+                    },
+                  },
+                },
+              ],
             },
           }
         : null;
 
     set_interpro_id(inputValue);
-    updateQuery(newIDQuery);
+    updateQuery(newIDQuery, "InterPro ID");
   };
 
   const handleNameChange = (e) => {
@@ -546,64 +446,192 @@ function App() {
     const newNameQuery =
       inputValue !== ""
         ? {
-            wildcard: {
-              Name: {
-                value: `*${inputValue}*`,
-                case_insensitive: true,
-              },
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  wildcard: {
+                    Name: {
+                      value: `${inputValue}*`,
+                      case_insensitive: true,
+                    },
+                  },
+                },
+              ],
             },
           }
         : null;
 
     setName(inputValue);
-    updateQuery(newNameQuery);
+    updateQuery(newNameQuery, "Name");
   };
 
-  const updateQuery = (newQuery) => {
+  const updateQuery = (newQuery, fieldName) => {
     setQueryArr((prevArray) => {
-      // Remove existing queries of the same type (InterPro ID or Name)
-      const filteredArray = prevArray.filter((p) => {
+      // If newQuery is null, remove only the corresponding type of query from the array
+      if (newQuery === null) {
+        const targetTypePrev = findEmptyField(prevArray, fieldName);
+        console.log("TargetType (null case):", targetTypePrev);
+
+        const updatedArray = prevArray.filter((p) => {
+          const hasWildcard =
+            p &&
+            p.bool &&
+            p.bool.filter &&
+            p.bool.filter[0] &&
+            p.bool.filter[0].wildcard;
+
+          const wildcardProperty =
+            hasWildcard && Object.keys(p.bool.filter[0].wildcard)[0];
+
+          const hasQueryString =
+            p.bool &&
+            p.bool.filter &&
+            p.bool.filter[0] &&
+            p.bool.filter[0].query_string;
+
+          const isNameQuery =
+            hasWildcard &&
+            wildcardProperty === "Name" &&
+            p.bool.filter[0].wildcard["Name"].value === "";
+
+          const isIHCQuery =
+            hasWildcard &&
+            wildcardProperty === "IHC" &&
+            p.bool.filter[0].wildcard["IHC"].value === "";
+          // Adjust the condition based on the targetTypePrev boolean value
+          return hasWildcard || hasQueryString
+            ? targetTypePrev
+              ? wildcardProperty !== fieldName &&
+                !(
+                  isNameQuery &&
+                  isIHCQuery &&
+                  p.bool.filter[0].query_string[fieldName] !== undefined
+                )
+              : isNameQuery ||
+                isIHCQuery ||
+                wildcardProperty === fieldName ||
+                (hasQueryString &&
+                  p.bool.filter[0].query_string[fieldName] !== undefined)
+            : true;
+        });
+
+        console.log("Updated Array (null case):", updatedArray);
+
+        return updatedArray;
+      }
+
+      const nonEmptyQueries = prevArray.filter((query) => {
+        const wildcardProperty =
+          query.bool &&
+          query.bool.filter &&
+          query.bool.filter[0].wildcard &&
+          Object.keys(query.bool.filter[0].wildcard)[0];
+
+        // Check if the field is not empty in the new query
         return !(
-          newQuery &&
-          p.wildcard.hasOwnProperty(Object.keys(newQuery.wildcard)[0])
+          wildcardProperty &&
+          newQuery.bool.filter &&
+          newQuery.bool.filter[0].wildcard &&
+          Object.keys(newQuery.bool.filter[0].wildcard)[0] ===
+            wildcardProperty &&
+          newQuery.bool.filter[0].wildcard[wildcardProperty] === ""
         );
       });
 
-      // Add the new query to the filtered array
-      return newQuery ? [...filteredArray, newQuery] : filteredArray;
+      console.log("Non-empty Queries:", nonEmptyQueries);
+
+      const updatedArray = nonEmptyQueries.map((p) => {
+        const isSame = isSameType(p, newQuery);
+        console.log(
+          `Comparing: ${JSON.stringify(p)} and ${JSON.stringify(
+            newQuery
+          )} => ${isSame}`
+        );
+        return isSame ? newQuery : p;
+      });
+
+      // If the new query does not exist or has an empty value, remove it from the array
+      if (
+        newQuery.bool.filter !== undefined &&
+        !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
+        !(newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value === "")
+      ) {
+        // Check if there's an existing query for the same field and remove it
+        const updatedArrayWithoutExisting = updatedArray.filter((p) => {
+          if (
+            p.bool &&
+            p.bool.filter &&
+            p.bool.filter[0].wildcard &&
+            Object.keys(p.bool.filter[0].wildcard)[0] === fieldName
+          ) {
+            // Remove the existing query if the new query is not empty
+            return newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value !== "";
+          }
+          return true;
+        });
+
+        // Add the new query only if it's not an empty wildcard
+        if (newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value !== "") {
+          updatedArrayWithoutExisting.push(newQuery);
+          console.log("New Query Added:", updatedArrayWithoutExisting);
+        }
+
+        return updatedArrayWithoutExisting;
+      }
+
+      return updatedArray;
     });
   };
 
-  const handleStartMember = (e) => {
-    const inputValue = e.target.value;
+  const findEmptyField = (queries, fieldName) => {
+    console.log("Queries:", queries);
+    console.log("Field Name:", fieldName);
 
-    const regex = new RegExp(
-      `^doc['# of Members.keyword'].length == ${inputValue}`,
-      "i"
-    );
+    const findFieldInFilter = (filter) => {
+      if (filter.wildcard) {
+        return filter && filter.wildcard && filter.wildcard[fieldName];
+      } else if (filter.range) {
+        return filter && filter.range && filter.range[fieldName];
+      } else if (filter.query_string) {
+        console.log("1272", filter.query_string);
+        return filter.query_string; // Directly return the found filter
+      }
+    };
 
-    setScriptArr((prevArray) => {
-      const newArray = prevArray.filter((p) => !regex.test(p.script.source));
-      console.log(newArray);
-      return newArray;
-    });
+    const searchQuery = (query) => {
+      if (query && query.bool && query.bool.filter) {
+        return query.bool.filter.some(findFieldInFilter);
+      }
 
-    if (inputValue === "") {
-      setMemberC(false);
-    } else {
-      setMemberC(true);
+      return false;
+    };
 
-      setScriptArr((prevArray) => [
-        ...prevArray,
-        {
-          script: {
-            source: `doc['# of Members.keyword'].length == ${inputValue}`,
-            lang: "painless",
-          },
-        },
-      ]);
+    const result = queries.some(searchQuery); // Use some instead of find
+
+    console.log(result ? "Field Found:" : "Field Not Found");
+
+    return result;
+  };
+
+  // Helper function to check if two queries have the same wildcard type
+  const isSameType = (query1, query2) => {
+    const type1 = query1.bool?.filter?.[0]?.wildcard
+      ? Object.keys(query1.bool.filter[0].wildcard)[0]
+      : null;
+    const type2 = query2.bool?.filter?.[0]?.wildcard
+      ? Object.keys(query2.bool.filter[0].wildcard)[0]
+      : null;
+
+    // Check both type and value for wildcard queries
+    if (type1 === type2 && type1 === "wildcard") {
+      const value1 = query1.bool.filter[0].wildcard[type1].value;
+      const value2 = query2.bool.filter[0].wildcard[type2].value;
+      return value1 === value2;
     }
-    setStartMember(inputValue);
+
+    return type1 === type2;
   };
 
   const handleEndMember = (e) => {};
@@ -674,12 +702,14 @@ function App() {
                         <FormControlLabel
                           control={
                             <Checkbox
-                              checked={typeArr[i]}
+                              checked={
+                                typeArr[typeValues.indexOf(child.key.trim())]
+                              }
                               onChange={filterType}
                               value={child.key}
                             />
                           }
-                          label={child.key + " (" + (child.doc_count - 1) + ")"}
+                          label={child.key + " (" + child.doc_count + ")"}
                         />
                       </FormGroup>
                     ) : null
