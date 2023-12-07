@@ -23,98 +23,12 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 import CustomLoadingOverlay from "../Loading/CustomLoadingOverlay";
 import CustomNoRowsOverlay from "../Loading/CustomNoRowsOverlay";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
+
 import main_feature from "../../components/hero.jpeg";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
 let i = 0;
 
 window.customElements.define("protvista-uniprot", ProtvistaUniprot);
-export const options = {
-  indexAxis: "y",
-  responsive: true,
-  title: {
-    display: true,
-    text: "Data Pasien Keluar Masuk",
-    fontSize: 20,
-  },
-  legend: {
-    position: "bottom",
-  },
-  plugins: {
-    tooltip: {
-      callbacks: {
-        label: function (context) {
-          let label = 0;
-          if (context.parsed.x) {
-            label = Math.abs(context.parsed.x);
-          }
-          return label;
-        },
-      },
-    },
-  },
-  scales: {
-    xAxes: [
-      {
-        stacked: true,
-        ticks: {
-          callback: (value) => Math.abs(value),
-        },
-      },
-    ],
-    yAxes: [
-      {
-        stacked: true,
-        ticks: {
-          reverse: true,
-        },
-      },
-      {
-        type: "category",
-        position: "right",
-        offset: true,
-        ticks: {
-          reverse: true,
-        },
-        gridLines: {
-          display: false,
-        },
-      },
-    ],
-  },
-};
-
-export const data = {
-  labels: ["0-4", "5-9", "10-14", "15-19", "20+"],
-  datasets: [
-    {
-      label: "Pasien Masuk",
-      data: [100, 90, 80, 70, 60000],
-      backgroundColor: "red",
-    },
-    {
-      label: "Pasien Keluar",
-      data: [-100, -75, -60, -75, -70],
-      backgroundColor: "blue",
-    },
-  ],
-};
 
 const th = {
   background: "#f2f2f2",
@@ -429,12 +343,7 @@ const Protein_Detail = (props) => {
                     borderTopLeftRadius: "10px",
                   }}
                 >
-                  <a
-                    style={{ color: "white" }}
-                    href="https://salivaryproteome.org/public/index.php/Property:Has_accession_number"
-                  >
-                    Identifier
-                  </a>
+                  Identifier
                 </TableCell>
                 <TableCell
                   style={{
@@ -446,12 +355,20 @@ const Protein_Detail = (props) => {
                     border: "1px solid #3592E4",
                   }}
                 >
-                  <a
-                    style={{ color: "white" }}
-                    href="https://salivaryproteome.org/public/index.php/Property:Known_officially_as"
-                  >
-                    Name
-                  </a>
+                  Name
+                </TableCell>
+
+                <TableCell
+                  style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "17px",
+                    fontWeight: "bold",
+                    border: "1px solid #3592E4",
+                  }}
+                >
+                  Sequence Length
                 </TableCell>
                 <TableCell
                   style={{
@@ -463,46 +380,7 @@ const Protein_Detail = (props) => {
                     border: "1px solid #3592E4",
                   }}
                 >
-                  <a
-                    style={{ color: "white" }}
-                    href="https://salivaryproteome.org/public/index.php/Property:Known_officially_as"
-                  >
-                    Aliases
-                  </a>
-                </TableCell>
-                <TableCell
-                  style={{
-                    backgroundColor: "#1463B9",
-                    color: "white",
-                    fontFamily: "Montserrat",
-                    fontSize: "17px",
-                    fontWeight: "bold",
-                    border: "1px solid #3592E4",
-                  }}
-                >
-                  <a
-                    style={{ color: "white" }}
-                    href="https://salivaryproteome.org/public/index.php/Property:Known_officially_as"
-                  >
-                    Sequence length
-                  </a>
-                </TableCell>
-                <TableCell
-                  style={{
-                    backgroundColor: "#1463B9",
-                    color: "white",
-                    fontFamily: "Montserrat",
-                    fontSize: "17px",
-                    fontWeight: "bold",
-                    border: "1px solid #3592E4",
-                  }}
-                >
-                  <a
-                    style={{ color: "white" }}
-                    href="https://salivaryproteome.org/public/index.php/Property:Known_officially_as"
-                  >
-                    Molecular mass
-                  </a>
+                  Molecular Mass
                 </TableCell>
                 <TableCell
                   style={{
@@ -515,12 +393,7 @@ const Protein_Detail = (props) => {
                     borderTopRightRadius: "10px",
                   }}
                 >
-                  <a
-                    style={{ color: "white" }}
-                    href="https://salivaryproteome.org/public/index.php/Property:Known_officially_as"
-                  >
-                    Sequence
-                  </a>
+                  Sequence
                 </TableCell>
               </TableRow>
               <TableRow
@@ -539,7 +412,6 @@ const Protein_Detail = (props) => {
                 <TableCell style={{ border: "1px solid #CACACA" }}>
                   Canonical sequence
                 </TableCell>
-                <TableCell style={{ border: "1px solid #CACACA" }}></TableCell>
                 <TableCell style={{ border: "1px solid #CACACA" }}>
                   {
                     data[0]["_source"]["salivary_proteins"][
@@ -553,9 +425,13 @@ const Protein_Detail = (props) => {
                 <TableCell style={{ border: "1px solid #CACACA" }}>
                   <a
                     style={{ color: "#116988" }}
-                    href="https://salivaryproteome.org/public/index.php/HSPW:PE90567/1"
+                    href={
+                      window.location.origin +
+                      "/protein_sequence/" +
+                      params["proteinid"]
+                    }
                   >
-                    HSPW:PE90567/1
+                    Sequence
                   </a>
                 </TableCell>
               </TableRow>
@@ -1217,7 +1093,6 @@ const Protein_Detail = (props) => {
                             textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
                           }}
                         />
-                        ]
                       </a>
                     </div>
                   </React.Fragment>
@@ -1358,10 +1233,7 @@ const Protein_Detail = (props) => {
                   </TableCell>
                 </TableRow>
                 <TableRow sx={{ border: "1px solid black" }}>
-                  <TableCell
-                    sx={th}
-                    style={{ maxWidth: "20%" }}
-                  >
+                  <TableCell sx={th} style={{ maxWidth: "20%" }}>
                     Abundance level
                   </TableCell>
                   <TableCell
@@ -1370,10 +1242,7 @@ const Protein_Detail = (props) => {
                   ></TableCell>
                 </TableRow>
                 <TableRow sx={{ border: "1px solid black" }}>
-                  <TableCell
-                    sx={th}
-                    style={{ maxWidth: "20%" }}
-                  >
+                  <TableCell sx={th} style={{ maxWidth: "20%" }}>
                     Curator
                   </TableCell>
                   <TableCell
