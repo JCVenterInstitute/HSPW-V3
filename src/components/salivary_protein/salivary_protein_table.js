@@ -427,15 +427,15 @@ function App() {
   const [rowData, setRowData] = useState([]);
   const [opinionVal, setopinionVal] = useState("");
   const [IHCVal, setIHCVal] = useState("*");
-  const [parStart, setparStart] = useState("0");
+  const [parStart, setparStart] = useState("");
   const [parEnd, setparEnd] = useState("");
-  const [subStart, setsubStart] = useState("0");
+  const [subStart, setsubStart] = useState("");
   const [subEnd, setsubEnd] = useState("");
-  const [pStart, setpStart] = useState("0");
+  const [pStart, setpStart] = useState("");
   const [pEnd, setpEnd] = useState("");
-  const [wsStart, setwsStart] = useState("0");
+  const [wsStart, setwsStart] = useState("");
   const [wsEnd, setwsEnd] = useState("");
-  const [mRNAStart, setmRNAStart] = useState("0");
+  const [mRNAStart, setmRNAStart] = useState("");
   const [mRNAEnd, setmRNAEnd] = useState("");
   const [queryArr, setQueryArr] = useState([]);
   const [opArr, setOpArr] = useState([false, false]);
@@ -528,6 +528,7 @@ function App() {
   };
 
   useEffect(() => {
+    console.log("Exclude value:", exclude);
     if (
       (accessionC === true ||
         geneC === true ||
@@ -777,7 +778,7 @@ function App() {
           minWidth: "98",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
-          cellClass: ["square_table"],
+          cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
         {
           headerName: "Par",
@@ -785,7 +786,7 @@ function App() {
           minWidth: "97",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
-          cellClass: ["square_table"],
+          cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
         {
           headerName: "Sub",
@@ -793,7 +794,7 @@ function App() {
           minWidth: "101",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
-          cellClass: ["square_table"],
+          cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
         {
           headerName: "B",
@@ -801,7 +802,7 @@ function App() {
           minWidth: "95",
           cellRenderer: "LinkComponent",
           headerClass: ["header-border"],
-          cellClass: ["square_table"],
+          cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
       ],
 
@@ -816,7 +817,7 @@ function App() {
       wrapText: true,
       cellRenderer: "IHCComponent",
       headerClass: ["header-border"],
-      cellClass: ["square_table"],
+      cellClass: ["square_table", "salivary-proteins-colored-cell"],
     },
     {
       headerName: "mRNA",
@@ -834,7 +835,7 @@ function App() {
           minWidth: "116",
           cellRenderer: "WSComponent",
           headerClass: ["header-border"],
-          cellClass: ["square_table"],
+          cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
         {
           headerName: "Specificity",
@@ -1411,8 +1412,26 @@ function App() {
             },
           }
         : null;
-
+    if (pEnd === "") {
+      newstartBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      plasma_abundance: { gte: inputValue, lte: 5 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
     setpStart(inputValue);
+    console.log("1433", exclude);
     if (exclude === true) {
       newstartBQuery =
         inputValue !== ""
@@ -1432,6 +1451,7 @@ function App() {
   };
 
   const handleendBChange = (e) => {
+    console.log("1454", exclude);
     const inputValue = e.target.value;
     const plasmaAbundance = inputValue === "" ? 10 : inputValue;
     let newendBQuery = {
@@ -1445,11 +1465,46 @@ function App() {
         ],
       },
     };
+    if (pStart === "") {
+      newendBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      plasma_abundance: { lte: inputValue, gte: 0 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    } else if (exclude === true && pStart === 0) {
+      newendBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [
+                  {
+                    range: {
+                      plasma_abundance: { gte: 0, lte: inputValue },
+                    },
+                  },
+                ],
+                filter: [],
+              },
+            }
+          : null;
+    }
 
     setplasmaC(inputValue !== ""); // Set parC based on whether inputValue is not empty
 
     setpEnd(inputValue);
-    if (exclude === true) {
+    if (exclude === true && pStart !== 0) {
       newendBQuery =
         inputValue !== ""
           ? {
@@ -1465,6 +1520,7 @@ function App() {
               },
             }
           : null;
+
       console.log("1541:", newendBQuery);
     }
     updateQuery(newendBQuery, "plasma_abundance");
@@ -2146,13 +2202,23 @@ function App() {
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <FormGroup style={{ marginLeft: "5%" }}>
+                <FormGroup style={{ marginLeft: "2%" }}>
                   <Stack direction="row" spacing={1} alignItems="center">
                     <Typography color="common.black">Include</Typography>
                     <Switch
                       checked={exclude}
                       inputProps={{ "aria-label": "ant design" }}
-                      onChange={(event) => setExclude(event.target.checked)}
+                      onChange={(event) => {
+                        setExclude(event.target.checked, () => {
+                          // Your logic that depends on the updated state value
+                        });
+                        console.log(
+                          "Exclude value after update:",
+                          event.target.checked
+                        );
+                        handlestartBChange({ target: { value: pStart } });
+                        handleendBChange({ target: { value: pEnd } });
+                      }}
                     />
                     <Typography color="common.black">Exclude</Typography>
                   </Stack>
