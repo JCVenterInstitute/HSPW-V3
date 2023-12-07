@@ -2154,8 +2154,10 @@ app.get("/api/properties/:entity", async (req, res) => {
     Genes: "genes",
     "Protein Clusters": "protein_cluster",
     "Protein Signatures": "protein_signature",
-    Proteins: "protein",
+    Proteins: "study_protein",
     "PubMed Citations": "citation",
+    "Salivary Proteins": "protein",
+    Annotations: "protein",
   };
 
   await getProperties(entityIndexMapping[entity]).then((properties) =>
