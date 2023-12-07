@@ -13,9 +13,6 @@ import {
   IconButton,
   FormGroup,
   FormControlLabel,
-  Modal,
-  Backdrop,
-  Fade,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -123,7 +120,6 @@ const DifferentialExpression = () => {
   const [tissueTypeFilterList, setTissueTypeFilterList] = useState([]);
   const [institutionFilterList, setInstitutionFilterList] = useState([]);
   const [diseaseFilterList, setDiseaseFilterList] = useState([]);
-  const [openExplanationModal, setOpenExplanationModal] = useState(false);
   const [lowerLimit, setLowerLimit] = useState(0);
   const [upperLimit, setUpperLimit] = useState(20000);
   const [inputData, setInputData] = useState("");
@@ -432,14 +428,6 @@ const DifferentialExpression = () => {
     setGroupBRowData(newGroupRowData);
   };
 
-  const handleOpenExplanationModal = () => {
-    setOpenExplanationModal(true);
-  };
-
-  const handleCloseExplanationModal = () => {
-    setOpenExplanationModal(false);
-  };
-
   const handleFilter = (searchKeyword) => {
     gridApi.setQuickFilter(searchKeyword);
     setTotalPageNumber(gridApi.paginationGetTotalPages());
@@ -508,10 +496,28 @@ const DifferentialExpression = () => {
     }
   };
 
-  const handleDownloadTemplate = async () => {
+  const handleDownloadTemplateData = async () => {
     try {
       const response = await axios
-        .get("http://localhost:8000/api/download-template")
+        .get("http://localhost:8000/api/download-template-data")
+        .then((res) => res.data);
+
+      const { url } = response;
+      // Create a link and trigger the download
+      const link = document.createElement("a");
+      link.href = url;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading template:", error);
+    }
+  };
+
+  const handleDownloadDataStandard = async () => {
+    try {
+      const response = await axios
+        .get("http://localhost:8000/api/download-data-standard")
         .then((res) => res.data);
 
       const { url } = response;
@@ -1206,126 +1212,110 @@ const DifferentialExpression = () => {
             <Box
               sx={{
                 backgroundColor: "#f9f8f7",
-                height: "84px",
                 mt: "20px",
                 borderRadius: "16px",
                 display: "flex",
-                alignItems: "center",
-                flexDirection: "row",
-                padding: "0 16px",
+                flexDirection: "column",
+                padding: "16px",
               }}
             >
-              <Typography
-                display="inline"
+              {/* First line */}
+              <Box
                 sx={{
-                  fontFamily: "Lato",
-                  color: "#464646",
-                  mr: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "row", // Set to row for horizontal layout
+                  marginBottom: "8px", // Add space between lines
                 }}
               >
-                SELECT FILE:
-              </Typography>
-              <Button
-                component="label"
-                variant="contained"
-                sx={{ mr: 6 }}
-                startIcon={<CloudUploadIcon />}
-                onChange={handleFileChange}
-              >
-                Upload file
-                <VisuallyHiddenInput type="file" />
-              </Button>
-              <Typography
-                display="inline"
+                <Typography
+                  display="inline"
+                  sx={{
+                    fontFamily: "Lato",
+                    color: "#464646",
+                    mr: 2,
+                  }}
+                >
+                  SELECT FILE:
+                </Typography>
+                <Button
+                  component="label"
+                  variant="contained"
+                  sx={{ mr: 2 }}
+                  startIcon={<CloudUploadIcon />}
+                  onChange={handleFileChange}
+                >
+                  Upload file
+                  <VisuallyHiddenInput type="file" />
+                </Button>
+                <Typography
+                  display="inline"
+                  sx={{
+                    fontFamily: "Lato",
+                    color: "#464646",
+                    ml: 6,
+                    mr: 2,
+                  }}
+                >
+                  FILE NAME:
+                </Typography>
+                <Typography
+                  display="inline"
+                  sx={{
+                    fontFamily: "Lato",
+                    color: "#464646",
+                    mr: 2,
+                    fontStyle: "italic",
+                  }}
+                >
+                  {fileName}
+                </Typography>
+              </Box>
+
+              {/* Second line */}
+              <Box
                 sx={{
-                  fontFamily: "Lato",
-                  color: "#464646",
-                  mr: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "row", // Keep this row horizontal
+                  mt: 2,
                 }}
               >
-                TEMPLATE:
-              </Typography>
-              <Button
-                variant="contained"
-                sx={{ mr: 2 }}
-                onClick={handleDownloadTemplate}
-              >
-                DOWNLOAD
-              </Button>
-              <Button variant="text" onClick={handleOpenExplanationModal}>
-                Explain Template
-              </Button>
-              <Modal
-                aria-labelledby="template-explanation-modal"
-                aria-describedby="template-explanation-message"
-                open={openExplanationModal}
-                onClose={handleCloseExplanationModal}
-                closeAfterTransition
-                BackdropComponent={Backdrop}
-                BackdropProps={{
-                  timeout: 500,
-                }}
-              >
-                <Fade in={openExplanationModal}>
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      width: 400,
-                      bgcolor: "background.paper",
-                      boxShadow: 24,
-                      p: 4,
-                    }}
-                  >
-                    <Typography
-                      id="template-explanation-modal"
-                      variant="h6"
-                      component="h2"
-                    >
-                      Template Explanation
-                    </Typography>
-                    <Typography
-                      id="template-explanation-message"
-                      sx={{ mt: 2 }}
-                    >
-                      Here is the explanation of how to use the template...
-                    </Typography>
-                  </Box>
-                </Fade>
-              </Modal>
-              <Typography
-                display="inline"
-                sx={{
-                  fontFamily: "Lato",
-                  color: "#464646",
-                  ml: 6,
-                  mr: 2,
-                }}
-              >
-                FILE NAME:
-              </Typography>
-              <Typography
-                display="inline"
-                sx={{
-                  fontFamily: "Lato",
-                  color: "#464646",
-                  mr: 2,
-                  fontStyle: "italic",
-                }}
-              >
-                {fileName}
-              </Typography>
-              {/* <Button
-                variant="contained"
-                sx={{
-                  marginLeft: "auto",
-                  marginRight: 5,
-                }}
-              >
-                UPLOAD
-              </Button> */}
+                <Typography
+                  display="inline"
+                  sx={{
+                    fontFamily: "Lato",
+                    color: "#464646",
+                    mr: 2,
+                  }}
+                >
+                  TEMPLATE DATA:
+                </Typography>
+                <Button
+                  variant="contained"
+                  sx={{ mr: 2 }}
+                  onClick={handleDownloadTemplateData}
+                >
+                  DOWNLOAD
+                </Button>
+                <Typography
+                  display="inline"
+                  sx={{
+                    fontFamily: "Lato",
+                    color: "#464646",
+                    mr: 2,
+                    ml: 6,
+                  }}
+                >
+                  DATA STANDARD:
+                </Typography>
+                <Button
+                  variant="contained"
+                  onClick={handleDownloadDataStandard}
+                >
+                  DOWNLOAD
+                </Button>
+              </Box>
             </Box>
           </Box>
           <div
