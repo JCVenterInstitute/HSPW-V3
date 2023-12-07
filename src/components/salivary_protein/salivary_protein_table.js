@@ -1418,6 +1418,7 @@ function App() {
 
   const handlestartBChange = (e) => {
     let inputValue = e.target.value;
+
     if (inputValue === "") {
       setplasmaC(false);
       inputValue = 0;
@@ -1437,6 +1438,7 @@ function App() {
             },
           }
         : null;
+
     if (pEnd === "") {
       newstartBQuery =
         inputValue !== ""
@@ -1455,9 +1457,10 @@ function App() {
             }
           : null;
     }
+
     setpStart(inputValue);
-    console.log("1433", exclude);
-    if (exclude === true) {
+
+    if (e.target.exclude === true) {
       newstartBQuery =
         inputValue !== ""
           ? {
@@ -1472,11 +1475,12 @@ function App() {
             }
           : null;
     }
+
     updateQuery(newstartBQuery, "plasma_abundance");
   };
 
   const handleendBChange = (e) => {
-    console.log("1454", exclude);
+    console.log("1454", e.target.exclude);
     const inputValue = e.target.value;
     const plasmaAbundance = inputValue === "" ? 10 : inputValue;
     let newendBQuery = {
@@ -1507,7 +1511,7 @@ function App() {
               },
             }
           : null;
-    } else if (exclude === true && pStart === 0) {
+    } else if (e.target.exclude === true && pStart === 0) {
       newendBQuery =
         inputValue !== ""
           ? {
@@ -1529,7 +1533,7 @@ function App() {
     setplasmaC(inputValue !== ""); // Set parC based on whether inputValue is not empty
 
     setpEnd(inputValue);
-    if (exclude === true && pStart !== 0) {
+    if (e.target.exclude === true && pStart !== 0) {
       newendBQuery =
         inputValue !== ""
           ? {
@@ -2251,15 +2255,21 @@ function App() {
                       checked={exclude}
                       inputProps={{ "aria-label": "ant design" }}
                       onChange={(event) => {
-                        setExclude(event.target.checked, () => {
-                          // Your logic that depends on the updated state value
+                        handlestartBChange({
+                          target: {
+                            value: pStart,
+                            exclude: event.target.checked,
+                          },
                         });
-                        console.log(
-                          "Exclude value after update:",
-                          event.target.checked
-                        );
-                        handlestartBChange({ target: { value: pStart } });
-                        handleendBChange({ target: { value: pEnd } });
+
+                        handleendBChange({
+                          target: {
+                            value: pEnd,
+                            exclude: event.target.checked,
+                          },
+                        });
+
+                        setExclude(event.target.checked);
                       }}
                     />
                     <Typography color="common.black">Exclude</Typography>
