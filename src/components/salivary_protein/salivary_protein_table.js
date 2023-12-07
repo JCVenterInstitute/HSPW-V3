@@ -2191,6 +2191,7 @@ function App() {
                 <TextField
                   variant="outlined"
                   size="small"
+                  type="number"
                   label="End..."
                   InputProps={{
                     style: {
@@ -2223,6 +2224,7 @@ function App() {
                 <TextField
                   variant="outlined"
                   size="small"
+                  type="number"
                   label="Start..."
                   InputProps={{
                     style: {
@@ -2247,6 +2249,7 @@ function App() {
                 <TextField
                   variant="outlined"
                   size="small"
+                  type="number"
                   label="End..."
                   InputProps={{
                     style: {
@@ -2280,6 +2283,7 @@ function App() {
                   variant="outlined"
                   size="small"
                   label="Start..."
+                  type="number"
                   InputProps={{
                     style: {
                       borderRadius: "16px",
@@ -2304,6 +2308,7 @@ function App() {
                   variant="outlined"
                   size="small"
                   label="End..."
+                  type="number"
                   InputProps={{
                     style: {
                       borderRadius: "16px",
