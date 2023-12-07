@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import List from "@mui/material/List";
 import Card from "@mui/material/Card";
@@ -51,6 +51,11 @@ export default function SelectAllTransferList({ properties }) {
       ),
     [right, rightSearch]
   );
+
+  useEffect(() => {
+    setLeft(properties);
+    setRight([]);
+  }, [properties]);
 
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
