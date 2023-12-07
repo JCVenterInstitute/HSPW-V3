@@ -72,14 +72,13 @@ const AdvancedSearch = () => {
       const res = await axios.get(
         `http://localhost:8000/api/properties/${e.target.value}`
       );
-      const newProperties = Object.keys(res.data);
-      setProperties(newProperties);
+      setProperties(res.data);
 
       // Set the first property as default for each row
       setRows(
         rows.map((row) => ({
           ...row,
-          selectedProperty: newProperties[0] || "",
+          selectedProperty: res.data[0] || "",
           selectedOperation: "contains",
         }))
       );
@@ -302,8 +301,11 @@ const AdvancedSearch = () => {
           >
             STEP 3 - Choose the properties that you want to display
           </legend>
-          {properties.length !== 0 && (
+
+          {properties.length !== 0 ? (
             <SelectAllTransferList properties={properties} />
+          ) : (
+            <Typography>Please an entity type first</Typography>
           )}
         </Box>
         <Box
