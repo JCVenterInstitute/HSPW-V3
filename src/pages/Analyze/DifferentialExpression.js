@@ -254,6 +254,7 @@ const DifferentialExpression = () => {
       cellClass: ["differential-cell"],
       checkboxSelection: true,
       headerCheckboxSelection: true,
+      headerCheckboxSelectionFilteredOnly: true,
       sort: "asc",
     },
     {

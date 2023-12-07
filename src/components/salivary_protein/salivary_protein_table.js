@@ -427,6 +427,7 @@ function App() {
   const [rowData, setRowData] = useState([]);
   const [opinionVal, setopinionVal] = useState("");
   const [IHCVal, setIHCVal] = useState("*");
+
   const [parStart, setparStart] = useState("");
   const [parEnd, setparEnd] = useState("");
   const [subStart, setsubStart] = useState("");
@@ -436,6 +437,7 @@ function App() {
   const [wsStart, setwsStart] = useState("");
   const [wsEnd, setwsEnd] = useState("");
   const [mRNAStart, setmRNAStart] = useState("");
+
   const [mRNAEnd, setmRNAEnd] = useState("");
   const [queryArr, setQueryArr] = useState([]);
   const [opArr, setOpArr] = useState([false, false]);
@@ -1431,7 +1433,9 @@ function App() {
           : null;
     }
     setpStart(inputValue);
+
     if (e.target.exclude === true) {
+
       newstartBQuery =
         inputValue !== ""
           ? {
@@ -1502,7 +1506,9 @@ function App() {
     setplasmaC(inputValue !== ""); // Set parC based on whether inputValue is not empty
 
     setpEnd(inputValue);
+
     if (e.target.exclude === true && pStart !== 0) {
+
       newendBQuery =
         inputValue !== ""
           ? {

@@ -169,7 +169,13 @@ export const MuiDrawer = () => {
                   MenuListProps={{ onMouseLeave: handleClose1 }}
                 >
                   <MenuItem onClick={handleClose1}>Basic search</MenuItem>
-                  <MenuItem onClick={handleClose1}>Advanced Search</MenuItem>
+                  <MenuItem
+                    onClick={handleClose1}
+                    component="a"
+                    href="/advanced-search"
+                  >
+                    Advanced Search
+                  </MenuItem>
                   <MenuItem onClick={handleClose1}>Semantic search</MenuItem>
                   <MenuItem onClick={handleClose1}>Experiment Search</MenuItem>
                   <MenuItem onClick={handleClose1}>
