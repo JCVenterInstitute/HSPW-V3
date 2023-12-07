@@ -1395,9 +1395,11 @@ function App() {
 
   const handlestartBChange = (e) => {
     let inputValue = e.target.value;
+    if (e.target.exclude === undefined) {
+      e.target.exclude = exclude;
+    }
     if (inputValue === "") {
       setplasmaC(false);
-      inputValue = 0;
     } else if (inputValue !== "") {
       setplasmaC(true);
     }
@@ -1414,7 +1416,7 @@ function App() {
             },
           }
         : null;
-    if (pEnd === "") {
+    if (pEnd === "" && e.target.exclude === false) {
       newstartBQuery =
         inputValue !== ""
           ? {
@@ -1431,19 +1433,92 @@ function App() {
               },
             }
           : null;
+<<<<<<< HEAD
     }
     setpStart(inputValue);
 
     if (e.target.exclude === true) {
 
+=======
+    } else if (pEnd === "" && e.target.exclude === true) {
+>>>>>>> 6d76b3e (added exclude query back to filter)
       newstartBQuery =
         inputValue !== ""
           ? {
               bool: {
                 must: [],
-                must_not: [
+                must_not: [],
+                filter: [
                   {
-                    range: { plasma_abundance: { gte: inputValue, lte: pEnd } },
+                    bool: {
+                      must_not: {
+                        range: {
+                          plasma_abundance: { gte: inputValue, lte: 5 },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    setpStart(inputValue);
+    if (inputValue === "") {
+      newstartBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      plasma_abundance: { gte: 0, lte: 5 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    if (e.target.exclude === true && inputValue !== "" && pEnd !== "") {
+      newstartBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          plasma_abundance: { gte: inputValue, lte: pEnd },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    } else if (e.target.exclude === true && inputValue === "" && pEnd !== "") {
+      newstartBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: { plasma_abundance: { gte: 0, lte: pEnd } },
+                      },
+                    },
                   },
                 ],
               },
@@ -1454,20 +1529,33 @@ function App() {
   };
 
   const handleendBChange = (e) => {
-    const inputValue = e.target.value;
-    const plasmaAbundance = inputValue === "" ? 10 : inputValue;
-    let newendBQuery = {
-      bool: {
-        must: [],
-        must_not: [],
-        filter: [
-          {
-            range: { plasma_abundance: { lte: plasmaAbundance, gte: pStart } },
-          },
-        ],
-      },
-    };
-    if (pStart === "") {
+    console.log("hande end b", e.target.exclude);
+    if (e.target.exclude === undefined) {
+      e.target.exclude = exclude;
+    }
+    let inputValue = e.target.value;
+    if (inputValue === "") {
+      setplasmaC(false);
+    } else if (inputValue !== "") {
+      setplasmaC(true);
+    }
+
+    let newendBQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  range: { plasma_abundance: { lte: inputValue, gte: pStart } },
+                },
+              ],
+            },
+          }
+        : null;
+    console.log();
+    if (pStart === "" && e.target.exclude === false) {
       newendBQuery =
         inputValue !== ""
           ? {
@@ -1484,54 +1572,107 @@ function App() {
               },
             }
           : null;
-    } else if (e.target.exclude === true && pStart === 0) {
+    } else if (pStart === "" && e.target.exclude === true) {
       newendBQuery =
         inputValue !== ""
           ? {
               bool: {
                 must: [],
-                must_not: [
+                must_not: [],
+                filter: [
                   {
-                    range: {
-                      plasma_abundance: { gte: 0, lte: inputValue },
+                    bool: {
+                      must_not: {
+                        range: {
+                          plasma_abundance: { lte: inputValue, gte: 0 },
+                        },
+                      },
                     },
                   },
                 ],
-                filter: [],
               },
             }
           : null;
     }
 
-    setplasmaC(inputValue !== ""); // Set parC based on whether inputValue is not empty
-
     setpEnd(inputValue);
+<<<<<<< HEAD
 
     if (e.target.exclude === true && pStart !== 0) {
 
+=======
+    if (inputValue === "") {
+>>>>>>> 6d76b3e (added exclude query back to filter)
       newendBQuery =
         inputValue !== ""
           ? {
               bool: {
                 must: [],
-                must_not: [
+                must_not: [],
+                filter: [
                   {
                     range: {
-                      plasma_abundance: { lte: inputValue, gte: pStart },
+                      plasma_abundance: { gte: 0, lte: 5 },
                     },
                   },
                 ],
               },
             }
           : null;
-
-      console.log("1541:", newendBQuery);
     }
+
+    if (e.target.exclude === true && inputValue !== "" && pStart !== "") {
+      newendBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          plasma_abundance: { lte: inputValue, gte: pStart },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    } else if (
+      e.target.exclude === true &&
+      inputValue === "" &&
+      pStart !== ""
+    ) {
+      newendBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: { plasma_abundance: { lte: 5, gte: pStart } },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
     updateQuery(newendBQuery, "plasma_abundance");
   };
 
   const handlestartmRNAChange = (e) => {
     const inputValue = e.target.value;
+
     if (inputValue === "") {
       setmRNAC(false);
     } else if (inputValue !== "") {
@@ -2039,6 +2180,7 @@ function App() {
               </AccordionSummary>
               <AccordionDetails>
                 <TextField
+                  type="number"
                   variant="outlined"
                   size="small"
                   label="Start..."
@@ -2242,6 +2384,7 @@ function App() {
                       borderRadius: "16px",
                     },
                   }}
+                  type="number"
                   onChange={handlestartBChange}
                   value={pStart}
                 />
@@ -2266,6 +2409,7 @@ function App() {
                       borderRadius: "16px",
                     },
                   }}
+                  type="number"
                   onChange={handleendBChange}
                   value={pEnd}
                 />
