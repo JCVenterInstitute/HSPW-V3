@@ -2185,6 +2185,7 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
       foldChangeThreshold,
       pValueThreshold,
       pValueType,
+      parametricTest,
       timestamp,
       formattedDate,
       workingDirectory,
@@ -2199,7 +2200,7 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
       path.join(workingDirectory, "generate-data-new.R")
     );
     // Execute the R script from the working directory
-    const command = `Rscript generate-data-new.R ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType}`;
+    const command = `Rscript generate-data-new.R ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType} ${parametricTest}`;
     const { stdout } = await execPromise(command, {
       cwd: workingDirectory,
     });
@@ -2235,6 +2236,7 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
       foldChangeThreshold,
       pValueThreshold,
       pValueType,
+      parametricTest,
       timestamp,
       formattedDate,
       workingDirectory,
@@ -2249,7 +2251,7 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
       path.join(workingDirectory, "generate-data-new.R")
     );
     // Execute the R script from the working directory
-    const command = `Rscript generate-data-new.R ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType}`;
+    const command = `Rscript generate-data-new.R ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType} ${parametricTest}`;
     const { stdout } = await execPromise(command, {
       cwd: workingDirectory,
     });
