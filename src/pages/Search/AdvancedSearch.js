@@ -10,11 +10,14 @@ import {
   IconButton,
   TextField,
   Button,
+  Checkbox,
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import axios from "axios";
 import SelectAllTransferList from "../../components/Search/SelectAllTransferList";
+import CircleCheckedFilled from "@mui/icons-material/CheckCircle";
+import CircleUnchecked from "@mui/icons-material/RadioButtonUnchecked";
 
 const AdvancedSearch = () => {
   const [entity, setEntity] = useState("");
@@ -22,6 +25,7 @@ const AdvancedSearch = () => {
   const [rows, setRows] = useState([
     { id: Date.now(), selectedProperty: "", selectedOperation: "" },
   ]); // Start with one row
+  const [booleanOperator, setBooleanOperator] = useState("AND");
 
   const entities = [
     "Genes",
@@ -169,7 +173,27 @@ const AdvancedSearch = () => {
               ))}
             </TextField>
             <Typography display="inline" sx={{ color: "black" }}>
-              containing all of the following properties
+              containing
+            </Typography>
+            <Checkbox
+              icon={<CircleUnchecked />}
+              checkedIcon={<CircleCheckedFilled />}
+              checked={booleanOperator === "AND"}
+              onChange={() => setBooleanOperator("AND")}
+              sx={{ p: 0, ml: 2 }}
+            />
+            <Typography display="inline" sx={{ mr: 2 }}>
+              (AND) all of the following properties
+            </Typography>
+            <Checkbox
+              icon={<CircleUnchecked />}
+              checkedIcon={<CircleCheckedFilled />}
+              checked={booleanOperator === "OR"}
+              onChange={() => setBooleanOperator("OR")}
+              sx={{ p: 0 }}
+            />
+            <Typography display="inline">
+              (OR) any of the following properties
             </Typography>
           </Box>
         </Box>
