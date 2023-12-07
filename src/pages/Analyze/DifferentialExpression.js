@@ -482,6 +482,7 @@ const DifferentialExpression = () => {
   };
 
   const handleResetFilter = () => {
+    gridApi.setQuickFilter("");
     gridApi.setFilterModel({});
     setTotalPageNumber(gridApi.paginationGetTotalPages());
     setSampleIdFilter("");
