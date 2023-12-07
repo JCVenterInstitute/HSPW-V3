@@ -211,7 +211,11 @@ export const MuiDrawer = () => {
                   >
                     Multiple sequence alignment
                   </MenuItem>
-                  <MenuItem onClick={handleClose2}>
+                  <MenuItem
+                    onClick={handleClose2}
+                    component="a"
+                    href="/differential-expression"
+                  >
                     Differential Expression Analysis
                   </MenuItem>
                   <MenuItem

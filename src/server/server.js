@@ -6,6 +6,15 @@ const { Client } = require("@opensearch-project/opensearch");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const createAwsOpensearchConnector = require("aws-opensearch-connector");
 const fs = require("fs");
+const { exec } = require("child_process");
+const util = require("util");
+const execPromise = util.promisify(exec);
+const { s3Upload } = require("./utils/s3Upload");
+const fse = require("fs-extra");
+const path = require("path");
+const { processGroupData } = require("./utils/processGroupData");
+const { processFile } = require("./utils/processFile");
+const { s3Download } = require("./utils/s3Download");
 
 app.use(cors());
 app.use(express.json());
@@ -1913,6 +1922,213 @@ app.get("/protein/:id", (req, res) => {
     console.log(result);
     res.json(result);
   });
+});
+
+app.get("/api/download-template", async (req, res) => {
+  // S3 download parameters
+  const params = {
+    bucketName: "differential-expression-result-dev",
+    s3Key: "inputdata.csv",
+  };
+
+  const presignedUrl = await s3Download(params);
+  res.send({ url: presignedUrl });
+});
+
+app.post("/api/differential-expression/analyze", async (req, res) => {
+  try {
+    const {
+      logNorm,
+      foldChangeThreshold,
+      pValueThreshold,
+      pValueType,
+      timestamp,
+      formattedDate,
+      workingDirectory,
+    } = req.body;
+    const scriptPath = "/home/ec2-user/r4test1/test";
+
+    // Create the working directory and copy the R script
+    await fse.ensureDir(workingDirectory);
+    await processGroupData(req.body, workingDirectory);
+    await fse.copy(
+      path.join(scriptPath, "generate-data-new.R"),
+      path.join(workingDirectory, "generate-data-new.R")
+    );
+    // Execute the R script from the working directory
+    const command = `Rscript generate-data-new.R ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType}`;
+    const { stdout } = await execPromise(command, {
+      cwd: workingDirectory,
+    });
+
+    // Compress the contents of the working directory
+    const compressCommand =
+      "zip -r data_set.zip volcano_0_dpi72.png volcano.csv heatmap_1_dpi72.png heatmap_0_dpi72.png tt_0_dpi72.png t_test.csv fc_0_dpi72.png fold_change.csv pca_score2d_0_dpi72.png pca_score.csv venn-dimensions.png venn_out_data.txt norm_0_dpi72.png data_normalized.csv all_data.tsv";
+    await execPromise(compressCommand, { cwd: workingDirectory });
+
+    // S3 upload parameters
+    const params = {
+      bucketName: "differential-expression-result-dev",
+      s3KeyPrefix: `${timestamp.year}-${timestamp.month}-${timestamp.day}/differential-expression-${formattedDate}`,
+      contentType: "text/plain",
+      directoryPath: workingDirectory,
+    };
+    // Perform the s3 upload
+    await s3Upload(params);
+    console.log(`stdout:\n${stdout}`);
+    res.status(200).send(`Output: ${stdout}`);
+  } catch (error) {
+    console.error(`Error during file operations: ${error.message}`);
+    res.status(500).send(`Server Error: ${error.message}`);
+  }
+  // res.status(200).send("Good");
+});
+
+app.post("/api/differential-expression/analyze-file", async (req, res) => {
+  try {
+    const {
+      inputData,
+      logNorm,
+      foldChangeThreshold,
+      pValueThreshold,
+      pValueType,
+      timestamp,
+      formattedDate,
+      workingDirectory,
+    } = req.body;
+    const scriptPath = "/home/ec2-user/r4test1/test";
+
+    // Create the working directory and copy the R script
+    await fse.ensureDir(workingDirectory);
+    await processFile(inputData, workingDirectory);
+    await fse.copy(
+      path.join(scriptPath, "generate-data-new.R"),
+      path.join(workingDirectory, "generate-data-new.R")
+    );
+    // Execute the R script from the working directory
+    const command = `Rscript generate-data-new.R ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType}`;
+    const { stdout } = await execPromise(command, {
+      cwd: workingDirectory,
+    });
+
+    // Compress the contents of the working directory
+    const compressCommand =
+      "zip -r data_set.zip volcano_0_dpi72.png volcano.csv heatmap_1_dpi72.png heatmap_0_dpi72.png tt_0_dpi72.png t_test.csv fc_0_dpi72.png fold_change.csv pca_score2d_0_dpi72.png pca_score.csv venn-dimensions.png venn_out_data.txt norm_0_dpi72.png data_normalized.csv all_data.tsv";
+    await execPromise(compressCommand, { cwd: workingDirectory });
+
+    // S3 upload parameters
+    const params = {
+      bucketName: "differential-expression-result-dev",
+      s3KeyPrefix: `${timestamp.year}-${timestamp.month}-${timestamp.day}/differential-expression-${formattedDate}`,
+      contentType: "text/plain",
+      directoryPath: workingDirectory,
+    };
+    // Perform the s3 upload
+    await s3Upload(params);
+    console.log(`stdout:\n${stdout}`);
+    res.status(200).send(`Output: ${stdout}`);
+  } catch (error) {
+    console.error(`Error during file operations: ${error.message}`);
+    res.status(500).send(`Server Error: ${error.message}`);
+  }
+});
+
+const searchStudy = async () => {
+  // Initialize the client.
+  const client = await getClient();
+
+  const query = {
+    size: 10000,
+    query: {
+      match_all: {},
+    },
+    aggs: {
+      sample_type: {
+        terms: {
+          field: "sample_type.keyword",
+        },
+      },
+      institution: {
+        terms: {
+          field: "institution.keyword",
+        },
+      },
+      condition_type: {
+        terms: {
+          field: "condition_type.keyword",
+        },
+      },
+    },
+  };
+
+  const response = await client.search({
+    index: "study",
+    body: query,
+  });
+
+  return response.body;
+};
+
+app.get("/api/study", async (req, res) => {
+  searchStudy().then((response) => {
+    res.json(response);
+  });
+});
+
+const searchStudyProtein = async (experiment_id_key) => {
+  // Initialize the client.
+  const client = await getClient();
+
+  const query = {
+    size: 10000,
+    query: {
+      query_string: {
+        default_field: "experiment_id_key",
+        query: experiment_id_key,
+      },
+    },
+  };
+
+  const response = await client.search({
+    index: "study_protein",
+    body: query,
+  });
+
+  return response.body.hits.hits;
+};
+
+app.get("/api/study_protein/:id", async (req, res) => {
+  searchStudyProtein(req.params.id).then((response) => {
+    res.json(response);
+  });
+});
+
+app.get("/api/s3Download/:jobId/:fileName", async (req, res) => {
+  const jobId = req.params.jobId;
+  const fileName = req.params.fileName;
+  console.log("> Processing jobId: ", jobId);
+  console.log("> Getting file: ", fileName);
+
+  const datePart = jobId.split("-")[2];
+
+  // Split the date part into year, month, and day
+  const year = datePart.substring(0, 4);
+  const month = datePart.substring(4, 6);
+  const day = datePart.substring(6, 8);
+
+  // S3 download parameters
+  const params = {
+    bucketName: "differential-expression-result-dev",
+    s3Key: `${year}-${month}-${day}/${jobId}/${fileName}`,
+  };
+
+  try {
+    const presignedUrl = await s3Download(params);
+    res.send({ url: presignedUrl }); // Send the presigned URL to the client
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Error generating presigned URL");
+  }
 });
 
 app.listen(8000, () => {
