@@ -1194,7 +1194,21 @@ function App() {
   };
 
   const handleGeneChange = (e) => {
-    const inputValue = e.target.value;
+    // Check if the event is a delete key press
+    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
+
+    let inputValue = e.target.value;
+
+    if (isDeleteKey) {
+      // Handle delete key press by removing the last character
+      inputValue = inputValue.slice(0, -1);
+    }
+
+    // Remove double backslashes
+    inputValue = inputValue.replace(/\\\\/g, "");
+
+    // Escape special characters
+    inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
     if (inputValue === "") {
       setGeneC(false);
     } else if (inputValue !== "") {
@@ -1226,7 +1240,21 @@ function App() {
   };
 
   const handleNameChange = (e) => {
-    const inputValue = e.target.value;
+    // Check if the event is a delete key press
+    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
+
+    let inputValue = e.target.value;
+
+    if (isDeleteKey) {
+      // Handle delete key press by removing the last character
+      inputValue = inputValue.slice(0, -1);
+    }
+
+    // Remove double backslashes
+    inputValue = inputValue.replace(/\\\\/g, "");
+
+    // Escape special characters
+    inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
     console.log(inputValue);
     if (inputValue === "") {
       console.log("wt");
