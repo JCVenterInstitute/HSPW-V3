@@ -29,14 +29,10 @@ import PSIBlastResults from "./pages/Analyze/PSIBlastResults";
 import PSIBlast from "./pages/Analyze/PSIBlast";
 import About from "./pages/Help/About";
 import Team from "./pages/Help/Team";
-
-import ProteinSequence from "./pages/saliva_protein/protein_detail_sequence";
-
 import DifferentialExpression from "./pages/Analyze/DifferentialExpression.js";
 import DifferentialExpressionResults from "./pages/Analyze/DifferentialExpressionResults.js";
 import AdvancedSearch from "./pages/Search/AdvancedSearch.js";
 import ProteinSequence from "./pages/saliva_protein/protein_detail_sequence";
-
 
 function App() {
   return (
