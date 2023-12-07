@@ -34,97 +34,6 @@ const th = {
   maxWidth: "1000px",
 };
 
-const ImageRenderer = ({ value }) => <img src={value} alt="Glygen" />;
-const LinkRenderer = ({ value }) => (
-  <a target="_blank" rel="noopener noreferrer" href={value}>
-    {value}
-  </a>
-);
-const handleFilter = (searchKeyword) => {
-  gridRef.current.api.setQuickFilter(searchKeyword);
-  setDocCount(gridApi.paginationGetTotalPages());
-};
-const SourceRenderer = ({ value }) => (
-  <TableHead>
-    <TableRow>
-      <TableCell
-        sx={th}
-        style={{
-          backgroundColor: "#1463B9",
-          color: "white",
-          fontFamily: "Montserrat",
-          fontSize: "17px",
-          fontWeight: "bold",
-          border: "1px solid #3592E4",
-          borderTopLeftRadius: "10px",
-        }}
-      >
-        ID
-      </TableCell>
-      <TableCell
-        sx={th}
-        style={{
-          backgroundColor: "#1463B9",
-          color: "white",
-          fontFamily: "Montserrat",
-          fontSize: "17px",
-          fontWeight: "bold",
-          border: "1px solid #3592E4",
-        }}
-      >
-        Database
-      </TableCell>
-    </TableRow>
-    {value.map((val, index) => (
-      <React.Fragment key={index}>
-        <TableRow>
-          <TableCell
-            style={{
-              border: "1px solid #CACACA",
-            }}
-          >
-            {val.url ? (
-              <>
-                <a href={val.url}>{val.id}</a>{" "}
-                <a href={val.url}>
-                  <FontAwesome
-                    className="super-crazy-colors"
-                    name="external-link"
-                    style={{
-                      textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
-                    }}
-                  />
-                </a>
-              </>
-            ) : (
-              val.id
-            )}
-          </TableCell>
-          <TableCell
-            style={{
-              border: "1px solid #CACACA",
-            }}
-          >
-            {val.database}
-          </TableCell>
-        </TableRow>
-      </React.Fragment>
-    ))}
-  </TableHead>
-);
-
-function LinkComponent(props) {
-  return (
-    <a
-      target="_blank"
-      rel="noopener noreferrer"
-      href={"http://localhost:3000/citation/" + props.value}
-    >
-      {props.value}
-    </a>
-  );
-}
-
 function Glycan_Table(props) {
   const [rowData, setRowData] = useState([]);
   const [message, setMessage] = useState("");
@@ -136,13 +45,100 @@ function Glycan_Table(props) {
   const [docCount, setDocCount] = useState(0);
   const [filterKeyword, setFilterKeyword] = useState("");
   const [pageNumArr, setPageNumArr] = useState([1]);
-
+  const gridRef = useRef();
   let data1 = [];
   for (let i = 0; i < message.length; i++) {
     data1.push(message[i]["_source"]);
   }
 
-  const rowHeight = 500;
+  const ImageRenderer = ({ value }) => <img src={value} alt="Glygen" />;
+  const LinkRenderer = ({ value }) => (
+    <a target="_blank" rel="noopener noreferrer" href={value}>
+      {value}
+    </a>
+  );
+
+  const SourceRenderer = ({ value }) => (
+    <TableHead>
+      <TableRow>
+        <TableCell
+          sx={th}
+          style={{
+            backgroundColor: "#1463B9",
+            color: "white",
+            fontFamily: "Montserrat",
+            fontSize: "17px",
+            fontWeight: "bold",
+            border: "1px solid #3592E4",
+            borderTopLeftRadius: "10px",
+          }}
+        >
+          ID
+        </TableCell>
+        <TableCell
+          sx={th}
+          style={{
+            backgroundColor: "#1463B9",
+            color: "white",
+            fontFamily: "Montserrat",
+            fontSize: "17px",
+            fontWeight: "bold",
+            border: "1px solid #3592E4",
+            borderTopRightRadius: "10px",
+          }}
+        >
+          Database
+        </TableCell>
+      </TableRow>
+      {value.map((val, index) => (
+        <React.Fragment key={index}>
+          <TableRow>
+            <TableCell
+              style={{
+                border: "1px solid #CACACA",
+              }}
+            >
+              {val.url ? (
+                <>
+                  <a href={val.url}>{val.id}</a>{" "}
+                  <a href={val.url}>
+                    <FontAwesome
+                      className="super-crazy-colors"
+                      name="external-link"
+                      style={{
+                        textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                      }}
+                    />
+                  </a>
+                </>
+              ) : (
+                val.id
+              )}
+            </TableCell>
+            <TableCell
+              style={{
+                border: "1px solid #CACACA",
+              }}
+            >
+              {val.database}
+            </TableCell>
+          </TableRow>
+        </React.Fragment>
+      ))}
+    </TableHead>
+  );
+
+  function LinkComponent(props) {
+    return (
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href={"http://localhost:3000/citation/" + props.value}
+      >
+        {props.value}
+      </a>
+    );
+  }
   const columns = [
     { headerName: "Accession", field: "glytoucan_accession" },
     {
@@ -153,6 +149,7 @@ function Glycan_Table(props) {
       cellRendererFramework: ImageRenderer,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
+      autoHeight: true,
     },
     {
       headerName: "Type",
@@ -219,7 +216,10 @@ function Glycan_Table(props) {
       }
     }
   };
-
+  const handleFilter = (searchKeyword) => {
+    gridRef.current.api.setQuickFilter(searchKeyword);
+    setDocCount(gridApi.paginationGetTotalPages());
+  };
   const onPageNumChanged = (event) => {
     var value = document.getElementById("page-num").value;
     setPageNum(value);
@@ -244,8 +244,6 @@ function Glycan_Table(props) {
   const onGridReady = (params) => {
     setGridApi(params);
   };
-
-  const gridRef = useRef();
 
   const onBtExport = useCallback(() => {
     gridRef.current.api.exportDataAsExcel();
@@ -483,7 +481,6 @@ function Glycan_Table(props) {
             LinkComponent,
           }}
           defaultColDef={defaultColDef}
-          rowHeight={rowHeight}
         />
       </div>
       <button
