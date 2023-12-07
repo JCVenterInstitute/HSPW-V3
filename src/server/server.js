@@ -2156,11 +2156,22 @@ app.get("/protein/:id", (req, res) => {
   });
 });
 
-app.get("/api/download-template", async (req, res) => {
+app.get("/api/download-template-data", async (req, res) => {
   // S3 download parameters
   const params = {
     bucketName: "differential-expression-result-dev",
     s3Key: "inputdata.csv",
+  };
+
+  const presignedUrl = await s3Download(params);
+  res.send({ url: presignedUrl });
+});
+
+app.get("/api/download-data-standard", async (req, res) => {
+  // S3 download parameters
+  const params = {
+    bucketName: "differential-expression-result-dev",
+    s3Key: "Example_inputdata_template.xlsx",
   };
 
   const presignedUrl = await s3Download(params);
