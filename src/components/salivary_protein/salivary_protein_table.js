@@ -860,27 +860,44 @@ function App() {
     gridRef.current.api.exportDataAsExcel();
   }, []);
 
-  const onFilterTextBoxChanged = () => {
-    const inputValue = document.getElementById("filter-text-box").value;
-    console.log("Input Value: " + inputValue);
-    if (inputValue !== "") {
-      setSearchText(inputValue);
-      setGlobalSC(true);
-    } else {
-      setGlobalSC(false);
-      setSearchText("");
+  const escapeRegExp = (string) => {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  };
+
+  const onFilterTextBoxChanged = (e) => {
+    if (e.key === "Enter") {
+      // Check if the event is a delete key press or a synthetic event
+      const isDeleteKey =
+        e.nativeEvent && e.nativeEvent.inputType === "deleteContentBackward";
+
+      let inputValue = e.target.value;
+
+      if (isDeleteKey) {
+        // Handle delete key press by removing the last character
+        inputValue = inputValue.slice(0, -1);
+      }
+
+      // Ensure that inputValue is defined
+      inputValue = inputValue || "";
+
+      // Escape special characters
+      const escapedInputValue = escapeRegExp(inputValue);
+
+      console.log("Input Value: " + escapedInputValue);
+
+      if (escapedInputValue !== "") {
+        setSearchText(escapedInputValue);
+        setGlobalSC(true);
+      } else {
+        setGlobalSC(false);
+        setSearchText("");
+      }
     }
   };
 
   const clearSearch = () => {
     setGlobalSC(false);
     setSearchText("");
-  };
-
-  const onSubmit = (e) => {
-    e.preventDefault();
-    // Additional logic for form submission if needed
-    // You can use the searchText state here for searching/filtering data
   };
 
   const onBtNext = (event) => {
@@ -1127,13 +1144,30 @@ function App() {
   };
 
   const handleAccessionChange = (e) => {
-    const inputValue = e.target.value;
+    // Check if the event is a delete key press
+    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
+
+    let inputValue = e.target.value;
+
+    if (isDeleteKey) {
+      // Handle delete key press by removing the last character
+      inputValue = inputValue.slice(0, -1);
+    }
+
+    // Remove double backslashes
+    inputValue = inputValue.replace(/\\\\/g, "");
+
+    // Escape special characters
+    inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+
     if (inputValue === "") {
       setAccessionC(false);
     } else {
       setAccessionC(true);
     }
+
     setPageNum(0);
+
     const newAccessionQuery =
       inputValue !== ""
         ? {
@@ -1228,11 +1262,10 @@ function App() {
     let inputValue = e.target.value;
     if (inputValue === "") {
       setwsC(false);
-      inputValue = 0;
     } else if (inputValue !== "") {
       setwsC(true);
     }
-    const newstartWSQuery =
+    let newstartWSQuery =
       inputValue !== ""
         ? {
             bool: {
@@ -1246,8 +1279,66 @@ function App() {
             },
           }
         : null;
+    if (wsEnd === "") {
+      newstartWSQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      saliva_abundance: { gte: inputValue, lte: 20000 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
     setwsStart(inputValue);
+    if (inputValue === "") {
+      newstartWSQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      saliva_abundance: { gte: 0, lte: 20000 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
 
+    if (inputValue === "" && wsEnd !== "") {
+      newstartWSQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          saliva_abundance: { lte: wsEnd, gte: 0 },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
     updateQuery(newstartWSQuery, "saliva_abundance");
   };
 
@@ -1259,7 +1350,7 @@ function App() {
     } else if (inputValue !== "") {
       setwsC(true);
     }
-    const newendParQuery =
+    let newendWSQuery =
       inputValue !== ""
         ? {
             bool: {
@@ -1276,9 +1367,70 @@ function App() {
           }
         : null;
 
+    if (wsStart === "") {
+      newendWSQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      saliva_abundance: { gte: 0, lte: inputValue },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
     setwsEnd(inputValue);
+    if (inputValue === "") {
+      newendWSQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      saliva_abundance: { gte: 0, lte: 20000 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
 
-    updateQuery(newendParQuery, "saliva_abundance");
+    if (inputValue === "" && wsStart !== "") {
+      newendWSQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          saliva_abundance: {
+                            lte: 20000,
+                            gte: wsStart,
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    updateQuery(newendWSQuery, "saliva_abundance");
   };
 
   const handlestartParChange = (e) => {
@@ -1286,11 +1438,10 @@ function App() {
 
     if (inputValue === "") {
       setparC(false);
-      inputValue = 0;
     } else if (inputValue !== "") {
       setparC(true);
     }
-    const newstartParQuery =
+    let newstartParQuery =
       inputValue !== ""
         ? {
             bool: {
@@ -1306,15 +1457,73 @@ function App() {
             },
           }
         : null;
+    if (parEnd === "") {
+      newstartParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      parotid_gland_abundance: { gte: inputValue, lte: 20000 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
     setparStart(inputValue);
+    if (inputValue === "") {
+      newstartParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      parotid_gland_abundance: { gte: 0, lte: 20000 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
 
+    if (inputValue === "" && parEnd !== "") {
+      newstartParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          parotid_gland_abundance: { lte: parEnd, gte: 0 },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
     updateQuery(newstartParQuery, "parotid_gland_abundance");
   };
 
   const handleendParChange = (e) => {
     const inputValue = e.target.value;
     const parGlandAbundance = inputValue === "" ? 20000 : inputValue;
-    const newendParQuery = {
+    let newendParQuery = {
       bool: {
         must: [],
         must_not: [],
@@ -1330,11 +1539,71 @@ function App() {
         ],
       },
     };
-
+    if (parStart === "") {
+      newendParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      parotid_gland_abundance: { gte: 0, lte: inputValue },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
     setparC(inputValue !== ""); // Set parC based on whether inputValue is not empty
 
     setparEnd(inputValue);
+    if (inputValue === "") {
+      newendParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      parotid_gland_abundance: { gte: 0, lte: 20000 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
 
+    if (inputValue === "" && parStart !== "") {
+      newendParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          parotid_gland_abundance: {
+                            lte: 20000,
+                            gte: parStart,
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
     updateQuery(newendParQuery, "parotid_gland_abundance");
   };
 
@@ -1343,12 +1612,11 @@ function App() {
 
     if (inputValue === "") {
       setsubC(false);
-      inputValue = 0; // Set inputValue to 0 when it is an empty string
     } else {
       setsubC(true);
     }
 
-    const newstartSubQuery =
+    let newstartSubQuery =
       inputValue !== ""
         ? {
             bool: {
@@ -1365,14 +1633,73 @@ function App() {
           }
         : null;
 
+    if (subEnd === "") {
+      newstartSubQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      "sm/sl_abundance": { gte: inputValue, lte: 20000 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
     setsubStart(inputValue);
 
+    if (inputValue === "") {
+      newstartSubQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      "sm/sl_abundance": { gte: 0, lte: 20000 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    if (inputValue === "" && subEnd !== "") {
+      newstartSubQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          "sm/sl_abundance": { lte: subEnd, gte: 0 },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
     updateQuery(newstartSubQuery, "sm/sl_abundance");
   };
   const handleendSubChange = (e) => {
     const inputValue = e.target.value;
     const subAbundance = inputValue === "" ? 20000 : inputValue;
-    const newendParQuery = {
+    let newendParQuery = {
       bool: {
         must: [],
         must_not: [],
@@ -1383,11 +1710,68 @@ function App() {
         ],
       },
     };
-
+    if (subStart === "") {
+      newendParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      "sm/sl_abundance": { gte: 0, lte: inputValue },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
     setsubC(inputValue !== ""); // Set parC based on whether inputValue is not empty
 
     setsubEnd(inputValue);
+    if (inputValue === "") {
+      newendParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      "sm/sl_abundance": { gte: 0, lte: 20000 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
 
+    if (inputValue === "" && subStart !== "") {
+      newendParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          "sm/sl_abundance": { lte: 20000, gte: subStart },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
     updateQuery(newendParQuery, "sm/sl_abundance");
   };
 
@@ -2510,7 +2894,13 @@ function App() {
                   cursor: "pointer",
                   borderRadius: "0 16px 16px 0",
                 }}
-                onClick={() => onFilterTextBoxChanged(searchText)}
+                onClick={() => {
+                  const syntheticEvent = {
+                    target: { value: searchText },
+                    nativeEvent: { inputType: "insertText" }, // Mimic an input event
+                  };
+                  onFilterTextBoxChanged(syntheticEvent);
+                }}
               >
                 <SearchIcon sx={{ color: "white" }} />
               </button>
