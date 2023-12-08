@@ -15,6 +15,7 @@ const path = require("path");
 const { processGroupData } = require("./utils/processGroupData");
 const { processFile } = require("./utils/processFile");
 const { s3Download } = require("./utils/s3Download");
+const { formQuery } = require("./utils/formQuery");
 
 app.use(cors());
 app.use(express.json());
@@ -2346,6 +2347,46 @@ app.get("/api/properties/:entity", async (req, res) => {
       }
       res.json(result);
     });
+  }
+});
+
+const advancedSearch = async (index, rows, booleanOperator) => {
+  // Initialize the client.
+  const client = await getClient();
+
+  const query = await formQuery(rows, booleanOperator);
+
+  const response = await client.search({
+    index: index,
+    body: query,
+  });
+
+  return response.body.hits.hits;
+};
+
+app.post("/api/advanced-search/build-query", async (req, res) => {
+  try {
+    const { entity, rows, booleanOperator } = req.body;
+
+    const entityIndexMapping = {
+      Genes: "genes",
+      "Protein Clusters": "protein_cluster",
+      "Protein Signatures": "protein_signature",
+      Proteins: "study_protein",
+      "PubMed Citations": "citation",
+      "Salivary Proteins": "protein",
+      // "Salivary Proteins": "salivary-proteins-102023",
+      Annotations: "protein",
+    };
+
+    const result = await advancedSearch(
+      entityIndexMapping[entity],
+      rows,
+      booleanOperator
+    );
+    res.json(result);
+  } catch (error) {
+    console.log(error);
   }
 });
 
