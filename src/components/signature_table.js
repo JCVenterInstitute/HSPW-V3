@@ -177,6 +177,7 @@ function App() {
         console.log(typeArr);
       });
     } else if (globalSC === true) {
+      console.log("180", globalSC);
       const result = globalSearch().catch(console.errror);
       result.then((value) => {
         if (value.hits.hits) {
@@ -387,39 +388,37 @@ function App() {
   const rowHeight = 50;
 
   const escapeRegExp = (string) => {
+    console.log(typeof string);
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   };
 
   const onFilterTextBoxChanged = (e) => {
-    if (e.key === "Enter") {
-      console.log("key entered", e.key);
+    // Check if the event is a delete key press or a synthetic event
+    const isDeleteKey =
+      e.nativeEvent && e.nativeEvent.inputType === "deleteContentBackward";
 
-      // Check if the event is a delete key press or a synthetic event
-      const isDeleteKey =
-        e.nativeEvent && e.nativeEvent.inputType === "deleteContentBackward";
+    let inputValue = e;
 
-      let inputValue = e.target.value;
+    if (isDeleteKey) {
+      // Handle delete key press by removing the last character
+      inputValue = inputValue.slice(0, -1);
+    }
 
-      if (isDeleteKey) {
-        // Handle delete key press by removing the last character
-        inputValue = inputValue.slice(0, -1);
-      }
+    // Ensure that inputValue is defined
+    inputValue = inputValue || "";
 
-      // Ensure that inputValue is defined
-      inputValue = inputValue || "";
+    // Escape special characters
+    const escapedInputValue = escapeRegExp(inputValue);
 
-      // Escape special characters
-      const escapedInputValue = escapeRegExp(inputValue);
+    console.log("Input Value: " + escapedInputValue);
 
-      console.log("Input Value: " + escapedInputValue);
-
-      if (escapedInputValue !== "") {
-        setSearchText(escapedInputValue);
-        setGlobalSC(true);
-      } else {
-        setGlobalSC(false);
-        setSearchText("");
-      }
+    if (escapedInputValue !== "") {
+      console.log("415", escapedInputValue);
+      setSearchText(escapedInputValue);
+      setGlobalSC(true);
+    } else {
+      setGlobalSC(false);
+      setSearchText("");
     }
   };
 
@@ -924,6 +923,8 @@ function App() {
                 }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
+                    console.log("key wodn", e.key);
+                    console.log(e.target.value);
                     onFilterTextBoxChanged(e.target.value);
                   }
                 }}
