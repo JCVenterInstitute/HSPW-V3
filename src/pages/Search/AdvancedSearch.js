@@ -56,7 +56,7 @@ const AdvancedSearch = () => {
       {
         id: Date.now(),
         selectedProperty: properties[0] || "",
-        selectedOperation: "contains",
+        selectedOperation: properties[0] ? "contains" : "",
       },
     ]);
   };
