@@ -103,7 +103,7 @@ function DownloadTable() {
       field: "project",
       autoHeight: true,
       wrapText: true,
-      cellStyle: { "word-break": "break-word" },
+      cellStyle: { wordBreak: "break-word" },
       headerClass: ["header-border"],
       cellClass: ["table-border"],
     },

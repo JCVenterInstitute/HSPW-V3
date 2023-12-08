@@ -13,6 +13,8 @@ import main_feature from "../components/hero.jpeg";
 import parse from "html-react-parser";
 import "./style.css";
 import FontAwesome from "react-fontawesome";
+import LinearProgress from "@mui/material/LinearProgress";
+import Box from "@mui/material/Box";
 const th = {
   background: "#f2f2f2",
   textAlign: "center",
@@ -86,7 +88,11 @@ const Signature_detail = (props) => {
   }, []);
 
   if (isLoading) {
-    return <h2>Loading</h2>;
+    return (
+      <Box sx={{ width: "100%" }}>
+        <LinearProgress sx={{ mb: "500px", margin: "20px" }} />
+      </Box>
+    );
   }
 
   return (
@@ -135,7 +141,7 @@ const Signature_detail = (props) => {
                 >
                   <div style={{ paddingLeft: "1%" }}>
                     <span style={{ color: "black", fontSize: "14px" }}>
-                      {parse(parse(abstract))}
+                      {parse(parse(abstract.split("=")[1]))}
                     </span>
                   </div>
                 </TableCell>
@@ -263,7 +269,14 @@ const Signature_detail = (props) => {
                                   pfam.split(":")[1]
                                 }
                               >
-                                {pfam}
+                                {pfam}{" "}
+                                <FontAwesome
+                                  className="super-crazy-colors"
+                                  name="external-link"
+                                  style={{
+                                    textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                                  }}
+                                />
                               </a>
                             </TableCell>
                           </>
@@ -287,7 +300,14 @@ const Signature_detail = (props) => {
                                   PRINTS.split(":")[1]
                                 }
                               >
-                                {PRINTS}
+                                {PRINTS}{" "}
+                                <FontAwesome
+                                  className="super-crazy-colors"
+                                  name="external-link"
+                                  style={{
+                                    textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                                  }}
+                                />
                               </a>
                             </TableCell>
                           </>
@@ -312,7 +332,14 @@ const Signature_detail = (props) => {
                                   PROFILE.split(":")[1]
                                 }
                               >
-                                {PROFILE}
+                                {PROFILE}{" "}
+                                <FontAwesome
+                                  className="super-crazy-colors"
+                                  name="external-link"
+                                  style={{
+                                    textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                                  }}
+                                />
                               </a>
                             </TableCell>
                           </>
@@ -337,7 +364,14 @@ const Signature_detail = (props) => {
                                   "&BLAST=DUMMY"
                                 }
                               >
-                                {SMART}
+                                {SMART}{" "}
+                                <FontAwesome
+                                  className="super-crazy-colors"
+                                  name="external-link"
+                                  style={{
+                                    textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                                  }}
+                                />
                               </a>
                             </TableCell>
                           </>
@@ -414,7 +448,7 @@ const Signature_detail = (props) => {
                               backgroundColor: "#1463B9",
                               color: "white",
                               fontFamily: "Montserrat",
-                              fontSize: "16px",
+                              fontSize: "17px",
                               fontWeight: "bold",
                             }}
                           >
@@ -529,7 +563,14 @@ const Signature_detail = (props) => {
                   }}
                 >
                   <a href={interpro_link + data[0]["_source"]["InterPro ID"]}>
-                    InterPro
+                    InterPro{" "}
+                    <FontAwesome
+                      className="super-crazy-colors"
+                      name="external-link"
+                      style={{
+                        textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                      }}
+                    />
                   </a>
                 </TableCell>
               </TableRow>
