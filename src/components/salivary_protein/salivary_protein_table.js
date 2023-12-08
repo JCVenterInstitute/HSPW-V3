@@ -728,7 +728,7 @@ function App() {
       headerCheckboxSelection: false,
       minWidth: "155",
       wordWrap: true,
-
+      sortable: true,
       cellStyle: { wordBreak: "break-word" },
       headerClass: ["header-border"],
       cellClass: ["table-border"],
@@ -739,7 +739,7 @@ function App() {
       minWidth: "132",
       field: "Gene Symbol",
       wrapText: true,
-
+      sortable: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
       cellStyle: { wordBreak: "break-word" },
@@ -752,14 +752,14 @@ function App() {
       wrapText: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
-
+      sortable: true,
       cellStyle: { wordBreak: "break-word" },
     },
     {
       headerName: "Expert Opinion",
       minWidth: "140",
       field: "expert_opinion",
-
+      sortable: true,
       cellRenderer: "opinionComponent",
       headerClass: ["header-border"],
       cellClass: ["table-border"],
@@ -864,36 +864,31 @@ function App() {
   };
 
   const onFilterTextBoxChanged = (e) => {
-    console.log("868", e.key);
-    if (e.key === "Enter") {
-      console.log("key entered", e.key);
+    // Check if the event is a delete key press or a synthetic event
+    const isDeleteKey =
+      e.nativeEvent && e.nativeEvent.inputType === "deleteContentBackward";
 
-      // Check if the event is a delete key press or a synthetic event
-      const isDeleteKey =
-        e.nativeEvent && e.nativeEvent.inputType === "deleteContentBackward";
+    let inputValue = e;
 
-      let inputValue = e.target.value;
+    if (isDeleteKey) {
+      // Handle delete key press by removing the last character
+      inputValue = inputValue.slice(0, -1);
+    }
 
-      if (isDeleteKey) {
-        // Handle delete key press by removing the last character
-        inputValue = inputValue.slice(0, -1);
-      }
+    // Ensure that inputValue is defined
+    inputValue = inputValue || "";
 
-      // Ensure that inputValue is defined
-      inputValue = inputValue || "";
+    // Escape special characters
+    const escapedInputValue = escapeRegExp(inputValue);
 
-      // Escape special characters
-      const escapedInputValue = escapeRegExp(inputValue);
+    console.log("Input Value: " + escapedInputValue);
 
-      console.log("Input Value: " + escapedInputValue);
-
-      if (escapedInputValue !== "") {
-        setSearchText(escapedInputValue);
-        setGlobalSC(true);
-      } else {
-        setGlobalSC(false);
-        setSearchText("");
-      }
+    if (escapedInputValue !== "") {
+      setSearchText(escapedInputValue);
+      setGlobalSC(true);
+    } else {
+      setGlobalSC(false);
+      setSearchText("");
     }
   };
 
