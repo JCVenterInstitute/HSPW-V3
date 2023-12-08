@@ -223,11 +223,11 @@ const Protein_Detail = (props) => {
                 Cross References
               </Link>
               |
-              <Link to="#keywords" className="hero-link">
+              <Link to="#keyword" className="hero-link">
                 Keywords
               </Link>
               |
-              <Link to="#references" className="hero-link">
+              <Link to="#reference" className="hero-link">
                 References
               </Link>
               |
@@ -1107,7 +1107,9 @@ const Protein_Detail = (props) => {
                 return (
                   <React.Fragment key={i}>
                     <a
-                      href={"https://www.uniprot.org/keywords/" + value.id}
+                      href={`https://www.uniprot.org/keywords/${
+                        value.id.split(":")[1]
+                      }`}
                       style={{
                         fontFamily: "Lato",
                         fontSize: "14px",
