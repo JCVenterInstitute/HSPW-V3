@@ -23,7 +23,7 @@ const AdvancedSearch = () => {
   const [entity, setEntity] = useState("");
   const [properties, setProperties] = useState([]);
   const [rows, setRows] = useState([
-    { id: Date.now(), selectedProperty: "", selectedOperation: "" },
+    { id: Date.now(), selectedProperty: "", selectedOperation: "", value: "" },
   ]); // Start with one row
   const [booleanOperator, setBooleanOperator] = useState("AND");
 
@@ -57,6 +57,7 @@ const AdvancedSearch = () => {
         id: Date.now(),
         selectedProperty: properties[0] || "",
         selectedOperation: properties[0] ? "contains" : "",
+        value: "",
       },
     ]);
   };
@@ -98,9 +99,34 @@ const AdvancedSearch = () => {
   const handleOperationChange = (rowId, newValue) => {
     setRows(
       rows.map((row) =>
-        row.id === rowId ? { ...row, selectedOperation: newValue } : row
+        row.id === rowId
+          ? {
+              ...row,
+              selectedOperation: newValue,
+              value: newValue === "exists" ? "" : row.value, // Clear value if operation is 'exists'
+            }
+          : row
       )
     );
+  };
+
+  const handleValueChange = (rowId, newValue) => {
+    setRows(
+      rows.map((row) => (row.id === rowId ? { ...row, value: newValue } : row))
+    );
+  };
+
+  const handleSearch = async () => {
+    console.log("Searching...");
+    console.log(rows);
+    const result = await axios
+      .post("http://localhost:8000/api/advanced-search/build-query", {
+        entity,
+        rows,
+        booleanOperator,
+      })
+      .then((res) => res.data);
+    console.log(result);
   };
 
   return (
@@ -283,6 +309,9 @@ const AdvancedSearch = () => {
                     label="Value"
                     size="small"
                     variant="outlined"
+                    value={row.value}
+                    onChange={(e) => handleValueChange(row.id, e.target.value)}
+                    disabled={row.selectedOperation === "exists"}
                   />
                 </Grid>
               </React.Fragment>
@@ -316,7 +345,9 @@ const AdvancedSearch = () => {
             gap: 2,
           }}
         >
-          <Button variant="contained">Search</Button>
+          <Button variant="contained" onClick={handleSearch}>
+            Search
+          </Button>
           <Button variant="outlined">Reset</Button>
         </Box>
         <Box component="fieldset" sx={{ p: 2, mb: 2, mt: 3 }}>
