@@ -21,11 +21,11 @@ import CircleUnchecked from "@mui/icons-material/RadioButtonUnchecked";
 
 const AdvancedSearch = () => {
   const [entity, setEntity] = useState("");
+  const [booleanOperator, setBooleanOperator] = useState("AND");
   const [properties, setProperties] = useState([]);
   const [rows, setRows] = useState([
     { id: Date.now(), selectedProperty: "", selectedOperation: "", value: "" },
   ]); // Start with one row
-  const [booleanOperator, setBooleanOperator] = useState("AND");
 
   const entities = [
     "Genes",
@@ -127,6 +127,20 @@ const AdvancedSearch = () => {
       })
       .then((res) => res.data);
     console.log(result);
+  };
+
+  const handleReset = () => {
+    setEntity("");
+    setBooleanOperator("AND");
+    setProperties([]);
+    setRows([
+      {
+        id: Date.now(),
+        selectedProperty: "",
+        selectedOperation: "",
+        value: "",
+      },
+    ]);
   };
 
   return (
@@ -348,7 +362,9 @@ const AdvancedSearch = () => {
           <Button variant="contained" onClick={handleSearch}>
             Search
           </Button>
-          <Button variant="outlined">Reset</Button>
+          <Button variant="outlined" onClick={handleReset}>
+            Reset
+          </Button>
         </Box>
         <Box component="fieldset" sx={{ p: 2, mb: 2, mt: 3 }}>
           <legend
