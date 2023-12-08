@@ -168,7 +168,7 @@ function App() {
         ) {
           newOptions.push(
             <option key={i} value={i}>
-              {i}
+              {i + 1}
             </option>
           );
         }
@@ -197,7 +197,7 @@ function App() {
         ) {
           newOptions.push(
             <option key={i} value={i}>
-              {i}
+              {i + 1}
             </option>
           );
         }
@@ -222,7 +222,7 @@ function App() {
         for (let i = 1; i <= Math.round(value.total.value / pageSize); i++) {
           newOptions.push(
             <option key={i} value={i}>
-              {i}
+              {i + 1}
             </option>
           );
         }
@@ -304,7 +304,7 @@ function App() {
       field: "Name",
       wrapText: true,
       autoHeight: true,
-      cellStyle: { "word-break": "break-word" },
+      cellStyle: { wordBreak: "break-word" },
       headerClass: ["header-border"],
       cellClass: ["table-border"],
     },
@@ -326,7 +326,7 @@ function App() {
     wrapText: true,
     autoHeaderHeight: true,
     autoHeight: true,
-    headerStyle: { "word-break": "break-word" },
+    headerStyle: { wordBreak: "break-word" },
     initialWidth: 200,
     headerComponentParams: {
       template:
@@ -368,7 +368,7 @@ function App() {
   }, []);
 
   const onBtNext = (event) => {
-    if (count < docCount / pageSize) {
+    if (pageNum + 1 < docCount / pageSize) {
       setPageNum((prevPageNum) => {
         console.log("Updated pageNum:", prevPageNum + 1);
         return prevPageNum + 1;
@@ -919,6 +919,9 @@ function App() {
                 size="small"
                 label="Search..."
                 value={searchText}
+                onChange={(e) => {
+                  setSearchText(e.target.value);
+                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     onFilterTextBoxChanged(e.target.value);
@@ -1023,7 +1026,7 @@ function App() {
                     borderRadius: "10px",
                   },
                 }}
-                value={pageNum ? pageNum : 1}
+                value={pageNum ? pageNum + 1 : 1}
                 sx={{ marginLeft: "10px", marginRight: "10px" }}
                 onChange={(event) => {
                   setPageNum(event.target.value);
@@ -1051,17 +1054,17 @@ function App() {
               </Typography>
               <button
                 onClick={onBtPrevious}
-                disabled={pageNum === 1}
+                disabled={pageNum + 1 === 1}
                 style={{
-                  color: pageNum === 1 ? "#D3D3D3" : "#F6921E",
+                  color: pageNum + 1 === 1 ? "#D3D3D3" : "#F6921E",
                   background: "white",
                   fontSize: "20px",
                   border: "none",
-                  cursor: pageNum === 1 ? "default" : "pointer",
-                  transition: pageNum === 1 ? "none" : "background 0.3s",
+                  cursor: pageNum + 1 === 1 ? "default" : "pointer",
+                  transition: pageNum + 1 === 1 ? "none" : "background 0.3s",
                   borderRadius: "5px",
                   marginRight: "15px",
-                  pointerEvents: pageNum === 1 ? "none" : "auto",
+                  pointerEvents: pageNum + 1 === 1 ? "none" : "auto",
                   paddingBottom: "5px",
                 }}
                 onMouseEnter={(e) =>
