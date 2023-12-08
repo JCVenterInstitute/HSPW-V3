@@ -1213,81 +1213,109 @@ const Protein_Detail = (props) => {
               Entry Information
             </h2>
 
-            <TableContainer>
-              <Table>
-                <TableBody>
-                  <TableRow sx={{ border: "1px solid black" }}>
-                    <TableCell
-                      sx={th}
-                      style={{
-                        backgroundColor: "#1463B9",
-                        color: "white",
-                        fontFamily: "Montserrat",
-                        fontSize: "16px",
-                        border: "1px solid #3592E4",
-                        borderTopLeftRadius: "10px",
-                      }}
-                    >
-                      Created On
-                    </TableCell>
-                    <TableCell
-                      sx={{ fontSize: "0.875rem" }}
-                      style={{
-                        maxWidth: "100%",
-                        border: "1px solid #CACACA",
-                        borderTopRightRadius: "10px",
-                      }}
-                    >
-                      {data[0]["_source"]["salivary_proteins"]["created_on"]}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow
-                    sx={{
-                      border: "1px solid #3592E4",
-                    }}
-                  >
-                    <TableCell
-                      sx={th}
-                      style={{
-                        backgroundColor: "#1463B9",
-                        color: "white",
-                        fontFamily: "Montserrat",
-                        fontSize: "16px",
-                        border: "1px solid #3592E4",
-                      }}
-                    >
-                      Last Modified On
-                    </TableCell>
-                    <TableCell
-                      sx={{ fontSize: "0.875rem" }}
-                      style={{ maxWidth: "100%", border: "1px solid #CACACA" }}
-                    >
-                      {data[0]["_source"]["salivary_proteins"]["last_modified"]}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow sx={{ border: "1px solid black" }}>
-                    <TableCell
-                      sx={th}
-                      style={{
-                        backgroundColor: "#1463B9",
-                        color: "white",
-                        fontFamily: "Montserrat",
-                        fontSize: "16px",
-                        border: "1px solid #3592E4",
-                      }}
-                    >
-                      Status
-                    </TableCell>
-                    <TableCell
-                      sx={{ fontSize: "0.875rem" }}
-                      style={{ maxWidth: "100%", border: "1px solid #CACACA" }}
-                    >
-                      {data[0]["_source"]["salivary_proteins"]["status"]}
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
+            <TableHead>
+              <TableRow sx={{ border: "1px solid black" }}>
+                <TableCell
+                  sx={th}
+                  style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    border: "1px solid #3592E4",
+                    borderTopLeftRadius: "10px",
+                  }}
+                >
+                  Created On
+                </TableCell>
+                <TableCell
+                  sx={{ fontSize: "0.875rem" }}
+                  style={{
+                    maxWidth: "100%",
+                    border: "1px solid #CACACA",
+                    borderTopRightRadius: "10px",
+                  }}
+                >
+                  {
+                    data[0]["_source"]["salivary_proteins"]["created_on"].split(
+                      "-"
+                    )[0]
+                  }
+                  {"/"}
+                  {
+                    data[0]["_source"]["salivary_proteins"]["created_on"].split(
+                      "-"
+                    )[1]
+                  }
+                  {"/"}
+                  {
+                    data[0]["_source"]["salivary_proteins"]["created_on"].split(
+                      "-"
+                    )[2]
+                  }
+                </TableCell>
+              </TableRow>
+              <TableRow
+                sx={{
+                  border: "1px solid #3592E4",
+                }}
+              >
+                <TableCell
+                  sx={th}
+                  style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    border: "1px solid #3592E4",
+                  }}
+                >
+                  Last Modified On
+                </TableCell>
+                <TableCell
+                  sx={{ fontSize: "0.875rem" }}
+                  style={{ maxWidth: "100%", border: "1px solid #CACACA" }}
+                >
+                  {
+                    data[0]["_source"]["salivary_proteins"][
+                      "last_modified"
+                    ].split("-")[0]
+                  }
+                  {"/"}
+                  {
+                    data[0]["_source"]["salivary_proteins"][
+                      "last_modified"
+                    ].split("-")[1]
+                  }
+                  {"/"}
+                  {
+                    data[0]["_source"]["salivary_proteins"][
+                      "last_modified"
+                    ].split("-")[2]
+                  }
+                </TableCell>
+              </TableRow>
+              <TableRow sx={{ border: "1px solid black" }}>
+                <TableCell
+                  sx={th}
+                  style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    border: "1px solid #3592E4",
+                  }}
+                >
+                  Status
+                </TableCell>
+                <TableCell
+                  sx={{ fontSize: "0.875rem" }}
+                  style={{ maxWidth: "100%", border: "1px solid #CACACA" }}
+                >
+                  {data[0]["_source"]["salivary_proteins"]["status"]}
+                </TableCell>
+              </TableRow>
+            </TableHead>
           </div>
         </TabPanel>
         <TabPanel>
