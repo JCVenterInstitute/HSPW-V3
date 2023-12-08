@@ -573,7 +573,7 @@ function App() {
         setOpCount(value.aggregations.expert_opinion.buckets);
         setIHCCount(value.aggregations.IHC.buckets);
       });
-    } else if (searchText !== "") {
+    } else if (globalSC === true) {
       const result = globalSearch().catch(console.errror);
       result.then((value) => {
         if (value.hits.hits) {
@@ -689,7 +689,6 @@ function App() {
     pageNum,
     globalSC,
     exclude,
-    searchText,
   ]);
 
   useEffect(() => {
@@ -865,7 +864,10 @@ function App() {
   };
 
   const onFilterTextBoxChanged = (e) => {
+    console.log("868", e.key);
     if (e.key === "Enter") {
+      console.log("key entered", e.key);
+
       // Check if the event is a delete key press or a synthetic event
       const isDeleteKey =
         e.nativeEvent && e.nativeEvent.inputType === "deleteContentBackward";
@@ -1148,7 +1150,7 @@ function App() {
     const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
 
     let inputValue = e.target.value;
-
+    setPrefix(inputValue);
     if (isDeleteKey) {
       // Handle delete key press by removing the last character
       inputValue = inputValue.slice(0, -1);
@@ -1188,8 +1190,6 @@ function App() {
           }
         : null;
 
-    setPrefix(inputValue);
-
     updateQuery(newAccessionQuery, "uniprot_accession");
   };
 
@@ -1198,7 +1198,7 @@ function App() {
     const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
 
     let inputValue = e.target.value;
-
+    setGenePrefix(inputValue);
     if (isDeleteKey) {
       // Handle delete key press by removing the last character
       inputValue = inputValue.slice(0, -1);
@@ -1234,7 +1234,6 @@ function App() {
             },
           }
         : null;
-    setGenePrefix(inputValue);
 
     updateQuery(newGeneQuery, "Gene Symbol");
   };
@@ -2478,39 +2477,43 @@ function App() {
                   Expert Opinion
                 </Typography>
               </AccordionSummary>
-              <List
-                component="div"
-                disablePadding
-                sx={{ border: "1px groove" }}
-              >
-                {opCount.map((child, key) =>
-                  child.key !== "" &&
-                  child.key !== "D.D.S." &&
-                  child.key != "Unknown" ? (
-                    <FormGroup key={key} sx={{ ml: "10px" }}>
-                      {child.key === "Unsubstantiated" ? (
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={opArr[0]}
-                              onChange={filterOpUS}
-                            />
-                          }
-                          label={"US (" + child.doc_count + ")"}
-                        />
-                      ) : (
-                        <FormControlLabel
-                          control={
-                            <Checkbox checked={opArr[1]} onChange={filterOpC} />
-                          }
-                          label={"C (" + (child.doc_count - 1) + ")"}
-                        />
-                      )}
-                    </FormGroup>
-                  ) : null
-                )}
-              </List>
-              <AccordionDetails></AccordionDetails>
+              <AccordionDetails>
+                <List
+                  component="div"
+                  disablePadding
+                  sx={{ border: "1px groove" }}
+                >
+                  {opCount.map((child, key) =>
+                    child.key !== "" &&
+                    child.key !== "D.D.S." &&
+                    child.key != "Unknown" ? (
+                      <FormGroup key={key} sx={{ ml: "10px" }}>
+                        {child.key === "Unsubstantiated" ? (
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={opArr[0]}
+                                onChange={filterOpUS}
+                              />
+                            }
+                            label={"US (" + child.doc_count + ")"}
+                          />
+                        ) : (
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={opArr[1]}
+                                onChange={filterOpC}
+                              />
+                            }
+                            label={"C (" + (child.doc_count - 1) + ")"}
+                          />
+                        )}
+                      </FormGroup>
+                    ) : null
+                  )}
+                </List>
+              </AccordionDetails>
             </Accordion>
             <Accordion>
               <AccordionSummary
@@ -2883,8 +2886,10 @@ function App() {
                 size="small"
                 label="Search..."
                 value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                onKeyPress={(e) => {
+                onChange={(e) => {
+                  setSearchText(e.target.value);
+                }}
+                onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     onFilterTextBoxChanged(e.target.value);
                   }
