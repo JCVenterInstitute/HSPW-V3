@@ -334,7 +334,7 @@ const AdvancedSearch = () => {
           {properties.length !== 0 ? (
             <SelectAllTransferList properties={properties} />
           ) : (
-            <Typography>Please an entity type first</Typography>
+            <Typography>Please select an entity type first</Typography>
           )}
         </Box>
         <Box
