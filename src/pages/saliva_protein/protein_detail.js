@@ -149,6 +149,7 @@ const Protein_Detail = (props) => {
             className="head_background"
           >
             <h1 className="head_title" align="left">
+            <h1 className="head_title" align="left">
               Protein: {data[0]["_source"]["salivary_proteins"]["protein_name"]}
             </h1>
             <p
@@ -208,11 +209,11 @@ const Protein_Detail = (props) => {
                 Cross References
               </Link>
               |
-              <Link to="#keywords" className="hero-link">
+              <Link to="#keyword" className="hero-link">
                 Keywords
               </Link>
               |
-              <Link to="#references" className="hero-link">
+              <Link to="#reference" className="hero-link">
                 References
               </Link>
               |
