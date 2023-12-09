@@ -2,6 +2,7 @@ import List from "@material-ui/core/List";
 import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { rgb } from "d3";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -30,12 +31,13 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 import CustomLoadingOverlay from "../customLoadingOverlay.jsx";
+import CustomNoRowsOverlay from "../customNoRowsOverlay.jsx";
 import CustomHeaderGroup from "../customHeaderGroup.jsx";
-import { ReactComponent as DownloadLogo } from "../table_icon/download.svg";
+import { ReactComponent as Download_Logo } from "../table_icon/download.svg";
 import "../filter.css";
 import "../table.css";
 
-// TODO: Move to some sort of env file
+// TODO: Should not be here move to some sort of env file
 const HOST_ENDPOINT = `http://localhost:8000`;
 
 const styles = {
@@ -47,12 +49,7 @@ const styles1 = {
 };
 
 const Accordion = styled((props) => (
-  <MuiAccordion
-    disableGutters
-    elevation={0}
-    square
-    {...props}
-  />
+  <MuiAccordion disableGutters elevation={0} square {...props} />
 ))(({ theme }) => ({
   marginBottom: "15px",
   "&:not(:last-child)": {
@@ -161,11 +158,7 @@ function WSComponent(props) {
         height={18}
         style={{ stroke: "black", alignItems: "center" }}
       >
-        <rect
-          width={18}
-          height={18}
-          fill="rgb(255,255,255)"
-        >
+        <rect width={18} height={18} fill="rgb(255,255,255)">
           <title>Not uniquely observed</title>
         </rect>
       </svg>
@@ -202,11 +195,7 @@ function WSComponent(props) {
             ></rect>
           </pattern>
         </defs>
-        <rect
-          width={18}
-          height={18}
-          style={{ fill: "url(#stripe2)" }}
-        >
+        <rect width={18} height={18} style={{ fill: "url(#stripe2)" }}>
           <title>Data not available</title>
         </rect>
       </svg>
@@ -217,13 +206,11 @@ function WSComponent(props) {
 function opinionComponent(props) {
   const { value } = props;
 
-  return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
-      <span>
-        {value === "Confirmed" ? "C" : value === "Unsubstantiated" ? "US" : ""}
-      </span>
-    </div>
-  );
+  if (value === "Confirmevalue") {
+    return <span>C</span>;
+  } else if (value === "Unsubstantiated") {
+    return <span>US</span>;
+  }
 }
 
 function IHCComponent(props) {
@@ -422,98 +409,128 @@ const columns = [
     field: "UniProt Accession",
     checkboxSelection: false,
     headerCheckboxSelection: false,
+    minWidth: "155",
     wordWrap: true,
+
     cellStyle: { wordBreak: "break-word" },
+    headerClass: ["header-border"],
     cellClass: ["table-border"],
     cellRenderer: "proteinLinkComponent",
   },
   {
     headerName: "Gene Symbol",
+    minWidth: "132",
     field: "Gene Symbol",
+    wrapText: true,
+
+    headerClass: ["header-border"],
     cellClass: ["table-border"],
-    cellStyle: {
-      wordBreak: "break-word",
-      textAlign: "center",
-      display: "flex",
-      justifyContent: "center",
-    },
+    cellStyle: { wordBreak: "break-word" },
   },
   {
     headerName: "Protein Name",
+    minWidth: "133",
     maxHeight: "5",
     field: "Protein Name",
+    wrapText: true,
+    headerClass: ["header-border"],
     cellClass: ["table-border"],
-    cellStyle: { wordBreak: "break-word", overflow: "scroll" },
+
+    cellStyle: { wordBreak: "break-word" },
   },
   {
     headerName: "Expert Opinion",
+    minWidth: "140",
     field: "expert_opinion",
+
     cellRenderer: "opinionComponent",
+    headerClass: ["header-border"],
     cellClass: ["table-border"],
+    wrapText: true,
   },
   {
-    headerName: "MS (obs.)",
+    headerName: "MS",
     headerGroupComponent: CustomHeaderGroup,
-    headerClass: ["header-border", "salivary-protein-header"],
+    headerClass: ["header-border"],
     cellClass: ["table-border"],
     children: [
       {
-        headerName: "Whole Saliva",
+        headerName: "WS",
         field: "saliva_abundance",
+        minWidth: "98",
         cellRenderer: "WSComponent",
+        headerClass: ["header-border"],
         cellClass: ["square_table", "salivary-proteins-colored-cell"],
       },
       {
-
-        headerName: "Parotid Glands",
+        headerName: "Par",
         field: "parotid_gland_abundance",
+        minWidth: "97",
         cellRenderer: "WSComponent",
+        headerClass: ["header-border"],
         cellClass: ["square_table", "salivary-proteins-colored-cell"],
       },
       {
-        headerName: "SM/SL Glands",
+        headerName: "Sub",
         field: "sm/sl_abundance",
+        minWidth: "101",
         cellRenderer: "WSComponent",
+        headerClass: ["header-border"],
         cellClass: ["square_table", "salivary-proteins-colored-cell"],
       },
       {
-        headerName: "Blood",
+        headerName: "B",
         field: "plasma_abundance",
+        minWidth: "95",
         cellRenderer: "LinkComponent",
+        headerClass: ["header-border"],
         cellClass: ["square_table", "salivary-proteins-colored-cell"],
       },
     ],
+
+    wrapText: true,
     cellStyle: { textAlign: "center" },
   },
   {
     headerName: "IHC",
     field: "IHC",
+    minWidth: "101",
+
     wrapText: true,
     cellRenderer: "IHCComponent",
+    headerClass: ["header-border"],
     cellClass: ["square_table", "salivary-proteins-colored-cell"],
   },
   {
-    headerName: "mRNA (NX)",
+    headerName: "mRNA",
     headerGroupComponent: CustomHeaderGroup,
-    headerClass: ["header-border", "salivary-protein-header"],
+    minWidth: "105",
+
     wrapText: true,
     cellRenderer: "WSComponent",
+    headerClass: ["header-border"],
     cellClass: ["table-border"],
     children: [
       {
         headerName: "Value",
         field: "mRNA",
+        minWidth: "116",
         cellRenderer: "WSComponent",
+        headerClass: ["header-border"],
         cellClass: ["square_table", "salivary-proteins-colored-cell"],
       },
       {
         headerName: "Specificity",
         field: "Specificity",
+        minWidth: "160",
+        headerClass: ["header-border"],
         cellClass: ["table-border"],
       },
       {
         headerName: "Specificity Score",
         field: "Specificity_Score",
+        minWidth: "159",
+        headerClass: ["header-border"],
         cellClass: ["table-border"],
       },
     ],
@@ -524,319 +541,668 @@ const defColumnDefs = {
   flex: 1,
   filter: true,
   resizable: true,
-  sortable: true,
   wrapHeaderText: true,
   wrapText: true,
   autoHeaderHeight: true,
-  headerClass: ["header-border", "salivary-protein-header"],
+  headerStyle: { wordBreak: "break-word" },
+  initialWidth: 200,
   headerComponentParams: {
     template:
       '<div class="ag-cell-label-container" role="presentation">' +
-      // '  <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button"></span>' +
+      '  <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button"></span>' +
       '  <div ref="eLabel" class="ag-header-cell-label" role="presentation">' +
       '    <span ref="eSortOrder" class="ag-header-icon ag-sort-order"></span>' +
       '    <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon"></span>' +
       '    <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon"></span>' +
       '    <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon"></span>' +
       '    <span ref="eText" class="ag-header-cell-text" role="columnheader" style="white-space: normal;"></span>' +
-      // '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
+      '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
       "  </div>" +
       "</div>",
   },
 };
 
-
-const customHeaders = {
-  "Content-Type": "application/json",
-};
-
-const recordsPerPageList = [
-  {
-    value: 50,
-    label: 50,
-  },
-  {
-    value: 100,
-    label: 100,
-  },
-  {
-    value: 500,
-    label: 500,
-  },
-  {
-    value: 1000,
-    label: 1000,
-  },
-];
-
-const rowHeight = 80;
-
-const IHCValues = ["medium", "not detected", "low", "n/a", "high"];
-
-
-/**
- * Escape all special characters for input string
- * Special Characters include: [-[\]{}()*+?.,\\^$|#\s
- * @param {String} inputVal Non-escaped string value entered by user
- * @returns String where special characters are escaped with slashes
- */
-const escapeSpecialCharacters = (inputVal) => {
-  return inputVal.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-};
-
-
-const stringAttributes = [
-  "UniProt Accession",
-  "Gene Symbol",
-  "Protein Name",
-  "IHC",
-  "expert_opinion",
-];
-
-const numberAttributes = [
-  "saliva_abundance", // MS WS
-  "parotid_gland_abundance", // MS PAR
-  "sm/sl_abundance", // MS Sub
-  "plasma_abundance", // MS B
-  "mRNA", // mRNA
-];
-
-function SalivaryProteinTable() {
-  const gridRef = useRef();
-
-  const [pageSize, setPageSize] = useState(50); // Default page data to 50 records per page
+function App() {
+  const [pageSize, setPageSize] = useState(50);
   const [pageNum, setPageNum] = useState(0);
-  const [docCount, setDocCount] = useState(0); // Total # of records available for display
+  const [gridApi, setGridApi] = useState("");
+  const [count, setCount] = useState(2);
+  const [docCount, setDocCount] = useState(0);
+  const [pageNumArr, setPageNumArr] = useState([1]);
+  const [accessionC, setAccessionC] = useState(false);
+  const [geneC, setGeneC] = useState(false);
+  const [nameC, setNameC] = useState(false);
+  const [eoC, seteoC] = useState(false);
   const [ihcC, setihcC] = useState(false);
+  const [wsC, setwsC] = useState(false);
+  const [parC, setparC] = useState(false);
+  const [subC, setsubC] = useState(false);
+  const [plasmaC, setplasmaC] = useState(false);
+  const [mRNAC, setmRNAC] = useState(false);
+  const [prefix, setPrefix] = useState("");
+  const [genePrefix, setGenePrefix] = useState("");
+  const [namePrefix, setNamePrefix] = useState("");
   const [opCount, setOpCount] = useState([]);
   const [IHCCount, setIHCCount] = useState([]);
   const [rowData, setRowData] = useState([]);
+  const [opinionVal, setopinionVal] = useState("");
+  const [IHCVal, setIHCVal] = useState("*");
+  const [parStart, setparStart] = useState("");
+  const [parEnd, setparEnd] = useState("");
+  const [subStart, setsubStart] = useState("");
+  const [subEnd, setsubEnd] = useState("");
+  const [pStart, setpStart] = useState("");
+  const [pEnd, setpEnd] = useState("");
+  const [wsStart, setwsStart] = useState("");
+  const [wsEnd, setwsEnd] = useState("");
+  const [mRNAStart, setmRNAStart] = useState("");
+  const [mRNAEnd, setmRNAEnd] = useState("");
+  const [queryArr, setQueryArr] = useState([]);
   const [opArr, setOpArr] = useState([false, false]);
-  const [orFilterOn, setOrFilterOn] = useState(false);
+  const [orChecked, setorChecked] = useState(false);
+  const [exclude, setExclude] = useState(false);
   const [IHCArr, setIHCArr] = useState([false, false, false, false, false]);
   const [searchText, setSearchText] = useState("");
-  const [msBExcludeOn, setMsBExcludeOn] = useState(false);
+  const [globalSC, setGlobalSC] = useState(false);
+
   const [facetFilter, setFacetFilters] = useState({});
-  const [columnApi, setColumnApi] = useState(null);
-  const [gridApi, setGridApi] = useState(null);
-  const [sortedColumn, setSortedColumn] = useState(null);
+
+  // Fetch initial salivary protein table data
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      const data = await fetch(
+        `${HOST_ENDPOINT}/saliva_protein_table/${pageSize}/${pageNum}`
+      ).then((data) => data.json());
+
+      return data;
+    };
+
+    try {
+      const result = fetchInitialData();
+
+      result.then((value) => {
+        if (value.hits.hits) {
+          let records = [];
+
+          for (let i = 0; i < value.hits.hits.length; i++) {
+            records.push(value.hits.hits[i]["_source"]);
+          }
+
+          setRowData([]);
+
+          console.log("> Records", records);
+
+          // setRowData(records);
+        }
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchOpCount = async () => {
+      const data = await fetch("http://localhost:8000/opCount");
+      const json = data.json();
+      return json;
+    };
+
+    const countOpResult = fetchOpCount().catch(console.error);
+
+    countOpResult.then((value) => {
+      if (value) {
+        setOpCount(value);
+      }
+    });
+
+    const fetchIHCCount = async () => {
+      const data = await fetch("http://localhost:8000/IHCCount");
+      const json = data.json();
+      return json;
+    };
+
+    const countIHCResult = fetchIHCCount().catch(console.errror);
+
+    countIHCResult.then((value) => {
+      if (value) {
+        setIHCCount(value);
+        console.log(IHCCount);
+      }
+    });
+
+    fetch("http://localhost:8000/saliva_protein_count/")
+      .then((res) => res.json())
+      .then((data) => {
+        setDocCount(data.count);
+        const newOptions = [];
+        for (let i = 1; i <= Math.round(data.count / pageSize); i++) {
+          newOptions.push(
+            <option key={i} value={i}>
+              {i}
+            </option>
+          );
+        }
+        setPageNumArr(newOptions);
+      });
+  }, []);
+
+  const globalSearch = async () => {
+    const data = await fetch(
+      `http://localhost:8000/multi_search/new_saliva_protein_test/${searchText}`
+    );
+    console.log(
+      `http://localhost:8000/multi_search/new_saliva_protein_test/${searchText}`
+    );
+    const json = data.json();
+    return json;
+  };
+
+  const customHeaders = {
+    "Content-Type": "application/json",
+  };
+
+  const fetchAndData = async () => {
+    console.log("> Query (Wan)", queryArr);
+    console.log("> Query (Mickey)", queryBuilder(facetFilter));
+
+    const data = await fetch(
+      `http://localhost:8000/and_search/${pageSize}/${pageNum * pageSize}/`,
+      {
+        method: "POST",
+        headers: customHeaders,
+        // body: JSON.stringify(queryArr),
+        body: JSON.stringify(queryBuilder(facetFilter)),
+      }
+    );
+    const json = data.json();
+    return json;
+  };
+
+  const fetchOrData = async () => {
+    const data = await fetch(
+      `http://localhost:8000/or_search/${pageSize}/${pageNum}/`,
+      {
+        method: "POST",
+        headers: customHeaders,
+        body: JSON.stringify(queryArr),
+      }
+    );
+    const json = data.json();
+    return json;
+  };
+
+  useEffect(() => {
+    if (
+      (accessionC === true ||
+        geneC === true ||
+        nameC === true ||
+        eoC === true ||
+        ihcC === true ||
+        wsC === true ||
+        parC === true ||
+        subC === true ||
+        plasmaC === true ||
+        mRNAC === true) &&
+      orChecked === false
+    ) {
+      const result = fetchAndData().catch(console.errror);
+
+      result.then((value) => {
+        if (value.hits.hits) {
+          console.log(value);
+          let data1 = [];
+          for (let i = 0; i < value.hits.hits.length; i++) {
+            data1.push(value.hits.hits[i]["_source"]);
+          }
+          console.log(data1);
+          setRowData(data1);
+        }
+        setDocCount(value.hits.total.value);
+        const newOptions = [];
+        for (
+          let i = 1;
+          i <= Math.round(value.hits.total.value / pageSize);
+          i++
+        ) {
+          newOptions.push(
+            <option key={i} value={i}>
+              {i}
+            </option>
+          );
+        }
+
+        setPageNumArr(newOptions);
+        setCount(2);
+        setOpCount(value.aggregations.expert_opinion.buckets);
+        setIHCCount(value.aggregations.IHC.buckets);
+      });
+    } else if (globalSC === true) {
+      const result = globalSearch().catch(console.errror);
+      result.then((value) => {
+        console.log("> Value ", value);
+
+        if (value.hits.hits) {
+          let data1 = [];
+          for (let i = 0; i < value.hits.hits.length; i++) {
+            data1.push(value.hits.hits[i]["_source"]);
+          }
+          console.log(data1);
+          setRowData(data1);
+        }
+        setDocCount(value.hits.total.value);
+        const newOptions = [];
+        for (
+          let i = 1;
+          i <= Math.round(value.hits.total.value / pageSize);
+          i++
+        ) {
+          newOptions.push(
+            <option key={i} value={i}>
+              {i}
+            </option>
+          );
+        }
+
+        setPageNumArr(newOptions);
+        setCount(2);
+      });
+    } else {
+      const fetchData = async () => {
+        const data = await fetch(
+          "http://localhost:8000/saliva_protein_table/" +
+            pageSize +
+            "/" +
+            pageNum * pageSize
+        );
+
+        const json = data.json();
+        return json;
+      };
+
+      const result = fetchData().catch(console.errror);
+
+      result.then((value) => {
+        if (value.hits.hits) {
+          let data1 = [];
+          for (let i = 0; i < value.hits.hits.length; i++) {
+            data1.push(value.hits.hits[i]["_source"]);
+          }
+
+          setRowData(data1);
+        }
+        setDocCount(value.hits.total.value);
+        const newOptions = [];
+        for (
+          let i = 1;
+          i <= Math.round(value.hits.total.value / pageSize);
+          i++
+        ) {
+          newOptions.push(
+            <option key={i} value={i}>
+              {i}
+            </option>
+          );
+        }
+
+        setPageNumArr(newOptions);
+
+        setOpCount(value.aggregations.expert_opinion.buckets);
+        setIHCCount(value.aggregations.IHC.buckets);
+      });
+
+      const fetchOpCount = async () => {
+        const data = await fetch("http://localhost:8000/opCount");
+        const json = data.json();
+        return json;
+      };
+
+      const countOpResult = fetchOpCount().catch(console.errror);
+
+      countOpResult.then((value) => {
+        if (value) {
+          setOpCount(value);
+        }
+      });
+
+      const fetchIHCCount = async () => {
+        const data = await fetch("http://localhost:8000/IHCCount");
+        const json = data.json();
+        return json;
+      };
+
+      const countIHCResult = fetchIHCCount().catch(console.errror);
+
+      countIHCResult.then((value) => {
+        if (value) {
+          setIHCCount(value);
+        }
+      });
+    }
+  }, [
+    prefix,
+    genePrefix,
+    namePrefix,
+    opArr,
+    IHCArr,
+    wsStart,
+    wsEnd,
+    parStart,
+    parEnd,
+    subStart,
+    subEnd,
+    pStart,
+    pEnd,
+    mRNAStart,
+    mRNAEnd,
+    pageSize,
+    pageNum,
+    globalSC,
+    exclude,
+    searchText,
+  ]);
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
   }, []);
 
-  // Export the current page data as CSV file
+  const noRowsOverlayComponent = useMemo(() => {
+    return CustomNoRowsOverlay;
+  }, []);
+
+  const gridRef = useRef();
+
   const onBtExport = useCallback(() => {
-    gridRef.current.api.exportDataAsCsv();
+    gridRef.current.api.exportDataAsExcel();
   }, []);
 
-
-  /**
-   * Create a proper sort query for whichever sort attribute is selected
-   */
-  const createSortQuery = () => {
-    const { attribute, order } = sortedColumn;
-
-
-    // Have to include .keyword when sorting string attributes
-    const sortAttrKey = `${sortedColumn.attribute}${
-      stringAttributes.includes(attribute) ? ".keyword" : ""
-    }`;
-
-    return {
-      sort: [
-        {
-          [sortAttrKey]: {
-            order,
-          },
-        },
-      ],
-
-    };
-
+  const escapeRegExp = (string) => {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   };
 
-  /**
-   * Create a proper search query for whichever search string is entered into the search bar
-   */
-  const createGlobalSearchQuery = () => {
-    const escapedInput = escapeSpecialCharacters(searchText);
+  const onFilterTextBoxChanged = (e) => {
+    // Check if the event is a delete key press or a synthetic event
+    const isDeleteKey =
+      e.nativeEvent && e.nativeEvent.inputType === "deleteContentBackward";
 
-    return {
-      query_string: {
-        query: `*${escapedInput}*`,
-        default_operator: "AND",
-        analyze_wildcard: true,
-      },
-    };
-  };
+    let inputValue = e;
 
-  // Handle fetching data for table
-  const fetchData = async () => {
-    const apiPayload = {
-      filters: queryBuilder(facetFilter),
-      // Pass sort query if any sort is applied
-      ...(sortedColumn && createSortQuery()),
-      ...(searchText && { keyword: createGlobalSearchQuery() }),
-    };
-
-    const data = await fetch(
-      `${HOST_ENDPOINT}/api/salivary-proteins/${pageSize}/${
-        pageNum * pageSize
-      }`,
-      {
-        method: "POST",
-        headers: customHeaders,
-        body: JSON.stringify(apiPayload),
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        const { hits, aggregations } = data;
-
-        for (const aggr of Object.keys(aggregations)) {
-          const displayedAggs = aggregations[aggr].buckets;
-
-          if (aggr === "IHC") {
-            setIHCCount(displayedAggs);
-          } else if (aggr === "expert_opinion") {
-            // Only want to display unsubstantiated & confirmed agg for expert opinions
-            setOpCount(
-              displayedAggs.filter((agg) =>
-                ["Unsubstantiated", "Confirmed"].includes(agg.key)
-              )
-            );
-          }
-        }
-
-        // Set number of total records returned
-        setDocCount(hits.total.value);
-
-        return hits.hits.map((rec) => rec._source);
-      });
-
-    setRowData(data);
-  };
-
-
-  // Initial data fetch on page load
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-
-  // Fetch new table data when page size is changed or filters are updated
-  useEffect(() => {
-    // Needed to delay search so users can type before triggering search
-    const delayDebounceFn = setTimeout(() => {
-      setPageNum(0);
-      fetchData();
-    }, 1000);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [facetFilter, pageSize, msBExcludeOn, searchText]);
-
-  // Update records when new sort is applied & go back to first page
-  useEffect(() => {
-    if (gridApi) {
-      gridApi.showLoadingOverlay();
-      setPageNum(0);
-      fetchData();
+    if (isDeleteKey) {
+      // Handle delete key press by removing the last character
+      inputValue = inputValue.slice(0, -1);
     }
-  }, [sortedColumn]);
 
+    // Ensure that inputValue is defined
+    inputValue = inputValue || "";
 
-  // Fetch data for new page selected
-  // No delay needed when switching pages no filter updates
-  useEffect(() => {
-    fetchData();
-  }, [pageNum]);
+    // Escape special characters
+    const escapedInputValue = escapeRegExp(inputValue);
 
-  /**
-   * Update search entered by user in search bar
-   * @param {string} input String input to search bar
-   */
-  const handleGlobalSearch = (input) => {
-    setSearchText(input);
+    console.log("Input Value: " + escapedInputValue);
+
+    if (escapedInputValue !== "") {
+      setSearchText(escapedInputValue);
+      setGlobalSC(true);
+    } else {
+      setGlobalSC(false);
+      setSearchText("");
+    }
   };
 
-  const onGridReady = (params) => {
-    setGridApi(params.api);
-    setColumnApi(params.columnApi);
-    gridRef.current.api.sizeColumnsToFit();
-
-  };
-
-  const clearSearchBar = () => {
+  const clearSearch = () => {
+    setGlobalSC(false);
     setSearchText("");
   };
 
-  // Set new page to prev page
-  const setPrevPage = () => {
-    if (pageNum !== 0) {
-      setPageNum(pageNum - 1);
-    }
-  };
-
-  // Set new page to next page
-  const setNextPage = () => {
-    if (pageNum < docCount / pageSize - 1) {
+  const onBtNext = (event) => {
+    if (count < docCount / pageSize) {
       setPageNum(pageNum + 1);
+
+      // Increment the count if needed
+      setCount(count + 1);
     }
   };
 
-  /**
-   * Creates a range query for a number field for OpenSearch
-   * @param {{ attrName, start, end }} input Necessary fields for range query
-   * @returns OpenSearch range query based on inputs
-   */
-  const createRangeQuery = ({ attrName, start, end }) => {
-    let rangeQuery = {
-      range: {
-        [attrName]: {
-          ...(start && { gte: start }),
-          ...(end && { lte: end }),
-        },
-      },
+  const onBtPrevious = (event) => {
+    if (pageNum !== 1) {
+      var x = pageNum;
+      setPageNum(x - 1);
+      setCount(count - 1);
+    }
+  };
+
+  const onGridReady = (params) => {
+    setGridApi(params);
+  };
+
+  const updateQuery = (newQuery, fieldName) => {
+    setQueryArr((prevArray) => {
+      // If newQuery is null, remove only the corresponding type of query from the array
+      if (newQuery === null) {
+        const targetTypePrev = findEmptyField(prevArray, fieldName);
+
+        console.log("TargetType (null case):", targetTypePrev);
+
+        const updatedArray = prevArray.filter((p) => {
+          const hasWildcard =
+            p &&
+            p.bool &&
+            p.bool.filter &&
+            p.bool.filter[0] &&
+            p.bool.filter[0].wildcard;
+
+          const wildcardProperty =
+            hasWildcard && Object.keys(p.bool.filter[0].wildcard)[0];
+
+          const hasQueryString =
+            p.bool &&
+            p.bool.filter &&
+            p.bool.filter[0] &&
+            p.bool.filter[0].query_string;
+
+          // Check if it's a "Gene Symbol" query with an empty value
+          const isGeneSymbolQuery =
+            hasWildcard &&
+            wildcardProperty === "Gene Symbol" &&
+            p.bool.filter[0].wildcard["Gene Symbol"].value === "";
+
+          const isProteinNameQuery =
+            hasWildcard &&
+            wildcardProperty === "Protein Name" &&
+            p.bool.filter[0].wildcard["Protein Name"].value === "";
+
+          const isIHCQuery =
+            hasWildcard &&
+            wildcardProperty === "IHC" &&
+            p.bool.filter[0].wildcard["IHC"].value === "";
+          // Adjust the condition based on the targetTypePrev boolean value
+          return hasWildcard || hasQueryString
+            ? targetTypePrev
+              ? wildcardProperty !== fieldName &&
+                !(
+                  isGeneSymbolQuery &&
+                  isProteinNameQuery &&
+                  isIHCQuery &&
+                  p.bool.filter[0].query_string[fieldName] !== undefined
+                )
+              : isGeneSymbolQuery ||
+                isProteinNameQuery ||
+                isIHCQuery ||
+                wildcardProperty === fieldName ||
+                (hasQueryString &&
+                  p.bool.filter[0].query_string[fieldName] !== undefined)
+            : true;
+        });
+
+        console.log("Updated Array (null case):", updatedArray);
+
+        return updatedArray;
+      }
+
+      const nonEmptyQueries = prevArray.filter((query) => {
+        const wildcardProperty =
+          query.bool &&
+          query.bool.filter &&
+          query.bool.filter[0].wildcard &&
+          Object.keys(query.bool.filter[0].wildcard)[0];
+
+        // Check if the field is not empty in the new query
+        return !(
+          wildcardProperty &&
+          newQuery.bool.filter &&
+          newQuery.bool.filter[0].wildcard &&
+          Object.keys(newQuery.bool.filter[0].wildcard)[0] ===
+            wildcardProperty &&
+          newQuery.bool.filter[0].wildcard[wildcardProperty] === ""
+        );
+      });
+
+      console.log("Non-empty Queries:", nonEmptyQueries);
+
+      const updatedArray = nonEmptyQueries.map((p) => {
+        const isSame = isSameType(p, newQuery);
+        console.log(
+          `Comparing: ${JSON.stringify(p)} and ${JSON.stringify(
+            newQuery
+          )} => ${isSame}`
+        );
+        return isSame ? newQuery : p;
+      });
+      console.log("1105", newQuery);
+
+      // If the new query does not exist or has an empty value, remove it from the array
+      if (
+        newQuery.bool.filter !== undefined &&
+        !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
+        !(newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value === "")
+      ) {
+        // Check if there's an existing query for the same field and remove it
+        const updatedArrayWithoutExisting = updatedArray.filter((p) => {
+          if (
+            p.bool &&
+            p.bool.filter &&
+            p.bool.filter[0].wildcard &&
+            Object.keys(p.bool.filter[0].wildcard)[0] === fieldName
+          ) {
+            // Remove the existing query if the new query is not empty
+            return newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value !== "";
+          }
+          return true;
+        });
+
+        // Add the new query only if it's not an empty wildcard
+        if (newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value !== "") {
+          updatedArrayWithoutExisting.push(newQuery);
+          console.log("New Query Added:", updatedArrayWithoutExisting);
+        }
+
+        return updatedArrayWithoutExisting;
+      } else if (
+        newQuery.bool.filter !== undefined &&
+        !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
+        (!(newQuery.bool.filter[0]?.range?.[fieldName]?.gte === "") ||
+          !(newQuery.bool.filter[0]?.range?.[fieldName]?.lte === ""))
+      ) {
+        updatedArray.push(newQuery);
+        console.log("New Query Added:", updatedArray);
+      } else if (
+        newQuery.bool.filter !== undefined &&
+        !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
+        !(newQuery.bool.filter[0]?.query_string?.query === "")
+      ) {
+        updatedArray.push(newQuery);
+        console.log("New Query Added Query String:", updatedArray);
+      } else if (
+        newQuery.bool.must_not !== undefined &&
+        !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
+        (!(newQuery.bool.must_not[0]?.range?.[fieldName]?.gte === "") ||
+          !(newQuery.bool.must_not[0]?.range?.[fieldName]?.lte === ""))
+      ) {
+        updatedArray.push(newQuery);
+      }
+      console.log("1157", updatedArray);
+      return updatedArray;
+    });
+  };
+
+  const findEmptyField = (queries, fieldName) => {
+    console.log("Queries:", queries);
+    console.log("Field Name:", fieldName);
+
+    const findFieldInFilter = (filter) => {
+      if (filter.wildcard) {
+        return filter && filter.wildcard && filter.wildcard[fieldName];
+      } else if (filter.range) {
+        return filter && filter.range && filter.range[fieldName];
+      } else if (filter.query_string) {
+        console.log("1272", filter.query_string);
+        return filter.query_string; // Directly return the found filter
+      }
     };
 
-    if (attrName === "plasma_abundance" && msBExcludeOn) {
-      rangeQuery = {
-        bool: {
-          filter: [
-            {
-              bool: {
-                must_not: [rangeQuery],
-              },
-            },
-          ],
-        },
-      };
-    } else {
-      rangeQuery = {
-        bool: {
-          filter: [rangeQuery],
-        },
-      };
-    }
+    const searchQuery = (query) => {
+      if (query && query.bool && query.bool.filter) {
+        return query.bool.filter.some(findFieldInFilter);
+      }
 
-    return rangeQuery;
+      return false;
+    };
+
+    const result = queries.some(searchQuery); // Use some instead of find
+
+    console.log(result ? "Field Found:" : "Field Not Found");
+
+    return result;
   };
 
-  /**
-   * Creates a query for a string field for OpenSearch
-   * @param {{attrName, value}} input necessary fields for string query
-   * @returns
-   */
-  const createStringQuery = ({ attrName, value }) => {
+  // Helper function to check if two queries have the same wildcard type
+  const isSameType = (query1, query2) => {
+    const type1 = query1.bool?.filter?.[0]?.wildcard
+      ? Object.keys(query1.bool.filter[0].wildcard)[0]
+      : null;
+    const type2 = query2.bool?.filter?.[0]?.wildcard
+      ? Object.keys(query2.bool.filter[0].wildcard)[0]
+      : null;
+
+    // Check both type and value for wildcard queries
+    if (type1 === type2 && type1 === "wildcard") {
+      const value1 = query1.bool.filter[0].wildcard[type1].value;
+      const value2 = query2.bool.filter[0].wildcard[type2].value;
+      return value1 === value2;
+    }
+
+    return type1 === type2;
+  };
+
+  const createRangeQuery = ({ attrName, start, end }) => {
     return {
       bool: {
         filter: [
           {
-            regexp: {
-              [`${attrName}.keyword`]: {
-                value: `${value}.*`,
-                flags: "ALL",
+            range: {
+              [attrName]: {
+                ...(start && { gte: start }),
+                ...(end && { lte: end }),
+              },
+            },
+          },
+        ],
+      },
+    };
+  };
+
+  const createStringQuery = ({ attrName, value }) => {
+    // Checkbox fields need exact matches (e.g should use No and not No* as wildcard value)
+    const checkboxFields = ["expert_opinion", "IHC"];
+
+    return {
+      bool: {
+        filter: [
+          {
+            wildcard: {
+              [attrName]: {
+                value: `${value}${
+                  checkboxFields.includes(attrName) ? "" : "*"
+                }`,
                 case_insensitive: true,
               },
             },
@@ -846,26 +1212,42 @@ function SalivaryProteinTable() {
     };
   };
 
-  /**
-   * Remove all empty filters to prevent building queries with empty values
-   * @param {Object} filters Object with Key value pairs of all facet fields
-   * @returns Object with all non empty filter values for building queries
-   */
-  const removeEmptyFilters = (filters) => {
-    const attributes = Object.keys(filters);
+  // Build OpenSearch Query based on user facet filters
+  const queryBuilder = (filters) => {
+    let attributes = Object.keys(filters);
 
+    const queries = [];
+
+    const stringAttributes = [
+      "uniprot_accession",
+      "Gene Symbol",
+      "Protein Name",
+      "IHC",
+      "expert_opinion",
+    ];
+
+    const numberAttributes = [
+      "saliva_abundance", // MS WS
+      "parotid_gland_abundance", // MS PAR
+      "sm/sl_abundance", // MS Sub
+      "plasma_abundance", // MS B
+      "mRNA", // mRNA Val
+    ];
+
+    console.log("> Query Builder Attributes", attributes);
+
+    // Remove any empty filters
     for (const attr of attributes) {
-      const attrType = typeof filters[attr];
+      console.log("> Query Attr", attr);
 
-      if (attrType === "string" && filters[attr] === "") {
-        // Remove empty string filters (e.g { "value": "" })
-        delete filters[attr];
-      } else if (attrType === "object") {
-        // Filter out empty range filters (e.g. { "rangeField": { start: "", end: "" }})
+      if (filters[attr] === "") delete filters[attr];
+
+      // Filter out empty range filters
+      if (typeof filters[attr] === "object") {
         const fil = filters[attr];
 
-        for (const key of Object.keys(fil)) {
-          if (fil[key] === "") delete fil[key];
+        for (const a of Object.keys(fil)) {
+          if (fil[a] === "") delete fil[a];
         }
 
         if (Object.keys(filters[attr]).length === 0) {
@@ -873,19 +1255,6 @@ function SalivaryProteinTable() {
         }
       }
     }
-
-    return filters;
-  };
-
-  /**
-   * Build OpenSearch Query based on user facet filters
-   * @param {Object} filters Object containing all key & values for all user selected facet filters
-   * @returns Returns an array of queries for each non empty filter applied by user
-   */
-  const queryBuilder = (filters) => {
-    const queries = [];
-
-    filters = removeEmptyFilters(filters);
 
     for (const attr of Object.keys(filters)) {
       if (stringAttributes.includes(attr)) {
@@ -897,38 +1266,173 @@ function SalivaryProteinTable() {
       }
     }
 
-    console.log("> Queries", queries);
     return queries;
   };
 
+  useEffect(() => {
+    // console.log("> Current Facet Filters", facetFilter);
+  }, [facetFilter]);
+
   const handleAccessionChange = (e) => {
-    const { value } = e.target;
+    // Check if the event is a delete key press
+    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
+
+    let inputValue = e.target.value;
+
+    const { value } = e.target.value;
 
     setFacetFilters({
       ...facetFilter,
-      "UniProt Accession": value,
+      uniprot_accession: value,
     });
+
+    setPrefix(inputValue);
+
+    if (isDeleteKey) {
+      // Handle delete key press by removing the last character
+      inputValue = inputValue.slice(0, -1);
+    }
+
+    // Remove double backslashes
+    inputValue = inputValue.replace(/\\\\/g, "");
+
+    // Escape special characters
+    inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+
+    if (inputValue === "") {
+      setAccessionC(false);
+    } else {
+      setAccessionC(true);
+    }
+
+    setPageNum(0);
+
+    const newAccessionQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  wildcard: {
+                    uniprot_accession: {
+                      value: `${inputValue}*`,
+                      case_insensitive: true,
+                    },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
+
+    updateQuery(newAccessionQuery, "uniprot_accession");
   };
 
   const handleGeneChange = (e) => {
-    const { value } = e.target;
+    // Check if the event is a delete key press
+    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
+
+    let inputValue = e.target.value;
 
     setFacetFilters({
       ...facetFilter,
-      "Gene Symbol": value,
+      "Gene Symbol": inputValue,
     });
+
+    if (isDeleteKey) {
+      // Handle delete key press by removing the last character
+      inputValue = inputValue.slice(0, -1);
+    }
+
+    // Remove double backslashes
+    inputValue = inputValue.replace(/\\\\/g, "");
+
+    // Escape special characters
+    inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    if (inputValue === "") {
+      setGeneC(false);
+    } else if (inputValue !== "") {
+      setGeneC(true);
+    }
+    setPageNum(0);
+    const newGeneQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  wildcard: {
+                    "Gene Symbol": {
+                      value: `${inputValue}*`,
+                      case_insensitive: true,
+                    },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
+
+    updateQuery(newGeneQuery, "Gene Symbol");
   };
 
   const handleNameChange = (e) => {
-    const { value } = e.target;
+    // Check if the event is a delete key press
+    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
+
+    let inputValue = e.target.value;
 
     setFacetFilters({
       ...facetFilter,
-      "Protein Name": value,
+      "Protein Name": inputValue,
     });
+
+    if (isDeleteKey) {
+      // Handle delete key press by removing the last character
+      inputValue = inputValue.slice(0, -1);
+    }
+
+    // Remove double backslashes
+    inputValue = inputValue.replace(/\\\\/g, "");
+
+    // Escape special characters
+    inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    console.log(inputValue);
+    if (inputValue === "") {
+      console.log("wt");
+      setNameC(false);
+    } else if (inputValue !== "") {
+      setNameC(true);
+    }
+    const newNameQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  wildcard: {
+                    "Protein Name": {
+                      value: `${inputValue}*`,
+                      case_insensitive: true,
+                    },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
+    setNamePrefix(e.target.value);
+
+    updateQuery(newNameQuery, "Protein Name");
   };
 
-  const handleStartWSChange = (e) => {
+  const handlestartWSChange = (e) => {
     let inputValue = e.target.value;
 
     const updateFacet = facetFilter;
@@ -945,158 +1449,1124 @@ function SalivaryProteinTable() {
     }
 
     setFacetFilters({ ...updateFacet });
+
+    if (inputValue === "") {
+      setwsC(false);
+    } else if (inputValue !== "") {
+      setwsC(true);
+    }
+    let newstartWSQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  range: {
+                    saliva_abundance: {
+                      gte: inputValue,
+                      lte: parEnd,
+                    },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
+    if (wsEnd === "") {
+      newstartWSQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      saliva_abundance: {
+                        gte: inputValue,
+                        lte: 20000,
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    setwsStart(inputValue);
+    if (inputValue === "") {
+      newstartWSQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      saliva_abundance: {
+                        gte: 0,
+                        lte: 20000,
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    if (inputValue === "" && wsEnd !== "") {
+      newstartWSQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          saliva_abundance: {
+                            lte: wsEnd,
+                            gte: 0,
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    updateQuery(newstartWSQuery, "saliva_abundance");
   };
 
-  const handleEndWSChange = (e) => {
-    const { value } = e.target;
+  const handleendWSChange = (e) => {
+    const inputValue = e.target.value;
+
+    const wsAbundance = inputValue === "" ? 20000 : inputValue;
 
     const updateFacet = facetFilter;
 
     if (updateFacet.saliva_abundance) {
       updateFacet.saliva_abundance = {
         ...updateFacet.saliva_abundance,
-        end: value,
+        end: inputValue,
       };
     } else {
       updateFacet.saliva_abundance = {
-        end: value,
+        end: inputValue,
       };
     }
 
     setFacetFilters({ ...updateFacet });
+
+    if (inputValue === "") {
+      setwsC(false);
+    } else if (inputValue !== "") {
+      setwsC(true);
+    }
+    let newendWSQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  range: {
+                    saliva_abundance: {
+                      lte: wsAbundance,
+                      gte: wsStart,
+                    },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
+
+    if (wsStart === "") {
+      newendWSQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      saliva_abundance: {
+                        gte: 0,
+                        lte: inputValue,
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    setwsEnd(inputValue);
+    if (inputValue === "") {
+      newendWSQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      saliva_abundance: {
+                        gte: 0,
+                        lte: 20000,
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    if (inputValue === "" && wsStart !== "") {
+      newendWSQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          saliva_abundance: {
+                            lte: 20000,
+                            gte: wsStart,
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    updateQuery(newendWSQuery, "saliva_abundance");
   };
 
-  const handleStartParChange = (e) => {
-    const { value } = e.target;
+  const handlestartParChange = (e) => {
+    let inputValue = e.target.value;
 
     const updateFacet = facetFilter;
 
     if (updateFacet.parotid_gland_abundance) {
       updateFacet.parotid_gland_abundance = {
         ...updateFacet.parotid_gland_abundance,
-        start: value,
+        start: inputValue,
       };
     } else {
       updateFacet.parotid_gland_abundance = {
-        start: value,
+        start: inputValue,
       };
     }
 
     setFacetFilters({ ...updateFacet });
+
+    if (inputValue === "") {
+      setparC(false);
+    } else if (inputValue !== "") {
+      setparC(true);
+    }
+    let newstartParQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  range: {
+                    parotid_gland_abundance: {
+                      gte: inputValue,
+                      lte: parEnd,
+                    },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
+    if (parEnd === "") {
+      newstartParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      parotid_gland_abundance: {
+                        gte: inputValue,
+                        lte: 20000,
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    setparStart(inputValue);
+    if (inputValue === "") {
+      newstartParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      parotid_gland_abundance: {
+                        gte: 0,
+                        lte: 20000,
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    if (inputValue === "" && parEnd !== "") {
+      newstartParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          parotid_gland_abundance: {
+                            lte: parEnd,
+                            gte: 0,
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    updateQuery(newstartParQuery, "parotid_gland_abundance");
   };
 
-  const handleEndParChange = (e) => {
-    const { value } = e.target;
+  const handleendParChange = (e) => {
+    const inputValue = e.target.value;
+
+    const parGlandAbundance = inputValue === "" ? 20000 : inputValue;
 
     const updateFacet = facetFilter;
 
     if (updateFacet.parotid_gland_abundance) {
       updateFacet.parotid_gland_abundance = {
         ...updateFacet.parotid_gland_abundance,
-        end: value,
+        end: inputValue,
       };
     } else {
       updateFacet.parotid_gland_abundance = {
-        end: value,
+        end: inputValue,
       };
     }
 
     setFacetFilters({ ...updateFacet });
+
+    let newendParQuery = {
+      bool: {
+        must: [],
+        must_not: [],
+        filter: [
+          {
+            range: {
+              parotid_gland_abundance: {
+                lte: parGlandAbundance,
+                gte: parStart,
+              },
+            },
+          },
+        ],
+      },
+    };
+    if (parStart === "") {
+      newendParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      parotid_gland_abundance: {
+                        gte: 0,
+                        lte: inputValue,
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    setparC(inputValue !== ""); // Set parC based on whether inputValue is not empty
+
+    setparEnd(inputValue);
+    if (inputValue === "") {
+      newendParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      parotid_gland_abundance: {
+                        gte: 0,
+                        lte: 20000,
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    if (inputValue === "" && parStart !== "") {
+      newendParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          parotid_gland_abundance: {
+                            lte: 20000,
+                            gte: parStart,
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    updateQuery(newendParQuery, "parotid_gland_abundance");
   };
 
-  const handleStartSubChange = (e) => {
-    const { value } = e.target;
+  const handleStartWSChange = (e) => {
+    let inputValue = e.target.value;
 
     const updateFacet = facetFilter;
 
     if (updateFacet["sm/sl_abundance"]) {
       updateFacet["sm/sl_abundance"] = {
         ...updateFacet["sm/sl_abundance"],
-        start: value,
+        start: inputValue,
       };
     } else {
       updateFacet["sm/sl_abundance"] = {
-        start: value,
+        start: inputValue,
       };
     }
 
     setFacetFilters({ ...updateFacet });
+
+    if (inputValue === "") {
+      setsubC(false);
+    } else {
+      setsubC(true);
+    }
+
+    let newstartSubQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  range: {
+                    "sm/sl_abundance": {
+                      gte: inputValue,
+                      lte: subEnd,
+                    },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
+
+    if (subEnd === "") {
+      newstartSubQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      "sm/sl_abundance": {
+                        gte: inputValue,
+                        lte: 20000,
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    setsubStart(inputValue);
+
+    if (inputValue === "") {
+      newstartSubQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      "sm/sl_abundance": {
+                        gte: 0,
+                        lte: 20000,
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    if (inputValue === "" && subEnd !== "") {
+      newstartSubQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          "sm/sl_abundance": {
+                            lte: subEnd,
+                            gte: 0,
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    updateQuery(newstartSubQuery, "sm/sl_abundance");
   };
 
-  const handleEndSubChange = (e) => {
-    const { value } = e.target;
+  const handleendSubChange = (e) => {
+    const inputValue = e.target.value;
+
+    const subAbundance = inputValue === "" ? 20000 : inputValue;
 
     const updateFacet = facetFilter;
 
     if (updateFacet["sm/sl_abundance"]) {
       updateFacet["sm/sl_abundance"] = {
         ...updateFacet["sm/sl_abundance"],
-        end: value,
+        end: inputValue,
       };
     } else {
       updateFacet["sm/sl_abundance"] = {
-        end: value,
+        end: inputValue,
       };
     }
 
     setFacetFilters({ ...updateFacet });
+
+    let newendParQuery = {
+      bool: {
+        must: [],
+        must_not: [],
+        filter: [
+          {
+            range: {
+              "sm/sl_abundance": {
+                lte: subAbundance,
+                gte: subStart,
+              },
+            },
+          },
+        ],
+      },
+    };
+    if (subStart === "") {
+      newendParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      "sm/sl_abundance": {
+                        gte: 0,
+                        lte: inputValue,
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    setsubC(inputValue !== ""); // Set parC based on whether inputValue is not empty
+
+    setsubEnd(inputValue);
+    if (inputValue === "") {
+      newendParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      "sm/sl_abundance": {
+                        gte: 0,
+                        lte: 20000,
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    if (inputValue === "" && subStart !== "") {
+      newendParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          "sm/sl_abundance": {
+                            lte: 20000,
+                            gte: subStart,
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    updateQuery(newendParQuery, "sm/sl_abundance");
   };
 
-  const handleStartBChange = (e) => {
-    const { value } = e.target;
+  const handlestartBChange = (e) => {
+    let inputValue = e.target.value;
+
+    if (e.target.exclude === undefined) {
+      e.target.exclude = exclude;
+    }
 
     const updateFacet = facetFilter;
 
     if (updateFacet["plasma_abundance"]) {
       updateFacet["plasma_abundance"] = {
         ...updateFacet["plasma_abundance"],
-        start: value,
+        start: inputValue,
       };
     } else {
       updateFacet["plasma_abundance"] = {
-        start: value,
+        start: inputValue,
       };
     }
 
     setFacetFilters({ ...updateFacet });
+
+    if (inputValue === "") {
+      setplasmaC(false);
+    } else if (inputValue !== "") {
+      setplasmaC(true);
+    }
+
+    let newstartBQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  range: {
+                    plasma_abundance: {
+                      gte: inputValue,
+                      lte: pEnd,
+                    },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
+    if (pEnd === "" && e.target.exclude === false) {
+      newstartBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      plasma_abundance: {
+                        gte: inputValue,
+                        lte: 5,
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    } else if (pEnd === "" && e.target.exclude === true) {
+      newstartBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          plasma_abundance: {
+                            gte: inputValue,
+                            lte: 5,
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    setpStart(inputValue);
+    if (inputValue === "") {
+      newstartBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      plasma_abundance: { gte: 0, lte: 5 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    if (e.target.exclude === true && inputValue !== "" && pEnd !== "") {
+      newstartBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          plasma_abundance: {
+                            gte: inputValue,
+                            lte: pEnd,
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    } else if (e.target.exclude === true && inputValue === "" && pEnd !== "") {
+      newstartBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          plasma_abundance: {
+                            gte: 0,
+                            lte: pEnd,
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    updateQuery(newstartBQuery, "plasma_abundance");
   };
 
-  const handleEndBChange = (e) => {
-    const { value } = e.target;
+  const handleendBChange = (e) => {
+    console.log("hande end b", e.target.exclude);
+
+    if (e.target.exclude === undefined) {
+      e.target.exclude = exclude;
+    }
+
+    let inputValue = e.target.value;
 
     const updateFacet = facetFilter;
 
     if (updateFacet["plasma_abundance"]) {
       updateFacet["plasma_abundance"] = {
         ...updateFacet["plasma_abundance"],
-        end: value,
+        end: inputValue,
       };
     } else {
       updateFacet["plasma_abundance"] = {
-        end: value,
+        end: inputValue,
       };
+    }
+
+    setFacetFilters({ ...updateFacet });
+
+    if (inputValue === "") {
+      setplasmaC(false);
+    } else if (inputValue !== "") {
+      setplasmaC(true);
+    }
+
+    let newendBQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  range: {
+                    plasma_abundance: {
+                      lte: inputValue,
+                      gte: pStart,
+                    },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
+    console.log();
+    if (pStart === "" && e.target.exclude === false) {
+      newendBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      plasma_abundance: {
+                        lte: inputValue,
+                        gte: 0,
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    } else if (pStart === "" && e.target.exclude === true) {
+      newendBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          plasma_abundance: {
+                            lte: inputValue,
+                            gte: 0,
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    setpEnd(inputValue);
+    if (inputValue === "") {
+      newendBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      plasma_abundance: { gte: 0, lte: 5 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    if (e.target.exclude === true && inputValue !== "" && pStart !== "") {
+      newendBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          plasma_abundance: {
+                            lte: inputValue,
+                            gte: pStart,
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    } else if (
+      e.target.exclude === true &&
+      inputValue === "" &&
+      pStart !== ""
+    ) {
+      newendBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          plasma_abundance: {
+                            lte: 5,
+                            gte: pStart,
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
     }
 
     setFacetFilters({ ...updateFacet });
   };
 
-  const handleStartMRNAChange = (e) => {
-    const { value } = e.target;
+  const handlestartmRNAChange = (e) => {
+    const inputValue = e.target.value;
+
+    if (inputValue === "") {
+      setmRNAC(false);
+    } else if (inputValue !== "") {
+      setmRNAC(true);
+    }
 
     const updateFacet = facetFilter;
 
     if (updateFacet.mRNA) {
       updateFacet.mRNA = {
         ...updateFacet.mRNA,
-        start: value,
+        start: inputValue,
       };
     } else {
       updateFacet.mRNA = {
-        start: value,
+        start: inputValue,
       };
     }
 
     setFacetFilters({ ...updateFacet });
+
+    const newstartmRNAQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  range: {
+                    mRNA: { gte: inputValue, lte: mRNAEnd },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
+
+    setmRNAStart(inputValue);
+    updateQuery(newstartmRNAQuery, "mRNA");
+  };
+
+  const handleendmRNAChange = (e) => {
+    const inputValue = e.target.value;
+
+    const mRNAAbundance = inputValue === "" ? 20000 : inputValue;
+
+    const updateFacet = facetFilter;
+
+    if (updateFacet.mRNA) {
+      updateFacet.mRNA = {
+        ...updateFacet.mRNA,
+        end: inputValue,
+      };
+    } else {
+      updateFacet.mRNA = {
+        end: inputValue,
+      };
+    }
+
+    setFacetFilters({ ...updateFacet });
+
+    const newendmRNAQuery = {
+      bool: {
+        must: [],
+        must_not: [],
+        filter: [{ range: { mRNA: { lte: mRNAAbundance, gte: mRNAStart } } }],
+      },
+    };
+
+    setmRNAC(inputValue !== ""); // Set parC based on whether inputValue is not empty
+
+    setmRNAEnd(inputValue);
+    updateQuery(newendmRNAQuery, "mRNA");
+  };
+
+  const filterOpUS = (event) => {
+    setOpArr((prevOpArr) => {
+      const updatedOpArr = [!prevOpArr[0], prevOpArr[1]];
+
+      if (updatedOpArr[0] === true) {
+        seteoC(true);
+        setopinionVal("Unsubstantiated");
+      } else if (updatedOpArr[0] === false && updatedOpArr[1] === false) {
+        seteoC(false);
+        setopinionVal("");
+      } else if (updatedOpArr[0] === false) {
+        setopinionVal("");
+      }
+      let opQuery =
+        updatedOpArr[0] === true
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    wildcard: {
+                      expert_opinion: {
+                        value: "Unsubstantiated",
+                        case_insensitive: true,
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+
+      updateQuery(opQuery, "expert_opinion");
+      return updatedOpArr;
+    });
   };
 
   const handleEndMRNAChange = (e) => {
@@ -1171,11 +2641,7 @@ function SalivaryProteinTable() {
             Filters
           </h1>
           <FormGroup style={{ marginLeft: "18%" }}>
-            <Stack
-              direction="row"
-              spacing={1}
-              alignItems="center"
-            >
+            <Stack direction="row" spacing={1} alignItems="center">
               <Typography color="common.black">And</Typography>
               <Switch
                 checked={orFilterOn}
@@ -1297,77 +2763,70 @@ function SalivaryProteinTable() {
                   Expert Opinion
                 </Typography>
               </AccordionSummary>
-
               <List
                 component="div"
                 disablePadding
                 sx={{ border: "1px groove" }}
               >
-                {opCount.map((child, key) => (
-                  <FormGroup
-                    key={key}
-                    sx={{ ml: "10px" }}
-                  >
-                    {child.key === "Unsubstantiated" ? (
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={opArr[0]}
-                            onClick={(e) => {
-                              const { checked } = e.target;
+                {opCount.map((child, key) =>
+                  child.key !== "" &&
+                  child.key !== "D.D.S." &&
+                  child.key !== "Unknown" ? (
+                    <FormGroup key={key} sx={{ ml: "10px" }}>
+                      {child.key === "Unsubstantiated" ? (
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={opArr[0]}
+                              onChange={filterOpUS}
+                              onClick={(e) => {
+                                const { checked } = e.target;
 
-                              if (!checked) {
-                                delete facetFilter["expert_opinion"];
-                              }
+                                if (!checked) {
+                                  delete facetFilter["expert_opinion"];
+                                }
 
-                              const updatedOpArr = [!opArr[0], opArr[1]];
+                                setFacetFilters({
+                                  ...facetFilter,
+                                  ...(checked && {
+                                    expert_opinion: "Unsubstantiated",
+                                  }), // Only pass when checked
+                                });
+                              }}
+                            />
+                          }
+                          label={"US (" + child.doc_count + ")"}
+                        />
+                      ) : (
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={opArr[1]}
+                              onChange={filterOpC}
+                              onClick={(e) => {
+                                const { checked } = e.target;
 
-                              setOpArr(updatedOpArr);
+                                if (!checked) {
+                                  delete facetFilter["expert_opinion"];
+                                }
 
-                              setFacetFilters({
-                                ...facetFilter,
-                                ...(checked && {
-                                  expert_opinion: "Unsubstantiated",
-                                }), // Only pass when checked
-                              });
-                            }}
-                          />
-                        }
-                        label={"US (" + child.doc_count + ")"}
-                      />
-                    ) : (
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={opArr[1]}
-                            onClick={(e) => {
-                              const { checked } = e.target;
-
-                              if (!checked) {
-                                delete facetFilter["expert_opinion"];
-                              }
-
-                              const updatedOpArr = [opArr[0], !opArr[1]];
-
-                              setOpArr(updatedOpArr);
-
-                              setFacetFilters({
-                                ...facetFilter,
-                                ...(checked && {
-                                  expert_opinion: "Confirmed",
-                                }), // Only pass when checked
-                              });
-                            }}
-                          />
-                        }
-                        label={"C (" + child.doc_count + ")"}
-                      />
-                    )}
-                  </FormGroup>
-                ))}
+                                setFacetFilters({
+                                  ...facetFilter,
+                                  ...(checked && {
+                                    expert_opinion: "Confirmed",
+                                  }), // Only pass when checked
+                                });
+                              }}
+                            />
+                          }
+                          label={"C (" + (child.doc_count - 1) + ")"}
+                        />
+                      )}
+                    </FormGroup>
+                  ) : null
+                )}
               </List>
               <AccordionDetails></AccordionDetails>
-
             </Accordion>
             <Accordion>
               <AccordionSummary
@@ -1395,10 +2854,7 @@ function SalivaryProteinTable() {
                 >
                   {IHCCount.map((child, i) =>
                     child.key !== "?" ? (
-                      <FormGroup
-                        key={i}
-                        sx={{ ml: "10px" }}
-                      >
+                      <FormGroup key={i} sx={{ ml: "10px" }}>
                         <FormControlLabel
                           control={
                             <Checkbox
@@ -1615,14 +3071,10 @@ function SalivaryProteinTable() {
               </AccordionSummary>
               <AccordionDetails>
                 <FormGroup style={{ marginLeft: "2%" }}>
-                  <Stack
-                    direction="row"
-                    spacing={1}
-                    alignItems="center"
-                  >
+                  <Stack direction="row" spacing={1} alignItems="center">
                     <Typography color="common.black">Include</Typography>
                     <Switch
-                      checked={msBExcludeOn}
+                      checked={exclude}
                       inputProps={{
                         "aria-label": "ant design",
                       }}
@@ -1727,10 +3179,7 @@ function SalivaryProteinTable() {
             </Accordion>
           </div>
         </Box>
-        <Container
-          maxWidth="xl"
-          sx={{ marginTop: "30px", marginLeft: "20px" }}
-        >
+        <Container maxWidth="xl" sx={{ marginTop: "30px", marginLeft: "20px" }}>
           <Box sx={{ display: "flex" }}>
             <Box
               style={{
@@ -1744,9 +3193,12 @@ function SalivaryProteinTable() {
                 size="small"
                 label="Search..."
                 value={searchText}
-
-                onChange={(e) => handleGlobalSearch(e.target.value)}
-
+                onChange={(e) => setSearchText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    onFilterTextBoxChanged(e.target.value);
+                  }
+                }}
                 InputProps={{
                   style: {
                     height: "44px",
@@ -1781,7 +3233,13 @@ function SalivaryProteinTable() {
                   borderRadius: "0 16px 16px 0",
                 }}
                 onClick={() => {
-                  handleGlobalSearch(searchText);
+                  const syntheticEvent = {
+                    target: { value: searchText },
+                    nativeEvent: {
+                      inputType: "insertText",
+                    }, // Mimic an input event
+                  };
+                  onFilterTextBoxChanged(syntheticEvent);
                 }}
               >
                 <SearchIcon sx={{ color: "white" }} />
@@ -1819,10 +3277,7 @@ function SalivaryProteinTable() {
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
               >
                 {recordsPerPageList.map((option) => (
-                  <MenuItem
-                    key={option.value}
-                    value={option.value}
-                  >
+                  <MenuItem key={option.value} value={option.value}>
                     {option.label}
                   </MenuItem>
                 ))}
@@ -1852,12 +3307,9 @@ function SalivaryProteinTable() {
                 }}
               >
                 {Array.from(
-                  { length: Math.ceil(docCount / pageSize) },
+                  { length: Math.ceil(docCount / pageSize) - 1 },
                   (_, index) => (
-                    <MenuItem
-                      key={index + 1}
-                      value={index + 1}
-                    >
+                    <MenuItem key={index + 1} value={index + 1}>
                       {index + 1}
                     </MenuItem>
                   )
@@ -1872,7 +3324,7 @@ function SalivaryProteinTable() {
                   marginRight: "30px",
                 }}
               >
-                out of {Math.ceil(docCount / pageSize)}
+                out of {Math.ceil(docCount / pageSize) - 1}
               </Typography>
               <button
                 onClick={setPrevPage}
