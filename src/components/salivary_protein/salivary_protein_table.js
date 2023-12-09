@@ -1,19 +1,9 @@
-import "../filter.css";
 import List from "@material-ui/core/List";
-import CustomLoadingOverlay from "../customLoadingOverlay.jsx";
-import CustomNoRowsOverlay from "../customNoRowsOverlay.jsx";
 import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  useMemo,
-} from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { rgb } from "d3";
-import "../table.css";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import FormGroup from "@mui/material/FormGroup";
@@ -23,7 +13,6 @@ import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import CustomHeaderGroup from "../customHeaderGroup.jsx";
 import Switch from "@mui/material/Switch";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import {
@@ -37,9 +26,18 @@ import {
   IconButton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { ReactComponent as Download_Logo } from "../table_icon/download.svg";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+
+import CustomLoadingOverlay from "../customLoadingOverlay.jsx";
+import CustomNoRowsOverlay from "../customNoRowsOverlay.jsx";
+import CustomHeaderGroup from "../customHeaderGroup.jsx";
+import { ReactComponent as Download_Logo } from "../table_icon/download.svg";
+import "../filter.css";
+import "../table.css";
+
+// TODO: Should not be here move to some sort of env file
+const HOST_ENDPOINT = `http://localhost:8000`;
 
 const styles = {
   transform: "translate(0, 0)",
@@ -50,7 +48,12 @@ const styles1 = {
 };
 
 const Accordion = styled((props) => (
-  <MuiAccordion disableGutters elevation={0} square {...props} />
+  <MuiAccordion
+    disableGutters
+    elevation={0}
+    square
+    {...props}
+  />
 ))(({ theme }) => ({
   marginBottom: "15px",
   "&:not(:last-child)": {
@@ -97,65 +100,60 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 function WSComponent(props) {
   const d = props.value;
+
   if (d < 10 || d === "low") {
     return (
-      <>
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgb(180,250,180)",
-            color: "black",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "22%",
-          }}
-        >
-          {Number(d).toFixed(2)}
-        </div>
-      </>
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgb(180,250,180)",
+          color: "black",
+          fontFamily: "Lato",
+          fontSize: "16px",
+          lineHeight: "24px",
+          textAlign: "center",
+          paddingTop: "22%",
+        }}
+      >
+        {Number(d).toFixed(2)}
+      </div>
     );
   } else if (d < 100 || d === "medium") {
     return (
-      <>
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgb(70,170,70)",
-            color: "#FFF",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "22%",
-          }}
-        >
-          {Number(d).toFixed(2)}
-        </div>
-      </>
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgb(70,170,70)",
+          color: "#FFF",
+          fontFamily: "Lato",
+          fontSize: "16px",
+          lineHeight: "24px",
+          textAlign: "center",
+          paddingTop: "22%",
+        }}
+      >
+        {Number(d).toFixed(2)}
+      </div>
     );
   } else if (d > 100 || d === "high") {
     return (
-      <>
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgb(0,100,0)",
-            color: "#FFF",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "22%",
-          }}
-        >
-          {Number(d).toFixed(2)}
-        </div>
-      </>
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgb(0,100,0)",
+          color: "#FFF",
+          fontFamily: "Lato",
+          fontSize: "16px",
+          lineHeight: "24px",
+          textAlign: "center",
+          paddingTop: "22%",
+        }}
+      >
+        {Number(d).toFixed(2)}
+      </div>
     );
   } else if (d === "not detected" || d === 0) {
     return (
@@ -164,7 +162,11 @@ function WSComponent(props) {
         height={18}
         style={{ stroke: "black", alignItems: "center" }}
       >
-        <rect width={18} height={18} fill="rgb(255,255,255)">
+        <rect
+          width={18}
+          height={18}
+          fill="rgb(255,255,255)"
+        >
           <title>Not uniquely observed</title>
         </rect>
       </svg>
@@ -201,7 +203,11 @@ function WSComponent(props) {
             ></rect>
           </pattern>
         </defs>
-        <rect width={18} height={18} style={{ fill: "url(#stripe2)" }}>
+        <rect
+          width={18}
+          height={18}
+          style={{ fill: "url(#stripe2)" }}
+        >
           <title>Data not available</title>
         </rect>
       </svg>
@@ -210,10 +216,11 @@ function WSComponent(props) {
 }
 
 function opinionComponent(props) {
-  const d = props.value;
-  if (d === "Confirmed") {
+  const { value } = props;
+
+  if (value === "Confirmevalue") {
     return <span>C</span>;
-  } else if (d === "Unsubstantiated") {
+  } else if (value === "Unsubstantiated") {
     return <span>US</span>;
   }
 }
@@ -317,7 +324,11 @@ function IHCComponent(props) {
             </pattern>
           </defs>
           <rect
-            style={{ fill: "url(#stripe2)", width: "100%", height: "100%" }}
+            style={{
+              fill: "url(#stripe2)",
+              width: "100%",
+              height: "100%",
+            }}
           >
             <title>Data not available</title>
           </rect>
@@ -402,6 +413,165 @@ function LinkComponent(props) {
   );
 }
 
+const columns = [
+  {
+    headerName: "Accession",
+    field: "UniProt Accession",
+    checkboxSelection: false,
+    headerCheckboxSelection: false,
+    minWidth: "155",
+    wordWrap: true,
+
+    cellStyle: { wordBreak: "break-word" },
+    headerClass: ["header-border"],
+    cellClass: ["table-border"],
+    cellRenderer: "proteinLinkComponent",
+  },
+  {
+    headerName: "Gene Symbol",
+    minWidth: "132",
+    field: "Gene Symbol",
+    wrapText: true,
+
+    headerClass: ["header-border"],
+    cellClass: ["table-border"],
+    cellStyle: { wordBreak: "break-word" },
+  },
+  {
+    headerName: "Protein Name",
+    minWidth: "133",
+    maxHeight: "5",
+    field: "Protein Name",
+    wrapText: true,
+    headerClass: ["header-border"],
+    cellClass: ["table-border"],
+
+    cellStyle: { wordBreak: "break-word" },
+  },
+  {
+    headerName: "Expert Opinion",
+    minWidth: "140",
+    field: "expert_opinion",
+
+    cellRenderer: "opinionComponent",
+    headerClass: ["header-border"],
+    cellClass: ["table-border"],
+    wrapText: true,
+  },
+  {
+    headerName: "MS",
+    headerGroupComponent: CustomHeaderGroup,
+    headerClass: ["header-border"],
+    cellClass: ["table-border"],
+    children: [
+      {
+        headerName: "WS",
+        field: "saliva_abundance",
+        minWidth: "98",
+        cellRenderer: "WSComponent",
+        headerClass: ["header-border"],
+        cellClass: ["square_table", "salivary-proteins-colored-cell"],
+      },
+      {
+        headerName: "Par",
+        field: "parotid_gland_abundance",
+        minWidth: "97",
+        cellRenderer: "WSComponent",
+        headerClass: ["header-border"],
+        cellClass: ["square_table", "salivary-proteins-colored-cell"],
+      },
+      {
+        headerName: "Sub",
+        field: "sm/sl_abundance",
+        minWidth: "101",
+        cellRenderer: "WSComponent",
+        headerClass: ["header-border"],
+        cellClass: ["square_table", "salivary-proteins-colored-cell"],
+      },
+      {
+        headerName: "B",
+        field: "plasma_abundance",
+        minWidth: "95",
+        cellRenderer: "LinkComponent",
+        headerClass: ["header-border"],
+        cellClass: ["square_table", "salivary-proteins-colored-cell"],
+      },
+    ],
+
+    wrapText: true,
+    cellStyle: { textAlign: "center" },
+  },
+  {
+    headerName: "IHC",
+    field: "IHC",
+    minWidth: "101",
+
+    wrapText: true,
+    cellRenderer: "IHCComponent",
+    headerClass: ["header-border"],
+    cellClass: ["square_table", "salivary-proteins-colored-cell"],
+  },
+  {
+    headerName: "mRNA",
+    headerGroupComponent: CustomHeaderGroup,
+    minWidth: "105",
+
+    wrapText: true,
+    cellRenderer: "WSComponent",
+    headerClass: ["header-border"],
+    cellClass: ["table-border"],
+    children: [
+      {
+        headerName: "Value",
+        field: "mRNA",
+        minWidth: "116",
+        cellRenderer: "WSComponent",
+        headerClass: ["header-border"],
+        cellClass: ["square_table", "salivary-proteins-colored-cell"],
+      },
+      {
+        headerName: "Specificity",
+        field: "Specificity",
+        minWidth: "160",
+        headerClass: ["header-border"],
+        cellClass: ["table-border"],
+      },
+      {
+        headerName: "Specificity Score",
+        field: "Specificity_Score",
+        minWidth: "159",
+        headerClass: ["header-border"],
+        cellClass: ["table-border"],
+      },
+    ],
+  },
+];
+
+const defColumnDefs = {
+  flex: 1,
+  filter: true,
+  resizable: true,
+  wrapHeaderText: true,
+  wrapText: true,
+  autoHeaderHeight: true,
+  headerStyle: { wordBreak: "break-word" },
+  initialWidth: 200,
+  headerComponentParams: {
+    template:
+      '<div class="ag-cell-label-container" role="presentation">' +
+      '  <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button"></span>' +
+      '  <div ref="eLabel" class="ag-header-cell-label" role="presentation">' +
+      '    <span ref="eSortOrder" class="ag-header-icon ag-sort-order"></span>' +
+      '    <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon"></span>' +
+      '    <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon"></span>' +
+      '    <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon"></span>' +
+      '    <span ref="eText" class="ag-header-cell-text" role="columnheader" style="white-space: normal;"></span>' +
+      '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
+      "  </div>" +
+      "</div>",
+  },
+};
+
 function App() {
   const [pageSize, setPageSize] = useState(50);
   const [pageNum, setPageNum] = useState(0);
@@ -442,16 +612,53 @@ function App() {
   const [orChecked, setorChecked] = useState(false);
   const [exclude, setExclude] = useState(false);
   const [IHCArr, setIHCArr] = useState([false, false, false, false, false]);
-
   const [searchText, setSearchText] = useState("");
   const [globalSC, setGlobalSC] = useState(false);
+
+  const [facetFilter, setFacetFilters] = useState({});
+
+  // Fetch initial salivary protein table data
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      const data = await fetch(
+        `${HOST_ENDPOINT}/saliva_protein_table/${pageSize}/${pageNum}`
+      ).then((data) => data.json());
+
+      return data;
+    };
+
+    try {
+      const result = fetchInitialData();
+
+      result.then((value) => {
+        if (value.hits.hits) {
+          let records = [];
+
+          for (let i = 0; i < value.hits.hits.length; i++) {
+            records.push(value.hits.hits[i]["_source"]);
+          }
+
+          setRowData([]);
+
+          console.log("> Records", records);
+
+          // setRowData(records);
+        }
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
   useEffect(() => {
     const fetchOpCount = async () => {
       const data = await fetch("http://localhost:8000/opCount");
       const json = data.json();
       return json;
     };
-    const countOpResult = fetchOpCount().catch(console.errror);
+
+    const countOpResult = fetchOpCount().catch(console.error);
+
     countOpResult.then((value) => {
       if (value) {
         setOpCount(value);
@@ -463,7 +670,9 @@ function App() {
       const json = data.json();
       return json;
     };
+
     const countIHCResult = fetchIHCCount().catch(console.errror);
+
     countIHCResult.then((value) => {
       if (value) {
         setIHCCount(value);
@@ -478,7 +687,10 @@ function App() {
         const newOptions = [];
         for (let i = 1; i <= Math.round(data.count / pageSize); i++) {
           newOptions.push(
-            <option key={i} value={i}>
+            <option
+              key={i}
+              value={i}
+            >
               {i}
             </option>
           );
@@ -497,17 +709,22 @@ function App() {
     const json = data.json();
     return json;
   };
+
   const customHeaders = {
     "Content-Type": "application/json",
   };
+
   const fetchAndData = async () => {
-    console.log("123", JSON.stringify(queryArr));
+    console.log("> Query (Wan)", queryArr);
+    console.log("> Query (Mickey)", queryBuilder(facetFilter));
+
     const data = await fetch(
-      `http://localhost:8000/and_search/${pageSize}/${pageNum}/`,
+      `http://localhost:8000/and_search/${pageSize}/${pageNum * pageSize}/`,
       {
         method: "POST",
         headers: customHeaders,
-        body: JSON.stringify(queryArr),
+        // body: JSON.stringify(queryArr),
+        body: JSON.stringify(queryBuilder(facetFilter)),
       }
     );
     const json = data.json();
@@ -528,7 +745,6 @@ function App() {
   };
 
   useEffect(() => {
-    console.log("Exclude value:", exclude);
     if (
       (accessionC === true ||
         geneC === true ||
@@ -542,8 +758,8 @@ function App() {
         mRNAC === true) &&
       orChecked === false
     ) {
-      console.log("1");
       const result = fetchAndData().catch(console.errror);
+
       result.then((value) => {
         if (value.hits.hits) {
           console.log(value);
@@ -562,7 +778,10 @@ function App() {
           i++
         ) {
           newOptions.push(
-            <option key={i} value={i}>
+            <option
+              key={i}
+              value={i}
+            >
               {i}
             </option>
           );
@@ -576,8 +795,9 @@ function App() {
     } else if (searchText !== "") {
       const result = globalSearch().catch(console.errror);
       result.then((value) => {
+        console.log("> Value ", value);
+
         if (value.hits.hits) {
-          console.log(value);
           let data1 = [];
           for (let i = 0; i < value.hits.hits.length; i++) {
             data1.push(value.hits.hits[i]["_source"]);
@@ -593,7 +813,10 @@ function App() {
           i++
         ) {
           newOptions.push(
-            <option key={i} value={i}>
+            <option
+              key={i}
+              value={i}
+            >
               {i}
             </option>
           );
@@ -608,14 +831,15 @@ function App() {
           "http://localhost:8000/saliva_protein_table/" +
             pageSize +
             "/" +
-            pageNum
+            pageNum * pageSize
         );
 
         const json = data.json();
-
         return json;
       };
+
       const result = fetchData().catch(console.errror);
+
       result.then((value) => {
         if (value.hits.hits) {
           let data1 = [];
@@ -633,7 +857,10 @@ function App() {
           i++
         ) {
           newOptions.push(
-            <option key={i} value={i}>
+            <option
+              key={i}
+              value={i}
+            >
               {i}
             </option>
           );
@@ -650,7 +877,9 @@ function App() {
         const json = data.json();
         return json;
       };
+
       const countOpResult = fetchOpCount().catch(console.errror);
+
       countOpResult.then((value) => {
         if (value) {
           setOpCount(value);
@@ -662,7 +891,9 @@ function App() {
         const json = data.json();
         return json;
       };
+
       const countIHCResult = fetchIHCCount().catch(console.errror);
+
       countIHCResult.then((value) => {
         if (value) {
           setIHCCount(value);
@@ -692,27 +923,6 @@ function App() {
     searchText,
   ]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetch(
-        `http://localhost:8000/saliva_protein_table/${pageSize}/${pageNum}`
-      );
-      const json = data.json();
-      return json;
-    };
-    const result = fetchData().catch(console.errror);
-    result.then((value) => {
-      if (value.hits.hits) {
-        let data1 = [];
-        for (let i = 0; i < value.hits.hits.length; i++) {
-          data1.push(value.hits.hits[i]["_source"]);
-        }
-
-        setRowData(data1);
-      }
-    });
-  }, []);
-
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
   }, []);
@@ -721,139 +931,6 @@ function App() {
     return CustomNoRowsOverlay;
   }, []);
 
-  const columns = [
-    {
-      headerName: "Accession",
-      field: "UniProt Accession",
-      checkboxSelection: false,
-      headerCheckboxSelection: false,
-      minWidth: "155",
-      wordWrap: true,
-
-      cellStyle: { wordBreak: "break-word" },
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      cellRenderer: "proteinLinkComponent",
-    },
-    {
-      headerName: "Gene Symbol",
-      minWidth: "132",
-      field: "Gene Symbol",
-      wrapText: true,
-
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      cellStyle: { wordBreak: "break-word" },
-    },
-    {
-      headerName: "Protein Name",
-      minWidth: "133",
-      maxHeight: "5",
-      field: "Protein Name",
-      wrapText: true,
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-
-      cellStyle: { wordBreak: "break-word" },
-    },
-    {
-      headerName: "Expert Opinion",
-      minWidth: "140",
-      field: "expert_opinion",
-
-      cellRenderer: "opinionComponent",
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      wrapText: true,
-    },
-    {
-      headerName: "MS",
-      headerGroupComponent: CustomHeaderGroup,
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      children: [
-        {
-          headerName: "WS",
-          field: "saliva_abundance",
-          minWidth: "98",
-          cellRenderer: "WSComponent",
-          headerClass: ["header-border"],
-          cellClass: ["square_table", "salivary-proteins-colored-cell"],
-        },
-        {
-          headerName: "Par",
-          field: "parotid_gland_abundance",
-          minWidth: "97",
-          cellRenderer: "WSComponent",
-          headerClass: ["header-border"],
-          cellClass: ["square_table", "salivary-proteins-colored-cell"],
-        },
-        {
-          headerName: "Sub",
-          field: "sm/sl_abundance",
-          minWidth: "101",
-          cellRenderer: "WSComponent",
-          headerClass: ["header-border"],
-          cellClass: ["square_table", "salivary-proteins-colored-cell"],
-        },
-        {
-          headerName: "B",
-          field: "plasma_abundance",
-          minWidth: "95",
-          cellRenderer: "LinkComponent",
-          headerClass: ["header-border"],
-          cellClass: ["square_table", "salivary-proteins-colored-cell"],
-        },
-      ],
-
-      wrapText: true,
-      cellStyle: { textAlign: "center" },
-    },
-    {
-      headerName: "IHC",
-      field: "IHC",
-      minWidth: "101",
-
-      wrapText: true,
-      cellRenderer: "IHCComponent",
-      headerClass: ["header-border"],
-      cellClass: ["square_table", "salivary-proteins-colored-cell"],
-    },
-    {
-      headerName: "mRNA",
-      headerGroupComponent: CustomHeaderGroup,
-      minWidth: "105",
-
-      wrapText: true,
-      cellRenderer: "WSComponent",
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      children: [
-        {
-          headerName: "Value",
-          field: "mRNA",
-          minWidth: "116",
-          cellRenderer: "WSComponent",
-          headerClass: ["header-border"],
-          cellClass: ["square_table", "salivary-proteins-colored-cell"],
-        },
-        {
-          headerName: "Specificity",
-          field: "Specificity",
-          minWidth: "160",
-          headerClass: ["header-border"],
-          cellClass: ["table-border"],
-        },
-        {
-          headerName: "Specificity Score",
-          field: "Specificity_Score",
-          minWidth: "159",
-          headerClass: ["header-border"],
-          cellClass: ["table-border"],
-        },
-      ],
-    },
-  ];
   const gridRef = useRef();
 
   const onBtExport = useCallback(() => {
@@ -905,7 +982,7 @@ function App() {
       setPageNum(pageNum + 1);
 
       // Increment the count if needed
-      setCount(count + 2);
+      setCount(count + 1);
     }
   };
 
@@ -915,30 +992,6 @@ function App() {
       setPageNum(x - 1);
       setCount(count - 1);
     }
-  };
-  const defColumnDefs = {
-    flex: 1,
-    filter: true,
-    resizable: true,
-    wrapHeaderText: true,
-    wrapText: true,
-    autoHeaderHeight: true,
-    headerStyle: { wordBreak: "break-word" },
-    initialWidth: 200,
-    headerComponentParams: {
-      template:
-        '<div class="ag-cell-label-container" role="presentation">' +
-        '  <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button"></span>' +
-        '  <div ref="eLabel" class="ag-header-cell-label" role="presentation">' +
-        '    <span ref="eSortOrder" class="ag-header-icon ag-sort-order"></span>' +
-        '    <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon"></span>' +
-        '    <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon"></span>' +
-        '    <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon"></span>' +
-        '    <span ref="eText" class="ag-header-cell-text" role="columnheader" style="white-space: normal;"></span>' +
-        '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
-        "  </div>" +
-        "</div>",
-    },
   };
 
   const onGridReady = (params) => {
@@ -950,6 +1003,7 @@ function App() {
       // If newQuery is null, remove only the corresponding type of query from the array
       if (newQuery === null) {
         const targetTypePrev = findEmptyField(prevArray, fieldName);
+
         console.log("TargetType (null case):", targetTypePrev);
 
         const updatedArray = prevArray.filter((p) => {
@@ -1143,11 +1197,120 @@ function App() {
     return type1 === type2;
   };
 
+  const createRangeQuery = ({ attrName, start, end }) => {
+    return {
+      bool: {
+        filter: [
+          {
+            range: {
+              [attrName]: {
+                ...(start && { gte: start }),
+                ...(end && { lte: end }),
+              },
+            },
+          },
+        ],
+      },
+    };
+  };
+
+  const createStringQuery = ({ attrName, value }) => {
+    // Checkbox fields need exact matches (e.g should use No and not No* as wildcard value)
+    const checkboxFields = ["expert_opinion", "IHC"];
+
+    return {
+      bool: {
+        filter: [
+          {
+            wildcard: {
+              [attrName]: {
+                value: `${value}${
+                  checkboxFields.includes(attrName) ? "" : "*"
+                }`,
+                case_insensitive: true,
+              },
+            },
+          },
+        ],
+      },
+    };
+  };
+
+  // Build OpenSearch Query based on user facet filters
+  const queryBuilder = (filters) => {
+    let attributes = Object.keys(filters);
+
+    const queries = [];
+
+    const stringAttributes = [
+      "uniprot_accession",
+      "Gene Symbol",
+      "Protein Name",
+      "IHC",
+      "expert_opinion",
+    ];
+
+    const numberAttributes = [
+      "saliva_abundance", // MS WS
+      "parotid_gland_abundance", // MS PAR
+      "sm/sl_abundance", // MS Sub
+      "plasma_abundance", // MS B
+      "mRNA", // mRNA Val
+    ];
+
+    console.log("> Query Builder Attributes", attributes);
+
+    // Remove any empty filters
+    for (const attr of attributes) {
+      console.log("> Query Attr", attr);
+
+      if (filters[attr] === "") delete filters[attr];
+
+      // Filter out empty range filters
+      if (typeof filters[attr] === "object") {
+        const fil = filters[attr];
+
+        for (const a of Object.keys(fil)) {
+          if (fil[a] === "") delete fil[a];
+        }
+
+        if (Object.keys(filters[attr]).length === 0) {
+          delete filters[attr];
+        }
+      }
+    }
+
+    for (const attr of Object.keys(filters)) {
+      if (stringAttributes.includes(attr)) {
+        queries.push(
+          createStringQuery({ attrName: attr, value: filters[attr] })
+        );
+      } else if (numberAttributes.includes(attr)) {
+        queries.push(createRangeQuery({ attrName: attr, ...filters[attr] }));
+      }
+    }
+
+    return queries;
+  };
+
+  useEffect(() => {
+    // console.log("> Current Facet Filters", facetFilter);
+  }, [facetFilter]);
+
   const handleAccessionChange = (e) => {
     // Check if the event is a delete key press
     const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
 
     let inputValue = e.target.value;
+
+    const { value } = e.target.value;
+
+    setFacetFilters({
+      ...facetFilter,
+      uniprot_accession: value,
+    });
+
+    setPrefix(inputValue);
 
     if (isDeleteKey) {
       // Handle delete key press by removing the last character
@@ -1188,8 +1351,6 @@ function App() {
           }
         : null;
 
-    setPrefix(inputValue);
-
     updateQuery(newAccessionQuery, "uniprot_accession");
   };
 
@@ -1198,6 +1359,11 @@ function App() {
     const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
 
     let inputValue = e.target.value;
+
+    setFacetFilters({
+      ...facetFilter,
+      "Gene Symbol": inputValue,
+    });
 
     if (isDeleteKey) {
       // Handle delete key press by removing the last character
@@ -1245,6 +1411,11 @@ function App() {
 
     let inputValue = e.target.value;
 
+    setFacetFilters({
+      ...facetFilter,
+      "Protein Name": inputValue,
+    });
+
     if (isDeleteKey) {
       // Handle delete key press by removing the last character
       inputValue = inputValue.slice(0, -1);
@@ -1288,6 +1459,22 @@ function App() {
 
   const handlestartWSChange = (e) => {
     let inputValue = e.target.value;
+
+    const updateFacet = facetFilter;
+
+    if (updateFacet.saliva_abundance) {
+      updateFacet.saliva_abundance = {
+        ...updateFacet.saliva_abundance,
+        start: inputValue,
+      };
+    } else {
+      updateFacet.saliva_abundance = {
+        start: inputValue,
+      };
+    }
+
+    setFacetFilters({ ...updateFacet });
+
     if (inputValue === "") {
       setwsC(false);
     } else if (inputValue !== "") {
@@ -1301,7 +1488,12 @@ function App() {
               must_not: [],
               filter: [
                 {
-                  range: { saliva_abundance: { gte: inputValue, lte: parEnd } },
+                  range: {
+                    saliva_abundance: {
+                      gte: inputValue,
+                      lte: parEnd,
+                    },
+                  },
                 },
               ],
             },
@@ -1317,7 +1509,10 @@ function App() {
                 filter: [
                   {
                     range: {
-                      saliva_abundance: { gte: inputValue, lte: 20000 },
+                      saliva_abundance: {
+                        gte: inputValue,
+                        lte: 20000,
+                      },
                     },
                   },
                 ],
@@ -1336,7 +1531,10 @@ function App() {
                 filter: [
                   {
                     range: {
-                      saliva_abundance: { gte: 0, lte: 20000 },
+                      saliva_abundance: {
+                        gte: 0,
+                        lte: 20000,
+                      },
                     },
                   },
                 ],
@@ -1357,7 +1555,10 @@ function App() {
                     bool: {
                       must_not: {
                         range: {
-                          saliva_abundance: { lte: wsEnd, gte: 0 },
+                          saliva_abundance: {
+                            lte: wsEnd,
+                            gte: 0,
+                          },
                         },
                       },
                     },
@@ -1372,7 +1573,24 @@ function App() {
 
   const handleendWSChange = (e) => {
     const inputValue = e.target.value;
+
     const wsAbundance = inputValue === "" ? 20000 : inputValue;
+
+    const updateFacet = facetFilter;
+
+    if (updateFacet.saliva_abundance) {
+      updateFacet.saliva_abundance = {
+        ...updateFacet.saliva_abundance,
+        end: inputValue,
+      };
+    } else {
+      updateFacet.saliva_abundance = {
+        end: inputValue,
+      };
+    }
+
+    setFacetFilters({ ...updateFacet });
+
     if (inputValue === "") {
       setwsC(false);
     } else if (inputValue !== "") {
@@ -1387,7 +1605,10 @@ function App() {
               filter: [
                 {
                   range: {
-                    saliva_abundance: { lte: wsAbundance, gte: wsStart },
+                    saliva_abundance: {
+                      lte: wsAbundance,
+                      gte: wsStart,
+                    },
                   },
                 },
               ],
@@ -1405,7 +1626,10 @@ function App() {
                 filter: [
                   {
                     range: {
-                      saliva_abundance: { gte: 0, lte: inputValue },
+                      saliva_abundance: {
+                        gte: 0,
+                        lte: inputValue,
+                      },
                     },
                   },
                 ],
@@ -1424,7 +1648,10 @@ function App() {
                 filter: [
                   {
                     range: {
-                      saliva_abundance: { gte: 0, lte: 20000 },
+                      saliva_abundance: {
+                        gte: 0,
+                        lte: 20000,
+                      },
                     },
                   },
                 ],
@@ -1464,6 +1691,21 @@ function App() {
   const handlestartParChange = (e) => {
     let inputValue = e.target.value;
 
+    const updateFacet = facetFilter;
+
+    if (updateFacet.parotid_gland_abundance) {
+      updateFacet.parotid_gland_abundance = {
+        ...updateFacet.parotid_gland_abundance,
+        start: inputValue,
+      };
+    } else {
+      updateFacet.parotid_gland_abundance = {
+        start: inputValue,
+      };
+    }
+
+    setFacetFilters({ ...updateFacet });
+
     if (inputValue === "") {
       setparC(false);
     } else if (inputValue !== "") {
@@ -1478,7 +1720,10 @@ function App() {
               filter: [
                 {
                   range: {
-                    parotid_gland_abundance: { gte: inputValue, lte: parEnd },
+                    parotid_gland_abundance: {
+                      gte: inputValue,
+                      lte: parEnd,
+                    },
                   },
                 },
               ],
@@ -1495,7 +1740,10 @@ function App() {
                 filter: [
                   {
                     range: {
-                      parotid_gland_abundance: { gte: inputValue, lte: 20000 },
+                      parotid_gland_abundance: {
+                        gte: inputValue,
+                        lte: 20000,
+                      },
                     },
                   },
                 ],
@@ -1514,7 +1762,10 @@ function App() {
                 filter: [
                   {
                     range: {
-                      parotid_gland_abundance: { gte: 0, lte: 20000 },
+                      parotid_gland_abundance: {
+                        gte: 0,
+                        lte: 20000,
+                      },
                     },
                   },
                 ],
@@ -1535,7 +1786,10 @@ function App() {
                     bool: {
                       must_not: {
                         range: {
-                          parotid_gland_abundance: { lte: parEnd, gte: 0 },
+                          parotid_gland_abundance: {
+                            lte: parEnd,
+                            gte: 0,
+                          },
                         },
                       },
                     },
@@ -1550,7 +1804,24 @@ function App() {
 
   const handleendParChange = (e) => {
     const inputValue = e.target.value;
+
     const parGlandAbundance = inputValue === "" ? 20000 : inputValue;
+
+    const updateFacet = facetFilter;
+
+    if (updateFacet.parotid_gland_abundance) {
+      updateFacet.parotid_gland_abundance = {
+        ...updateFacet.parotid_gland_abundance,
+        end: inputValue,
+      };
+    } else {
+      updateFacet.parotid_gland_abundance = {
+        end: inputValue,
+      };
+    }
+
+    setFacetFilters({ ...updateFacet });
+
     let newendParQuery = {
       bool: {
         must: [],
@@ -1577,7 +1848,10 @@ function App() {
                 filter: [
                   {
                     range: {
-                      parotid_gland_abundance: { gte: 0, lte: inputValue },
+                      parotid_gland_abundance: {
+                        gte: 0,
+                        lte: inputValue,
+                      },
                     },
                   },
                 ],
@@ -1598,7 +1872,10 @@ function App() {
                 filter: [
                   {
                     range: {
-                      parotid_gland_abundance: { gte: 0, lte: 20000 },
+                      parotid_gland_abundance: {
+                        gte: 0,
+                        lte: 20000,
+                      },
                     },
                   },
                 ],
@@ -1638,6 +1915,21 @@ function App() {
   const handlestartSubChange = (e) => {
     let inputValue = e.target.value;
 
+    const updateFacet = facetFilter;
+
+    if (updateFacet["sm/sl_abundance"]) {
+      updateFacet["sm/sl_abundance"] = {
+        ...updateFacet["sm/sl_abundance"],
+        start: inputValue,
+      };
+    } else {
+      updateFacet["sm/sl_abundance"] = {
+        start: inputValue,
+      };
+    }
+
+    setFacetFilters({ ...updateFacet });
+
     if (inputValue === "") {
       setsubC(false);
     } else {
@@ -1653,7 +1945,10 @@ function App() {
               filter: [
                 {
                   range: {
-                    "sm/sl_abundance": { gte: inputValue, lte: subEnd },
+                    "sm/sl_abundance": {
+                      gte: inputValue,
+                      lte: subEnd,
+                    },
                   },
                 },
               ],
@@ -1671,7 +1966,10 @@ function App() {
                 filter: [
                   {
                     range: {
-                      "sm/sl_abundance": { gte: inputValue, lte: 20000 },
+                      "sm/sl_abundance": {
+                        gte: inputValue,
+                        lte: 20000,
+                      },
                     },
                   },
                 ],
@@ -1691,7 +1989,10 @@ function App() {
                 filter: [
                   {
                     range: {
-                      "sm/sl_abundance": { gte: 0, lte: 20000 },
+                      "sm/sl_abundance": {
+                        gte: 0,
+                        lte: 20000,
+                      },
                     },
                   },
                 ],
@@ -1712,7 +2013,10 @@ function App() {
                     bool: {
                       must_not: {
                         range: {
-                          "sm/sl_abundance": { lte: subEnd, gte: 0 },
+                          "sm/sl_abundance": {
+                            lte: subEnd,
+                            gte: 0,
+                          },
                         },
                       },
                     },
@@ -1724,16 +2028,39 @@ function App() {
     }
     updateQuery(newstartSubQuery, "sm/sl_abundance");
   };
+
   const handleendSubChange = (e) => {
     const inputValue = e.target.value;
+
     const subAbundance = inputValue === "" ? 20000 : inputValue;
+
+    const updateFacet = facetFilter;
+
+    if (updateFacet["sm/sl_abundance"]) {
+      updateFacet["sm/sl_abundance"] = {
+        ...updateFacet["sm/sl_abundance"],
+        end: inputValue,
+      };
+    } else {
+      updateFacet["sm/sl_abundance"] = {
+        end: inputValue,
+      };
+    }
+
+    setFacetFilters({ ...updateFacet });
+
     let newendParQuery = {
       bool: {
         must: [],
         must_not: [],
         filter: [
           {
-            range: { "sm/sl_abundance": { lte: subAbundance, gte: subStart } },
+            range: {
+              "sm/sl_abundance": {
+                lte: subAbundance,
+                gte: subStart,
+              },
+            },
           },
         ],
       },
@@ -1748,7 +2075,10 @@ function App() {
                 filter: [
                   {
                     range: {
-                      "sm/sl_abundance": { gte: 0, lte: inputValue },
+                      "sm/sl_abundance": {
+                        gte: 0,
+                        lte: inputValue,
+                      },
                     },
                   },
                 ],
@@ -1769,7 +2099,10 @@ function App() {
                 filter: [
                   {
                     range: {
-                      "sm/sl_abundance": { gte: 0, lte: 20000 },
+                      "sm/sl_abundance": {
+                        gte: 0,
+                        lte: 20000,
+                      },
                     },
                   },
                 ],
@@ -1790,7 +2123,10 @@ function App() {
                     bool: {
                       must_not: {
                         range: {
-                          "sm/sl_abundance": { lte: 20000, gte: subStart },
+                          "sm/sl_abundance": {
+                            lte: 20000,
+                            gte: subStart,
+                          },
                         },
                       },
                     },
@@ -1805,9 +2141,26 @@ function App() {
 
   const handlestartBChange = (e) => {
     let inputValue = e.target.value;
+
     if (e.target.exclude === undefined) {
       e.target.exclude = exclude;
     }
+
+    const updateFacet = facetFilter;
+
+    if (updateFacet["plasma_abundance"]) {
+      updateFacet["plasma_abundance"] = {
+        ...updateFacet["plasma_abundance"],
+        start: inputValue,
+      };
+    } else {
+      updateFacet["plasma_abundance"] = {
+        start: inputValue,
+      };
+    }
+
+    setFacetFilters({ ...updateFacet });
+
     if (inputValue === "") {
       setplasmaC(false);
     } else if (inputValue !== "") {
@@ -1821,7 +2174,14 @@ function App() {
               must: [],
               must_not: [],
               filter: [
-                { range: { plasma_abundance: { gte: inputValue, lte: pEnd } } },
+                {
+                  range: {
+                    plasma_abundance: {
+                      gte: inputValue,
+                      lte: pEnd,
+                    },
+                  },
+                },
               ],
             },
           }
@@ -1836,7 +2196,10 @@ function App() {
                 filter: [
                   {
                     range: {
-                      plasma_abundance: { gte: inputValue, lte: 5 },
+                      plasma_abundance: {
+                        gte: inputValue,
+                        lte: 5,
+                      },
                     },
                   },
                 ],
@@ -1855,7 +2218,10 @@ function App() {
                     bool: {
                       must_not: {
                         range: {
-                          plasma_abundance: { gte: inputValue, lte: 5 },
+                          plasma_abundance: {
+                            gte: inputValue,
+                            lte: 5,
+                          },
                         },
                       },
                     },
@@ -1898,7 +2264,10 @@ function App() {
                     bool: {
                       must_not: {
                         range: {
-                          plasma_abundance: { gte: inputValue, lte: pEnd },
+                          plasma_abundance: {
+                            gte: inputValue,
+                            lte: pEnd,
+                          },
                         },
                       },
                     },
@@ -1918,7 +2287,12 @@ function App() {
                   {
                     bool: {
                       must_not: {
-                        range: { plasma_abundance: { gte: 0, lte: pEnd } },
+                        range: {
+                          plasma_abundance: {
+                            gte: 0,
+                            lte: pEnd,
+                          },
+                        },
                       },
                     },
                   },
@@ -1932,10 +2306,28 @@ function App() {
 
   const handleendBChange = (e) => {
     console.log("hande end b", e.target.exclude);
+
     if (e.target.exclude === undefined) {
       e.target.exclude = exclude;
     }
+
     let inputValue = e.target.value;
+
+    const updateFacet = facetFilter;
+
+    if (updateFacet["plasma_abundance"]) {
+      updateFacet["plasma_abundance"] = {
+        ...updateFacet["plasma_abundance"],
+        end: inputValue,
+      };
+    } else {
+      updateFacet["plasma_abundance"] = {
+        end: inputValue,
+      };
+    }
+
+    setFacetFilters({ ...updateFacet });
+
     if (inputValue === "") {
       setplasmaC(false);
     } else if (inputValue !== "") {
@@ -1950,7 +2342,12 @@ function App() {
               must_not: [],
               filter: [
                 {
-                  range: { plasma_abundance: { lte: inputValue, gte: pStart } },
+                  range: {
+                    plasma_abundance: {
+                      lte: inputValue,
+                      gte: pStart,
+                    },
+                  },
                 },
               ],
             },
@@ -1967,7 +2364,10 @@ function App() {
                 filter: [
                   {
                     range: {
-                      plasma_abundance: { lte: inputValue, gte: 0 },
+                      plasma_abundance: {
+                        lte: inputValue,
+                        gte: 0,
+                      },
                     },
                   },
                 ],
@@ -1986,7 +2386,10 @@ function App() {
                     bool: {
                       must_not: {
                         range: {
-                          plasma_abundance: { lte: inputValue, gte: 0 },
+                          plasma_abundance: {
+                            lte: inputValue,
+                            gte: 0,
+                          },
                         },
                       },
                     },
@@ -2029,7 +2432,10 @@ function App() {
                     bool: {
                       must_not: {
                         range: {
-                          plasma_abundance: { lte: inputValue, gte: pStart },
+                          plasma_abundance: {
+                            lte: inputValue,
+                            gte: pStart,
+                          },
                         },
                       },
                     },
@@ -2053,7 +2459,12 @@ function App() {
                   {
                     bool: {
                       must_not: {
-                        range: { plasma_abundance: { lte: 5, gte: pStart } },
+                        range: {
+                          plasma_abundance: {
+                            lte: 5,
+                            gte: pStart,
+                          },
+                        },
                       },
                     },
                   },
@@ -2075,13 +2486,34 @@ function App() {
       setmRNAC(true);
     }
 
+    const updateFacet = facetFilter;
+
+    if (updateFacet.mRNA) {
+      updateFacet.mRNA = {
+        ...updateFacet.mRNA,
+        start: inputValue,
+      };
+    } else {
+      updateFacet.mRNA = {
+        start: inputValue,
+      };
+    }
+
+    setFacetFilters({ ...updateFacet });
+
     const newstartmRNAQuery =
       inputValue !== ""
         ? {
             bool: {
               must: [],
               must_not: [],
-              filter: [{ range: { mRNA: { gte: inputValue, lte: mRNAEnd } } }],
+              filter: [
+                {
+                  range: {
+                    mRNA: { gte: inputValue, lte: mRNAEnd },
+                  },
+                },
+              ],
             },
           }
         : null;
@@ -2092,7 +2524,24 @@ function App() {
 
   const handleendmRNAChange = (e) => {
     const inputValue = e.target.value;
+
     const mRNAAbundance = inputValue === "" ? 20000 : inputValue;
+
+    const updateFacet = facetFilter;
+
+    if (updateFacet.mRNA) {
+      updateFacet.mRNA = {
+        ...updateFacet.mRNA,
+        end: inputValue,
+      };
+    } else {
+      updateFacet.mRNA = {
+        end: inputValue,
+      };
+    }
+
+    setFacetFilters({ ...updateFacet });
+
     const newendmRNAQuery = {
       bool: {
         must: [],
@@ -2354,7 +2803,11 @@ function App() {
             Filters
           </h1>
           <FormGroup style={{ marginLeft: "18%" }}>
-            <Stack direction="row" spacing={1} alignItems="center">
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+            >
               <Typography color="common.black">And</Typography>
               <Switch
                 checked={orChecked}
@@ -2486,14 +2939,31 @@ function App() {
                 {opCount.map((child, key) =>
                   child.key !== "" &&
                   child.key !== "D.D.S." &&
-                  child.key != "Unknown" ? (
-                    <FormGroup key={key} sx={{ ml: "10px" }}>
+                  child.key !== "Unknown" ? (
+                    <FormGroup
+                      key={key}
+                      sx={{ ml: "10px" }}
+                    >
                       {child.key === "Unsubstantiated" ? (
                         <FormControlLabel
                           control={
                             <Checkbox
                               checked={opArr[0]}
                               onChange={filterOpUS}
+                              onClick={(e) => {
+                                const { checked } = e.target;
+
+                                if (!checked) {
+                                  delete facetFilter["expert_opinion"];
+                                }
+
+                                setFacetFilters({
+                                  ...facetFilter,
+                                  ...(checked && {
+                                    expert_opinion: "Unsubstantiated",
+                                  }), // Only pass when checked
+                                });
+                              }}
                             />
                           }
                           label={"US (" + child.doc_count + ")"}
@@ -2501,7 +2971,24 @@ function App() {
                       ) : (
                         <FormControlLabel
                           control={
-                            <Checkbox checked={opArr[1]} onChange={filterOpC} />
+                            <Checkbox
+                              checked={opArr[1]}
+                              onChange={filterOpC}
+                              onClick={(e) => {
+                                const { checked } = e.target;
+
+                                if (!checked) {
+                                  delete facetFilter["expert_opinion"];
+                                }
+
+                                setFacetFilters({
+                                  ...facetFilter,
+                                  ...(checked && {
+                                    expert_opinion: "Confirmed",
+                                  }), // Only pass when checked
+                                });
+                              }}
+                            />
                           }
                           label={"C (" + (child.doc_count - 1) + ")"}
                         />
@@ -2538,7 +3025,10 @@ function App() {
                 >
                   {IHCCount.map((child, i) =>
                     child.key !== "?" ? (
-                      <FormGroup key={i} sx={{ ml: "10px" }}>
+                      <FormGroup
+                        key={i}
+                        sx={{ ml: "10px" }}
+                      >
                         <FormControlLabel
                           control={
                             <Checkbox
@@ -2547,6 +3037,20 @@ function App() {
                               } // Set the checked attribute based on IHCArr
                               onChange={filterIHC}
                               value={child.key}
+                              onClick={(e) => {
+                                const { value, checked } = e.target;
+
+                                if (!checked) {
+                                  delete facetFilter["IHC"];
+                                }
+
+                                setFacetFilters({
+                                  ...facetFilter,
+                                  ...(checked && {
+                                    IHC: value,
+                                  }), // Only pass when checked
+                                });
+                              }}
                             />
                           }
                           label={child.key + " (" + child.doc_count + ")"}
@@ -2750,11 +3254,17 @@ function App() {
               </AccordionSummary>
               <AccordionDetails>
                 <FormGroup style={{ marginLeft: "2%" }}>
-                  <Stack direction="row" spacing={1} alignItems="center">
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                  >
                     <Typography color="common.black">Include</Typography>
                     <Switch
                       checked={exclude}
-                      inputProps={{ "aria-label": "ant design" }}
+                      inputProps={{
+                        "aria-label": "ant design",
+                      }}
                       onChange={(event) => {
                         handlestartBChange({
                           target: {
@@ -2875,16 +3385,25 @@ function App() {
           </div>
         </Box>
 
-        <Container maxWidth="xl" sx={{ marginTop: "30px", marginLeft: "20px" }}>
+        <Container
+          maxWidth="xl"
+          sx={{ marginTop: "30px", marginLeft: "20px" }}
+        >
           <Box sx={{ display: "flex" }}>
-            <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
+            <Box
+              style={{
+                display: "flex",
+                width: "100%",
+                maxWidth: "550px",
+              }}
+            >
               <TextField
                 variant="outlined"
                 size="small"
                 label="Search..."
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
-                onKeyPress={(e) => {
+                onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     onFilterTextBoxChanged(e.target.value);
                   }
@@ -2925,7 +3444,9 @@ function App() {
                 onClick={() => {
                   const syntheticEvent = {
                     target: { value: searchText },
-                    nativeEvent: { inputType: "insertText" }, // Mimic an input event
+                    nativeEvent: {
+                      inputType: "insertText",
+                    }, // Mimic an input event
                   };
                   onFilterTextBoxChanged(syntheticEvent);
                 }}
@@ -2965,7 +3486,10 @@ function App() {
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
               >
                 {recordsPerPageList.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
+                  <MenuItem
+                    key={option.value}
+                    value={option.value}
+                  >
                     {option.label}
                   </MenuItem>
                 ))}
@@ -2995,9 +3519,12 @@ function App() {
                 }}
               >
                 {Array.from(
-                  { length: Math.ceil(docCount / pageSize) },
+                  { length: Math.ceil(docCount / pageSize) - 1 },
                   (_, index) => (
-                    <MenuItem key={index + 1} value={index + 1}>
+                    <MenuItem
+                      key={index + 1}
+                      value={index + 1}
+                    >
                       {index + 1}
                     </MenuItem>
                   )
@@ -3012,7 +3539,7 @@ function App() {
                   marginRight: "30px",
                 }}
               >
-                out of {Math.ceil(docCount / pageSize)}
+                out of {Math.ceil(docCount / pageSize) - 1}
               </Typography>
               <button
                 onClick={onBtPrevious}
@@ -3107,7 +3634,7 @@ function App() {
                 columnDefs={columns}
                 ref={gridRef}
                 defaultColDef={defColumnDefs}
-                frameworkComponents={{
+                components={{
                   LinkComponent,
                   WSComponent,
                   IHCComponent,
