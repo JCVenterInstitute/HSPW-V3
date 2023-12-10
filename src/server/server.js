@@ -2174,6 +2174,50 @@ app.get("/api/properties/:entity", async (req, res) => {
   );
 });
 
+async function querySalivaryProtein(size, from, filter) {
+  const client = await getClient();
+
+  const payload = {
+    index: "new_saliva_protein_test",
+    body: {
+      track_total_hits: true,
+      size: size,
+      from: from,
+      aggs: {
+        IHC: {
+          terms: {
+            field: "IHC.keyword",
+          },
+        },
+        expert_opinion: {
+          terms: {
+            field: "expert_opinion.keyword",
+          },
+        },
+      },
+      query: {
+        bool: {
+          filter,
+        },
+      },
+    },
+  };
+
+  const response = await client.search(payload);
+
+  return response.body;
+}
+
+app.post("/api/salivary-proteins/:size/:from/", (req, res) => {
+  const { size, from } = req.params;
+
+  const results = querySalivaryProtein(size, from, req.body);
+
+  results.then((result) => {
+    res.json(result);
+  });
+});
+
 app.listen(8000, () => {
   console.log(`Server is running on port 8000.`);
 });
