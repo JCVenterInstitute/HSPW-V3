@@ -2240,22 +2240,7 @@ app.get("/api/properties/:entity", async (req, res) => {
   );
 });
 
-/**
- * Query data used for Salivary Protein page table
- * @param {Number} size Number of records to return
- * @param {Number} from Starting point for the data page to return
- * @param {Object[]} filter All applied filters applied by user in facet menu
- * @param {Object[]} sort Sort query for column selected to sort by from table
- * @param {Object} keyword String entered by user into search bar
- * @returns
- */
-async function querySalivaryProtein(
-  size,
-  from,
-  filter,
-  sort = null,
-  keyword = null
-) {
+async function querySalivaryProtein(size, from, filter) {
   const client = await getClient();
 
   const payload = {
@@ -2279,10 +2264,8 @@ async function querySalivaryProtein(
       query: {
         bool: {
           filter,
-          ...(keyword && { must: [keyword] }), // Apply global search if present
         },
       },
-      ...(sort && { sort }), // Apply sort if present
     },
   };
 
@@ -2292,10 +2275,9 @@ async function querySalivaryProtein(
 }
 
 app.post("/api/salivary-proteins/:size/:from/", (req, res) => {
-  const { filters, sort, keyword } = req.body;
   const { size, from } = req.params;
 
-  const results = querySalivaryProtein(size, from, filters, sort, keyword);
+  const results = querySalivaryProtein(size, from, req.body);
 
   results.then((result) => {
     res.json(result);
