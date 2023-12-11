@@ -30,6 +30,9 @@ const generateColumnDefs = (entity, data) => {
   if (entity === "Genes") {
     fields = fields.filter((field) => field !== "GeneID"); // Remove "GeneID" if it exists
     fields.unshift("GeneID"); // Add "GeneID" at the beginning
+  } else if (entity === "Protein Clusters") {
+    fields = fields.filter((field) => field !== "uniprot_id");
+    fields.unshift("uniprot_id");
   }
 
   // Generate column definitions based on the keys
@@ -106,6 +109,8 @@ const AdvancedSearch = () => {
         .then((res) => res.data);
       if (e.target.value === "Genes") {
         propertyList = propertyList.filter((item) => item !== "GeneID");
+      } else if (e.target.value === "Protein Clusters") {
+        propertyList = propertyList.filter((item) => item !== "uniprot_id");
       }
       setProperties(propertyList);
 
@@ -439,6 +444,7 @@ const AdvancedSearch = () => {
               Search Results
             </legend>
             <SearchResultsTable
+              entity={entity}
               searchResults={searchResults}
               columnDefs={columnDefs}
             />

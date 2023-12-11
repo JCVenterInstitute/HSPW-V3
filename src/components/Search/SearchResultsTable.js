@@ -6,7 +6,7 @@ import CustomHeaderGroup from "./CustomHeaderGroup";
 import CustomLoadingOverlay from "./CustomLoadingOverlay";
 import CustomNoRowsOverlay from "./CustomNoRowsOverlay";
 
-const SearchResultsTable = ({ searchResults, columnDefs }) => {
+const SearchResultsTable = ({ entity, searchResults, columnDefs }) => {
   const [rowData, setRowData] = useState([]);
   const [columns, setColumns] = useState([]);
 
@@ -20,9 +20,49 @@ const SearchResultsTable = ({ searchResults, columnDefs }) => {
   };
 
   useEffect(() => {
+    if (columnDefs && columnDefs.length > 0) {
+      // Modify the first column definition
+      const modifiedColumnDefs = [...columnDefs];
+      modifiedColumnDefs[0] = {
+        ...modifiedColumnDefs[0],
+        cellRenderer: (params) => {
+          // Conditional rendering based on 'entity'
+          if (entity === "Genes") {
+            return (
+              <span
+                onClick={() => (window.location.href = `/gene/${params.value}`)}
+                style={{
+                  cursor: "pointer",
+                  color: "blue",
+                  textDecoration: "underline",
+                }}
+              >
+                {params.value}
+              </span>
+            );
+          } else if (entity === "Protein Clusters") {
+            return (
+              <span
+                onClick={() => (window.location.href = `/gene/${params.value}`)}
+                style={{
+                  cursor: "pointer",
+                  color: "blue",
+                  textDecoration: "underline",
+                }}
+              >
+                {params.value}
+              </span>
+            );
+          } else {
+            // Default rendering for other entities
+            return <span>{params.value}</span>;
+          }
+        },
+      };
+      setColumns(modifiedColumnDefs);
+    }
     setRowData(searchResults);
-    setColumns(columnDefs);
-  }, [searchResults, columnDefs]);
+  }, [searchResults, columnDefs, history]);
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;

@@ -70,6 +70,8 @@ exports.formQuery = async (
   let combinedSelectedProperties = [];
   if (index === "genes") {
     combinedSelectedProperties = ["GeneID", ...selectedProperties];
+  } else if (index === "protein_cluster") {
+    combinedSelectedProperties = ["uniprot_id", ...selectedProperties];
   }
 
   // Form the final query
