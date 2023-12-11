@@ -2240,7 +2240,7 @@ app.get("/api/properties/:entity", async (req, res) => {
   );
 });
 
-async function querySalivaryProtein(size, from, filter) {
+async function querySalivaryProtein(size, from, filter, sort = null) {
   const client = await getClient();
 
   const payload = {
@@ -2266,8 +2266,11 @@ async function querySalivaryProtein(size, from, filter) {
           filter,
         },
       },
+      ...(sort && { sort }), // Apply sort if present
     },
   };
+
+  console.log("> Query", JSON.stringify(payload.body));
 
   const response = await client.search(payload);
 
@@ -2275,9 +2278,13 @@ async function querySalivaryProtein(size, from, filter) {
 }
 
 app.post("/api/salivary-proteins/:size/:from/", (req, res) => {
+  const { filters, sort } = req.body;
   const { size, from } = req.params;
 
-  const results = querySalivaryProtein(size, from, req.body);
+  console.log("> Filters", filters);
+  console.log("> Sort", sort);
+
+  const results = querySalivaryProtein(size, from, filters, sort);
 
   results.then((result) => {
     res.json(result);
