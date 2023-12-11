@@ -7,19 +7,78 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
+
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-
-import axios from "axios";
-import { ICellRendererParams } from "ag-grid-community";
+import {
+  Container,
+  TextField,
+  Box,
+  MenuItem,
+  Stack,
+  Checkbox,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ClearIcon from "@mui/icons-material/Clear";
+import SearchIcon from "@mui/icons-material/Search";
+import MuiAccordion from "@mui/material/Accordion";
+import MuiAccordionSummary from "@mui/material/AccordionSummary";
+import MuiAccordionDetails from "@mui/material/AccordionDetails";
+import { styled } from "@mui/material/styles";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { ReactComponent as Download_Logo } from "./table_icon/download.svg";
 import { ReactComponent as Left_Arrow } from "./table_icon/left_arrow.svg";
 import { ReactComponent as Right_Arrow } from "./table_icon/right_arrow.svg";
 import { ReactComponent as Search } from "./table_icon/search.svg";
+
+const Accordion = styled((props) => (
+  <MuiAccordion disableGutters elevation={0} square {...props} />
+))(({ theme }) => ({
+  marginBottom: "15px",
+  "&:not(:last-child)": {
+    borderBottom: 0,
+  },
+  "&:before": {
+    display: "none",
+  },
+  "&:hover": {
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? "rgba(255, 255, 255, .1)"
+        : "rgba(0, 0, 0, .05)",
+  },
+}));
+
+const AccordionSummary = styled((props) => (
+  <MuiAccordionSummary
+    expandIcon={<PlayArrowIcon sx={{ fontSize: "1.1rem", color: "#454545" }} />}
+    {...props}
+  />
+))(({ theme }) => ({
+  paddingLeft: "25px",
+  backgroundColor:
+    theme.palette.mode === "dark"
+      ? "rgba(255, 255, 255, .05)"
+      : "rgba(0, 0, 0, .03)",
+  flexDirection: "row-reverse",
+  "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
+    transform: "rotate(90deg)",
+  },
+  "& .MuiAccordionSummary-content": {
+    marginLeft: theme.spacing(2),
+  },
+}));
+
+const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderTop: "1px solid rgba(0, 0, 0, .125)",
+  backgroundColor: "#f9f8f7",
+  color: "#454545",
+  fontFamily: "Montserrat",
+}));
 
 function App() {
   const [message, setMessage] = useState("");
@@ -42,6 +101,7 @@ function App() {
   const [startMember, setStartMember] = useState("");
   const [searchText, setSearchText] = useState("");
   const [memberC, setMemberC] = useState(false);
+  const [globalSC, setGlobalSC] = useState(false);
 
   useEffect(() => {
     const fetchTypeCount = async () => {
@@ -108,7 +168,7 @@ function App() {
         ) {
           newOptions.push(
             <option key={i} value={i}>
-              {i}
+              {i + 1}
             </option>
           );
         }
@@ -116,7 +176,8 @@ function App() {
         settypeCount(value.aggregations.Type.buckets);
         console.log(typeArr);
       });
-    } else if (searchText !== "") {
+    } else if (globalSC === true) {
+      console.log("180", globalSC);
       const result = globalSearch().catch(console.errror);
       result.then((value) => {
         if (value.hits.hits) {
@@ -137,7 +198,7 @@ function App() {
         ) {
           newOptions.push(
             <option key={i} value={i}>
-              {i}
+              {i + 1}
             </option>
           );
         }
@@ -162,7 +223,7 @@ function App() {
         for (let i = 1; i <= Math.round(value.total.value / pageSize); i++) {
           newOptions.push(
             <option key={i} value={i}>
-              {i}
+              {i + 1}
             </option>
           );
         }
@@ -177,7 +238,7 @@ function App() {
         }
       });
     }
-  }, [pageSize, pageNum, queryArr, typeArr, name, startMember, searchText]);
+  }, [pageSize, pageNum, queryArr, typeArr, name, startMember, globalSC]);
 
   const [gridApi, setGridApi] = useState();
   function LinkComponent(props) {
@@ -203,6 +264,25 @@ function App() {
     return json;
   };
 
+  const recordsPerPageList = [
+    {
+      value: 50,
+      label: 50,
+    },
+    {
+      value: 100,
+      label: 100,
+    },
+    {
+      value: 500,
+      label: 500,
+    },
+    {
+      value: 1000,
+      label: 1000,
+    },
+  ];
+
   const columns = [
     {
       headerName: "InterPro ID",
@@ -225,7 +305,7 @@ function App() {
       field: "Name",
       wrapText: true,
       autoHeight: true,
-      cellStyle: { "word-break": "break-word" },
+      cellStyle: { wordBreak: "break-word" },
       headerClass: ["header-border"],
       cellClass: ["table-border"],
     },
@@ -247,7 +327,7 @@ function App() {
     wrapText: true,
     autoHeaderHeight: true,
     autoHeight: true,
-    headerStyle: { "word-break": "break-word" },
+    headerStyle: { wordBreak: "break-word" },
     initialWidth: 200,
     headerComponentParams: {
       template:
@@ -289,7 +369,7 @@ function App() {
   }, []);
 
   const onBtNext = (event) => {
-    if (count < docCount / pageSize) {
+    if (pageNum + 1 < docCount / pageSize) {
       setPageNum((prevPageNum) => {
         console.log("Updated pageNum:", prevPageNum + 1);
         return prevPageNum + 1;
@@ -305,20 +385,46 @@ function App() {
       setCount(count - 1);
     }
   };
-  const rowHeight = 20;
+  const rowHeight = 50;
 
-  const onFilterTextBoxChanged = () => {
-    const inputValue = document.getElementById("filter-text-box").value;
-    console.log("Input Value: " + inputValue);
-    if (inputValue !== "") {
-      setSearchText(inputValue);
+  const escapeRegExp = (string) => {
+    console.log(typeof string);
+    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  };
+
+  const onFilterTextBoxChanged = (e) => {
+    // Check if the event is a delete key press or a synthetic event
+    const isDeleteKey =
+      e.nativeEvent && e.nativeEvent.inputType === "deleteContentBackward";
+
+    let inputValue = e;
+
+    if (isDeleteKey) {
+      // Handle delete key press by removing the last character
+      inputValue = inputValue.slice(0, -1);
+    }
+
+    // Ensure that inputValue is defined
+    inputValue = inputValue || "";
+
+    // Escape special characters
+    const escapedInputValue = escapeRegExp(inputValue);
+
+    console.log("Input Value: " + escapedInputValue);
+
+    if (escapedInputValue !== "") {
+      console.log("415", escapedInputValue);
+      setSearchText(escapedInputValue);
+      setGlobalSC(true);
     } else {
+      setGlobalSC(false);
       setSearchText("");
     }
   };
 
   const clearSearch = () => {
     setSearchText("");
+    setGlobalSC(false);
   };
 
   const onSubmit = (e) => {
@@ -400,7 +506,20 @@ function App() {
   };
 
   const handleIDChange = (e) => {
-    const inputValue = e.target.value;
+    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
+
+    let inputValue = e.target.value;
+    set_interpro_id(inputValue);
+    if (isDeleteKey) {
+      // Handle delete key press by removing the last character
+      inputValue = inputValue.slice(0, -1);
+    }
+
+    // Remove double backslashes
+    inputValue = inputValue.replace(/\\\\/g, "");
+
+    // Escape special characters
+    inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 
     if (inputValue === "") {
       setidC(false);
@@ -429,12 +548,24 @@ function App() {
           }
         : null;
 
-    set_interpro_id(inputValue);
     updateQuery(newIDQuery, "InterPro ID");
   };
 
   const handleNameChange = (e) => {
-    var inputValue = e.target.value;
+    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
+
+    let inputValue = e.target.value;
+    setName(inputValue);
+    if (isDeleteKey) {
+      // Handle delete key press by removing the last character
+      inputValue = inputValue.slice(0, -1);
+    }
+
+    // Remove double backslashes
+    inputValue = inputValue.replace(/\\\\/g, "");
+
+    // Escape special characters
+    inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 
     if (inputValue === "") {
       setNameC(false);
@@ -638,47 +769,64 @@ function App() {
 
   return (
     <>
-      <div className="rowC">
-        <div className="sidebar1" style={{ height: "45rem" }}>
-          <h2
+      <Container
+        maxWidth="false"
+        sx={{
+          width: "100%",
+          display: "flex",
+          paddingLeft: "0px !important",
+          // paddingRight: "0px !important",
+        }}
+      >
+        <Box
+          sx={{
+            backgroundColor: "#f9f8f7",
+            width: "270px",
+            height: "47rem",
+            overflow: "scroll",
+          }}
+        >
+          <h1
             style={{
-              margin: "26px",
               color: "#1463B9",
-              fontFamily: "Montserrat",
-              fontSize: "20px",
-              fontStyle: "normal",
-              fontWeight: "700",
-              lineHeight: "130%",
+              display: "center",
               textAlign: "center",
-              alignItems: "center",
+              paddingTop: "30px",
+              fontSize: "25px",
+              paddingBottom: "40px",
             }}
           >
-            FILTER
-          </h2>
-
+            Filters
+          </h1>
           <div>
             <Accordion>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 style={{ flexDirection: "row-reverse" }}
               >
-                <Typography variant="h6">InterPro ID</Typography>
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  InterPro ID
+                </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <input
-                  type="text"
-                  id="filter-id-box"
-                  placeholder="Search..."
-                  onChange={handleIDChange}
-                  style={{
-                    width: "80%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Search..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
                   }}
+                  onChange={handleIDChange}
                   value={interpro_id}
                 />
               </AccordionDetails>
@@ -688,8 +836,19 @@ function App() {
                 expandIcon={<ExpandMoreIcon />}
                 style={{ flexDirection: "row-reverse" }}
               >
-                <Typography variant="h6">Type</Typography>
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  Type
+                </Typography>
               </AccordionSummary>
+
               <AccordionDetails>
                 <List
                   component="div"
@@ -709,7 +868,7 @@ function App() {
                               value={child.key}
                             />
                           }
-                          label={child.key + " (" + child.doc_count + ")"}
+                          label={child.key + " (" + (child.doc_count - 1) + ")"}
                         />
                       </FormGroup>
                     ) : null
@@ -722,198 +881,310 @@ function App() {
                 expandIcon={<ExpandMoreIcon />}
                 style={{ flexDirection: "row-reverse" }}
               >
-                <Typography variant="h6">Name</Typography>
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  Name
+                </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <input
-                  type="text"
-                  id="filter-name-box"
-                  placeholder="Search..."
-                  onChange={handleNameChange}
-                  style={{
-                    width: "80%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Search..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
                   }}
+                  onChange={handleNameChange}
                   value={name}
                 />
               </AccordionDetails>
             </Accordion>
           </div>
-        </div>
-      </div>
-      <div className="AppBox1">
-        <div className="example-header" style={{ marginLeft: "35px" }}>
-          <form
-            onSubmit={onSubmit}
-            style={{ display: "inline", position: "relative" }}
-          >
-            <input
-              type="search"
-              id="filter-text-box"
-              placeholder="Search..."
-              autoComplete="on"
-              onChange={onFilterTextBoxChanged}
-              style={{
-                width: "calc(30% - 30px)", // Adjust width to accommodate clear button
-                padding: "0.25rem 0.75rem",
-                borderRadius: "10px 0 0 10px",
-                borderColor: "#1463B9",
-                display: "inline",
-                position: "relative",
-              }}
-            />
-            {searchText && (
+        </Box>
+        <Container maxWidth="xl" sx={{ marginTop: "30px", marginLeft: "20px" }}>
+          <Box sx={{ display: "flex" }}>
+            <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
+              <TextField
+                variant="outlined"
+                size="small"
+                label="Search..."
+                value={searchText}
+                onChange={(e) => {
+                  setSearchText(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    console.log("key wodn", e.key);
+                    console.log(e.target.value);
+                    onFilterTextBoxChanged(e.target.value);
+                  }
+                }}
+                InputProps={{
+                  style: {
+                    height: "44px",
+                    width: "500px",
+                    borderRadius: "16px 0 0 16px",
+                  },
+                  endAdornment: searchText && (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="clear search"
+                        onClick={() => {
+                          clearSearch();
+                        }}
+                        edge="end"
+                        size="small"
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
               <button
-                type="button"
-                onClick={clearSearch}
+                type="submit"
                 style={{
-                  position: "absolute",
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                  backgroundColor: "#fff",
-                  border: "none",
+                  border: "2px solid #1463B9",
+                  width: "50px",
+                  height: "44px",
+                  backgroundColor: "#1463B9",
+                  borderColor: "#1463B9",
                   cursor: "pointer",
+                  borderRadius: "0 16px 16px 0",
+                }}
+                onClick={() => {
+                  const syntheticEvent = {
+                    target: { value: searchText },
+                    nativeEvent: { inputType: "insertText" }, // Mimic an input event
+                  };
+                  onFilterTextBoxChanged(syntheticEvent);
                 }}
               >
-                X
+                <SearchIcon sx={{ color: "white" }} />
               </button>
-            )}
-            <button
-              type="button" // Change type to "button" to prevent form submission
-              onClick={onFilterTextBoxChanged} // Use onClick event handler for the button
-              style={{
-                display: "inline",
-                position: "relative",
-                top: "0.3em",
-                backgroundColor: "#1463B9",
-                borderColor: "#1463B9",
-                cursor: "pointer",
-                width: "5%",
-                borderRadius: "0 10px 10px 0",
+            </Box>
+            <Box
+              sx={{
+                textAlign: "right",
+                justifyContent: "flex-end", // To push content to the right
+                flexGrow: 1, // To make the right Box occupy remaining space
               }}
             >
-              <Search />
-            </button>
-          </form>
-          <text style={{ marginLeft: "5%" }}>Records Per Page</text>
-          <select onChange={onPageSizeChanged} value={pageSize} id="page-size">
-            <option value="50">50</option>
-            <option value="100">100</option>
-            <option value="500">500</option>
-            <option value="1000">1000</option>
-          </select>
-          <text style={{ marginLeft: "5%" }}>Page</text>
-          <select onChange={onPageNumChanged} value={pageNum + 1} id="page-num">
-            {pageNumArr}
-          </select>
-          <text style={{ marginLeft: "1%" }}>
-            out of {Math.round(docCount / pageSize)}
-          </text>
-          <button
-            onClick={onBtPrevious}
-            style={{
-              marginLeft: "5%",
-              fontWeight: "bold",
-              marginLeft: "3%",
-              marginTop: "10px",
-              color: "#F6921E",
-              background: "white",
-              fontSize: "20",
-              padding: ".3em 2em",
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            <Left_Arrow
-              style={{
-                marginRight: "10px",
-                paddingTop: "5px",
-                display: "inline",
-                position: "relative",
-                top: "0.15em",
-              }}
-            />
-            prev
-          </button>
-          <button
-            onClick={onBtNext}
-            style={{
-              fontWeight: "bold",
-              marginTop: "10px",
-              marginLeft: "1%",
-              color: "#F6921E",
-              background: "white",
-              fontSize: "20",
-              padding: "2em .3em ",
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            next
-            <Right_Arrow
-              style={{
-                marginLeft: "10px",
-                paddingTop: "5px",
-                display: "inline",
-                position: "relative",
-                top: "0.15em",
-              }}
-            />
-          </button>
-        </div>
+              <Typography
+                display="inline"
+                sx={{
+                  fontFamily: "Lato",
+                  fontSize: "18px",
+                  color: "#464646",
+                }}
+              >
+                Records Per Page
+              </Typography>
+              <TextField
+                select
+                size="small"
+                InputProps={{
+                  style: {
+                    borderRadius: "10px",
+                  },
+                }}
+                value={pageSize}
+                onChange={(event) => {
+                  setPageSize(event.target.value);
+                }}
+                sx={{ marginLeft: "10px", marginRight: "30px" }}
+              >
+                {recordsPerPageList.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <Typography
+                display="inline"
+                sx={{
+                  fontFamily: "Lato",
+                  fontSize: "18px",
+                  color: "#464646",
+                }}
+              >
+                Page
+              </Typography>
+              <TextField
+                select
+                size="small"
+                InputProps={{
+                  style: {
+                    borderRadius: "10px",
+                  },
+                }}
+                value={pageNum ? pageNum + 1 : 1}
+                sx={{ marginLeft: "10px", marginRight: "10px" }}
+                onChange={(event) => {
+                  setPageNum(event.target.value);
+                }}
+              >
+                {Array.from(
+                  { length: Math.ceil(docCount / pageSize) },
+                  (_, index) => (
+                    <MenuItem key={index + 1} value={index + 1}>
+                      {index + 1}
+                    </MenuItem>
+                  )
+                )}
+              </TextField>
+              <Typography
+                display="inline"
+                sx={{
+                  fontFamily: "Lato",
+                  fontSize: "18px",
+                  color: "#464646",
+                  marginRight: "30px",
+                }}
+              >
+                out of {Math.ceil(docCount / pageSize)}
+              </Typography>
+              <button
+                onClick={onBtPrevious}
+                disabled={pageNum + 1 === 1}
+                style={{
+                  color: pageNum + 1 === 1 ? "#D3D3D3" : "#F6921E",
+                  background: "white",
+                  fontSize: "20px",
+                  border: "none",
+                  cursor: pageNum + 1 === 1 ? "default" : "pointer",
+                  transition: pageNum + 1 === 1 ? "none" : "background 0.3s",
+                  borderRadius: "5px",
+                  marginRight: "15px",
+                  pointerEvents: pageNum + 1 === 1 ? "none" : "auto",
+                  paddingBottom: "5px",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = "rgba(246, 146, 30, 0.2)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = "white")
+                }
+              >
+                <ArrowBackIosIcon
+                  style={{
+                    display: "inline",
+                    position: "relative",
+                    top: "0.2em",
+                    fontWeight: "bold",
+                  }}
+                />
+                prev
+              </button>
+              <button
+                onClick={onBtNext}
+                disabled={pageNum === Math.ceil(docCount / pageSize)}
+                style={{
+                  color:
+                    pageNum === Math.ceil(docCount / pageSize)
+                      ? "#D3D3D3"
+                      : "#F6921E",
+                  background: "white",
+                  fontSize: "20px",
+                  border: "none",
+                  cursor:
+                    pageNum === Math.ceil(docCount / pageSize)
+                      ? "default"
+                      : "pointer",
+                  transition:
+                    pageNum === Math.ceil(docCount / pageSize)
+                      ? "none"
+                      : "background 0.3s",
+                  borderRadius: "5px",
+                  pointerEvents:
+                    pageNum === Math.ceil(docCount / pageSize)
+                      ? "none"
+                      : "auto",
+                  paddingBottom: "5px",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(246, 146, 30, 0.2)";
+                }}
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = "white")
+                }
+              >
+                next
+                <ArrowForwardIosIcon
+                  style={{
+                    display: "inline",
+                    position: "relative",
+                    top: "0.2em",
+                    fontWeight: "bold",
+                  }}
+                />
+              </button>
+            </Box>
+          </Box>
 
-        <div
-          className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
-          style={{ height: 600 }}
-        >
-          <AgGridReact
-            className="ag-cell-wrap-text"
-            ref={gridRef}
-            rowData={rowData}
-            columnDefs={columns}
-            defaultColDef={defColumnDefs}
-            onGridReady={onGridReady}
-            cacheQuickFilter={true}
-            frameworkComponents={{
-              LinkComponent,
+          <Box
+            sx={{
+              marginTop: "20px",
             }}
-            enableCellTextSelection={true}
-            overlayNoRowsTemplate={
-              '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
-            }
-            paginationPageSize={50}
-          />
-        </div>
-        <button
-          onClick={onBtExport}
+          >
+            <div
+              className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
+              style={{ height: 600 }}
+            >
+              <AgGridReact
+                className="ag-cell-wrap-text"
+                ref={gridRef}
+                rowData={rowData}
+                columnDefs={columns}
+                defaultColDef={defColumnDefs}
+                onGridReady={onGridReady}
+                cacheQuickFilter={true}
+                frameworkComponents={{
+                  LinkComponent,
+                }}
+                enableCellTextSelection={true}
+                overlayNoRowsTemplate={
+                  '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
+                }
+                paginationPageSize={50}
+              />
+            </div>
+          </Box>
+        </Container>
+      </Container>
+
+      <button
+        onClick={onBtExport}
+        style={{
+          fontWeight: "bold",
+          textAlign: "center",
+          color: "#F6921E",
+          background: "white",
+          fontSize: "20",
+          border: "none",
+          cursor: "pointer",
+        }}
+      >
+        <Download_Logo
           style={{
-            fontWeight: "bold",
-            textAlign: "center",
-            color: "#F6921E",
-            background: "white",
-            fontSize: "20",
-            border: "none",
-            cursor: "pointer",
+            marginRight: "10px",
+            paddingTop: "5px",
+            display: "inline",
+            position: "relative",
+            top: "0.15em",
           }}
-        >
-          <Download_Logo
-            style={{
-              marginRight: "10px",
-              paddingTop: "5px",
-              display: "inline",
-              position: "relative",
-              top: "0.15em",
-            }}
-          />
-          Download Spreadsheet
-        </button>
-      </div>
+        />
+        Download Spreadsheet
+      </button>
     </>
   );
 }

@@ -464,6 +464,7 @@ const columns = [
         cellClass: ["square_table", "salivary-proteins-colored-cell"],
       },
       {
+
         headerName: "Parotid Glands",
         field: "parotid_gland_abundance",
         cellRenderer: "WSComponent",
@@ -544,6 +545,7 @@ const defColumnDefs = {
   },
 };
 
+
 const customHeaders = {
   "Content-Type": "application/json",
 };
@@ -571,6 +573,7 @@ const rowHeight = 80;
 
 const IHCValues = ["medium", "not detected", "low", "n/a", "high"];
 
+
 /**
  * Escape all special characters for input string
  * Special Characters include: [-[\]{}()*+?.,\\^$|#\s
@@ -580,6 +583,7 @@ const IHCValues = ["medium", "not detected", "low", "n/a", "high"];
 const escapeSpecialCharacters = (inputVal) => {
   return inputVal.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
+
 
 const stringAttributes = [
   "UniProt Accession",
@@ -626,11 +630,13 @@ function SalivaryProteinTable() {
     gridRef.current.api.exportDataAsCsv();
   }, []);
 
+
   /**
    * Create a proper sort query for whichever sort attribute is selected
    */
   const createSortQuery = () => {
     const { attribute, order } = sortedColumn;
+
 
     // Have to include .keyword when sorting string attributes
     const sortAttrKey = `${sortedColumn.attribute}${
@@ -645,7 +651,9 @@ function SalivaryProteinTable() {
           },
         },
       ],
+
     };
+
   };
 
   /**
@@ -710,10 +718,12 @@ function SalivaryProteinTable() {
     setRowData(data);
   };
 
+
   // Initial data fetch on page load
   useEffect(() => {
     fetchData();
   }, []);
+
 
   // Fetch new table data when page size is changed or filters are updated
   useEffect(() => {
@@ -735,6 +745,7 @@ function SalivaryProteinTable() {
     }
   }, [sortedColumn]);
 
+
   // Fetch data for new page selected
   // No delay needed when switching pages no filter updates
   useEffect(() => {
@@ -753,6 +764,7 @@ function SalivaryProteinTable() {
     setGridApi(params.api);
     setColumnApi(params.columnApi);
     gridRef.current.api.sizeColumnsToFit();
+
   };
 
   const clearSearchBar = () => {
@@ -1285,6 +1297,7 @@ function SalivaryProteinTable() {
                   Expert Opinion
                 </Typography>
               </AccordionSummary>
+
               <List
                 component="div"
                 disablePadding
@@ -1354,6 +1367,7 @@ function SalivaryProteinTable() {
                 ))}
               </List>
               <AccordionDetails></AccordionDetails>
+
             </Accordion>
             <Accordion>
               <AccordionSummary
@@ -1730,7 +1744,9 @@ function SalivaryProteinTable() {
                 size="small"
                 label="Search..."
                 value={searchText}
+
                 onChange={(e) => handleGlobalSearch(e.target.value)}
+
                 InputProps={{
                   style: {
                     height: "44px",

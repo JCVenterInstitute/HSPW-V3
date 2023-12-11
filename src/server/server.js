@@ -283,9 +283,8 @@ app.post("/citation_search/:size/:from/", (req, res) => {
 
 async function and_search_signature(size, from, wildQuery, scriptQuery) {
   var client = await getClient();
-  console.log(wildQuery);
+
   wildQuery = JSON.parse(wildQuery);
-  scriptQuery = JSON.parse(scriptQuery);
 
   var query = {
     size: size,
@@ -327,6 +326,7 @@ app.get("/signature_search/:size/:from/:query/:script", (req, res) => {
 });
 
 async function and_search_gene(size, from, wildQuery) {
+  console.log(JSON.stringify(wildQuery));
   var client = await getClient();
 
   var query = {
@@ -348,7 +348,6 @@ async function and_search_gene(size, from, wildQuery) {
 }
 
 app.post("/genes_search/:size/:from/", (req, res) => {
-  console.log("315" + JSON.stringify(req.body));
   let a = and_search_gene(req.params.size, req.params.from, req.body);
   a.then(function (result) {
     res.json(result);
@@ -401,7 +400,7 @@ async function multi_search(index, text) {
       query: {
         query_string: {
           query: "*" + text + "*",
-          fields: ["UniProt Accession", "Gene Symbol", "Protein Name"],
+          fields: [],
         },
       },
     };
@@ -410,7 +409,16 @@ async function multi_search(index, text) {
       query: {
         query_string: {
           query: "*" + text + "*",
-          fields: ["InterPro ID", "Name", "Type"],
+          fields: [],
+        },
+      },
+    };
+  } else if (index === "genes") {
+    query = {
+      query: {
+        query_string: {
+          query: "*" + text + "*",
+          fields: [],
         },
       },
     };
