@@ -1,9 +1,19 @@
+import "../filter.css";
 import List from "@material-ui/core/List";
+import CustomLoadingOverlay from "../customLoadingOverlay.jsx";
+import CustomNoRowsOverlay from "../customNoRowsOverlay.jsx";
 import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
 import { AgGridReact } from "ag-grid-react";
 import { rgb } from "d3";
+import "../table.css";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import FormGroup from "@mui/material/FormGroup";
@@ -13,6 +23,7 @@ import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import CustomHeaderGroup from "../customHeaderGroup.jsx";
 import Switch from "@mui/material/Switch";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import {
@@ -26,17 +37,9 @@ import {
   IconButton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { ReactComponent as Download_Logo } from "../table_icon/download.svg";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-
-import CustomLoadingOverlay from "../customLoadingOverlay.jsx";
-import CustomHeaderGroup from "../customHeaderGroup.jsx";
-import { ReactComponent as DownloadLogo } from "../table_icon/download.svg";
-import "../filter.css";
-import "../table.css";
-
-// TODO: Move to some sort of env file
-const HOST_ENDPOINT = `http://localhost:8000`;
 
 const styles = {
   transform: "translate(0, 0)",
@@ -47,7 +50,6 @@ const styles1 = {
 };
 
 const Accordion = styled((props) => (
-  <MuiAccordion disableGutters elevation={0} square {...props} />
   <MuiAccordion disableGutters elevation={0} square {...props} />
 ))(({ theme }) => ({
   marginBottom: "15px",
@@ -95,60 +97,65 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 function WSComponent(props) {
   const d = props.value;
-
   if (d < 10 || d === "low") {
     return (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          backgroundColor: "rgb(180,250,180)",
-          color: "black",
-          fontFamily: "Lato",
-          fontSize: "16px",
-          lineHeight: "24px",
-          textAlign: "center",
-          paddingTop: "22%",
-        }}
-      >
-        {Number(d).toFixed(2)}
-      </div>
+      <>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgb(180,250,180)",
+            color: "black",
+            fontFamily: "Lato",
+            fontSize: "16px",
+            lineHeight: "24px",
+            textAlign: "center",
+            paddingTop: "22%",
+          }}
+        >
+          {Number(d).toFixed(2)}
+        </div>
+      </>
     );
   } else if (d < 100 || d === "medium") {
     return (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          backgroundColor: "rgb(70,170,70)",
-          color: "#FFF",
-          fontFamily: "Lato",
-          fontSize: "16px",
-          lineHeight: "24px",
-          textAlign: "center",
-          paddingTop: "22%",
-        }}
-      >
-        {Number(d).toFixed(2)}
-      </div>
+      <>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgb(70,170,70)",
+            color: "#FFF",
+            fontFamily: "Lato",
+            fontSize: "16px",
+            lineHeight: "24px",
+            textAlign: "center",
+            paddingTop: "22%",
+          }}
+        >
+          {Number(d).toFixed(2)}
+        </div>
+      </>
     );
   } else if (d > 100 || d === "high") {
     return (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          backgroundColor: "rgb(0,100,0)",
-          color: "#FFF",
-          fontFamily: "Lato",
-          fontSize: "16px",
-          lineHeight: "24px",
-          textAlign: "center",
-          paddingTop: "22%",
-        }}
-      >
-        {Number(d).toFixed(2)}
-      </div>
+      <>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgb(0,100,0)",
+            color: "#FFF",
+            fontFamily: "Lato",
+            fontSize: "16px",
+            lineHeight: "24px",
+            textAlign: "center",
+            paddingTop: "22%",
+          }}
+        >
+          {Number(d).toFixed(2)}
+        </div>
+      </>
     );
   } else if (d === "not detected" || d === 0) {
     return (
@@ -203,15 +210,12 @@ function WSComponent(props) {
 }
 
 function opinionComponent(props) {
-  const { value } = props;
-
-  return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
-      <span>
-        {value === "Confirmed" ? "C" : value === "Unsubstantiated" ? "US" : ""}
-      </span>
-    </div>
-  );
+  const d = props.value;
+  if (d === "Confirmed") {
+    return <span>C</span>;
+  } else if (d === "Unsubstantiated") {
+    return <span>US</span>;
+  }
 }
 
 function IHCComponent(props) {
@@ -313,11 +317,7 @@ function IHCComponent(props) {
             </pattern>
           </defs>
           <rect
-            style={{
-              fill: "url(#stripe2)",
-              width: "100%",
-              height: "100%",
-            }}
+            style={{ fill: "url(#stripe2)", width: "100%", height: "100%" }}
           >
             <title>Data not available</title>
           </rect>
@@ -347,15 +347,13 @@ function IHCComponent(props) {
 
 function proteinLinkComponent(props) {
   return (
-    <div style={{ paddingLeft: "20px" }}>
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href={`${window.location.origin}/protein/${props.value}`}
-      >
-        {props.value}
-      </a>
-    </div>
+    <a
+      target="_blank"
+      rel="noopener noreferrer"
+      href={window.location.origin + "/protein/" + props.value}
+    >
+      {props.value}
+    </a>
   );
 }
 
@@ -730,7 +728,7 @@ function App() {
       headerCheckboxSelection: false,
       minWidth: "155",
       wordWrap: true,
-
+      sortable: true,
       cellStyle: { wordBreak: "break-word" },
       headerClass: ["header-border"],
       cellClass: ["table-border"],
@@ -741,7 +739,7 @@ function App() {
       minWidth: "132",
       field: "Gene Symbol",
       wrapText: true,
-
+      sortable: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
       cellStyle: { wordBreak: "break-word" },
@@ -754,14 +752,14 @@ function App() {
       wrapText: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
-
+      sortable: true,
       cellStyle: { wordBreak: "break-word" },
     },
     {
       headerName: "Expert Opinion",
       minWidth: "140",
       field: "expert_opinion",
-
+      sortable: true,
       cellRenderer: "opinionComponent",
       headerClass: ["header-border"],
       cellClass: ["table-border"],
@@ -866,36 +864,31 @@ function App() {
   };
 
   const onFilterTextBoxChanged = (e) => {
-    console.log("868", e.key);
-    if (e.key === "Enter") {
-      console.log("key entered", e.key);
+    // Check if the event is a delete key press or a synthetic event
+    const isDeleteKey =
+      e.nativeEvent && e.nativeEvent.inputType === "deleteContentBackward";
 
-      // Check if the event is a delete key press or a synthetic event
-      const isDeleteKey =
-        e.nativeEvent && e.nativeEvent.inputType === "deleteContentBackward";
+    let inputValue = e;
 
-      let inputValue = e.target.value;
+    if (isDeleteKey) {
+      // Handle delete key press by removing the last character
+      inputValue = inputValue.slice(0, -1);
+    }
 
-      if (isDeleteKey) {
-        // Handle delete key press by removing the last character
-        inputValue = inputValue.slice(0, -1);
-      }
+    // Ensure that inputValue is defined
+    inputValue = inputValue || "";
 
-      // Ensure that inputValue is defined
-      inputValue = inputValue || "";
+    // Escape special characters
+    const escapedInputValue = escapeRegExp(inputValue);
 
-      // Escape special characters
-      const escapedInputValue = escapeRegExp(inputValue);
+    console.log("Input Value: " + escapedInputValue);
 
-      console.log("Input Value: " + escapedInputValue);
-
-      if (escapedInputValue !== "") {
-        setSearchText(escapedInputValue);
-        setGlobalSC(true);
-      } else {
-        setGlobalSC(false);
-        setSearchText("");
-      }
+    if (escapedInputValue !== "") {
+      setSearchText(escapedInputValue);
+      setGlobalSC(true);
+    } else {
+      setGlobalSC(false);
+      setSearchText("");
     }
   };
 
@@ -945,6 +938,1365 @@ function App() {
     },
   };
 
+  const onGridReady = (params) => {
+    setGridApi(params);
+  };
+
+  const updateQuery = (newQuery, fieldName) => {
+    setQueryArr((prevArray) => {
+      // If newQuery is null, remove only the corresponding type of query from the array
+      if (newQuery === null) {
+        const targetTypePrev = findEmptyField(prevArray, fieldName);
+        console.log("TargetType (null case):", targetTypePrev);
+
+        const updatedArray = prevArray.filter((p) => {
+          const hasWildcard =
+            p &&
+            p.bool &&
+            p.bool.filter &&
+            p.bool.filter[0] &&
+            p.bool.filter[0].wildcard;
+
+          const wildcardProperty =
+            hasWildcard && Object.keys(p.bool.filter[0].wildcard)[0];
+
+          const hasQueryString =
+            p.bool &&
+            p.bool.filter &&
+            p.bool.filter[0] &&
+            p.bool.filter[0].query_string;
+
+          // Check if it's a "Gene Symbol" query with an empty value
+          const isGeneSymbolQuery =
+            hasWildcard &&
+            wildcardProperty === "Gene Symbol" &&
+            p.bool.filter[0].wildcard["Gene Symbol"].value === "";
+
+          const isProteinNameQuery =
+            hasWildcard &&
+            wildcardProperty === "Protein Name" &&
+            p.bool.filter[0].wildcard["Protein Name"].value === "";
+
+          const isIHCQuery =
+            hasWildcard &&
+            wildcardProperty === "IHC" &&
+            p.bool.filter[0].wildcard["IHC"].value === "";
+          // Adjust the condition based on the targetTypePrev boolean value
+          return hasWildcard || hasQueryString
+            ? targetTypePrev
+              ? wildcardProperty !== fieldName &&
+                !(
+                  isGeneSymbolQuery &&
+                  isProteinNameQuery &&
+                  isIHCQuery &&
+                  p.bool.filter[0].query_string[fieldName] !== undefined
+                )
+              : isGeneSymbolQuery ||
+                isProteinNameQuery ||
+                isIHCQuery ||
+                wildcardProperty === fieldName ||
+                (hasQueryString &&
+                  p.bool.filter[0].query_string[fieldName] !== undefined)
+            : true;
+        });
+
+        console.log("Updated Array (null case):", updatedArray);
+
+        return updatedArray;
+      }
+
+      const nonEmptyQueries = prevArray.filter((query) => {
+        const wildcardProperty =
+          query.bool &&
+          query.bool.filter &&
+          query.bool.filter[0].wildcard &&
+          Object.keys(query.bool.filter[0].wildcard)[0];
+
+        // Check if the field is not empty in the new query
+        return !(
+          wildcardProperty &&
+          newQuery.bool.filter &&
+          newQuery.bool.filter[0].wildcard &&
+          Object.keys(newQuery.bool.filter[0].wildcard)[0] ===
+            wildcardProperty &&
+          newQuery.bool.filter[0].wildcard[wildcardProperty] === ""
+        );
+      });
+
+      console.log("Non-empty Queries:", nonEmptyQueries);
+
+      const updatedArray = nonEmptyQueries.map((p) => {
+        const isSame = isSameType(p, newQuery);
+        console.log(
+          `Comparing: ${JSON.stringify(p)} and ${JSON.stringify(
+            newQuery
+          )} => ${isSame}`
+        );
+        return isSame ? newQuery : p;
+      });
+      console.log("1105", newQuery);
+
+      // If the new query does not exist or has an empty value, remove it from the array
+      if (
+        newQuery.bool.filter !== undefined &&
+        !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
+        !(newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value === "")
+      ) {
+        // Check if there's an existing query for the same field and remove it
+        const updatedArrayWithoutExisting = updatedArray.filter((p) => {
+          if (
+            p.bool &&
+            p.bool.filter &&
+            p.bool.filter[0].wildcard &&
+            Object.keys(p.bool.filter[0].wildcard)[0] === fieldName
+          ) {
+            // Remove the existing query if the new query is not empty
+            return newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value !== "";
+          }
+          return true;
+        });
+
+        // Add the new query only if it's not an empty wildcard
+        if (newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value !== "") {
+          updatedArrayWithoutExisting.push(newQuery);
+          console.log("New Query Added:", updatedArrayWithoutExisting);
+        }
+
+        return updatedArrayWithoutExisting;
+      } else if (
+        newQuery.bool.filter !== undefined &&
+        !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
+        (!(newQuery.bool.filter[0]?.range?.[fieldName]?.gte === "") ||
+          !(newQuery.bool.filter[0]?.range?.[fieldName]?.lte === ""))
+      ) {
+        updatedArray.push(newQuery);
+        console.log("New Query Added:", updatedArray);
+      } else if (
+        newQuery.bool.filter !== undefined &&
+        !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
+        !(newQuery.bool.filter[0]?.query_string?.query === "")
+      ) {
+        updatedArray.push(newQuery);
+        console.log("New Query Added Query String:", updatedArray);
+      } else if (
+        newQuery.bool.must_not !== undefined &&
+        !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
+        (!(newQuery.bool.must_not[0]?.range?.[fieldName]?.gte === "") ||
+          !(newQuery.bool.must_not[0]?.range?.[fieldName]?.lte === ""))
+      ) {
+        updatedArray.push(newQuery);
+      }
+      console.log("1157", updatedArray);
+      return updatedArray;
+    });
+  };
+
+  const findEmptyField = (queries, fieldName) => {
+    console.log("Queries:", queries);
+    console.log("Field Name:", fieldName);
+
+    const findFieldInFilter = (filter) => {
+      if (filter.wildcard) {
+        return filter && filter.wildcard && filter.wildcard[fieldName];
+      } else if (filter.range) {
+        return filter && filter.range && filter.range[fieldName];
+      } else if (filter.query_string) {
+        console.log("1272", filter.query_string);
+        return filter.query_string; // Directly return the found filter
+      }
+    };
+
+    const searchQuery = (query) => {
+      if (query && query.bool && query.bool.filter) {
+        return query.bool.filter.some(findFieldInFilter);
+      }
+
+      return false;
+    };
+
+    const result = queries.some(searchQuery); // Use some instead of find
+
+    console.log(result ? "Field Found:" : "Field Not Found");
+
+    return result;
+  };
+
+  // Helper function to check if two queries have the same wildcard type
+  const isSameType = (query1, query2) => {
+    const type1 = query1.bool?.filter?.[0]?.wildcard
+      ? Object.keys(query1.bool.filter[0].wildcard)[0]
+      : null;
+    const type2 = query2.bool?.filter?.[0]?.wildcard
+      ? Object.keys(query2.bool.filter[0].wildcard)[0]
+      : null;
+
+    // Check both type and value for wildcard queries
+    if (type1 === type2 && type1 === "wildcard") {
+      const value1 = query1.bool.filter[0].wildcard[type1].value;
+      const value2 = query2.bool.filter[0].wildcard[type2].value;
+      return value1 === value2;
+    }
+
+    return type1 === type2;
+  };
+
+  const handleAccessionChange = (e) => {
+    // Check if the event is a delete key press
+    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
+
+    let inputValue = e.target.value;
+    setPrefix(inputValue);
+    if (isDeleteKey) {
+      // Handle delete key press by removing the last character
+      inputValue = inputValue.slice(0, -1);
+    }
+
+    // Remove double backslashes
+    inputValue = inputValue.replace(/\\\\/g, "");
+
+    // Escape special characters
+    inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+
+    if (inputValue === "") {
+      setAccessionC(false);
+    } else {
+      setAccessionC(true);
+    }
+
+    setPageNum(0);
+
+    const newAccessionQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  wildcard: {
+                    uniprot_accession: {
+                      value: `${inputValue}*`,
+                      case_insensitive: true,
+                    },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
+
+    updateQuery(newAccessionQuery, "uniprot_accession");
+  };
+
+  const handleGeneChange = (e) => {
+    // Check if the event is a delete key press
+    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
+
+    let inputValue = e.target.value;
+    setGenePrefix(inputValue);
+    if (isDeleteKey) {
+      // Handle delete key press by removing the last character
+      inputValue = inputValue.slice(0, -1);
+    }
+
+    // Remove double backslashes
+    inputValue = inputValue.replace(/\\\\/g, "");
+
+    // Escape special characters
+    inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    if (inputValue === "") {
+      setGeneC(false);
+    } else if (inputValue !== "") {
+      setGeneC(true);
+    }
+    setPageNum(0);
+    const newGeneQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  wildcard: {
+                    "Gene Symbol": {
+                      value: `${inputValue}*`,
+                      case_insensitive: true,
+                    },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
+
+    updateQuery(newGeneQuery, "Gene Symbol");
+  };
+
+  const handleNameChange = (e) => {
+    // Check if the event is a delete key press
+    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
+
+    let inputValue = e.target.value;
+
+    if (isDeleteKey) {
+      // Handle delete key press by removing the last character
+      inputValue = inputValue.slice(0, -1);
+    }
+
+    // Remove double backslashes
+    inputValue = inputValue.replace(/\\\\/g, "");
+
+    // Escape special characters
+    inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    console.log(inputValue);
+    if (inputValue === "") {
+      console.log("wt");
+      setNameC(false);
+    } else if (inputValue !== "") {
+      setNameC(true);
+    }
+    const newNameQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  wildcard: {
+                    "Protein Name": {
+                      value: `${inputValue}*`,
+                      case_insensitive: true,
+                    },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
+    setNamePrefix(e.target.value);
+
+    updateQuery(newNameQuery, "Protein Name");
+  };
+
+  const handlestartWSChange = (e) => {
+    let inputValue = e.target.value;
+    if (inputValue === "") {
+      setwsC(false);
+    } else if (inputValue !== "") {
+      setwsC(true);
+    }
+    let newstartWSQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  range: { saliva_abundance: { gte: inputValue, lte: parEnd } },
+                },
+              ],
+            },
+          }
+        : null;
+    if (wsEnd === "") {
+      newstartWSQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      saliva_abundance: { gte: inputValue, lte: 20000 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    setwsStart(inputValue);
+    if (inputValue === "") {
+      newstartWSQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      saliva_abundance: { gte: 0, lte: 20000 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    if (inputValue === "" && wsEnd !== "") {
+      newstartWSQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          saliva_abundance: { lte: wsEnd, gte: 0 },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    updateQuery(newstartWSQuery, "saliva_abundance");
+  };
+
+  const handleendWSChange = (e) => {
+    const inputValue = e.target.value;
+    const wsAbundance = inputValue === "" ? 20000 : inputValue;
+    if (inputValue === "") {
+      setwsC(false);
+    } else if (inputValue !== "") {
+      setwsC(true);
+    }
+    let newendWSQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  range: {
+                    saliva_abundance: { lte: wsAbundance, gte: wsStart },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
+
+    if (wsStart === "") {
+      newendWSQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      saliva_abundance: { gte: 0, lte: inputValue },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    setwsEnd(inputValue);
+    if (inputValue === "") {
+      newendWSQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      saliva_abundance: { gte: 0, lte: 20000 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    if (inputValue === "" && wsStart !== "") {
+      newendWSQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          saliva_abundance: {
+                            lte: 20000,
+                            gte: wsStart,
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    updateQuery(newendWSQuery, "saliva_abundance");
+  };
+
+  const handlestartParChange = (e) => {
+    let inputValue = e.target.value;
+
+    if (inputValue === "") {
+      setparC(false);
+    } else if (inputValue !== "") {
+      setparC(true);
+    }
+    let newstartParQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  range: {
+                    parotid_gland_abundance: { gte: inputValue, lte: parEnd },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
+    if (parEnd === "") {
+      newstartParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      parotid_gland_abundance: { gte: inputValue, lte: 20000 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    setparStart(inputValue);
+    if (inputValue === "") {
+      newstartParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      parotid_gland_abundance: { gte: 0, lte: 20000 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    if (inputValue === "" && parEnd !== "") {
+      newstartParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          parotid_gland_abundance: { lte: parEnd, gte: 0 },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    updateQuery(newstartParQuery, "parotid_gland_abundance");
+  };
+
+  const handleendParChange = (e) => {
+    const inputValue = e.target.value;
+    const parGlandAbundance = inputValue === "" ? 20000 : inputValue;
+    let newendParQuery = {
+      bool: {
+        must: [],
+        must_not: [],
+        filter: [
+          {
+            range: {
+              parotid_gland_abundance: {
+                lte: parGlandAbundance,
+                gte: parStart,
+              },
+            },
+          },
+        ],
+      },
+    };
+    if (parStart === "") {
+      newendParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      parotid_gland_abundance: { gte: 0, lte: inputValue },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    setparC(inputValue !== ""); // Set parC based on whether inputValue is not empty
+
+    setparEnd(inputValue);
+    if (inputValue === "") {
+      newendParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      parotid_gland_abundance: { gte: 0, lte: 20000 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    if (inputValue === "" && parStart !== "") {
+      newendParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          parotid_gland_abundance: {
+                            lte: 20000,
+                            gte: parStart,
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    updateQuery(newendParQuery, "parotid_gland_abundance");
+  };
+
+  const handlestartSubChange = (e) => {
+    let inputValue = e.target.value;
+
+    if (inputValue === "") {
+      setsubC(false);
+    } else {
+      setsubC(true);
+    }
+
+    let newstartSubQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  range: {
+                    "sm/sl_abundance": { gte: inputValue, lte: subEnd },
+                  },
+                },
+              ],
+            },
+          }
+        : null;
+
+    if (subEnd === "") {
+      newstartSubQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      "sm/sl_abundance": { gte: inputValue, lte: 20000 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    setsubStart(inputValue);
+
+    if (inputValue === "") {
+      newstartSubQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      "sm/sl_abundance": { gte: 0, lte: 20000 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    if (inputValue === "" && subEnd !== "") {
+      newstartSubQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          "sm/sl_abundance": { lte: subEnd, gte: 0 },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    updateQuery(newstartSubQuery, "sm/sl_abundance");
+  };
+  const handleendSubChange = (e) => {
+    const inputValue = e.target.value;
+    const subAbundance = inputValue === "" ? 20000 : inputValue;
+    let newendParQuery = {
+      bool: {
+        must: [],
+        must_not: [],
+        filter: [
+          {
+            range: { "sm/sl_abundance": { lte: subAbundance, gte: subStart } },
+          },
+        ],
+      },
+    };
+    if (subStart === "") {
+      newendParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      "sm/sl_abundance": { gte: 0, lte: inputValue },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    setsubC(inputValue !== ""); // Set parC based on whether inputValue is not empty
+
+    setsubEnd(inputValue);
+    if (inputValue === "") {
+      newendParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      "sm/sl_abundance": { gte: 0, lte: 20000 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    if (inputValue === "" && subStart !== "") {
+      newendParQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          "sm/sl_abundance": { lte: 20000, gte: subStart },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    updateQuery(newendParQuery, "sm/sl_abundance");
+  };
+
+  const handlestartBChange = (e) => {
+    let inputValue = e.target.value;
+    if (e.target.exclude === undefined) {
+      e.target.exclude = exclude;
+    }
+    if (inputValue === "") {
+      setplasmaC(false);
+    } else if (inputValue !== "") {
+      setplasmaC(true);
+    }
+
+    let newstartBQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                { range: { plasma_abundance: { gte: inputValue, lte: pEnd } } },
+              ],
+            },
+          }
+        : null;
+    if (pEnd === "" && e.target.exclude === false) {
+      newstartBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      plasma_abundance: { gte: inputValue, lte: 5 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    } else if (pEnd === "" && e.target.exclude === true) {
+      newstartBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          plasma_abundance: { gte: inputValue, lte: 5 },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    setpStart(inputValue);
+    if (inputValue === "") {
+      newstartBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      plasma_abundance: { gte: 0, lte: 5 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    if (e.target.exclude === true && inputValue !== "" && pEnd !== "") {
+      newstartBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          plasma_abundance: { gte: inputValue, lte: pEnd },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    } else if (e.target.exclude === true && inputValue === "" && pEnd !== "") {
+      newstartBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: { plasma_abundance: { gte: 0, lte: pEnd } },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+    updateQuery(newstartBQuery, "plasma_abundance");
+  };
+
+  const handleendBChange = (e) => {
+    console.log("hande end b", e.target.exclude);
+    if (e.target.exclude === undefined) {
+      e.target.exclude = exclude;
+    }
+    let inputValue = e.target.value;
+    if (inputValue === "") {
+      setplasmaC(false);
+    } else if (inputValue !== "") {
+      setplasmaC(true);
+    }
+
+    let newendBQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [
+                {
+                  range: { plasma_abundance: { lte: inputValue, gte: pStart } },
+                },
+              ],
+            },
+          }
+        : null;
+    console.log();
+    if (pStart === "" && e.target.exclude === false) {
+      newendBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      plasma_abundance: { lte: inputValue, gte: 0 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    } else if (pStart === "" && e.target.exclude === true) {
+      newendBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          plasma_abundance: { lte: inputValue, gte: 0 },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    setpEnd(inputValue);
+    if (inputValue === "") {
+      newendBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    range: {
+                      plasma_abundance: { gte: 0, lte: 5 },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    if (e.target.exclude === true && inputValue !== "" && pStart !== "") {
+      newendBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: {
+                          plasma_abundance: { lte: inputValue, gte: pStart },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    } else if (
+      e.target.exclude === true &&
+      inputValue === "" &&
+      pStart !== ""
+    ) {
+      newendBQuery =
+        inputValue !== ""
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    bool: {
+                      must_not: {
+                        range: { plasma_abundance: { lte: 5, gte: pStart } },
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+    }
+
+    updateQuery(newendBQuery, "plasma_abundance");
+  };
+
+  const handlestartmRNAChange = (e) => {
+    const inputValue = e.target.value;
+
+    if (inputValue === "") {
+      setmRNAC(false);
+    } else if (inputValue !== "") {
+      setmRNAC(true);
+    }
+
+    const newstartmRNAQuery =
+      inputValue !== ""
+        ? {
+            bool: {
+              must: [],
+              must_not: [],
+              filter: [{ range: { mRNA: { gte: inputValue, lte: mRNAEnd } } }],
+            },
+          }
+        : null;
+
+    setmRNAStart(inputValue);
+    updateQuery(newstartmRNAQuery, "mRNA");
+  };
+
+  const handleendmRNAChange = (e) => {
+    const inputValue = e.target.value;
+    const mRNAAbundance = inputValue === "" ? 20000 : inputValue;
+    const newendmRNAQuery = {
+      bool: {
+        must: [],
+        must_not: [],
+        filter: [{ range: { mRNA: { lte: mRNAAbundance, gte: mRNAStart } } }],
+      },
+    };
+
+    setmRNAC(inputValue !== ""); // Set parC based on whether inputValue is not empty
+
+    setmRNAEnd(inputValue);
+    updateQuery(newendmRNAQuery, "mRNA");
+  };
+
+  const filterOpUS = (event) => {
+    setOpArr((prevOpArr) => {
+      const updatedOpArr = [!prevOpArr[0], prevOpArr[1]];
+
+      if (updatedOpArr[0] === true) {
+        seteoC(true);
+        setopinionVal("Unsubstantiated");
+      } else if (updatedOpArr[0] === false && updatedOpArr[1] === false) {
+        seteoC(false);
+        setopinionVal("");
+      } else if (updatedOpArr[0] === false) {
+        setopinionVal("");
+      }
+      let opQuery =
+        updatedOpArr[0] === true
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    wildcard: {
+                      expert_opinion: {
+                        value: "Unsubstantiated",
+                        case_insensitive: true,
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+
+      updateQuery(opQuery, "expert_opinion");
+      return updatedOpArr;
+    });
+  };
+
+  const filterOpC = (event) => {
+    setOpArr((prevOpArr) => {
+      const updatedOpArr = [prevOpArr[0], !prevOpArr[1]];
+
+      if (updatedOpArr[1] === true) {
+        seteoC(true);
+        setopinionVal("Confirmed");
+        console.log("diu:" + eoC + opinionVal);
+      } else if (updatedOpArr[0] === false && updatedOpArr[1] === false) {
+        seteoC(false);
+        setopinionVal("");
+      } else if (updatedOpArr[1] === false) {
+        setopinionVal("");
+      }
+      let opQuery =
+        updatedOpArr[1] === true
+          ? {
+              bool: {
+                must: [],
+                must_not: [],
+                filter: [
+                  {
+                    wildcard: {
+                      expert_opinion: {
+                        value: "Confirmed",
+                        case_insensitive: true,
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+
+      updateQuery(opQuery, "expert_opinion");
+      return updatedOpArr;
+    });
+  };
+  const IHCValues = ["medium", "not detected", "low", "n/a", "high"];
+  const filterIHC = (event) => {
+    const { value } = event.target;
+
+    const inputValue = value;
+    setIHCArr((prevIHCArr) => {
+      let updatedIHCArr;
+      let IHCQuery;
+      if (value === "not detected") {
+        // Special case for "not detected"
+        updatedIHCArr = [false, !prevIHCArr[1], false, false, false];
+        setihcC(!prevIHCArr[1]); // Update ihcC based on the second checkbox
+        setIHCVal(`not*`);
+
+        IHCQuery =
+          prevIHCArr[1] === false
+            ? {
+                bool: {
+                  must: [],
+                  must_not: [],
+                  filter: [
+                    {
+                      wildcard: {
+                        IHC: {
+                          value: "*not*",
+                          case_insensitive: true,
+                        },
+                      },
+                    },
+                  ],
+                },
+              }
+            : null;
+      } else if (value === "n/a") {
+        // Special case for "n/a"
+        updatedIHCArr = [false, false, false, !prevIHCArr[3], false];
+        setihcC(!prevIHCArr[3]); // Update ihcC based on the fourth checkbox
+        setIHCVal(`*a*`);
+        IHCQuery =
+          prevIHCArr[3] === false
+            ? {
+                bool: {
+                  must: [],
+                  must_not: [],
+                  filter: [
+                    {
+                      wildcard: {
+                        IHC: {
+                          value: "*a*",
+                          case_insensitive: true,
+                        },
+                      },
+                    },
+                  ],
+                },
+              }
+            : null;
+      } else {
+        updatedIHCArr = prevIHCArr.map((isChecked, index) =>
+          index === IHCValues.indexOf(value) ? !isChecked : isChecked
+        );
+
+        // Check if any checkbox is checked
+        const anyChecked = updatedIHCArr.some((isChecked) => isChecked);
+
+        // Update ihcC and IHCVal based on checked status
+        if (anyChecked) {
+          setihcC(true);
+          setIHCVal(`${value}*`);
+          IHCQuery =
+            prevIHCArr[IHCValues.indexOf(value)] === false
+              ? {
+                  bool: {
+                    must: [],
+                    must_not: [],
+                    filter: [
+                      {
+                        wildcard: {
+                          IHC: {
+                            value: `${value}`,
+                            case_insensitive: true,
+                          },
+                        },
+                      },
+                    ],
+                  },
+                }
+              : null;
+        } else {
+          setihcC(false);
+          setIHCVal("");
+          IHCQuery =
+            prevIHCArr[IHCValues.indexOf(value)] === false
+              ? {
+                  bool: {
+                    must: [],
+                    must_not: [],
+                    filter: [
+                      {
+                        wildcard: {
+                          IHC: {
+                            value: `${value}`,
+                            case_insensitive: true,
+                          },
+                        },
+                      },
+                    ],
+                  },
+                }
+              : null;
+        }
+      }
+      console.log(IHCQuery);
+      updateQuery(IHCQuery, "IHC");
+      return updatedIHCArr;
+    });
+  };
+
+  const rowHeight = 80;
+
   const recordsPerPageList = [
     {
       value: 50,
@@ -964,1680 +2316,843 @@ function App() {
     },
   ];
 
-  const rowHeight = 80;
-
-  const IHCValues = ["medium", "not detected", "low", "n/a", "high"];
-
-  /**
-   * Escape all special characters for input string
-   * Special Characters include: [-[\]{}()*+?.,\\^$|#\s
-   * @param {String} inputVal Non-escaped string value entered by user
-   * @returns String where special characters are escaped with slashes
-   */
-  const escapeSpecialCharacters = (inputVal) => {
-    return inputVal.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-  };
-
-  const stringAttributes = [
-    "UniProt Accession",
-    "Gene Symbol",
-    "Protein Name",
-    "IHC",
-    "expert_opinion",
-  ];
-
-  const numberAttributes = [
-    "saliva_abundance", // MS WS
-    "parotid_gland_abundance", // MS PAR
-    "sm/sl_abundance", // MS Sub
-    "plasma_abundance", // MS B
-    "mRNA", // mRNA
-  ];
-
-  function SalivaryProteinTable() {
-    const gridRef = useRef();
-
-    const [pageSize, setPageSize] = useState(50); // Default page data to 50 records per page
-    const [pageNum, setPageNum] = useState(0);
-    const [docCount, setDocCount] = useState(0); // Total # of records available for display
-    const [ihcC, setihcC] = useState(false);
-    const [opCount, setOpCount] = useState([]);
-    const [IHCCount, setIHCCount] = useState([]);
-    const [rowData, setRowData] = useState([]);
-    const [opArr, setOpArr] = useState([false, false]);
-    const [orFilterOn, setOrFilterOn] = useState(false);
-    const [IHCArr, setIHCArr] = useState([false, false, false, false, false]);
-    const [searchText, setSearchText] = useState("");
-    const [msBExcludeOn, setMsBExcludeOn] = useState(false);
-    const [facetFilter, setFacetFilters] = useState({});
-    const [columnApi, setColumnApi] = useState(null);
-    const [gridApi, setGridApi] = useState(null);
-    const [sortedColumn, setSortedColumn] = useState(null);
-
-    const loadingOverlayComponent = useMemo(() => {
-      return CustomLoadingOverlay;
-    }, []);
-
-    // Export the current page data as CSV file
-    const onBtExport = useCallback(() => {
-      gridRef.current.api.exportDataAsCsv();
-    }, []);
-
-    /**
-     * Create a proper sort query for whichever sort attribute is selected
-     */
-    const createSortQuery = () => {
-      const { attribute, order } = sortedColumn;
-
-      // Have to include .keyword when sorting string attributes
-      const sortAttrKey = `${sortedColumn.attribute}${
-        stringAttributes.includes(attribute) ? ".keyword" : ""
-      }`;
-
-      return {
-        sort: [
-          {
-            [sortAttrKey]: {
-              order,
-            },
-          },
-        ],
-      };
-    };
-
-    /**
-     * Create a proper search query for whichever search string is entered into the search bar
-     */
-    const createGlobalSearchQuery = () => {
-      const escapedInput = escapeSpecialCharacters(searchText);
-
-      return {
-        query_string: {
-          query: `*${escapedInput}*`,
-          default_operator: "AND",
-          analyze_wildcard: true,
-        },
-      };
-    };
-
-    // Handle fetching data for table
-    const fetchData = async () => {
-      const apiPayload = {
-        filters: queryBuilder(facetFilter),
-        // Pass sort query if any sort is applied
-        ...(sortedColumn && createSortQuery()),
-        ...(searchText && { keyword: createGlobalSearchQuery() }),
-      };
-
-      const searchQuery = (query) => {
-        if (query && query.bool && query.bool.filter) {
-          return query.bool.filter.some(findFieldInFilter);
-        }
-
-        return false;
-      };
-
-      const result = queries.some(searchQuery); // Use some instead of find
-
-      console.log(result ? "Field Found:" : "Field Not Found");
-
-      return result;
-    };
-
-    // Helper function to check if two queries have the same wildcard type
-    const isSameType = (query1, query2) => {
-      const type1 = query1.bool?.filter?.[0]?.wildcard
-        ? Object.keys(query1.bool.filter[0].wildcard)[0]
-        : null;
-      const type2 = query2.bool?.filter?.[0]?.wildcard
-        ? Object.keys(query2.bool.filter[0].wildcard)[0]
-        : null;
-
-      // Check both type and value for wildcard queries
-      if (type1 === type2 && type1 === "wildcard") {
-        const value1 = query1.bool.filter[0].wildcard[type1].value;
-        const value2 = query2.bool.filter[0].wildcard[type2].value;
-        return value1 === value2;
-      }
-
-      return type1 === type2;
-    };
-
-    const handleAccessionChange = (e) => {
-      // Check if the event is a delete key press
-      const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
-
-      let inputValue = e.target.value;
-      setPrefix(inputValue);
-      if (isDeleteKey) {
-        // Handle delete key press by removing the last character
-        inputValue = inputValue.slice(0, -1);
-      }
-
-      // Remove double backslashes
-      inputValue = inputValue.replace(/\\\\/g, "");
-
-      // Escape special characters
-      inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-
-      if (inputValue === "") {
-        setAccessionC(false);
-      } else {
-        setAccessionC(true);
-      }
-
-      setPageNum(0);
-
-      const newAccessionQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    wildcard: {
-                      uniprot_accession: {
-                        value: `${inputValue}*`,
-                        case_insensitive: true,
-                      },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-
-      updateQuery(newAccessionQuery, "uniprot_accession");
-    };
-
-    const handleGeneChange = (e) => {
-      // Check if the event is a delete key press
-      const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
-
-      let inputValue = e.target.value;
-      setGenePrefix(inputValue);
-      if (isDeleteKey) {
-        // Handle delete key press by removing the last character
-        inputValue = inputValue.slice(0, -1);
-      }
-
-      // Remove double backslashes
-      inputValue = inputValue.replace(/\\\\/g, "");
-
-      // Escape special characters
-      inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-      if (inputValue === "") {
-        setGeneC(false);
-      } else if (inputValue !== "") {
-        setGeneC(true);
-      }
-      setPageNum(0);
-      const newGeneQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    wildcard: {
-                      "Gene Symbol": {
-                        value: `${inputValue}*`,
-                        case_insensitive: true,
-                      },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-
-      updateQuery(newGeneQuery, "Gene Symbol");
-    };
-
-    const handleNameChange = (e) => {
-      // Check if the event is a delete key press
-      const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
-
-      let inputValue = e.target.value;
-
-      if (isDeleteKey) {
-        // Handle delete key press by removing the last character
-        inputValue = inputValue.slice(0, -1);
-      }
-
-      // Remove double backslashes
-      inputValue = inputValue.replace(/\\\\/g, "");
-
-      // Escape special characters
-      inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-      console.log(inputValue);
-      if (inputValue === "") {
-        console.log("wt");
-        setNameC(false);
-      } else if (inputValue !== "") {
-        setNameC(true);
-      }
-      const newNameQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    wildcard: {
-                      "Protein Name": {
-                        value: `${inputValue}*`,
-                        case_insensitive: true,
-                      },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-      setNamePrefix(e.target.value);
-
-      updateQuery(newNameQuery, "Protein Name");
-    };
-
-    const handlestartWSChange = (e) => {
-      let inputValue = e.target.value;
-      if (inputValue === "") {
-        setwsC(false);
-      } else if (inputValue !== "") {
-        setwsC(true);
-      }
-      let newstartWSQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      saliva_abundance: { gte: inputValue, lte: parEnd },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-      if (wsEnd === "") {
-        newstartWSQuery =
-          inputValue !== ""
-            ? {
-                bool: {
-                  must: [],
-                  must_not: [],
-                  filter: [
-                    {
-                      range: {
-                        saliva_abundance: { gte: inputValue, lte: 20000 },
-                      },
-                    },
-                  ],
-                },
-              }
-            : null;
-      }
-      setwsStart(inputValue);
-      if (inputValue === "") {
-        newstartWSQuery =
-          inputValue !== ""
-            ? {
-                bool: {
-                  must: [],
-                  must_not: [],
-                  filter: [
-                    {
-                      range: {
-                        saliva_abundance: { gte: 0, lte: 20000 },
-                      },
-                    },
-                  ],
-                },
-              }
-            : null;
-      }
-
-      if (inputValue === "" && wsEnd !== "") {
-        newstartWSQuery =
-          inputValue !== ""
-            ? {
-                bool: {
-                  must: [],
-                  must_not: [],
-                  filter: [
-                    {
-                      bool: {
-                        must_not: {
-                          range: {
-                            saliva_abundance: { lte: wsEnd, gte: 0 },
-                          },
-                        },
-                      },
-                    },
-                  ],
-                },
-              }
-            : null;
-      }
-      updateQuery(newstartWSQuery, "saliva_abundance");
-    };
-
-    const handleendWSChange = (e) => {
-      const inputValue = e.target.value;
-      const wsAbundance = inputValue === "" ? 20000 : inputValue;
-      if (inputValue === "") {
-        setwsC(false);
-      } else if (inputValue !== "") {
-        setwsC(true);
-      }
-      let newendWSQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      saliva_abundance: { lte: wsAbundance, gte: wsStart },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-
-      if (wsStart === "") {
-        newendWSQuery =
-          inputValue !== ""
-            ? {
-                bool: {
-                  must: [],
-                  must_not: [],
-                  filter: [
-                    {
-                      range: {
-                        saliva_abundance: { gte: 0, lte: inputValue },
-                      },
-                    },
-                  ],
-                },
-              }
-            : null;
-      }
-      setwsEnd(inputValue);
-      if (inputValue === "") {
-        newendWSQuery =
-          inputValue !== ""
-            ? {
-                bool: {
-                  must: [],
-                  must_not: [],
-                  filter: [
-                    {
-                      range: {
-                        saliva_abundance: { gte: 0, lte: 20000 },
-                      },
-                    },
-                  ],
-                },
-              }
-            : null;
-      }
-
-      if (inputValue === "" && wsStart !== "") {
-        newendWSQuery =
-          inputValue !== ""
-            ? {
-                bool: {
-                  must: [],
-                  must_not: [],
-                  filter: [
-                    {
-                      bool: {
-                        must_not: {
-                          range: {
-                            saliva_abundance: {
-                              lte: 20000,
-                              gte: wsStart,
-                            },
-                          },
-                        },
-                      },
-                    },
-                  ],
-                },
-              }
-            : null;
-      }
-      updateQuery(newendWSQuery, "saliva_abundance");
-    };
-
-    const handlestartParChange = (e) => {
-      let inputValue = e.target.value;
-
-      if (inputValue === "") {
-        setparC(false);
-      } else if (inputValue !== "") {
-        setparC(true);
-      }
-      let newstartParQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      parotid_gland_abundance: { gte: inputValue, lte: parEnd },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-      if (parEnd === "") {
-        newstartParQuery =
-          inputValue !== ""
-            ? {
-                bool: {
-                  must: [],
-                  must_not: [],
-                  filter: [
-                    {
-                      range: {
-                        parotid_gland_abundance: {
-                          gte: inputValue,
-                          lte: 20000,
-                        },
-                      },
-                    },
-                  ],
-                },
-              }
-            : null;
-      }
-      setparStart(inputValue);
-      if (inputValue === "") {
-        newstartParQuery =
-          inputValue !== ""
-            ? {
-                bool: {
-                  must: [],
-                  must_not: [],
-                  filter: [
-                    {
-                      range: {
-                        parotid_gland_abundance: { gte: 0, lte: 20000 },
-                      },
-                    },
-                  ],
-                },
-              }
-            : null;
-      }
-
-      if (inputValue === "" && parEnd !== "") {
-        newstartParQuery =
-          inputValue !== ""
-            ? {
-                bool: {
-                  must: [],
-                  must_not: [],
-                  filter: [
-                    {
-                      bool: {
-                        must_not: {
-                          range: {
-                            parotid_gland_abundance: { lte: parEnd, gte: 0 },
-                          },
-                        },
-                      },
-                    },
-                  ],
-                },
-              }
-            : null;
-      }
-      updateQuery(newstartParQuery, "parotid_gland_abundance");
-    };
-
-    const handleendParChange = (e) => {
-      const inputValue = e.target.value;
-      const parGlandAbundance = inputValue === "" ? 20000 : inputValue;
-      let newendParQuery = {
-        bool: {
-          must: [],
-          must_not: [],
-          filter: [
-            {
-              range: {
-                parotid_gland_abundance: {
-                  lte: parGlandAbundance,
-                  gte: parStart,
-                },
-              },
-            },
-          ],
-        },
-      };
-      if (parStart === "") {
-        newendParQuery =
-          inputValue !== ""
-            ? {
-                bool: {
-                  must: [],
-                  must_not: [],
-                  filter: [
-                    {
-                      range: {
-                        parotid_gland_abundance: { gte: 0, lte: inputValue },
-                      },
-                    },
-                  ],
-                },
-              }
-            : null;
-      }
-      setparC(inputValue !== ""); // Set parC based on whether inputValue is not empty
-
-      setparEnd(inputValue);
-      if (inputValue === "") {
-        newendParQuery =
-          inputValue !== ""
-            ? {
-                bool: {
-                  must: [],
-                  must_not: [],
-                  filter: [
-                    {
-                      range: {
-                        parotid_gland_abundance: { gte: 0, lte: 20000 },
-                      },
-                    },
-                  ],
-                },
-              }
-            : null;
-      }
-
-      if (inputValue === "" && parStart !== "") {
-        newendParQuery =
-          inputValue !== ""
-            ? {
-                bool: {
-                  must: [],
-                  must_not: [],
-                  filter: [
-                    {
-                      bool: {
-                        must_not: {
-                          range: {
-                            parotid_gland_abundance: {
-                              lte: 20000,
-                              gte: parStart,
-                            },
-                          },
-                        },
-                      },
-                    },
-                  ],
-                },
-              }
-            : null;
-      }
-      updateQuery(newendParQuery, "parotid_gland_abundance");
-    };
-
-    const handleStartWSChange = (e) => {
-      let inputValue = e.target.value;
-
-      const updateFacet = facetFilter;
-
-      if (updateFacet.saliva_abundance) {
-        updateFacet.saliva_abundance = {
-          ...updateFacet.saliva_abundance,
-          start: inputValue,
-        };
-      } else {
-        updateFacet.saliva_abundance = {
-          start: inputValue,
-        };
-      }
-
-      setFacetFilters({ ...updateFacet });
-    };
-
-    const handleEndWSChange = (e) => {
-      const { value } = e.target;
-
-      const updateFacet = facetFilter;
-
-      if (updateFacet.saliva_abundance) {
-        updateFacet.saliva_abundance = {
-          ...updateFacet.saliva_abundance,
-          end: value,
-        };
-      } else {
-        updateFacet.saliva_abundance = {
-          end: value,
-        };
-      }
-
-      setFacetFilters({ ...updateFacet });
-    };
-
-    const handleStartParChange = (e) => {
-      const { value } = e.target;
-
-      const updateFacet = facetFilter;
-
-      if (updateFacet.parotid_gland_abundance) {
-        updateFacet.parotid_gland_abundance = {
-          ...updateFacet.parotid_gland_abundance,
-          start: value,
-        };
-      } else {
-        updateFacet.parotid_gland_abundance = {
-          start: value,
-        };
-      }
-
-      setFacetFilters({ ...updateFacet });
-    };
-
-    const handleEndParChange = (e) => {
-      const { value } = e.target;
-
-      const updateFacet = facetFilter;
-
-      if (updateFacet.parotid_gland_abundance) {
-        updateFacet.parotid_gland_abundance = {
-          ...updateFacet.parotid_gland_abundance,
-          end: value,
-        };
-      } else {
-        updateFacet.parotid_gland_abundance = {
-          end: value,
-        };
-      }
-
-      setFacetFilters({ ...updateFacet });
-    };
-
-    const handleStartSubChange = (e) => {
-      const { value } = e.target;
-
-      const updateFacet = facetFilter;
-
-      if (updateFacet["sm/sl_abundance"]) {
-        updateFacet["sm/sl_abundance"] = {
-          ...updateFacet["sm/sl_abundance"],
-          start: value,
-        };
-      } else {
-        updateFacet["sm/sl_abundance"] = {
-          start: value,
-        };
-      }
-
-      setFacetFilters({ ...updateFacet });
-    };
-
-    const handleEndSubChange = (e) => {
-      const { value } = e.target;
-
-      const updateFacet = facetFilter;
-
-      if (updateFacet["sm/sl_abundance"]) {
-        updateFacet["sm/sl_abundance"] = {
-          ...updateFacet["sm/sl_abundance"],
-          end: value,
-        };
-      } else {
-        updateFacet["sm/sl_abundance"] = {
-          end: value,
-        };
-      }
-
-      setFacetFilters({ ...updateFacet });
-    };
-
-    const handleStartBChange = (e) => {
-      const { value } = e.target;
-
-      const updateFacet = facetFilter;
-
-      if (updateFacet["plasma_abundance"]) {
-        updateFacet["plasma_abundance"] = {
-          ...updateFacet["plasma_abundance"],
-          start: value,
-        };
-      } else {
-        updateFacet["plasma_abundance"] = {
-          start: value,
-        };
-      }
-
-      setFacetFilters({ ...updateFacet });
-    };
-
-    const handleEndBChange = (e) => {
-      const { value } = e.target;
-
-      const updateFacet = facetFilter;
-
-      if (updateFacet["plasma_abundance"]) {
-        updateFacet["plasma_abundance"] = {
-          ...updateFacet["plasma_abundance"],
-          end: value,
-        };
-      } else {
-        updateFacet["plasma_abundance"] = {
-          end: value,
-        };
-      }
-
-      setFacetFilters({ ...updateFacet });
-    };
-
-    const handleStartMRNAChange = (e) => {
-      const { value } = e.target;
-
-      const updateFacet = facetFilter;
-
-      if (updateFacet.mRNA) {
-        updateFacet.mRNA = {
-          ...updateFacet.mRNA,
-          start: value,
-        };
-      } else {
-        updateFacet.mRNA = {
-          start: value,
-        };
-      }
-
-      setFacetFilters({ ...updateFacet });
-    };
-
-    const handleEndMRNAChange = (e) => {
-      const updateFacet = facetFilter;
-      const { value } = e.target;
-
-      if (updateFacet.mRNA) {
-        updateFacet.mRNA = {
-          ...updateFacet.mRNA,
-          end: value,
-        };
-      } else {
-        updateFacet.mRNA = {
-          end: value,
-        };
-      }
-
-      setFacetFilters({ ...updateFacet });
-    };
-
-    const filterIHC = (event) => {
-      const { value } = event.target;
-      const valIndex = IHCValues.indexOf(value);
-      const updatedIHCArr = IHCArr;
-      updatedIHCArr[valIndex] = !IHCArr[valIndex];
-      setihcC(updatedIHCArr);
-    };
-
-    /**
-     * Track which column is selected for sort by user
-     */
-    const onSortChanged = () => {
-      const columnState = columnApi.getColumnState();
-      const sortedColumn = columnState.filter((col) => col.sort !== null);
-
-      if (sortedColumn.length !== 0) {
-        const { sort, colId } = sortedColumn[0];
-        setSortedColumn({ attribute: colId, order: sort });
-      } else {
-        setSortedColumn(null);
-      }
-    };
-
-    return (
-      <>
-        <Container
-          maxWidth="false"
+  return (
+    <>
+      <Container
+        maxWidth="false"
+        sx={{
+          width: "100%",
+          display: "flex",
+          paddingLeft: "0px !important",
+          // paddingRight: "0px !important",
+        }}
+      >
+        <Box
           sx={{
-            width: "100%",
-            display: "flex",
-            paddingLeft: "0px !important",
+            backgroundColor: "#f9f8f7",
+            width: "270px",
+            height: "47rem",
+            overflow: "scroll",
           }}
         >
-          <Box
-            sx={{
-              backgroundColor: "#f9f8f7",
-              width: "285px",
-              overflow: "scroll",
-              maxHeight: "760px",
+          <h1
+            style={{
+              color: "#1463B9",
+              display: "center",
+              textAlign: "center",
+              paddingTop: "30px",
+              fontSize: "25px",
+              paddingBottom: "40px",
             }}
           >
-            <h1
-              style={{
-                color: "#1463B9",
-                display: "center",
-                textAlign: "center",
-                paddingTop: "30px",
-                fontSize: "25px",
-                paddingBottom: "40px",
-              }}
-            >
-              Filters
-            </h1>
-            <FormGroup style={{ marginLeft: "18%" }}>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Typography color="common.black">And</Typography>
-                <Switch
-                  checked={orFilterOn}
-                  inputProps={{ "aria-label": "ant design" }}
-                  onChange={(event) => setOrFilterOn(event.target.checked)}
-                />
-                <Typography color="common.black">Or</Typography>
-              </Stack>
-            </FormGroup>
-            <div>
-              <Accordion>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  style={{ flexDirection: "row-reverse" }}
-                >
-                  <Typography
-                    sx={{
-                      color: "#454545",
-                      fontFamily: "Montserrat",
-                      fontSize: "16px",
-                      fontStyle: "normal",
-                      lineHeight: "normal",
-                    }}
-                  >
-                    Accession
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    label="Search..."
-                    InputProps={{
-                      style: {
-                        borderRadius: "16px",
-                      },
-                    }}
-                    onChange={handleAccessionChange}
-                    name="accession"
-                  />
-                </AccordionDetails>
-              </Accordion>
-              <Accordion>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  style={{ flexDirection: "row-reverse" }}
-                >
-                  <Typography
-                    sx={{
-                      color: "#454545",
-                      fontFamily: "Montserrat",
-                      fontSize: "16px",
-                      fontStyle: "normal",
-                      lineHeight: "normal",
-                    }}
-                  >
-                    Gene Symbol
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    label="Search..."
-                    InputProps={{
-                      style: {
-                        borderRadius: "16px",
-                      },
-                    }}
-                    onChange={handleGeneChange}
-                  />
-                </AccordionDetails>
-              </Accordion>
-              <Accordion>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  style={{ flexDirection: "row-reverse" }}
-                >
-                  <Typography
-                    sx={{
-                      color: "#454545",
-                      fontFamily: "Montserrat",
-                      fontSize: "16px",
-                      fontStyle: "normal",
-                      lineHeight: "normal",
-                    }}
-                  >
-                    Protein Name
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    label="Search..."
-                    InputProps={{
-                      style: {
-                        borderRadius: "16px",
-                      },
-                    }}
-                    onChange={handleNameChange}
-                  />
-                </AccordionDetails>
-              </Accordion>
-              <Accordion>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  style={{ flexDirection: "row-reverse" }}
-                >
-                  <Typography
-                    sx={{
-                      color: "#454545",
-                      fontFamily: "Montserrat",
-                      fontSize: "16px",
-                      fontStyle: "normal",
-                      lineHeight: "normal",
-                    }}
-                  >
-                    Expert Opinion
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <List
-                    component="div"
-                    disablePadding
-                    sx={{ border: "1px groove" }}
-                  >
-                    {opCount.map((child, key) =>
-                      child.key !== "" &&
-                      child.key !== "D.D.S." &&
-                      child.key != "Unknown" ? (
-                        <FormGroup key={key} sx={{ ml: "10px" }}>
-                          {child.key === "Unsubstantiated" ? (
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  checked={opArr[0]}
-                                  onChange={filterOpUS}
-                                />
-                              }
-                              label={"US (" + child.doc_count + ")"}
-                            />
-                          ) : (
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  checked={opArr[1]}
-                                  onChange={filterOpC}
-                                />
-                              }
-                              label={"C (" + (child.doc_count - 1) + ")"}
-                            />
-                          )}
-                        </FormGroup>
-                      ) : null
-                    )}
-                  </List>
-                </AccordionDetails>
-              </Accordion>
-              <Accordion>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  style={{ flexDirection: "row-reverse" }}
-                >
-                  <Typography
-                    sx={{
-                      color: "#454545",
-                      fontFamily: "Montserrat",
-                      fontSize: "16px",
-                      fontStyle: "normal",
-                      lineHeight: "normal",
-                    }}
-                  >
-                    IHC
-                  </Typography>
-                </AccordionSummary>
-
-                <AccordionDetails>
-                  <List
-                    component="div"
-                    disablePadding
-                    sx={{ border: "1px groove" }}
-                  >
-                    {IHCCount.map((child, i) =>
-                      child.key !== "?" ? (
-                        <FormGroup key={i} sx={{ ml: "10px" }}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={
-                                  IHCArr[IHCValues.indexOf(child.key.trim())]
-                                } // Set the checked attribute based on IHCArr
-                                onChange={filterIHC}
-                                value={child.key}
-                                onClick={(e) => {
-                                  const { value, checked } = e.target;
-
-                                  if (!checked) {
-                                    delete facetFilter["IHC"];
-                                  }
-
-                                  setFacetFilters({
-                                    ...facetFilter,
-                                    ...(checked && {
-                                      IHC: value,
-                                    }), // Only pass when checked
-                                  });
-                                }}
-                              />
-                            }
-                            label={child.key + " (" + child.doc_count + ")"}
-                          />
-                        </FormGroup>
-                      ) : null
-                    )}
-                  </List>
-                </AccordionDetails>
-              </Accordion>
-              <Accordion>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  style={{ flexDirection: "row-reverse" }}
-                >
-                  <Typography
-                    sx={{
-                      color: "#454545",
-                      fontFamily: "Montserrat",
-                      fontSize: "16px",
-                      fontStyle: "normal",
-                      lineHeight: "normal",
-                    }}
-                  >
-                    Whole Saliva
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <TextField
-                    type="number"
-                    variant="outlined"
-                    size="small"
-                    label="Start..."
-                    InputProps={{
-                      style: {
-                        borderRadius: "16px",
-                      },
-                    }}
-                    onChange={handleStartWSChange}
-                  />
-                  <Typography
-                    variant="p"
-                    style={{
-                      margin: "5px",
-                      textAlign: "center",
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    to
-                  </Typography>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    type="number"
-                    label="End..."
-                    InputProps={{
-                      style: {
-                        borderRadius: "16px",
-                      },
-                    }}
-                    onChange={handleEndWSChange}
-                  />
-                </AccordionDetails>
-              </Accordion>
-              <Accordion>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  style={{ flexDirection: "row-reverse" }}
-                >
-                  <Typography
-                    sx={{
-                      color: "#454545",
-                      fontFamily: "Montserrat",
-                      fontSize: "16px",
-                      fontStyle: "normal",
-                      lineHeight: "normal",
-                    }}
-                  >
-                    Parotid Glands
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    type="number"
-                    label="Start..."
-                    InputProps={{
-                      style: {
-                        borderRadius: "16px",
-                      },
-                    }}
-                    onChange={handleStartParChange}
-                  />
-                  <Typography
-                    variant="p"
-                    style={{
-                      margin: "5px",
-                      textAlign: "center",
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    to
-                  </Typography>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    type="number"
-                    label="End..."
-                    InputProps={{
-                      style: {
-                        borderRadius: "16px",
-                      },
-                    }}
-                    onChange={handleEndParChange}
-                  />
-                </AccordionDetails>
-              </Accordion>
-              <Accordion>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  style={{ flexDirection: "row-reverse" }}
-                >
-                  <Typography
-                    sx={{
-                      color: "#454545",
-                      fontFamily: "Montserrat",
-                      fontSize: "16px",
-                      fontStyle: "normal",
-                      lineHeight: "normal",
-                    }}
-                  >
-                    SM/SL Glands
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    label="Start..."
-                    type="number"
-                    InputProps={{
-                      style: {
-                        borderRadius: "16px",
-                      },
-                    }}
-                    onChange={handleStartSubChange}
-                  />
-                  <Typography
-                    variant="p"
-                    style={{
-                      margin: "5px",
-                      textAlign: "center",
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    to
-                  </Typography>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    label="End..."
-                    type="number"
-                    InputProps={{
-                      style: {
-                        borderRadius: "16px",
-                      },
-                    }}
-                    onChange={handleEndSubChange}
-                  />
-                </AccordionDetails>
-              </Accordion>
-              <Accordion>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  style={{ flexDirection: "row-reverse" }}
-                >
-                  <Typography
-                    sx={{
-                      color: "#454545",
-                      fontFamily: "Montserrat",
-                      fontSize: "16px",
-                      fontStyle: "normal",
-                      lineHeight: "normal",
-                    }}
-                  >
-                    Blood
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <FormGroup style={{ marginLeft: "2%" }}>
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      <Typography color="common.black">Include</Typography>
-                      <Switch
-                        checked={msBExcludeOn}
-                        inputProps={{
-                          "aria-label": "ant design",
-                        }}
-                        onChange={(event) => {
-                          setMsBExcludeOn(event.target.checked);
-                        }}
-                      />
-                      <Typography color="common.black">Exclude</Typography>
-                    </Stack>
-                  </FormGroup>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    label="Start..."
-                    InputProps={{
-                      style: {
-                        borderRadius: "16px",
-                      },
-                    }}
-                    type="number"
-                    onChange={handleStartBChange}
-                  />
-                  <Typography
-                    variant="p"
-                    style={{
-                      margin: "5px",
-                      textAlign: "center",
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    to
-                  </Typography>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    label="End..."
-                    InputProps={{
-                      style: {
-                        borderRadius: "16px",
-                      },
-                    }}
-                    type="number"
-                    onChange={handleEndBChange}
-                  />
-                </AccordionDetails>
-              </Accordion>
-              <Accordion>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  style={{ flexDirection: "row-reverse" }}
-                >
-                  <Typography
-                    sx={{
-                      color: "#454545",
-                      fontFamily: "Montserrat",
-                      fontSize: "16px",
-                      fontStyle: "normal",
-                      lineHeight: "normal",
-                    }}
-                  >
-                    mRNA
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    label="Start..."
-                    InputProps={{
-                      style: {
-                        borderRadius: "16px",
-                      },
-                    }}
-                    onChange={handleStartMRNAChange}
-                    type="number"
-                  />
-                  <Typography
-                    variant="p"
-                    style={{
-                      margin: "5px",
-                      textAlign: "center",
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    to
-                  </Typography>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    label="End..."
-                    InputProps={{
-                      style: {
-                        borderRadius: "16px",
-                      },
-                    }}
-                    onChange={handleEndMRNAChange}
-                    type="number"
-                  />
-                </AccordionDetails>
-              </Accordion>
-            </div>
-          </Box>
-          <Container
-            maxWidth="xl"
-            sx={{ marginTop: "30px", marginLeft: "20px" }}
-          >
-            <Box sx={{ display: "flex" }}>
-              <Box
-                style={{
-                  display: "flex",
-                  width: "100%",
-                  maxWidth: "550px",
-                }}
+            Filters
+          </h1>
+          <FormGroup style={{ marginLeft: "18%" }}>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Typography color="common.black">And</Typography>
+              <Switch
+                checked={orChecked}
+                inputProps={{ "aria-label": "ant design" }}
+                onChange={(event) => setorChecked(event.target.checked)}
+              />
+              <Typography color="common.black">Or</Typography>
+            </Stack>
+          </FormGroup>
+          <div>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
               >
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  Accession
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
                 <TextField
                   variant="outlined"
                   size="small"
                   label="Search..."
-                  value={searchText}
-                  onChange={(e) => {
-                    setSearchText(e.target.value);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      onFilterTextBoxChanged(e.target.value);
-                    }
-                  }}
                   InputProps={{
                     style: {
-                      height: "44px",
-                      width: "500px",
-                      borderRadius: "16px 0 0 16px",
+                      borderRadius: "16px",
                     },
-                    endAdornment: searchText && (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="clear search"
-                          onClick={() => {
-                            clearSearchBar();
-                          }}
-                          edge="end"
-                          size="small"
-                        >
-                          <ClearIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
                   }}
+                  onChange={handleAccessionChange}
+                  value={prefix}
                 />
-                <button
-                  type="submit"
-                  style={{
-                    border: "2px solid #1463B9",
-                    width: "50px",
-                    height: "44px",
-                    backgroundColor: "#1463B9",
-                    borderColor: "#1463B9",
-                    cursor: "pointer",
-                    borderRadius: "0 16px 16px 0",
-                  }}
-                  onClick={() => {
-                    handleGlobalSearch(searchText);
-                  }}
-                >
-                  <SearchIcon sx={{ color: "white" }} />
-                </button>
-              </Box>
-              <Box
-                sx={{
-                  textAlign: "right",
-                  justifyContent: "flex-end", // To push content to the right
-                  flexGrow: 1, // To make the right Box occupy remaining space
-                }}
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
               >
                 <Typography
-                  display="inline"
                   sx={{
-                    fontFamily: "Lato",
-                    fontSize: "18px",
-                    color: "#464646",
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
                   }}
                 >
-                  Records Per Page
+                  Gene Symbol
                 </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
                 <TextField
-                  select
+                  variant="outlined"
                   size="small"
+                  label="Search..."
                   InputProps={{
                     style: {
-                      borderRadius: "10px",
+                      borderRadius: "16px",
                     },
                   }}
-                  value={pageSize}
-                  onChange={(event) => {
-                    setPageSize(event.target.value);
-                  }}
-                  sx={{ marginLeft: "10px", marginRight: "30px" }}
-                >
-                  {recordsPerPageList.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
+                  onChange={handleGeneChange}
+                  value={genePrefix}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
                 <Typography
-                  display="inline"
                   sx={{
-                    fontFamily: "Lato",
-                    fontSize: "18px",
-                    color: "#464646",
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
                   }}
                 >
-                  Page
+                  Protein Name
                 </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
                 <TextField
-                  select
+                  variant="outlined"
                   size="small"
+                  label="Search..."
                   InputProps={{
                     style: {
-                      borderRadius: "10px",
+                      borderRadius: "16px",
                     },
                   }}
-                  value={pageNum === 0 ? 1 : pageNum + 1}
-                  sx={{ marginLeft: "10px", marginRight: "10px" }}
-                  onChange={(event) => {
-                    setPageNum(event.target.value - 1);
+                  onChange={handleNameChange}
+                  value={namePrefix}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
                   }}
                 >
-                  {Array.from(
-                    { length: Math.ceil(docCount / pageSize) },
-                    (_, index) => (
-                      <MenuItem key={index + 1} value={index + 1}>
-                        {index + 1}
-                      </MenuItem>
-                    )
+                  Expert Opinion
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <List
+                  component="div"
+                  disablePadding
+                  sx={{ border: "1px groove" }}
+                >
+                  {opCount.map((child, key) =>
+                    child.key !== "" &&
+                    child.key !== "D.D.S." &&
+                    child.key != "Unknown" ? (
+                      <FormGroup key={key} sx={{ ml: "10px" }}>
+                        {child.key === "Unsubstantiated" ? (
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={opArr[0]}
+                                onChange={filterOpUS}
+                              />
+                            }
+                            label={"US (" + child.doc_count + ")"}
+                          />
+                        ) : (
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={opArr[1]}
+                                onChange={filterOpC}
+                              />
+                            }
+                            label={"C (" + (child.doc_count - 1) + ")"}
+                          />
+                        )}
+                      </FormGroup>
+                    ) : null
                   )}
-                </TextField>
+                </List>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
                 <Typography
-                  display="inline"
                   sx={{
-                    fontFamily: "Lato",
-                    fontSize: "18px",
-                    color: "#464646",
-                    marginRight: "30px",
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
                   }}
                 >
-                  out of {Math.ceil(docCount / pageSize)}
+                  IHC
                 </Typography>
-                <button
-                  onClick={setPrevPage}
-                  disabled={pageNum === 0}
-                  style={{
-                    color: pageNum === 0 ? "#D3D3D3" : "#F6921E",
-                    background: "white",
-                    fontSize: "20px",
-                    border: "none",
-                    cursor: pageNum === 0 ? "default" : "pointer",
-                    transition: pageNum === 0 ? "none" : "background 0.3s",
-                    borderRadius: "5px",
-                    marginRight: "15px",
-                    pointerEvents: pageNum === 0 ? "none" : "auto",
-                    paddingBottom: "5px",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.background =
-                      "rgba(246, 146, 30, 0.2)")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.background = "white")
-                  }
+              </AccordionSummary>
+
+              <AccordionDetails>
+                <List
+                  component="div"
+                  disablePadding
+                  sx={{ border: "1px groove" }}
                 >
-                  <ArrowBackIosIcon
-                    style={{
-                      display: "inline",
-                      position: "relative",
-                      top: "0.2em",
-                      fontWeight: "bold",
-                    }}
-                  />
-                  prev
-                </button>
-                <button
-                  onClick={setNextPage}
-                  disabled={pageNum === Math.ceil(docCount / pageSize - 1)}
-                  style={{
-                    color:
-                      pageNum === Math.ceil(docCount / pageSize - 1)
-                        ? "#D3D3D3"
-                        : "#F6921E",
-                    background: "white",
-                    fontSize: "20px",
-                    border: "none",
-                    cursor:
-                      pageNum === Math.ceil(docCount / pageSize)
-                        ? "default"
-                        : "pointer",
-                    transition:
-                      pageNum === Math.ceil(docCount / pageSize)
-                        ? "none"
-                        : "background 0.3s",
-                    borderRadius: "5px",
-                    pointerEvents:
-                      pageNum === Math.ceil(docCount / pageSize)
-                        ? "none"
-                        : "auto",
-                    paddingBottom: "5px",
+                  {IHCCount.map((child, i) =>
+                    child.key !== "?" ? (
+                      <FormGroup key={i} sx={{ ml: "10px" }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={
+                                IHCArr[IHCValues.indexOf(child.key.trim())]
+                              } // Set the checked attribute based on IHCArr
+                              onChange={filterIHC}
+                              value={child.key}
+                            />
+                          }
+                          label={child.key + " (" + child.doc_count + ")"}
+                        />
+                      </FormGroup>
+                    ) : null
+                  )}
+                </List>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
                   }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background =
-                      "rgba(246, 146, 30, 0.2)";
-                  }}
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.background = "white")
-                  }
                 >
-                  next
-                  <ArrowForwardIosIcon
-                    style={{
-                      display: "inline",
-                      position: "relative",
-                      top: "0.2em",
-                      fontWeight: "bold",
-                    }}
-                  />
-                </button>
-              </Box>
+                  MS WS
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <TextField
+                  type="number"
+                  variant="outlined"
+                  size="small"
+                  label="Start..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                  onChange={handlestartWSChange}
+                  value={wsStart}
+                />
+                <Typography
+                  variant="p"
+                  style={{
+                    margin: "5px",
+                    textAlign: "center",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  {" "}
+                  to
+                </Typography>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  type="number"
+                  label="End..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                  onChange={handleendWSChange}
+                  value={wsEnd}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  MS Par
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  type="number"
+                  label="Start..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                  onChange={handlestartParChange}
+                  value={parStart}
+                />
+                <Typography
+                  variant="p"
+                  style={{
+                    margin: "5px",
+                    textAlign: "center",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  {" "}
+                  to
+                </Typography>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  type="number"
+                  label="End..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                  onChange={handleendParChange}
+                  value={parEnd}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  MS Sub
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Start..."
+                  type="number"
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                  onChange={handlestartSubChange}
+                  value={subStart}
+                />
+                <Typography
+                  variant="p"
+                  style={{
+                    margin: "5px",
+                    textAlign: "center",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  {" "}
+                  to
+                </Typography>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="End..."
+                  type="number"
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                  onChange={handleendSubChange}
+                  value={subEnd}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  MS B
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <FormGroup style={{ marginLeft: "2%" }}>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Typography color="common.black">Include</Typography>
+                    <Switch
+                      checked={exclude}
+                      inputProps={{ "aria-label": "ant design" }}
+                      onChange={(event) => {
+                        handlestartBChange({
+                          target: {
+                            value: pStart,
+                            exclude: event.target.checked,
+                          },
+                        });
+
+                        handleendBChange({
+                          target: {
+                            value: pEnd,
+                            exclude: event.target.checked,
+                          },
+                        });
+
+                        setExclude(event.target.checked);
+                      }}
+                    />
+                    <Typography color="common.black">Exclude</Typography>
+                  </Stack>
+                </FormGroup>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Start..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                  type="number"
+                  onChange={handlestartBChange}
+                  value={pStart}
+                />
+                <Typography
+                  variant="p"
+                  style={{
+                    margin: "5px",
+                    textAlign: "center",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  {" "}
+                  to
+                </Typography>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="End..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                  type="number"
+                  onChange={handleendBChange}
+                  value={pEnd}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  mRNA Val
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Start..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                  onChange={handlestartmRNAChange}
+                  value={mRNAStart}
+                />
+                <Typography
+                  variant="p"
+                  style={{
+                    margin: "5px",
+                    textAlign: "center",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  {" "}
+                  to
+                </Typography>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="End..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                  onChange={handleendmRNAChange}
+                  value={mRNAEnd}
+                />
+              </AccordionDetails>
+            </Accordion>
+          </div>
+        </Box>
+
+        <Container maxWidth="xl" sx={{ marginTop: "30px", marginLeft: "20px" }}>
+          <Box sx={{ display: "flex" }}>
+            <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
+              <TextField
+                variant="outlined"
+                size="small"
+                label="Search..."
+                value={searchText}
+                onChange={(e) => {
+                  setSearchText(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    onFilterTextBoxChanged(e.target.value);
+                  }
+                }}
+                InputProps={{
+                  style: {
+                    height: "44px",
+                    width: "500px",
+                    borderRadius: "16px 0 0 16px",
+                  },
+                  endAdornment: searchText && (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="clear search"
+                        onClick={() => {
+                          clearSearch();
+                        }}
+                        edge="end"
+                        size="small"
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <button
+                type="submit"
+                style={{
+                  border: "2px solid #1463B9",
+                  width: "50px",
+                  height: "44px",
+                  backgroundColor: "#1463B9",
+                  borderColor: "#1463B9",
+                  cursor: "pointer",
+                  borderRadius: "0 16px 16px 0",
+                }}
+                onClick={() => {
+                  const syntheticEvent = {
+                    target: { value: searchText },
+                    nativeEvent: { inputType: "insertText" }, // Mimic an input event
+                  };
+                  onFilterTextBoxChanged(syntheticEvent);
+                }}
+              >
+                <SearchIcon sx={{ color: "white" }} />
+              </button>
             </Box>
             <Box
               sx={{
-                marginTop: "20px",
+                textAlign: "right",
+                justifyContent: "flex-end", // To push content to the right
+                flexGrow: 1, // To make the right Box occupy remaining space
               }}
             >
-              <div
-                className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
-                style={{ height: 600 }}
-              >
-                <AgGridReact
-                  className="ag-cell-wrap-text saliva_table"
-                  rowData={rowData}
-                  columnDefs={columns}
-                  ref={gridRef}
-                  defaultColDef={defColumnDefs}
-                  components={{
-                    LinkComponent,
-                    WSComponent,
-                    IHCComponent,
-                    opinionComponent,
-                    proteinLinkComponent,
-                  }}
-                  onSortChanged={onSortChanged}
-                  onGridReady={onGridReady}
-                  loadingOverlayComponent={loadingOverlayComponent}
-                  pagination={true}
-                  enableCellTextSelection={true}
-                  paginationPageSize={pageSize}
-                  rowHeight={rowHeight}
-                  suppressPaginationPanel={true}
-                />
-              </div>
-              <button
-                onClick={onBtExport}
-                style={{
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  marginTop: "10px",
-                  color: "#F6921E",
-                  background: "white",
-                  fontSize: "20",
-                  border: "none",
-                  cursor: "pointer",
+              <Typography
+                display="inline"
+                sx={{
+                  fontFamily: "Lato",
+                  fontSize: "18px",
+                  color: "#464646",
                 }}
               >
-                <DownloadLogo
+                Records Per Page
+              </Typography>
+              <TextField
+                select
+                size="small"
+                InputProps={{
+                  style: {
+                    borderRadius: "10px",
+                  },
+                }}
+                value={pageSize}
+                onChange={(event) => {
+                  setPageSize(event.target.value);
+                }}
+                sx={{ marginLeft: "10px", marginRight: "30px" }}
+              >
+                {recordsPerPageList.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <Typography
+                display="inline"
+                sx={{
+                  fontFamily: "Lato",
+                  fontSize: "18px",
+                  color: "#464646",
+                }}
+              >
+                Page
+              </Typography>
+              <TextField
+                select
+                size="small"
+                InputProps={{
+                  style: {
+                    borderRadius: "10px",
+                  },
+                }}
+                value={pageNum ? pageNum : 1}
+                sx={{ marginLeft: "10px", marginRight: "10px" }}
+                onChange={(event) => {
+                  setPageNum(event.target.value);
+                }}
+              >
+                {Array.from(
+                  { length: Math.ceil(docCount / pageSize) },
+                  (_, index) => (
+                    <MenuItem key={index + 1} value={index + 1}>
+                      {index + 1}
+                    </MenuItem>
+                  )
+                )}
+              </TextField>
+              <Typography
+                display="inline"
+                sx={{
+                  fontFamily: "Lato",
+                  fontSize: "18px",
+                  color: "#464646",
+                  marginRight: "30px",
+                }}
+              >
+                out of {Math.ceil(docCount / pageSize)}
+              </Typography>
+              <button
+                onClick={onBtPrevious}
+                disabled={pageNum === 1}
+                style={{
+                  color: pageNum === 1 ? "#D3D3D3" : "#F6921E",
+                  background: "white",
+                  fontSize: "20px",
+                  border: "none",
+                  cursor: pageNum === 1 ? "default" : "pointer",
+                  transition: pageNum === 1 ? "none" : "background 0.3s",
+                  borderRadius: "5px",
+                  marginRight: "15px",
+                  pointerEvents: pageNum === 1 ? "none" : "auto",
+                  paddingBottom: "5px",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = "rgba(246, 146, 30, 0.2)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = "white")
+                }
+              >
+                <ArrowBackIosIcon
                   style={{
-                    marginRight: "10px",
-                    paddingTop: "5px",
                     display: "inline",
                     position: "relative",
-                    top: "0.15em",
+                    top: "0.2em",
+                    fontWeight: "bold",
                   }}
                 />
-                Download Spreadsheet
+                prev
+              </button>
+              <button
+                onClick={onBtNext}
+                disabled={pageNum === Math.ceil(docCount / pageSize)}
+                style={{
+                  color:
+                    pageNum === Math.ceil(docCount / pageSize)
+                      ? "#D3D3D3"
+                      : "#F6921E",
+                  background: "white",
+                  fontSize: "20px",
+                  border: "none",
+                  cursor:
+                    pageNum === Math.ceil(docCount / pageSize)
+                      ? "default"
+                      : "pointer",
+                  transition:
+                    pageNum === Math.ceil(docCount / pageSize)
+                      ? "none"
+                      : "background 0.3s",
+                  borderRadius: "5px",
+                  pointerEvents:
+                    pageNum === Math.ceil(docCount / pageSize)
+                      ? "none"
+                      : "auto",
+                  paddingBottom: "5px",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(246, 146, 30, 0.2)";
+                }}
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = "white")
+                }
+              >
+                next
+                <ArrowForwardIosIcon
+                  style={{
+                    display: "inline",
+                    position: "relative",
+                    top: "0.2em",
+                    fontWeight: "bold",
+                  }}
+                />
               </button>
             </Box>
-          </Container>
+          </Box>
+
+          <Box
+            sx={{
+              marginTop: "20px",
+            }}
+          >
+            <div
+              className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
+              style={{ height: 600 }}
+            >
+              <AgGridReact
+                className="ag-cell-wrap-text saliva_table"
+                rowData={rowData}
+                columnDefs={columns}
+                ref={gridRef}
+                defaultColDef={defColumnDefs}
+                frameworkComponents={{
+                  LinkComponent,
+                  WSComponent,
+                  IHCComponent,
+                  opinionComponent,
+                  proteinLinkComponent,
+                }}
+                noRowsOverlayComponent={noRowsOverlayComponent}
+                loadingOverlayComponent={loadingOverlayComponent}
+                onGridReady={onGridReady}
+                pagination={true}
+                enableCellTextSelection={true}
+                paginationPageSize={pageSize}
+                rowHeight={rowHeight}
+                suppressPaginationPanel={true}
+              />
+            </div>
+            <button
+              onClick={onBtExport}
+              style={{
+                fontWeight: "bold",
+                textAlign: "center",
+                marginTop: "10px",
+                color: "#F6921E",
+                background: "white",
+                fontSize: "20",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              <Download_Logo
+                style={{
+                  marginRight: "10px",
+                  paddingTop: "5px",
+                  display: "inline",
+                  position: "relative",
+                  top: "0.15em",
+                }}
+              />
+              Download Spreadsheet
+            </button>
+          </Box>
         </Container>
-      </>
-    );
-  }
+      </Container>
+    </>
+  );
 }
 
-export default SalivaryProteinTable;
+export default App;

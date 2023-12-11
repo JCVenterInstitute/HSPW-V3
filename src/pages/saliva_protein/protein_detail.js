@@ -3,7 +3,7 @@ import Table from "@mui/material/Table";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
-import { TableBody } from "@mui/material";
+import { TableBody, TableHead } from "@mui/material";
 import { HashLink as Link } from "react-router-hash-link";
 import { useEffect, useState } from "react";
 import Divider from "@mui/material/Divider";
@@ -148,7 +148,6 @@ const Protein_Detail = (props) => {
             }}
             className="head_background"
           >
-            <h1 className="head_title" align="left">
             <h1 className="head_title" align="left">
               Protein: {data[0]["_source"]["salivary_proteins"]["protein_name"]}
             </h1>
@@ -922,7 +921,7 @@ const Protein_Detail = (props) => {
                                 }}
                               />
                             </a>
-                            <span>{i != arr.length - 1 ? ", " : ""}</span>
+                            <span>{i !== arr.length - 1 ? ", " : ""}</span>
                           </React.Fragment>
                         );
                       })}
@@ -970,7 +969,7 @@ const Protein_Detail = (props) => {
                                 }}
                               />
                             </a>
-                            <span>{i != arr.length - 1 ? ", " : ""}</span>
+                            <span>{i == arr.length - 1 ? ", " : ""}</span>
                           </React.Fragment>
                         );
                       })}
@@ -1017,7 +1016,7 @@ const Protein_Detail = (props) => {
                                   }}
                                 />
                               </a>
-                              <span>{i != arr.length - 1 ? ", " : ""}</span>
+                              <span>{i !== arr.length - 1 ? ", " : ""}</span>
                             </React.Fragment>
                           );
                         }
@@ -1084,7 +1083,7 @@ const Protein_Detail = (props) => {
                                 }}
                               />
                             </a>
-                            <span>{i != arr.length - 1 ? ", " : ""}</span>
+                            <span>{i !== arr.length - 1 ? ", " : ""}</span>
                           </React.Fragment>
                         );
                       })}
@@ -1137,7 +1136,7 @@ const Protein_Detail = (props) => {
                         }}
                       />
                     </a>
-                    <span>{i != arr.length - 1 ? ", " : ""}</span>
+                    <span>{i !== arr.length - 1 ? ", " : ""}</span>
                   </React.Fragment>
                 );
               }
