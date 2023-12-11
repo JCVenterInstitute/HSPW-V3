@@ -61,6 +61,10 @@
   height: 100%;
 }
 
+.salivary-protein-header {
+  font-size: 12px !important;
+}
+
 .comment_table_description {
   height: auto !important;
   padding: 5px !important;
