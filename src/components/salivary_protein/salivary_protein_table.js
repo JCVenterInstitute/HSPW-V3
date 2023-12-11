@@ -205,11 +205,13 @@ function WSComponent(props) {
 function opinionComponent(props) {
   const { value } = props;
 
-  if (value === "Confirmed") {
-    return <span>C</span>;
-  } else if (value === "Unsubstantiated") {
-    return <span>US</span>;
-  }
+  return (
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <span>
+        {value === "Confirmed" ? "C" : value === "Unsubstantiated" ? "US" : ""}
+      </span>
+    </div>
+  );
 }
 
 function IHCComponent(props) {
@@ -345,13 +347,15 @@ function IHCComponent(props) {
 
 function proteinLinkComponent(props) {
   return (
-    <a
-      target="_blank"
-      rel="noopener noreferrer"
-      href={window.location.origin + "/protein/" + props.value}
-    >
-      {props.value}
-    </a>
+    <div style={{ paddingLeft: "20px" }}>
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href={`${window.location.origin}/protein/${props.value}`}
+      >
+        {props.value}
+      </a>
+    </div>
   );
 }
 
@@ -406,74 +410,64 @@ const columns = [
     field: "UniProt Accession",
     checkboxSelection: false,
     headerCheckboxSelection: false,
-    minWidth: "155",
     wordWrap: true,
     cellStyle: { wordBreak: "break-word" },
-    headerClass: ["header-border"],
     cellClass: ["table-border"],
     cellRenderer: "proteinLinkComponent",
+    cellStyle: { paddingLeft: "15px" },
   },
   {
     headerName: "Gene Symbol",
-    minWidth: "132",
     field: "Gene Symbol",
-    headerClass: ["header-border"],
     cellClass: ["table-border"],
-    cellStyle: { wordBreak: "break-word" },
+    cellStyle: {
+      wordBreak: "break-word",
+      textAlign: "center",
+      display: "flex",
+      justifyContent: "center",
+    },
   },
   {
     headerName: "Protein Name",
-    minWidth: "133",
     maxHeight: "5",
     field: "Protein Name",
-    headerClass: ["header-border"],
     cellClass: ["table-border"],
     cellStyle: { wordBreak: "break-word" },
   },
   {
     headerName: "Expert Opinion",
-    minWidth: "140",
     field: "expert_opinion",
     cellRenderer: "opinionComponent",
-    headerClass: ["header-border"],
     cellClass: ["table-border"],
   },
   {
-    headerName: "MS",
+    headerName: "MS (obs.)",
     headerGroupComponent: CustomHeaderGroup,
-    headerClass: ["header-border"],
+    headerClass: ["header-border", "salivary-protein-header"],
     cellClass: ["table-border"],
     children: [
       {
-        headerName: "WS",
+        headerName: "Whole Saliva",
         field: "saliva_abundance",
-        minWidth: "98",
         cellRenderer: "WSComponent",
-        headerClass: ["header-border"],
         cellClass: ["square_table", "salivary-proteins-colored-cell"],
       },
       {
-        headerName: "Par",
+        headerName: "Parotid Glands",
         field: "parotid_gland_abundance",
-        minWidth: "97",
         cellRenderer: "WSComponent",
-        headerClass: ["header-border"],
         cellClass: ["square_table", "salivary-proteins-colored-cell"],
       },
       {
-        headerName: "Sub",
+        headerName: "SM/SL Glands",
         field: "sm/sl_abundance",
-        minWidth: "101",
         cellRenderer: "WSComponent",
-        headerClass: ["header-border"],
         cellClass: ["square_table", "salivary-proteins-colored-cell"],
       },
       {
-        headerName: "B",
+        headerName: "Blood",
         field: "plasma_abundance",
-        minWidth: "95",
         cellRenderer: "LinkComponent",
-        headerClass: ["header-border"],
         cellClass: ["square_table", "salivary-proteins-colored-cell"],
       },
     ],
@@ -482,41 +476,32 @@ const columns = [
   {
     headerName: "IHC",
     field: "IHC",
-    minWidth: "101",
     wrapText: true,
     cellRenderer: "IHCComponent",
-    headerClass: ["header-border"],
     cellClass: ["square_table", "salivary-proteins-colored-cell"],
   },
   {
-    headerName: "mRNA",
+    headerName: "mRNA (NX)",
     headerGroupComponent: CustomHeaderGroup,
-    minWidth: "105",
+    headerClass: ["header-border", "salivary-protein-header"],
     wrapText: true,
     cellRenderer: "WSComponent",
-    headerClass: ["header-border"],
     cellClass: ["table-border"],
     children: [
       {
         headerName: "Value",
         field: "mRNA",
-        minWidth: "116",
         cellRenderer: "WSComponent",
-        headerClass: ["header-border"],
         cellClass: ["square_table", "salivary-proteins-colored-cell"],
       },
       {
         headerName: "Specificity",
         field: "Specificity",
-        minWidth: "160",
-        headerClass: ["header-border"],
         cellClass: ["table-border"],
       },
       {
         headerName: "Specificity Score",
         field: "Specificity_Score",
-        minWidth: "159",
-        headerClass: ["header-border"],
         cellClass: ["table-border"],
       },
     ],
@@ -527,22 +512,22 @@ const defColumnDefs = {
   flex: 1,
   filter: true,
   resizable: true,
+  sortable: true,
   wrapHeaderText: true,
   wrapText: true,
   autoHeaderHeight: true,
-  headerStyle: { wordBreak: "break-word" },
-  initialWidth: 200,
+  headerClass: ["header-border", "salivary-protein-header"],
   headerComponentParams: {
     template:
       '<div class="ag-cell-label-container" role="presentation">' +
-      '  <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button"></span>' +
+      // '  <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button"></span>' +
       '  <div ref="eLabel" class="ag-header-cell-label" role="presentation">' +
       '    <span ref="eSortOrder" class="ag-header-icon ag-sort-order"></span>' +
       '    <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon"></span>' +
       '    <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon"></span>' +
       '    <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon"></span>' +
       '    <span ref="eText" class="ag-header-cell-text" role="columnheader" style="white-space: normal;"></span>' +
-      '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
+      // '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
       "  </div>" +
       "</div>",
   },
@@ -591,7 +576,7 @@ function SalivaryProteinTable() {
   const [pageSize, setPageSize] = useState(50); // Default page data to 50 records per page
   const [pageNum, setPageNum] = useState(0);
 
-  const [docCount, setDocCount] = useState(0);
+  const [docCount, setDocCount] = useState(0); // Total # of records available for display
   const [ihcC, setihcC] = useState(false);
   const [opCount, setOpCount] = useState([]);
   const [IHCCount, setIHCCount] = useState([]);
@@ -618,6 +603,8 @@ function SalivaryProteinTable() {
 
   // Handle fetching data for table
   const fetchData = async () => {
+    console.log("> Queries", queryBuilder(facetFilter));
+
     const data = await fetch(
       `${HOST_ENDPOINT}/api/salivary-proteins/${pageSize}/${
         pageNum * pageSize
@@ -670,7 +657,7 @@ function SalivaryProteinTable() {
     }, 1000);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [facetFilter, pageSize]);
+  }, [facetFilter, pageSize, msBExcludeOn]);
 
   // Fetch data for new page selected
   // No delay needed when switching pages no filter updates
@@ -678,10 +665,18 @@ function SalivaryProteinTable() {
     fetchData();
   }, [pageNum]);
 
-  const onFilterTextBoxChanged = (e) => {
-    const { value } = e.target;
+  /**
+   * Update search entered by user in search bar
+   * @param {string} input String input to search bar
+   */
+  const handleGlobalSearch = (input) => {
+    input = escapeSpecialCharacters(input);
+    console.log("> Search input escaped", input);
+    setSearchText(input);
+  };
 
-    setSearchText(escapeSpecialCharacters(value));
+  const onGridReady = () => {
+    gridRef.current.api.sizeColumnsToFit();
   };
 
   const clearSearchBar = () => {
@@ -708,20 +703,36 @@ function SalivaryProteinTable() {
    * @returns OpenSearch range query based on inputs
    */
   const createRangeQuery = ({ attrName, start, end }) => {
-    return {
-      bool: {
-        filter: [
-          {
-            range: {
-              [attrName]: {
-                ...(start && { gte: start }),
-                ...(end && { lte: end }),
-              },
-            },
-          },
-        ],
+    let rangeQuery = {
+      range: {
+        [attrName]: {
+          ...(start && { gte: start }),
+          ...(end && { lte: end }),
+        },
       },
     };
+
+    if (attrName === "plasma_abundance" && msBExcludeOn) {
+      rangeQuery = {
+        bool: {
+          filter: [
+            {
+              bool: {
+                must_not: [rangeQuery],
+              },
+            },
+          ],
+        },
+      };
+    } else {
+      rangeQuery = {
+        bool: {
+          filter: [rangeQuery],
+        },
+      };
+    }
+
+    return rangeQuery;
   };
 
   /**
@@ -799,7 +810,7 @@ function SalivaryProteinTable() {
       "parotid_gland_abundance", // MS PAR
       "sm/sl_abundance", // MS Sub
       "plasma_abundance", // MS B
-      "mRNA", // mRNA Val
+      "mRNA", // mRNA
     ];
 
     filters = removeEmptyFilters(filters);
@@ -1035,10 +1046,9 @@ function SalivaryProteinTable() {
   };
 
   const filterIHC = (event) => {
-    const valIndex = IHCValues.indexOf(value);
     const { value } = event.target;
+    const valIndex = IHCValues.indexOf(value);
     const updatedIHCArr = IHCArr;
-
     updatedIHCArr[valIndex] = !IHCArr[valIndex];
     setihcC(updatedIHCArr);
   };
@@ -1208,7 +1218,6 @@ function SalivaryProteinTable() {
                         control={
                           <Checkbox
                             checked={opArr[0]}
-                            // onChange={filterOpUS}
                             onClick={(e) => {
                               const { checked } = e.target;
 
@@ -1337,7 +1346,7 @@ function SalivaryProteinTable() {
                     lineHeight: "normal",
                   }}
                 >
-                  MS WS
+                  Whole Saliva
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -1392,7 +1401,7 @@ function SalivaryProteinTable() {
                     lineHeight: "normal",
                   }}
                 >
-                  MS Par
+                  Parotid Glands
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -1447,7 +1456,7 @@ function SalivaryProteinTable() {
                     lineHeight: "normal",
                   }}
                 >
-                  MS Sub
+                  SM/SL Glands
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -1502,7 +1511,7 @@ function SalivaryProteinTable() {
                     lineHeight: "normal",
                   }}
                 >
-                  MS B
+                  Blood
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -1572,7 +1581,7 @@ function SalivaryProteinTable() {
                     lineHeight: "normal",
                   }}
                 >
-                  mRNA Val
+                  mRNA
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -1629,12 +1638,7 @@ function SalivaryProteinTable() {
                 size="small"
                 label="Search..."
                 value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    onFilterTextBoxChanged(e.target.value);
-                  }
-                }}
+                onChange={(e) => handleGlobalSearch(e.target.value)}
                 InputProps={{
                   style: {
                     height: "44px",
@@ -1669,13 +1673,7 @@ function SalivaryProteinTable() {
                   borderRadius: "0 16px 16px 0",
                 }}
                 onClick={() => {
-                  const syntheticEvent = {
-                    target: { value: searchText },
-                    nativeEvent: {
-                      inputType: "insertText",
-                    }, // Mimic an input event
-                  };
-                  onFilterTextBoxChanged(syntheticEvent);
+                  handleGlobalSearch(searchText);
                 }}
               >
                 <SearchIcon sx={{ color: "white" }} />
@@ -1861,6 +1859,7 @@ function SalivaryProteinTable() {
                   opinionComponent,
                   proteinLinkComponent,
                 }}
+                onGridReady={onGridReady}
                 noRowsOverlayComponent={noRowsOverlayComponent}
                 loadingOverlayComponent={loadingOverlayComponent}
                 pagination={true}
