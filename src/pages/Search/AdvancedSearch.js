@@ -33,6 +33,9 @@ const generateColumnDefs = (entity, data) => {
   } else if (entity === "Protein Clusters") {
     fields = fields.filter((field) => field !== "uniprot_id");
     fields.unshift("uniprot_id");
+  } else if (entity === "Protein Signatures") {
+    fields = fields.filter((field) => field !== "InterPro ID");
+    fields.unshift("InterPro ID");
   }
 
   // Generate column definitions based on the keys
@@ -51,6 +54,7 @@ const AdvancedSearch = () => {
   const [entity, setEntity] = useState("");
   const [booleanOperator, setBooleanOperator] = useState("AND");
   const [properties, setProperties] = useState([]);
+  const [propertiesOptions, setPropertiesOptions] = useState([]);
   const [rows, setRows] = useState([
     { id: Date.now(), selectedProperty: "", selectedOperation: "", value: "" },
   ]); // Start with one row
@@ -102,15 +106,19 @@ const AdvancedSearch = () => {
 
   const handleEntityChange = async (e) => {
     setEntity(e.target.value);
+    setSearchStarted(false);
 
     try {
       let propertyList = await axios
         .get(`http://localhost:8000/api/properties/${e.target.value}`)
         .then((res) => res.data);
+      setPropertiesOptions(propertyList);
       if (e.target.value === "Genes") {
         propertyList = propertyList.filter((item) => item !== "GeneID");
       } else if (e.target.value === "Protein Clusters") {
         propertyList = propertyList.filter((item) => item !== "uniprot_id");
+      } else if (e.target.value === "Protein Signatures") {
+        propertyList = propertyList.filter((item) => item !== "InterPro ID");
       }
       setProperties(propertyList);
 
@@ -345,7 +353,7 @@ const AdvancedSearch = () => {
                       handlePropertyChange(row.id, e.target.value)
                     }
                   >
-                    {properties.map((property) => (
+                    {propertiesOptions.map((property) => (
                       <MenuItem key={property} value={property}>
                         {property}
                       </MenuItem>

@@ -72,6 +72,8 @@ exports.formQuery = async (
     combinedSelectedProperties = ["GeneID", ...selectedProperties];
   } else if (index === "protein_cluster") {
     combinedSelectedProperties = ["uniprot_id", ...selectedProperties];
+  } else if (index === "protein_signature") {
+    combinedSelectedProperties = ["InterPro ID", ...selectedProperties];
   }
 
   // Form the final query

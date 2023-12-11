@@ -30,7 +30,7 @@ const SearchResultsTable = ({ entity, searchResults, columnDefs }) => {
           if (entity === "Genes") {
             return (
               <span
-                onClick={() => (window.location.href = `/gene/${params.value}`)}
+                onClick={() => window.open(`/gene/${params.value}`, "_blank")}
                 style={{
                   cursor: "pointer",
                   color: "blue",
@@ -43,7 +43,24 @@ const SearchResultsTable = ({ entity, searchResults, columnDefs }) => {
           } else if (entity === "Protein Clusters") {
             return (
               <span
-                onClick={() => (window.location.href = `/gene/${params.value}`)}
+                onClick={() =>
+                  window.open(`/protein_clusters/${params.value}`, "_blank")
+                }
+                style={{
+                  cursor: "pointer",
+                  color: "blue",
+                  textDecoration: "underline",
+                }}
+              >
+                {params.value}
+              </span>
+            );
+          } else if (entity === "Protein Signatures") {
+            return (
+              <span
+                onClick={() =>
+                  window.open(`/protein_signature/${params.value}`, "_blank")
+                }
                 style={{
                   cursor: "pointer",
                   color: "blue",
