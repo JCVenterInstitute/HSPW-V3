@@ -30,7 +30,6 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 import CustomLoadingOverlay from "../customLoadingOverlay.jsx";
-import CustomNoRowsOverlay from "../customNoRowsOverlay.jsx";
 import CustomHeaderGroup from "../customHeaderGroup.jsx";
 import { ReactComponent as DownloadLogo } from "../table_icon/download.svg";
 import "../filter.css";
@@ -607,10 +606,6 @@ function SalivaryProteinTable() {
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
-  }, []);
-
-  const noRowsOverlayComponent = useMemo(() => {
-    return CustomNoRowsOverlay;
   }, []);
 
   // Export the current page data as CSV file
@@ -1928,7 +1923,6 @@ function SalivaryProteinTable() {
                 }}
                 onSortChanged={onSortChanged}
                 onGridReady={onGridReady}
-                noRowsOverlayComponent={noRowsOverlayComponent}
                 loadingOverlayComponent={loadingOverlayComponent}
                 pagination={true}
                 enableCellTextSelection={true}
