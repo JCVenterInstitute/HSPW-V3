@@ -32,7 +32,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CustomLoadingOverlay from "../customLoadingOverlay.jsx";
 import CustomNoRowsOverlay from "../customNoRowsOverlay.jsx";
 import CustomHeaderGroup from "../customHeaderGroup.jsx";
-import { ReactComponent as Download_Logo } from "../table_icon/download.svg";
+import { ReactComponent as DownloadLogo } from "../table_icon/download.svg";
 import "../filter.css";
 import "../table.css";
 
@@ -427,7 +427,6 @@ const columns = [
     cellStyle: { wordBreak: "break-word" },
     cellClass: ["table-border"],
     cellRenderer: "proteinLinkComponent",
-    cellStyle: { paddingLeft: "15px" },
   },
   {
     headerName: "Gene Symbol",
@@ -583,6 +582,22 @@ const escapeSpecialCharacters = (inputVal) => {
   return inputVal.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
 
+const stringAttributes = [
+  "UniProt Accession",
+  "Gene Symbol",
+  "Protein Name",
+  "IHC",
+  "expert_opinion",
+];
+
+const numberAttributes = [
+  "saliva_abundance", // MS WS
+  "parotid_gland_abundance", // MS PAR
+  "sm/sl_abundance", // MS Sub
+  "plasma_abundance", // MS B
+  "mRNA", // mRNA
+];
+
 function SalivaryProteinTable() {
   const gridRef = useRef();
 
@@ -601,6 +616,11 @@ function SalivaryProteinTable() {
   const [msBExcludeOn, setMsBExcludeOn] = useState(false);
   const [facetFilter, setFacetFilters] = useState({});
 
+  const [columnApi, setColumnApi] = useState(null);
+  const [gridApi, setGridApi] = useState(null);
+
+  const [sortedColumn, setSortedColumn] = useState(null);
+
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
   }, []);
@@ -614,9 +634,35 @@ function SalivaryProteinTable() {
     gridRef.current.api.exportDataAsCsv();
   }, []);
 
+  /**
+   * Create a proper sort query for whichever sort attribute is selected
+   */
+  const createSortQuery = () => {
+    const { attribute, order } = sortedColumn;
+
+    // Have to include .keyword when sorting string attributes
+    const sortAttrKey = `${sortedColumn.attribute}${
+      stringAttributes.includes(attribute) ? ".keyword" : ""
+    }`;
+
+    return {
+      sort: [
+        {
+          [sortAttrKey]: {
+            order,
+          },
+        },
+      ],
+    };
+  };
+
   // Handle fetching data for table
   const fetchData = async () => {
-    console.log("> Queries", queryBuilder(facetFilter));
+    const apiPayload = {
+      filters: queryBuilder(facetFilter),
+      // Pass sort query if any sort is applied
+      ...(sortedColumn && createSortQuery()),
+    };
 
     const data = await fetch(
       `${HOST_ENDPOINT}/api/salivary-proteins/${pageSize}/${
@@ -625,7 +671,7 @@ function SalivaryProteinTable() {
       {
         method: "POST",
         headers: customHeaders,
-        body: JSON.stringify(queryBuilder(facetFilter)),
+        body: JSON.stringify(apiPayload),
       }
     )
       .then((res) => res.json())
@@ -665,12 +711,21 @@ function SalivaryProteinTable() {
   useEffect(() => {
     // Needed to delay search so users can type before triggering search
     const delayDebounceFn = setTimeout(() => {
-      fetchData();
       setPageNum(0);
+      fetchData();
     }, 1000);
 
     return () => clearTimeout(delayDebounceFn);
   }, [facetFilter, pageSize, msBExcludeOn]);
+
+  // Update records when new sort is applied & go back to first page
+  useEffect(() => {
+    if (gridApi) {
+      gridApi.showLoadingOverlay();
+      setPageNum(0);
+      fetchData();
+    }
+  }, [sortedColumn]);
 
   // Fetch data for new page selected
   // No delay needed when switching pages no filter updates
@@ -688,7 +743,9 @@ function SalivaryProteinTable() {
     setSearchText(input);
   };
 
-  const onGridReady = () => {
+  const onGridReady = (params) => {
+    setGridApi(params.api);
+    setColumnApi(params.columnApi);
     gridRef.current.api.sizeColumnsToFit();
   };
 
@@ -810,22 +867,6 @@ function SalivaryProteinTable() {
   const queryBuilder = (filters) => {
     const queries = [];
 
-    const stringAttributes = [
-      "uniprot_accession",
-      "Gene Symbol",
-      "Protein Name",
-      "IHC",
-      "expert_opinion",
-    ];
-
-    const numberAttributes = [
-      "saliva_abundance", // MS WS
-      "parotid_gland_abundance", // MS PAR
-      "sm/sl_abundance", // MS Sub
-      "plasma_abundance", // MS B
-      "mRNA", // mRNA
-    ];
-
     filters = removeEmptyFilters(filters);
 
     for (const attr of Object.keys(filters)) {
@@ -847,7 +888,7 @@ function SalivaryProteinTable() {
 
     setFacetFilters({
       ...facetFilter,
-      uniprot_accession: value,
+      "UniProt Accession": value,
     });
   };
 
@@ -1064,6 +1105,21 @@ function SalivaryProteinTable() {
     const updatedIHCArr = IHCArr;
     updatedIHCArr[valIndex] = !IHCArr[valIndex];
     setihcC(updatedIHCArr);
+  };
+
+  /**
+   * Track which column is selected for sort by user
+   */
+  const onSortChanged = () => {
+    const columnState = columnApi.getColumnState();
+    const sortedColumn = columnState.filter((col) => col.sort !== null);
+
+    if (sortedColumn.length !== 0) {
+      const { sort, colId } = sortedColumn[0];
+      setSortedColumn({ attribute: colId, order: sort });
+    } else {
+      setSortedColumn(null);
+    }
   };
 
   return (
@@ -1895,6 +1951,7 @@ function SalivaryProteinTable() {
                   opinionComponent,
                   proteinLinkComponent,
                 }}
+                onSortChanged={onSortChanged}
                 onGridReady={onGridReady}
                 noRowsOverlayComponent={noRowsOverlayComponent}
                 loadingOverlayComponent={loadingOverlayComponent}
@@ -1918,7 +1975,7 @@ function SalivaryProteinTable() {
                 cursor: "pointer",
               }}
             >
-              <Download_Logo
+              <DownloadLogo
                 style={{
                   marginRight: "10px",
                   paddingTop: "5px",
