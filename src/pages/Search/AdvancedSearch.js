@@ -18,6 +18,31 @@ import axios from "axios";
 import SelectAllTransferList from "../../components/Search/SelectAllTransferList";
 import CircleCheckedFilled from "@mui/icons-material/CheckCircle";
 import CircleUnchecked from "@mui/icons-material/RadioButtonUnchecked";
+import SearchResultsTable from "../../components/Search/SearchResultsTable";
+
+const generateColumnDefs = (entity, data) => {
+  if (!data || data.length === 0) return [];
+
+  // Get the keys from the first object in the data array
+  let fields = Object.keys(data[0]);
+
+  // If the entity is "Genes", rearrange to make "GeneID" the first element
+  if (entity === "Genes") {
+    fields = fields.filter((field) => field !== "GeneID"); // Remove "GeneID" if it exists
+    fields.unshift("GeneID"); // Add "GeneID" at the beginning
+  }
+
+  // Generate column definitions based on the keys
+  return fields.map((field) => ({
+    headerName: field,
+    field: field,
+    wrapText: true,
+    minWidth: 200,
+    headerClass: ["header-border"],
+    cellClass: ["differential-cell"],
+    // Add other common properties here if needed
+  }));
+};
 
 const AdvancedSearch = () => {
   const [entity, setEntity] = useState("");
@@ -26,6 +51,10 @@ const AdvancedSearch = () => {
   const [rows, setRows] = useState([
     { id: Date.now(), selectedProperty: "", selectedOperation: "", value: "" },
   ]); // Start with one row
+  const [selectedProperties, setSelectedProperties] = useState([]);
+  const [searchStarted, setSearchStarted] = useState(false);
+  const [searchResults, setSearchResults] = useState();
+  const [columnDefs, setColumnDefs] = useState();
 
   const entities = [
     "Genes",
@@ -49,6 +78,8 @@ const AdvancedSearch = () => {
     "doesn't contain",
   ];
 
+  const numericOperations = ["exists", "is equal to", "is unequal to"];
+
   const handleAddRow = () => {
     // Use a unique ID for key purposes, like a timestamp
     setRows([
@@ -56,7 +87,7 @@ const AdvancedSearch = () => {
       {
         id: Date.now(),
         selectedProperty: properties[0] || "",
-        selectedOperation: properties[0] ? "contains" : "",
+        selectedOperation: properties[0] || "",
         value: "",
       },
     ]);
@@ -70,17 +101,20 @@ const AdvancedSearch = () => {
     setEntity(e.target.value);
 
     try {
-      const res = await axios.get(
-        `http://localhost:8000/api/properties/${e.target.value}`
-      );
-      setProperties(res.data);
+      let propertyList = await axios
+        .get(`http://localhost:8000/api/properties/${e.target.value}`)
+        .then((res) => res.data);
+      if (e.target.value === "Genes") {
+        propertyList = propertyList.filter((item) => item !== "GeneID");
+      }
+      setProperties(propertyList);
 
       // Set the first property as default for each row
       setRows(
         rows.map((row) => ({
           ...row,
-          selectedProperty: res.data[0] || "",
-          selectedOperation: "contains",
+          selectedProperty: propertyList[0] || "",
+          selectedOperation: "",
         }))
       );
     } catch (error) {
@@ -116,17 +150,30 @@ const AdvancedSearch = () => {
     );
   };
 
+  const handleSelectedPropertiesChange = (newSelectedProperties) => {
+    setSelectedProperties(newSelectedProperties);
+  };
+
   const handleSearch = async () => {
-    console.log("Searching...");
-    console.log(rows);
+    console.log("> Searching...");
+    console.log("> Search Query:", rows);
+
+    setSearchStarted(true);
+
     const result = await axios
       .post("http://localhost:8000/api/advanced-search/build-query", {
         entity,
         rows,
         booleanOperator,
+        selectedProperties,
       })
-      .then((res) => res.data);
+      .then((res) => res.data.map((item) => item._source));
     console.log(result);
+
+    const columns = generateColumnDefs(entity, result);
+
+    setColumnDefs(columns);
+    setSearchResults(result);
   };
 
   const handleReset = () => {
@@ -141,6 +188,7 @@ const AdvancedSearch = () => {
         value: "",
       },
     ]);
+    setSearchStarted(false);
   };
 
   return (
@@ -310,11 +358,18 @@ const AdvancedSearch = () => {
                       handleOperationChange(row.id, e.target.value)
                     }
                   >
-                    {operations.map((operation) => (
-                      <MenuItem key={operation} value={operation}>
-                        {operation}
-                      </MenuItem>
-                    ))}
+                    {row.selectedProperty === "number_of_members" ||
+                    row.selectedProperty === "experiment_id_key"
+                      ? numericOperations.map((operation) => (
+                          <MenuItem key={operation} value={operation}>
+                            {operation}
+                          </MenuItem>
+                        ))
+                      : operations.map((operation) => (
+                          <MenuItem key={operation} value={operation}>
+                            {operation}
+                          </MenuItem>
+                        ))}
                   </TextField>
                 </Grid>
                 <Grid item xs={5}>
@@ -346,7 +401,10 @@ const AdvancedSearch = () => {
           </legend>
 
           {properties.length !== 0 ? (
-            <SelectAllTransferList properties={properties} />
+            <SelectAllTransferList
+              properties={properties}
+              onSelectedPropertiesChange={handleSelectedPropertiesChange}
+            />
           ) : (
             <Typography>Please select an entity type first</Typography>
           )}
@@ -357,6 +415,7 @@ const AdvancedSearch = () => {
             display: "flex",
             justifyContent: "center", // Centers the buttons horizontally
             gap: 2,
+            mb: 3,
           }}
         >
           <Button variant="contained" onClick={handleSearch}>
@@ -366,19 +425,25 @@ const AdvancedSearch = () => {
             Reset
           </Button>
         </Box>
-        <Box component="fieldset" sx={{ p: 2, mb: 2, mt: 3 }}>
-          <legend
-            style={{
-              fontSize: "100%",
-              backgroundColor: "#e5e5e5",
-              color: "#222",
-              padding: "0.1em 0.5em",
-              border: "2px solid #d8d8d8",
-            }}
-          >
-            Search Results
-          </legend>
-        </Box>
+        {searchStarted && (
+          <Box component="fieldset" sx={{ p: 2, mb: 2, mt: 3 }}>
+            <legend
+              style={{
+                fontSize: "100%",
+                backgroundColor: "#e5e5e5",
+                color: "#222",
+                padding: "0.1em 0.5em",
+                border: "2px solid #d8d8d8",
+              }}
+            >
+              Search Results
+            </legend>
+            <SearchResultsTable
+              searchResults={searchResults}
+              columnDefs={columnDefs}
+            />
+          </Box>
+        )}
       </Container>
     </>
   );

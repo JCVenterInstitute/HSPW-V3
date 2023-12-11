@@ -1,10 +1,19 @@
-exports.formQuery = async (query, booleanOperator) => {
+exports.formQuery = async (
+  index,
+  query,
+  booleanOperator,
+  selectedProperties
+) => {
   console.log("> Forming query...");
 
   // Function to map each operation to its corresponding OpenSearch clause
   const mapOperationToClause = (item) => {
     // Append '.keyword' to each field name
-    const field = item.selectedProperty + ".keyword";
+    const field =
+      item.selectedProperty === "number_of_members" ||
+      item.selectedProperty === "experiment_id_key"
+        ? item.selectedProperty
+        : item.selectedProperty + ".keyword";
     const value = item.value;
 
     switch (item.selectedOperation) {
@@ -58,9 +67,15 @@ exports.formQuery = async (query, booleanOperator) => {
   // Map each item in the query array to an OpenSearch clause
   const clauses = query.map(mapOperationToClause);
 
+  let combinedSelectedProperties = [];
+  if (index === "genes") {
+    combinedSelectedProperties = ["GeneID", ...selectedProperties];
+  }
+
   // Form the final query
   const finalQuery = {
     size: 10000,
+    _source: combinedSelectedProperties,
     query: {
       bool: {
         [booleanOperator === "OR" ? "should" : "must"]: clauses,

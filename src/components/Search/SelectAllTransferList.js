@@ -26,7 +26,10 @@ function union(a, b) {
   return [...a, ...not(b, a)];
 }
 
-export default function SelectAllTransferList({ properties }) {
+export default function SelectAllTransferList({
+  properties,
+  onSelectedPropertiesChange,
+}) {
   const [checked, setChecked] = useState([]);
   const [left, setLeft] = useState(properties);
   const [right, setRight] = useState([]);
@@ -56,6 +59,11 @@ export default function SelectAllTransferList({ properties }) {
     setLeft(properties);
     setRight([]);
   }, [properties]);
+
+  useEffect(() => {
+    // Call the callback function whenever the `right` variable is updated
+    onSelectedPropertiesChange(right);
+  }, [right, onSelectedPropertiesChange]);
 
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
@@ -187,7 +195,7 @@ export default function SelectAllTransferList({ properties }) {
             variant="h6"
             sx={{ fontFamily: "Lato", textAlign: "center" }}
           >
-            Display
+            Available
           </Typography>
         </Grid>
         <Grid item xs={1}></Grid>
@@ -196,7 +204,7 @@ export default function SelectAllTransferList({ properties }) {
             variant="h6"
             sx={{ fontFamily: "Lato", textAlign: "center" }}
           >
-            Don't Display
+            Selected
           </Typography>
         </Grid>
       </Grid>
