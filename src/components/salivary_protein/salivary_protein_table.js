@@ -444,7 +444,7 @@ const columns = [
     maxHeight: "5",
     field: "Protein Name",
     cellClass: ["table-border"],
-    cellStyle: { wordBreak: "break-word" },
+    cellStyle: { wordBreak: "break-word", overflow: "scroll" },
   },
   {
     headerName: "Expert Opinion",
@@ -603,7 +603,6 @@ function SalivaryProteinTable() {
 
   const [pageSize, setPageSize] = useState(50); // Default page data to 50 records per page
   const [pageNum, setPageNum] = useState(0);
-
   const [docCount, setDocCount] = useState(0); // Total # of records available for display
   const [ihcC, setihcC] = useState(false);
   const [opCount, setOpCount] = useState([]);
@@ -615,10 +614,8 @@ function SalivaryProteinTable() {
   const [searchText, setSearchText] = useState("");
   const [msBExcludeOn, setMsBExcludeOn] = useState(false);
   const [facetFilter, setFacetFilters] = useState({});
-
   const [columnApi, setColumnApi] = useState(null);
   const [gridApi, setGridApi] = useState(null);
-
   const [sortedColumn, setSortedColumn] = useState(null);
 
   const loadingOverlayComponent = useMemo(() => {
@@ -656,12 +653,28 @@ function SalivaryProteinTable() {
     };
   };
 
+  /**
+   * Create a proper search query for whichever search string is entered into the search bar
+   */
+  const createGlobalSearchQuery = () => {
+    const escapedInput = escapeSpecialCharacters(searchText);
+
+    return {
+      query_string: {
+        query: `*${escapedInput}*`,
+        default_operator: "AND",
+        analyze_wildcard: true,
+      },
+    };
+  };
+
   // Handle fetching data for table
   const fetchData = async () => {
     const apiPayload = {
       filters: queryBuilder(facetFilter),
       // Pass sort query if any sort is applied
       ...(sortedColumn && createSortQuery()),
+      ...(searchText && { keyword: createGlobalSearchQuery() }),
     };
 
     const data = await fetch(
@@ -716,7 +729,7 @@ function SalivaryProteinTable() {
     }, 1000);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [facetFilter, pageSize, msBExcludeOn]);
+  }, [facetFilter, pageSize, msBExcludeOn, searchText]);
 
   // Update records when new sort is applied & go back to first page
   useEffect(() => {
@@ -738,8 +751,6 @@ function SalivaryProteinTable() {
    * @param {string} input String input to search bar
    */
   const handleGlobalSearch = (input) => {
-    input = escapeSpecialCharacters(input);
-    console.log("> Search input escaped", input);
     setSearchText(input);
   };
 
