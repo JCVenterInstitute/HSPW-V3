@@ -1,19 +1,9 @@
-import "../filter.css";
 import List from "@material-ui/core/List";
-import CustomLoadingOverlay from "../customLoadingOverlay.jsx";
-import CustomNoRowsOverlay from "../customNoRowsOverlay.jsx";
 import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  useMemo,
-} from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { rgb } from "d3";
-import "../table.css";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import FormGroup from "@mui/material/FormGroup";
@@ -23,7 +13,6 @@ import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import CustomHeaderGroup from "../customHeaderGroup.jsx";
 import Switch from "@mui/material/Switch";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import {
@@ -37,9 +26,17 @@ import {
   IconButton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { ReactComponent as Download_Logo } from "../table_icon/download.svg";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+
+import CustomLoadingOverlay from "../customLoadingOverlay.jsx";
+import CustomHeaderGroup from "../customHeaderGroup.jsx";
+import { ReactComponent as DownloadLogo } from "../table_icon/download.svg";
+import "../filter.css";
+import "../table.css";
+
+// TODO: Move to some sort of env file
+const HOST_ENDPOINT = `http://localhost:8000`;
 
 const styles = {
   transform: "translate(0, 0)",
@@ -97,65 +94,60 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 function WSComponent(props) {
   const d = props.value;
+
   if (d < 10 || d === "low") {
     return (
-      <>
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgb(180,250,180)",
-            color: "black",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "22%",
-          }}
-        >
-          {Number(d).toFixed(2)}
-        </div>
-      </>
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgb(180,250,180)",
+          color: "black",
+          fontFamily: "Lato",
+          fontSize: "16px",
+          lineHeight: "24px",
+          textAlign: "center",
+          paddingTop: "22%",
+        }}
+      >
+        {Number(d).toFixed(2)}
+      </div>
     );
   } else if (d < 100 || d === "medium") {
     return (
-      <>
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgb(70,170,70)",
-            color: "#FFF",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "22%",
-          }}
-        >
-          {Number(d).toFixed(2)}
-        </div>
-      </>
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgb(70,170,70)",
+          color: "#FFF",
+          fontFamily: "Lato",
+          fontSize: "16px",
+          lineHeight: "24px",
+          textAlign: "center",
+          paddingTop: "22%",
+        }}
+      >
+        {Number(d).toFixed(2)}
+      </div>
     );
   } else if (d > 100 || d === "high") {
     return (
-      <>
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgb(0,100,0)",
-            color: "#FFF",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "22%",
-          }}
-        >
-          {Number(d).toFixed(2)}
-        </div>
-      </>
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgb(0,100,0)",
+          color: "#FFF",
+          fontFamily: "Lato",
+          fontSize: "16px",
+          lineHeight: "24px",
+          textAlign: "center",
+          paddingTop: "22%",
+        }}
+      >
+        {Number(d).toFixed(2)}
+      </div>
     );
   } else if (d === "not detected" || d === 0) {
     return (
@@ -210,12 +202,15 @@ function WSComponent(props) {
 }
 
 function opinionComponent(props) {
-  const d = props.value;
-  if (d === "Confirmed") {
-    return <span>C</span>;
-  } else if (d === "Unsubstantiated") {
-    return <span>US</span>;
-  }
+  const { value } = props;
+
+  return (
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <span>
+        {value === "Confirmed" ? "C" : value === "Unsubstantiated" ? "US" : ""}
+      </span>
+    </div>
+  );
 }
 
 function IHCComponent(props) {
@@ -317,7 +312,11 @@ function IHCComponent(props) {
             </pattern>
           </defs>
           <rect
-            style={{ fill: "url(#stripe2)", width: "100%", height: "100%" }}
+            style={{
+              fill: "url(#stripe2)",
+              width: "100%",
+              height: "100%",
+            }}
           >
             <title>Data not available</title>
           </rect>
@@ -347,13 +346,15 @@ function IHCComponent(props) {
 
 function proteinLinkComponent(props) {
   return (
-    <a
-      target="_blank"
-      rel="noopener noreferrer"
-      href={window.location.origin + "/protein/" + props.value}
-    >
-      {props.value}
-    </a>
+    <div style={{ paddingLeft: "20px" }}>
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href={`${window.location.origin}/protein/${props.value}`}
+      >
+        {props.value}
+      </a>
+    </div>
   );
 }
 
@@ -402,1919 +403,717 @@ function LinkComponent(props) {
   );
 }
 
-function App() {
-  const [pageSize, setPageSize] = useState(50);
+const columns = [
+  {
+    headerName: "Accession",
+    field: "UniProt Accession",
+    checkboxSelection: false,
+    headerCheckboxSelection: false,
+    wordWrap: true,
+    cellStyle: { wordBreak: "break-word" },
+    cellClass: ["table-border"],
+    cellRenderer: "proteinLinkComponent",
+  },
+  {
+    headerName: "Gene Symbol",
+    field: "Gene Symbol",
+    cellClass: ["table-border"],
+    cellStyle: {
+      wordBreak: "break-word",
+      textAlign: "center",
+      display: "flex",
+      justifyContent: "center",
+    },
+  },
+  {
+    headerName: "Protein Name",
+    maxHeight: "5",
+    field: "Protein Name",
+    cellClass: ["table-border"],
+    cellStyle: { wordBreak: "break-word", overflow: "scroll" },
+  },
+  {
+    headerName: "Expert Opinion",
+    field: "expert_opinion",
+    cellRenderer: "opinionComponent",
+    cellClass: ["table-border"],
+  },
+  {
+    headerName: "MS (obs.)",
+    headerGroupComponent: CustomHeaderGroup,
+    headerClass: ["header-border", "salivary-protein-header"],
+    cellClass: ["table-border"],
+    children: [
+      {
+        headerName: "Whole Saliva",
+        field: "saliva_abundance",
+        cellRenderer: "WSComponent",
+        cellClass: ["square_table", "salivary-proteins-colored-cell"],
+      },
+      {
+        headerName: "Parotid Glands",
+        field: "parotid_gland_abundance",
+        cellRenderer: "WSComponent",
+        cellClass: ["square_table", "salivary-proteins-colored-cell"],
+      },
+      {
+        headerName: "SM/SL Glands",
+        field: "sm/sl_abundance",
+        cellRenderer: "WSComponent",
+        cellClass: ["square_table", "salivary-proteins-colored-cell"],
+      },
+      {
+        headerName: "Blood",
+        field: "plasma_abundance",
+        cellRenderer: "LinkComponent",
+        cellClass: ["square_table", "salivary-proteins-colored-cell"],
+      },
+    ],
+    cellStyle: { textAlign: "center" },
+  },
+  {
+    headerName: "IHC",
+    field: "IHC",
+    wrapText: true,
+    cellRenderer: "IHCComponent",
+    cellClass: ["square_table", "salivary-proteins-colored-cell"],
+  },
+  {
+    headerName: "mRNA (NX)",
+    headerGroupComponent: CustomHeaderGroup,
+    headerClass: ["header-border", "salivary-protein-header"],
+    wrapText: true,
+    cellRenderer: "WSComponent",
+    cellClass: ["table-border"],
+    children: [
+      {
+        headerName: "Value",
+        field: "mRNA",
+        cellRenderer: "WSComponent",
+        cellClass: ["square_table", "salivary-proteins-colored-cell"],
+      },
+      {
+        headerName: "Specificity",
+        field: "Specificity",
+        cellClass: ["table-border"],
+      },
+      {
+        headerName: "Specificity Score",
+        field: "Specificity_Score",
+        cellClass: ["table-border"],
+      },
+    ],
+  },
+];
+
+const defColumnDefs = {
+  flex: 1,
+  filter: true,
+  resizable: true,
+  sortable: true,
+  wrapHeaderText: true,
+  wrapText: true,
+  autoHeaderHeight: true,
+  headerClass: ["header-border", "salivary-protein-header"],
+  headerComponentParams: {
+    template:
+      '<div class="ag-cell-label-container" role="presentation">' +
+      // '  <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button"></span>' +
+      '  <div ref="eLabel" class="ag-header-cell-label" role="presentation">' +
+      '    <span ref="eSortOrder" class="ag-header-icon ag-sort-order"></span>' +
+      '    <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon"></span>' +
+      '    <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon"></span>' +
+      '    <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon"></span>' +
+      '    <span ref="eText" class="ag-header-cell-text" role="columnheader" style="white-space: normal;"></span>' +
+      // '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
+      "  </div>" +
+      "</div>",
+  },
+};
+
+const customHeaders = {
+  "Content-Type": "application/json",
+};
+
+const recordsPerPageList = [
+  {
+    value: 50,
+    label: 50,
+  },
+  {
+    value: 100,
+    label: 100,
+  },
+  {
+    value: 500,
+    label: 500,
+  },
+  {
+    value: 1000,
+    label: 1000,
+  },
+];
+
+const rowHeight = 80;
+
+const IHCValues = ["medium", "not detected", "low", "n/a", "high"];
+
+/**
+ * Escape all special characters for input string
+ * Special Characters include: [-[\]{}()*+?.,\\^$|#\s
+ * @param {String} inputVal Non-escaped string value entered by user
+ * @returns String where special characters are escaped with slashes
+ */
+const escapeSpecialCharacters = (inputVal) => {
+  return inputVal.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
+
+const stringAttributes = [
+  "UniProt Accession",
+  "Gene Symbol",
+  "Protein Name",
+  "IHC",
+  "expert_opinion",
+];
+
+const numberAttributes = [
+  "saliva_abundance", // MS WS
+  "parotid_gland_abundance", // MS PAR
+  "sm/sl_abundance", // MS Sub
+  "plasma_abundance", // MS B
+  "mRNA", // mRNA
+];
+
+function SalivaryProteinTable() {
+  const gridRef = useRef();
+
+  const [pageSize, setPageSize] = useState(50); // Default page data to 50 records per page
   const [pageNum, setPageNum] = useState(0);
-  const [gridApi, setGridApi] = useState("");
-  const [count, setCount] = useState(2);
-  const [docCount, setDocCount] = useState(0);
-  const [pageNumArr, setPageNumArr] = useState([1]);
-  const [accessionC, setAccessionC] = useState(false);
-  const [geneC, setGeneC] = useState(false);
-  const [nameC, setNameC] = useState(false);
-  const [eoC, seteoC] = useState(false);
+  const [docCount, setDocCount] = useState(0); // Total # of records available for display
   const [ihcC, setihcC] = useState(false);
-  const [wsC, setwsC] = useState(false);
-  const [parC, setparC] = useState(false);
-  const [subC, setsubC] = useState(false);
-  const [plasmaC, setplasmaC] = useState(false);
-  const [mRNAC, setmRNAC] = useState(false);
-  const [prefix, setPrefix] = useState("");
-  const [genePrefix, setGenePrefix] = useState("");
-  const [namePrefix, setNamePrefix] = useState("");
   const [opCount, setOpCount] = useState([]);
   const [IHCCount, setIHCCount] = useState([]);
   const [rowData, setRowData] = useState([]);
-  const [opinionVal, setopinionVal] = useState("");
-  const [IHCVal, setIHCVal] = useState("*");
-  const [parStart, setparStart] = useState("");
-  const [parEnd, setparEnd] = useState("");
-  const [subStart, setsubStart] = useState("");
-  const [subEnd, setsubEnd] = useState("");
-  const [pStart, setpStart] = useState("");
-  const [pEnd, setpEnd] = useState("");
-  const [wsStart, setwsStart] = useState("");
-  const [wsEnd, setwsEnd] = useState("");
-  const [mRNAStart, setmRNAStart] = useState("");
-  const [mRNAEnd, setmRNAEnd] = useState("");
-  const [queryArr, setQueryArr] = useState([]);
   const [opArr, setOpArr] = useState([false, false]);
-  const [orChecked, setorChecked] = useState(false);
-  const [exclude, setExclude] = useState(false);
+  const [orFilterOn, setOrFilterOn] = useState(false);
   const [IHCArr, setIHCArr] = useState([false, false, false, false, false]);
-
   const [searchText, setSearchText] = useState("");
-  const [globalSC, setGlobalSC] = useState(false);
-  useEffect(() => {
-    const fetchOpCount = async () => {
-      const data = await fetch("http://localhost:8000/opCount");
-      const json = data.json();
-      return json;
-    };
-    const countOpResult = fetchOpCount().catch(console.errror);
-    countOpResult.then((value) => {
-      if (value) {
-        setOpCount(value);
-      }
-    });
-
-    const fetchIHCCount = async () => {
-      const data = await fetch("http://localhost:8000/IHCCount");
-      const json = data.json();
-      return json;
-    };
-    const countIHCResult = fetchIHCCount().catch(console.errror);
-    countIHCResult.then((value) => {
-      if (value) {
-        setIHCCount(value);
-        console.log(IHCCount);
-      }
-    });
-
-    fetch("http://localhost:8000/saliva_protein_count/")
-      .then((res) => res.json())
-      .then((data) => {
-        setDocCount(data.count);
-        const newOptions = [];
-        for (let i = 1; i <= Math.round(data.count / pageSize); i++) {
-          newOptions.push(
-            <option key={i} value={i}>
-              {i}
-            </option>
-          );
-        }
-        setPageNumArr(newOptions);
-      });
-  }, []);
-
-  const globalSearch = async () => {
-    const data = await fetch(
-      `http://localhost:8000/multi_search/new_saliva_protein_test/${searchText}`
-    );
-    console.log(
-      `http://localhost:8000/multi_search/new_saliva_protein_test/${searchText}`
-    );
-    const json = data.json();
-    return json;
-  };
-  const customHeaders = {
-    "Content-Type": "application/json",
-  };
-  const fetchAndData = async () => {
-    console.log("123", JSON.stringify(queryArr));
-    const data = await fetch(
-      `http://localhost:8000/and_search/${pageSize}/${pageNum}/`,
-      {
-        method: "POST",
-        headers: customHeaders,
-        body: JSON.stringify(queryArr),
-      }
-    );
-    const json = data.json();
-    return json;
-  };
-
-  const fetchOrData = async () => {
-    const data = await fetch(
-      `http://localhost:8000/or_search/${pageSize}/${pageNum}/`,
-      {
-        method: "POST",
-        headers: customHeaders,
-        body: JSON.stringify(queryArr),
-      }
-    );
-    const json = data.json();
-    return json;
-  };
-
-  useEffect(() => {
-    console.log("Exclude value:", exclude);
-    if (
-      (accessionC === true ||
-        geneC === true ||
-        nameC === true ||
-        eoC === true ||
-        ihcC === true ||
-        wsC === true ||
-        parC === true ||
-        subC === true ||
-        plasmaC === true ||
-        mRNAC === true) &&
-      orChecked === false
-    ) {
-      console.log("1");
-      const result = fetchAndData().catch(console.errror);
-      result.then((value) => {
-        if (value.hits.hits) {
-          console.log(value);
-          let data1 = [];
-          for (let i = 0; i < value.hits.hits.length; i++) {
-            data1.push(value.hits.hits[i]["_source"]);
-          }
-          console.log(data1);
-          setRowData(data1);
-        }
-        setDocCount(value.hits.total.value);
-        const newOptions = [];
-        for (
-          let i = 1;
-          i <= Math.round(value.hits.total.value / pageSize);
-          i++
-        ) {
-          newOptions.push(
-            <option key={i} value={i}>
-              {i}
-            </option>
-          );
-        }
-
-        setPageNumArr(newOptions);
-        setCount(2);
-        setOpCount(value.aggregations.expert_opinion.buckets);
-        setIHCCount(value.aggregations.IHC.buckets);
-      });
-    } else if (globalSC === true) {
-      const result = globalSearch().catch(console.errror);
-      result.then((value) => {
-        if (value.hits.hits) {
-          console.log(value);
-          let data1 = [];
-          for (let i = 0; i < value.hits.hits.length; i++) {
-            data1.push(value.hits.hits[i]["_source"]);
-          }
-          console.log(data1);
-          setRowData(data1);
-        }
-        setDocCount(value.hits.total.value);
-        const newOptions = [];
-        for (
-          let i = 1;
-          i <= Math.round(value.hits.total.value / pageSize);
-          i++
-        ) {
-          newOptions.push(
-            <option key={i} value={i}>
-              {i}
-            </option>
-          );
-        }
-
-        setPageNumArr(newOptions);
-        setCount(2);
-      });
-    } else {
-      const fetchData = async () => {
-        const data = await fetch(
-          "http://localhost:8000/saliva_protein_table/" +
-            pageSize +
-            "/" +
-            pageNum
-        );
-
-        const json = data.json();
-
-        return json;
-      };
-      const result = fetchData().catch(console.errror);
-      result.then((value) => {
-        if (value.hits.hits) {
-          let data1 = [];
-          for (let i = 0; i < value.hits.hits.length; i++) {
-            data1.push(value.hits.hits[i]["_source"]);
-          }
-
-          setRowData(data1);
-        }
-        setDocCount(value.hits.total.value);
-        const newOptions = [];
-        for (
-          let i = 1;
-          i <= Math.round(value.hits.total.value / pageSize);
-          i++
-        ) {
-          newOptions.push(
-            <option key={i} value={i}>
-              {i}
-            </option>
-          );
-        }
-
-        setPageNumArr(newOptions);
-
-        setOpCount(value.aggregations.expert_opinion.buckets);
-        setIHCCount(value.aggregations.IHC.buckets);
-      });
-
-      const fetchOpCount = async () => {
-        const data = await fetch("http://localhost:8000/opCount");
-        const json = data.json();
-        return json;
-      };
-      const countOpResult = fetchOpCount().catch(console.errror);
-      countOpResult.then((value) => {
-        if (value) {
-          setOpCount(value);
-        }
-      });
-
-      const fetchIHCCount = async () => {
-        const data = await fetch("http://localhost:8000/IHCCount");
-        const json = data.json();
-        return json;
-      };
-      const countIHCResult = fetchIHCCount().catch(console.errror);
-      countIHCResult.then((value) => {
-        if (value) {
-          setIHCCount(value);
-        }
-      });
-    }
-  }, [
-    prefix,
-    genePrefix,
-    namePrefix,
-    opArr,
-    IHCArr,
-    wsStart,
-    wsEnd,
-    parStart,
-    parEnd,
-    subStart,
-    subEnd,
-    pStart,
-    pEnd,
-    mRNAStart,
-    mRNAEnd,
-    pageSize,
-    pageNum,
-    globalSC,
-    exclude,
-  ]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetch(
-        `http://localhost:8000/saliva_protein_table/${pageSize}/${pageNum}`
-      );
-      const json = data.json();
-      return json;
-    };
-    const result = fetchData().catch(console.errror);
-    result.then((value) => {
-      if (value.hits.hits) {
-        let data1 = [];
-        for (let i = 0; i < value.hits.hits.length; i++) {
-          data1.push(value.hits.hits[i]["_source"]);
-        }
-
-        setRowData(data1);
-      }
-    });
-  }, []);
+  const [msBExcludeOn, setMsBExcludeOn] = useState(false);
+  const [facetFilter, setFacetFilters] = useState({});
+  const [columnApi, setColumnApi] = useState(null);
+  const [gridApi, setGridApi] = useState(null);
+  const [sortedColumn, setSortedColumn] = useState(null);
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
   }, []);
 
-  const noRowsOverlayComponent = useMemo(() => {
-    return CustomNoRowsOverlay;
-  }, []);
-
-  const columns = [
-    {
-      headerName: "Accession",
-      field: "UniProt Accession",
-      checkboxSelection: false,
-      headerCheckboxSelection: false,
-      minWidth: "155",
-      wordWrap: true,
-      sortable: true,
-      cellStyle: { wordBreak: "break-word" },
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      cellRenderer: "proteinLinkComponent",
-    },
-    {
-      headerName: "Gene Symbol",
-      minWidth: "132",
-      field: "Gene Symbol",
-      wrapText: true,
-      sortable: true,
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      cellStyle: { wordBreak: "break-word" },
-    },
-    {
-      headerName: "Protein Name",
-      minWidth: "133",
-      maxHeight: "5",
-      field: "Protein Name",
-      wrapText: true,
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      sortable: true,
-      cellStyle: { wordBreak: "break-word" },
-    },
-    {
-      headerName: "Expert Opinion",
-      minWidth: "140",
-      field: "expert_opinion",
-      sortable: true,
-      cellRenderer: "opinionComponent",
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      wrapText: true,
-    },
-    {
-      headerName: "MS",
-      headerGroupComponent: CustomHeaderGroup,
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      children: [
-        {
-          headerName: "WS",
-          field: "saliva_abundance",
-          minWidth: "98",
-          cellRenderer: "WSComponent",
-          headerClass: ["header-border"],
-          cellClass: ["square_table", "salivary-proteins-colored-cell"],
-        },
-        {
-          headerName: "Par",
-          field: "parotid_gland_abundance",
-          minWidth: "97",
-          cellRenderer: "WSComponent",
-          headerClass: ["header-border"],
-          cellClass: ["square_table", "salivary-proteins-colored-cell"],
-        },
-        {
-          headerName: "Sub",
-          field: "sm/sl_abundance",
-          minWidth: "101",
-          cellRenderer: "WSComponent",
-          headerClass: ["header-border"],
-          cellClass: ["square_table", "salivary-proteins-colored-cell"],
-        },
-        {
-          headerName: "B",
-          field: "plasma_abundance",
-          minWidth: "95",
-          cellRenderer: "LinkComponent",
-          headerClass: ["header-border"],
-          cellClass: ["square_table", "salivary-proteins-colored-cell"],
-        },
-      ],
-
-      wrapText: true,
-      cellStyle: { textAlign: "center" },
-    },
-    {
-      headerName: "IHC",
-      field: "IHC",
-      minWidth: "101",
-
-      wrapText: true,
-      cellRenderer: "IHCComponent",
-      headerClass: ["header-border"],
-      cellClass: ["square_table", "salivary-proteins-colored-cell"],
-    },
-    {
-      headerName: "mRNA",
-      headerGroupComponent: CustomHeaderGroup,
-      minWidth: "105",
-
-      wrapText: true,
-      cellRenderer: "WSComponent",
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      children: [
-        {
-          headerName: "Value",
-          field: "mRNA",
-          minWidth: "116",
-          cellRenderer: "WSComponent",
-          headerClass: ["header-border"],
-          cellClass: ["square_table", "salivary-proteins-colored-cell"],
-        },
-        {
-          headerName: "Specificity",
-          field: "Specificity",
-          minWidth: "160",
-          headerClass: ["header-border"],
-          cellClass: ["table-border"],
-        },
-        {
-          headerName: "Specificity Score",
-          field: "Specificity_Score",
-          minWidth: "159",
-          headerClass: ["header-border"],
-          cellClass: ["table-border"],
-        },
-      ],
-    },
-  ];
-  const gridRef = useRef();
-
+  // Export the current page data as CSV file
   const onBtExport = useCallback(() => {
-    gridRef.current.api.exportDataAsExcel();
+    gridRef.current.api.exportDataAsCsv();
   }, []);
 
-  const escapeRegExp = (string) => {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  /**
+   * Create a proper sort query for whichever sort attribute is selected
+   */
+  const createSortQuery = () => {
+    const { attribute, order } = sortedColumn;
+
+    // Have to include .keyword when sorting string attributes
+    const sortAttrKey = `${sortedColumn.attribute}${
+      stringAttributes.includes(attribute) ? ".keyword" : ""
+    }`;
+
+    return {
+      sort: [
+        {
+          [sortAttrKey]: {
+            order,
+          },
+        },
+      ],
+    };
   };
 
-  const onFilterTextBoxChanged = (e) => {
-    // Check if the event is a delete key press or a synthetic event
-    const isDeleteKey =
-      e.nativeEvent && e.nativeEvent.inputType === "deleteContentBackward";
+  /**
+   * Create a proper search query for whichever search string is entered into the search bar
+   */
+  const createGlobalSearchQuery = () => {
+    const escapedInput = escapeSpecialCharacters(searchText);
 
-    let inputValue = e;
+    return {
+      query_string: {
+        query: `*${escapedInput}*`,
+        default_operator: "AND",
+        analyze_wildcard: true,
+      },
+    };
+  };
 
-    if (isDeleteKey) {
-      // Handle delete key press by removing the last character
-      inputValue = inputValue.slice(0, -1);
+  // Handle fetching data for table
+  const fetchData = async () => {
+    const apiPayload = {
+      filters: queryBuilder(facetFilter),
+      // Pass sort query if any sort is applied
+      ...(sortedColumn && createSortQuery()),
+      ...(searchText && { keyword: createGlobalSearchQuery() }),
+    };
+
+    const data = await fetch(
+      `${HOST_ENDPOINT}/api/salivary-proteins/${pageSize}/${
+        pageNum * pageSize
+      }`,
+      {
+        method: "POST",
+        headers: customHeaders,
+        body: JSON.stringify(apiPayload),
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        const { hits, aggregations } = data;
+
+        for (const aggr of Object.keys(aggregations)) {
+          const displayedAggs = aggregations[aggr].buckets;
+
+          if (aggr === "IHC") {
+            setIHCCount(displayedAggs);
+          } else if (aggr === "expert_opinion") {
+            // Only want to display unsubstantiated & confirmed agg for expert opinions
+            setOpCount(
+              displayedAggs.filter((agg) =>
+                ["Unsubstantiated", "Confirmed"].includes(agg.key)
+              )
+            );
+          }
+        }
+
+        // Set number of total records returned
+        setDocCount(hits.total.value);
+
+        return hits.hits.map((rec) => rec._source);
+      });
+
+    setRowData(data);
+  };
+
+  // Initial data fetch on page load
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // Fetch new table data when page size is changed or filters are updated
+  useEffect(() => {
+    // Needed to delay search so users can type before triggering search
+    const delayDebounceFn = setTimeout(() => {
+      setPageNum(0);
+      fetchData();
+    }, 1000);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [facetFilter, pageSize, msBExcludeOn, searchText]);
+
+  // Update records when new sort is applied & go back to first page
+  useEffect(() => {
+    if (gridApi) {
+      gridApi.showLoadingOverlay();
+      setPageNum(0);
+      fetchData();
     }
+  }, [sortedColumn]);
 
-    // Ensure that inputValue is defined
-    inputValue = inputValue || "";
+  // Fetch data for new page selected
+  // No delay needed when switching pages no filter updates
+  useEffect(() => {
+    fetchData();
+  }, [pageNum]);
 
-    // Escape special characters
-    const escapedInputValue = escapeRegExp(inputValue);
-
-    console.log("Input Value: " + escapedInputValue);
-
-    if (escapedInputValue !== "") {
-      setSearchText(escapedInputValue);
-      setGlobalSC(true);
-    } else {
-      setGlobalSC(false);
-      setSearchText("");
-    }
-  };
-
-  const clearSearch = () => {
-    setGlobalSC(false);
-    setSearchText("");
-  };
-
-  const onBtNext = (event) => {
-    if (count < docCount / pageSize) {
-      setPageNum(pageNum + 1);
-
-      // Increment the count if needed
-      setCount(count + 2);
-    }
-  };
-
-  const onBtPrevious = (event) => {
-    if (pageNum !== 1) {
-      var x = pageNum;
-      setPageNum(x - 1);
-      setCount(count - 1);
-    }
-  };
-  const defColumnDefs = {
-    flex: 1,
-    filter: true,
-    resizable: true,
-    wrapHeaderText: true,
-    wrapText: true,
-    autoHeaderHeight: true,
-    headerStyle: { wordBreak: "break-word" },
-    initialWidth: 200,
-    headerComponentParams: {
-      template:
-        '<div class="ag-cell-label-container" role="presentation">' +
-        '  <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button"></span>' +
-        '  <div ref="eLabel" class="ag-header-cell-label" role="presentation">' +
-        '    <span ref="eSortOrder" class="ag-header-icon ag-sort-order"></span>' +
-        '    <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon"></span>' +
-        '    <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon"></span>' +
-        '    <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon"></span>' +
-        '    <span ref="eText" class="ag-header-cell-text" role="columnheader" style="white-space: normal;"></span>' +
-        '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
-        "  </div>" +
-        "</div>",
-    },
+  /**
+   * Update search entered by user in search bar
+   * @param {string} input String input to search bar
+   */
+  const handleGlobalSearch = (input) => {
+    setSearchText(input);
   };
 
   const onGridReady = (params) => {
-    setGridApi(params);
+    setGridApi(params.api);
+    setColumnApi(params.columnApi);
+    gridRef.current.api.sizeColumnsToFit();
   };
 
-  const updateQuery = (newQuery, fieldName) => {
-    setQueryArr((prevArray) => {
-      // If newQuery is null, remove only the corresponding type of query from the array
-      if (newQuery === null) {
-        const targetTypePrev = findEmptyField(prevArray, fieldName);
-        console.log("TargetType (null case):", targetTypePrev);
-
-        const updatedArray = prevArray.filter((p) => {
-          const hasWildcard =
-            p &&
-            p.bool &&
-            p.bool.filter &&
-            p.bool.filter[0] &&
-            p.bool.filter[0].wildcard;
-
-          const wildcardProperty =
-            hasWildcard && Object.keys(p.bool.filter[0].wildcard)[0];
-
-          const hasQueryString =
-            p.bool &&
-            p.bool.filter &&
-            p.bool.filter[0] &&
-            p.bool.filter[0].query_string;
-
-          // Check if it's a "Gene Symbol" query with an empty value
-          const isGeneSymbolQuery =
-            hasWildcard &&
-            wildcardProperty === "Gene Symbol" &&
-            p.bool.filter[0].wildcard["Gene Symbol"].value === "";
-
-          const isProteinNameQuery =
-            hasWildcard &&
-            wildcardProperty === "Protein Name" &&
-            p.bool.filter[0].wildcard["Protein Name"].value === "";
-
-          const isIHCQuery =
-            hasWildcard &&
-            wildcardProperty === "IHC" &&
-            p.bool.filter[0].wildcard["IHC"].value === "";
-          // Adjust the condition based on the targetTypePrev boolean value
-          return hasWildcard || hasQueryString
-            ? targetTypePrev
-              ? wildcardProperty !== fieldName &&
-                !(
-                  isGeneSymbolQuery &&
-                  isProteinNameQuery &&
-                  isIHCQuery &&
-                  p.bool.filter[0].query_string[fieldName] !== undefined
-                )
-              : isGeneSymbolQuery ||
-                isProteinNameQuery ||
-                isIHCQuery ||
-                wildcardProperty === fieldName ||
-                (hasQueryString &&
-                  p.bool.filter[0].query_string[fieldName] !== undefined)
-            : true;
-        });
-
-        console.log("Updated Array (null case):", updatedArray);
-
-        return updatedArray;
-      }
-
-      const nonEmptyQueries = prevArray.filter((query) => {
-        const wildcardProperty =
-          query.bool &&
-          query.bool.filter &&
-          query.bool.filter[0].wildcard &&
-          Object.keys(query.bool.filter[0].wildcard)[0];
-
-        // Check if the field is not empty in the new query
-        return !(
-          wildcardProperty &&
-          newQuery.bool.filter &&
-          newQuery.bool.filter[0].wildcard &&
-          Object.keys(newQuery.bool.filter[0].wildcard)[0] ===
-            wildcardProperty &&
-          newQuery.bool.filter[0].wildcard[wildcardProperty] === ""
-        );
-      });
-
-      console.log("Non-empty Queries:", nonEmptyQueries);
-
-      const updatedArray = nonEmptyQueries.map((p) => {
-        const isSame = isSameType(p, newQuery);
-        console.log(
-          `Comparing: ${JSON.stringify(p)} and ${JSON.stringify(
-            newQuery
-          )} => ${isSame}`
-        );
-        return isSame ? newQuery : p;
-      });
-      console.log("1105", newQuery);
-
-      // If the new query does not exist or has an empty value, remove it from the array
-      if (
-        newQuery.bool.filter !== undefined &&
-        !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
-        !(newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value === "")
-      ) {
-        // Check if there's an existing query for the same field and remove it
-        const updatedArrayWithoutExisting = updatedArray.filter((p) => {
-          if (
-            p.bool &&
-            p.bool.filter &&
-            p.bool.filter[0].wildcard &&
-            Object.keys(p.bool.filter[0].wildcard)[0] === fieldName
-          ) {
-            // Remove the existing query if the new query is not empty
-            return newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value !== "";
-          }
-          return true;
-        });
-
-        // Add the new query only if it's not an empty wildcard
-        if (newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value !== "") {
-          updatedArrayWithoutExisting.push(newQuery);
-          console.log("New Query Added:", updatedArrayWithoutExisting);
-        }
-
-        return updatedArrayWithoutExisting;
-      } else if (
-        newQuery.bool.filter !== undefined &&
-        !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
-        (!(newQuery.bool.filter[0]?.range?.[fieldName]?.gte === "") ||
-          !(newQuery.bool.filter[0]?.range?.[fieldName]?.lte === ""))
-      ) {
-        updatedArray.push(newQuery);
-        console.log("New Query Added:", updatedArray);
-      } else if (
-        newQuery.bool.filter !== undefined &&
-        !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
-        !(newQuery.bool.filter[0]?.query_string?.query === "")
-      ) {
-        updatedArray.push(newQuery);
-        console.log("New Query Added Query String:", updatedArray);
-      } else if (
-        newQuery.bool.must_not !== undefined &&
-        !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
-        (!(newQuery.bool.must_not[0]?.range?.[fieldName]?.gte === "") ||
-          !(newQuery.bool.must_not[0]?.range?.[fieldName]?.lte === ""))
-      ) {
-        updatedArray.push(newQuery);
-      }
-      console.log("1157", updatedArray);
-      return updatedArray;
-    });
+  const clearSearchBar = () => {
+    setSearchText("");
   };
 
-  const findEmptyField = (queries, fieldName) => {
-    console.log("Queries:", queries);
-    console.log("Field Name:", fieldName);
+  // Set new page to prev page
+  const setPrevPage = () => {
+    if (pageNum !== 0) {
+      setPageNum(pageNum - 1);
+    }
+  };
 
-    const findFieldInFilter = (filter) => {
-      if (filter.wildcard) {
-        return filter && filter.wildcard && filter.wildcard[fieldName];
-      } else if (filter.range) {
-        return filter && filter.range && filter.range[fieldName];
-      } else if (filter.query_string) {
-        console.log("1272", filter.query_string);
-        return filter.query_string; // Directly return the found filter
-      }
+  // Set new page to next page
+  const setNextPage = () => {
+    if (pageNum < docCount / pageSize - 1) {
+      setPageNum(pageNum + 1);
+    }
+  };
+
+  /**
+   * Creates a range query for a number field for OpenSearch
+   * @param {{ attrName, start, end }} input Necessary fields for range query
+   * @returns OpenSearch range query based on inputs
+   */
+  const createRangeQuery = ({ attrName, start, end }) => {
+    let rangeQuery = {
+      range: {
+        [attrName]: {
+          ...(start && { gte: start }),
+          ...(end && { lte: end }),
+        },
+      },
     };
 
-    const searchQuery = (query) => {
-      if (query && query.bool && query.bool.filter) {
-        return query.bool.filter.some(findFieldInFilter);
-      }
-
-      return false;
-    };
-
-    const result = queries.some(searchQuery); // Use some instead of find
-
-    console.log(result ? "Field Found:" : "Field Not Found");
-
-    return result;
-  };
-
-  // Helper function to check if two queries have the same wildcard type
-  const isSameType = (query1, query2) => {
-    const type1 = query1.bool?.filter?.[0]?.wildcard
-      ? Object.keys(query1.bool.filter[0].wildcard)[0]
-      : null;
-    const type2 = query2.bool?.filter?.[0]?.wildcard
-      ? Object.keys(query2.bool.filter[0].wildcard)[0]
-      : null;
-
-    // Check both type and value for wildcard queries
-    if (type1 === type2 && type1 === "wildcard") {
-      const value1 = query1.bool.filter[0].wildcard[type1].value;
-      const value2 = query2.bool.filter[0].wildcard[type2].value;
-      return value1 === value2;
+    if (attrName === "plasma_abundance" && msBExcludeOn) {
+      rangeQuery = {
+        bool: {
+          filter: [
+            {
+              bool: {
+                must_not: [rangeQuery],
+              },
+            },
+          ],
+        },
+      };
+    } else {
+      rangeQuery = {
+        bool: {
+          filter: [rangeQuery],
+        },
+      };
     }
 
-    return type1 === type2;
+    return rangeQuery;
+  };
+
+  /**
+   * Creates a query for a string field for OpenSearch
+   * @param {{attrName, value}} input necessary fields for string query
+   * @returns
+   */
+  const createStringQuery = ({ attrName, value }) => {
+    return {
+      bool: {
+        filter: [
+          {
+            regexp: {
+              [`${attrName}.keyword`]: {
+                value: `${value}.*`,
+                flags: "ALL",
+                case_insensitive: true,
+              },
+            },
+          },
+        ],
+      },
+    };
+  };
+
+  /**
+   * Remove all empty filters to prevent building queries with empty values
+   * @param {Object} filters Object with Key value pairs of all facet fields
+   * @returns Object with all non empty filter values for building queries
+   */
+  const removeEmptyFilters = (filters) => {
+    const attributes = Object.keys(filters);
+
+    for (const attr of attributes) {
+      const attrType = typeof filters[attr];
+
+      if (attrType === "string" && filters[attr] === "") {
+        // Remove empty string filters (e.g { "value": "" })
+        delete filters[attr];
+      } else if (attrType === "object") {
+        // Filter out empty range filters (e.g. { "rangeField": { start: "", end: "" }})
+        const fil = filters[attr];
+
+        for (const key of Object.keys(fil)) {
+          if (fil[key] === "") delete fil[key];
+        }
+
+        if (Object.keys(filters[attr]).length === 0) {
+          delete filters[attr];
+        }
+      }
+    }
+
+    return filters;
+  };
+
+  /**
+   * Build OpenSearch Query based on user facet filters
+   * @param {Object} filters Object containing all key & values for all user selected facet filters
+   * @returns Returns an array of queries for each non empty filter applied by user
+   */
+  const queryBuilder = (filters) => {
+    const queries = [];
+
+    filters = removeEmptyFilters(filters);
+
+    for (const attr of Object.keys(filters)) {
+      if (stringAttributes.includes(attr)) {
+        queries.push(
+          createStringQuery({ attrName: attr, value: filters[attr] })
+        );
+      } else if (numberAttributes.includes(attr)) {
+        queries.push(createRangeQuery({ attrName: attr, ...filters[attr] }));
+      }
+    }
+
+    console.log("> Queries", queries);
+    return queries;
   };
 
   const handleAccessionChange = (e) => {
-    // Check if the event is a delete key press
-    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
+    const { value } = e.target;
 
-    let inputValue = e.target.value;
-    setPrefix(inputValue);
-    if (isDeleteKey) {
-      // Handle delete key press by removing the last character
-      inputValue = inputValue.slice(0, -1);
-    }
-
-    // Remove double backslashes
-    inputValue = inputValue.replace(/\\\\/g, "");
-
-    // Escape special characters
-    inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-
-    if (inputValue === "") {
-      setAccessionC(false);
-    } else {
-      setAccessionC(true);
-    }
-
-    setPageNum(0);
-
-    const newAccessionQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [
-                {
-                  wildcard: {
-                    uniprot_accession: {
-                      value: `${inputValue}*`,
-                      case_insensitive: true,
-                    },
-                  },
-                },
-              ],
-            },
-          }
-        : null;
-
-    updateQuery(newAccessionQuery, "uniprot_accession");
+    setFacetFilters({
+      ...facetFilter,
+      "UniProt Accession": value,
+    });
   };
 
   const handleGeneChange = (e) => {
-    // Check if the event is a delete key press
-    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
+    const { value } = e.target;
 
-    let inputValue = e.target.value;
-    setGenePrefix(inputValue);
-    if (isDeleteKey) {
-      // Handle delete key press by removing the last character
-      inputValue = inputValue.slice(0, -1);
-    }
-
-    // Remove double backslashes
-    inputValue = inputValue.replace(/\\\\/g, "");
-
-    // Escape special characters
-    inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-    if (inputValue === "") {
-      setGeneC(false);
-    } else if (inputValue !== "") {
-      setGeneC(true);
-    }
-    setPageNum(0);
-    const newGeneQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [
-                {
-                  wildcard: {
-                    "Gene Symbol": {
-                      value: `${inputValue}*`,
-                      case_insensitive: true,
-                    },
-                  },
-                },
-              ],
-            },
-          }
-        : null;
-
-    updateQuery(newGeneQuery, "Gene Symbol");
+    setFacetFilters({
+      ...facetFilter,
+      "Gene Symbol": value,
+    });
   };
 
   const handleNameChange = (e) => {
-    // Check if the event is a delete key press
-    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
+    const { value } = e.target;
 
+    setFacetFilters({
+      ...facetFilter,
+      "Protein Name": value,
+    });
+  };
+
+  const handleStartWSChange = (e) => {
     let inputValue = e.target.value;
 
-    if (isDeleteKey) {
-      // Handle delete key press by removing the last character
-      inputValue = inputValue.slice(0, -1);
-    }
+    const updateFacet = facetFilter;
 
-    // Remove double backslashes
-    inputValue = inputValue.replace(/\\\\/g, "");
-
-    // Escape special characters
-    inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-    console.log(inputValue);
-    if (inputValue === "") {
-      console.log("wt");
-      setNameC(false);
-    } else if (inputValue !== "") {
-      setNameC(true);
-    }
-    const newNameQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [
-                {
-                  wildcard: {
-                    "Protein Name": {
-                      value: `${inputValue}*`,
-                      case_insensitive: true,
-                    },
-                  },
-                },
-              ],
-            },
-          }
-        : null;
-    setNamePrefix(e.target.value);
-
-    updateQuery(newNameQuery, "Protein Name");
-  };
-
-  const handlestartWSChange = (e) => {
-    let inputValue = e.target.value;
-    if (inputValue === "") {
-      setwsC(false);
-    } else if (inputValue !== "") {
-      setwsC(true);
-    }
-    let newstartWSQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [
-                {
-                  range: { saliva_abundance: { gte: inputValue, lte: parEnd } },
-                },
-              ],
-            },
-          }
-        : null;
-    if (wsEnd === "") {
-      newstartWSQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      saliva_abundance: { gte: inputValue, lte: 20000 },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-    setwsStart(inputValue);
-    if (inputValue === "") {
-      newstartWSQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      saliva_abundance: { gte: 0, lte: 20000 },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-
-    if (inputValue === "" && wsEnd !== "") {
-      newstartWSQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    bool: {
-                      must_not: {
-                        range: {
-                          saliva_abundance: { lte: wsEnd, gte: 0 },
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-    updateQuery(newstartWSQuery, "saliva_abundance");
-  };
-
-  const handleendWSChange = (e) => {
-    const inputValue = e.target.value;
-    const wsAbundance = inputValue === "" ? 20000 : inputValue;
-    if (inputValue === "") {
-      setwsC(false);
-    } else if (inputValue !== "") {
-      setwsC(true);
-    }
-    let newendWSQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [
-                {
-                  range: {
-                    saliva_abundance: { lte: wsAbundance, gte: wsStart },
-                  },
-                },
-              ],
-            },
-          }
-        : null;
-
-    if (wsStart === "") {
-      newendWSQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      saliva_abundance: { gte: 0, lte: inputValue },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-    setwsEnd(inputValue);
-    if (inputValue === "") {
-      newendWSQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      saliva_abundance: { gte: 0, lte: 20000 },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-
-    if (inputValue === "" && wsStart !== "") {
-      newendWSQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    bool: {
-                      must_not: {
-                        range: {
-                          saliva_abundance: {
-                            lte: 20000,
-                            gte: wsStart,
-                          },
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-    updateQuery(newendWSQuery, "saliva_abundance");
-  };
-
-  const handlestartParChange = (e) => {
-    let inputValue = e.target.value;
-
-    if (inputValue === "") {
-      setparC(false);
-    } else if (inputValue !== "") {
-      setparC(true);
-    }
-    let newstartParQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [
-                {
-                  range: {
-                    parotid_gland_abundance: { gte: inputValue, lte: parEnd },
-                  },
-                },
-              ],
-            },
-          }
-        : null;
-    if (parEnd === "") {
-      newstartParQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      parotid_gland_abundance: { gte: inputValue, lte: 20000 },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-    setparStart(inputValue);
-    if (inputValue === "") {
-      newstartParQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      parotid_gland_abundance: { gte: 0, lte: 20000 },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-
-    if (inputValue === "" && parEnd !== "") {
-      newstartParQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    bool: {
-                      must_not: {
-                        range: {
-                          parotid_gland_abundance: { lte: parEnd, gte: 0 },
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-    updateQuery(newstartParQuery, "parotid_gland_abundance");
-  };
-
-  const handleendParChange = (e) => {
-    const inputValue = e.target.value;
-    const parGlandAbundance = inputValue === "" ? 20000 : inputValue;
-    let newendParQuery = {
-      bool: {
-        must: [],
-        must_not: [],
-        filter: [
-          {
-            range: {
-              parotid_gland_abundance: {
-                lte: parGlandAbundance,
-                gte: parStart,
-              },
-            },
-          },
-        ],
-      },
-    };
-    if (parStart === "") {
-      newendParQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      parotid_gland_abundance: { gte: 0, lte: inputValue },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-    setparC(inputValue !== ""); // Set parC based on whether inputValue is not empty
-
-    setparEnd(inputValue);
-    if (inputValue === "") {
-      newendParQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      parotid_gland_abundance: { gte: 0, lte: 20000 },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-
-    if (inputValue === "" && parStart !== "") {
-      newendParQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    bool: {
-                      must_not: {
-                        range: {
-                          parotid_gland_abundance: {
-                            lte: 20000,
-                            gte: parStart,
-                          },
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-    updateQuery(newendParQuery, "parotid_gland_abundance");
-  };
-
-  const handlestartSubChange = (e) => {
-    let inputValue = e.target.value;
-
-    if (inputValue === "") {
-      setsubC(false);
+    if (updateFacet.saliva_abundance) {
+      updateFacet.saliva_abundance = {
+        ...updateFacet.saliva_abundance,
+        start: inputValue,
+      };
     } else {
-      setsubC(true);
+      updateFacet.saliva_abundance = {
+        start: inputValue,
+      };
     }
 
-    let newstartSubQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [
-                {
-                  range: {
-                    "sm/sl_abundance": { gte: inputValue, lte: subEnd },
-                  },
-                },
-              ],
-            },
-          }
-        : null;
-
-    if (subEnd === "") {
-      newstartSubQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      "sm/sl_abundance": { gte: inputValue, lte: 20000 },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-    setsubStart(inputValue);
-
-    if (inputValue === "") {
-      newstartSubQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      "sm/sl_abundance": { gte: 0, lte: 20000 },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-
-    if (inputValue === "" && subEnd !== "") {
-      newstartSubQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    bool: {
-                      must_not: {
-                        range: {
-                          "sm/sl_abundance": { lte: subEnd, gte: 0 },
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-    updateQuery(newstartSubQuery, "sm/sl_abundance");
-  };
-  const handleendSubChange = (e) => {
-    const inputValue = e.target.value;
-    const subAbundance = inputValue === "" ? 20000 : inputValue;
-    let newendParQuery = {
-      bool: {
-        must: [],
-        must_not: [],
-        filter: [
-          {
-            range: { "sm/sl_abundance": { lte: subAbundance, gte: subStart } },
-          },
-        ],
-      },
-    };
-    if (subStart === "") {
-      newendParQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      "sm/sl_abundance": { gte: 0, lte: inputValue },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-    setsubC(inputValue !== ""); // Set parC based on whether inputValue is not empty
-
-    setsubEnd(inputValue);
-    if (inputValue === "") {
-      newendParQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      "sm/sl_abundance": { gte: 0, lte: 20000 },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-
-    if (inputValue === "" && subStart !== "") {
-      newendParQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    bool: {
-                      must_not: {
-                        range: {
-                          "sm/sl_abundance": { lte: 20000, gte: subStart },
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-    updateQuery(newendParQuery, "sm/sl_abundance");
+    setFacetFilters({ ...updateFacet });
   };
 
-  const handlestartBChange = (e) => {
-    let inputValue = e.target.value;
-    if (e.target.exclude === undefined) {
-      e.target.exclude = exclude;
-    }
-    if (inputValue === "") {
-      setplasmaC(false);
-    } else if (inputValue !== "") {
-      setplasmaC(true);
+  const handleEndWSChange = (e) => {
+    const { value } = e.target;
+
+    const updateFacet = facetFilter;
+
+    if (updateFacet.saliva_abundance) {
+      updateFacet.saliva_abundance = {
+        ...updateFacet.saliva_abundance,
+        end: value,
+      };
+    } else {
+      updateFacet.saliva_abundance = {
+        end: value,
+      };
     }
 
-    let newstartBQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [
-                { range: { plasma_abundance: { gte: inputValue, lte: pEnd } } },
-              ],
-            },
-          }
-        : null;
-    if (pEnd === "" && e.target.exclude === false) {
-      newstartBQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      plasma_abundance: { gte: inputValue, lte: 5 },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    } else if (pEnd === "" && e.target.exclude === true) {
-      newstartBQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    bool: {
-                      must_not: {
-                        range: {
-                          plasma_abundance: { gte: inputValue, lte: 5 },
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-
-    setpStart(inputValue);
-    if (inputValue === "") {
-      newstartBQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      plasma_abundance: { gte: 0, lte: 5 },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-
-    if (e.target.exclude === true && inputValue !== "" && pEnd !== "") {
-      newstartBQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    bool: {
-                      must_not: {
-                        range: {
-                          plasma_abundance: { gte: inputValue, lte: pEnd },
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    } else if (e.target.exclude === true && inputValue === "" && pEnd !== "") {
-      newstartBQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    bool: {
-                      must_not: {
-                        range: { plasma_abundance: { gte: 0, lte: pEnd } },
-                      },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-    updateQuery(newstartBQuery, "plasma_abundance");
+    setFacetFilters({ ...updateFacet });
   };
 
-  const handleendBChange = (e) => {
-    console.log("hande end b", e.target.exclude);
-    if (e.target.exclude === undefined) {
-      e.target.exclude = exclude;
-    }
-    let inputValue = e.target.value;
-    if (inputValue === "") {
-      setplasmaC(false);
-    } else if (inputValue !== "") {
-      setplasmaC(true);
+  const handleStartParChange = (e) => {
+    const { value } = e.target;
+
+    const updateFacet = facetFilter;
+
+    if (updateFacet.parotid_gland_abundance) {
+      updateFacet.parotid_gland_abundance = {
+        ...updateFacet.parotid_gland_abundance,
+        start: value,
+      };
+    } else {
+      updateFacet.parotid_gland_abundance = {
+        start: value,
+      };
     }
 
-    let newendBQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [
-                {
-                  range: { plasma_abundance: { lte: inputValue, gte: pStart } },
-                },
-              ],
-            },
-          }
-        : null;
-    console.log();
-    if (pStart === "" && e.target.exclude === false) {
-      newendBQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      plasma_abundance: { lte: inputValue, gte: 0 },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    } else if (pStart === "" && e.target.exclude === true) {
-      newendBQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    bool: {
-                      must_not: {
-                        range: {
-                          plasma_abundance: { lte: inputValue, gte: 0 },
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-
-    setpEnd(inputValue);
-    if (inputValue === "") {
-      newendBQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    range: {
-                      plasma_abundance: { gte: 0, lte: 5 },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-
-    if (e.target.exclude === true && inputValue !== "" && pStart !== "") {
-      newendBQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    bool: {
-                      must_not: {
-                        range: {
-                          plasma_abundance: { lte: inputValue, gte: pStart },
-                        },
-                      },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    } else if (
-      e.target.exclude === true &&
-      inputValue === "" &&
-      pStart !== ""
-    ) {
-      newendBQuery =
-        inputValue !== ""
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    bool: {
-                      must_not: {
-                        range: { plasma_abundance: { lte: 5, gte: pStart } },
-                      },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
-    }
-
-    updateQuery(newendBQuery, "plasma_abundance");
+    setFacetFilters({ ...updateFacet });
   };
 
-  const handlestartmRNAChange = (e) => {
-    const inputValue = e.target.value;
+  const handleEndParChange = (e) => {
+    const { value } = e.target;
 
-    if (inputValue === "") {
-      setmRNAC(false);
-    } else if (inputValue !== "") {
-      setmRNAC(true);
+    const updateFacet = facetFilter;
+
+    if (updateFacet.parotid_gland_abundance) {
+      updateFacet.parotid_gland_abundance = {
+        ...updateFacet.parotid_gland_abundance,
+        end: value,
+      };
+    } else {
+      updateFacet.parotid_gland_abundance = {
+        end: value,
+      };
     }
 
-    const newstartmRNAQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [{ range: { mRNA: { gte: inputValue, lte: mRNAEnd } } }],
-            },
-          }
-        : null;
-
-    setmRNAStart(inputValue);
-    updateQuery(newstartmRNAQuery, "mRNA");
+    setFacetFilters({ ...updateFacet });
   };
 
-  const handleendmRNAChange = (e) => {
-    const inputValue = e.target.value;
-    const mRNAAbundance = inputValue === "" ? 20000 : inputValue;
-    const newendmRNAQuery = {
-      bool: {
-        must: [],
-        must_not: [],
-        filter: [{ range: { mRNA: { lte: mRNAAbundance, gte: mRNAStart } } }],
-      },
-    };
+  const handleStartSubChange = (e) => {
+    const { value } = e.target;
 
-    setmRNAC(inputValue !== ""); // Set parC based on whether inputValue is not empty
+    const updateFacet = facetFilter;
 
-    setmRNAEnd(inputValue);
-    updateQuery(newendmRNAQuery, "mRNA");
+    if (updateFacet["sm/sl_abundance"]) {
+      updateFacet["sm/sl_abundance"] = {
+        ...updateFacet["sm/sl_abundance"],
+        start: value,
+      };
+    } else {
+      updateFacet["sm/sl_abundance"] = {
+        start: value,
+      };
+    }
+
+    setFacetFilters({ ...updateFacet });
   };
 
-  const filterOpUS = (event) => {
-    setOpArr((prevOpArr) => {
-      const updatedOpArr = [!prevOpArr[0], prevOpArr[1]];
+  const handleEndSubChange = (e) => {
+    const { value } = e.target;
 
-      if (updatedOpArr[0] === true) {
-        seteoC(true);
-        setopinionVal("Unsubstantiated");
-      } else if (updatedOpArr[0] === false && updatedOpArr[1] === false) {
-        seteoC(false);
-        setopinionVal("");
-      } else if (updatedOpArr[0] === false) {
-        setopinionVal("");
-      }
-      let opQuery =
-        updatedOpArr[0] === true
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    wildcard: {
-                      expert_opinion: {
-                        value: "Unsubstantiated",
-                        case_insensitive: true,
-                      },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
+    const updateFacet = facetFilter;
 
-      updateQuery(opQuery, "expert_opinion");
-      return updatedOpArr;
-    });
+    if (updateFacet["sm/sl_abundance"]) {
+      updateFacet["sm/sl_abundance"] = {
+        ...updateFacet["sm/sl_abundance"],
+        end: value,
+      };
+    } else {
+      updateFacet["sm/sl_abundance"] = {
+        end: value,
+      };
+    }
+
+    setFacetFilters({ ...updateFacet });
   };
 
-  const filterOpC = (event) => {
-    setOpArr((prevOpArr) => {
-      const updatedOpArr = [prevOpArr[0], !prevOpArr[1]];
+  const handleStartBChange = (e) => {
+    const { value } = e.target;
 
-      if (updatedOpArr[1] === true) {
-        seteoC(true);
-        setopinionVal("Confirmed");
-        console.log("diu:" + eoC + opinionVal);
-      } else if (updatedOpArr[0] === false && updatedOpArr[1] === false) {
-        seteoC(false);
-        setopinionVal("");
-      } else if (updatedOpArr[1] === false) {
-        setopinionVal("");
-      }
-      let opQuery =
-        updatedOpArr[1] === true
-          ? {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    wildcard: {
-                      expert_opinion: {
-                        value: "Confirmed",
-                        case_insensitive: true,
-                      },
-                    },
-                  },
-                ],
-              },
-            }
-          : null;
+    const updateFacet = facetFilter;
 
-      updateQuery(opQuery, "expert_opinion");
-      return updatedOpArr;
-    });
+    if (updateFacet["plasma_abundance"]) {
+      updateFacet["plasma_abundance"] = {
+        ...updateFacet["plasma_abundance"],
+        start: value,
+      };
+    } else {
+      updateFacet["plasma_abundance"] = {
+        start: value,
+      };
+    }
+
+    setFacetFilters({ ...updateFacet });
   };
-  const IHCValues = ["medium", "not detected", "low", "n/a", "high"];
+
+  const handleEndBChange = (e) => {
+    const { value } = e.target;
+
+    const updateFacet = facetFilter;
+
+    if (updateFacet["plasma_abundance"]) {
+      updateFacet["plasma_abundance"] = {
+        ...updateFacet["plasma_abundance"],
+        end: value,
+      };
+    } else {
+      updateFacet["plasma_abundance"] = {
+        end: value,
+      };
+    }
+
+    setFacetFilters({ ...updateFacet });
+  };
+
+  const handleStartMRNAChange = (e) => {
+    const { value } = e.target;
+
+    const updateFacet = facetFilter;
+
+    if (updateFacet.mRNA) {
+      updateFacet.mRNA = {
+        ...updateFacet.mRNA,
+        start: value,
+      };
+    } else {
+      updateFacet.mRNA = {
+        start: value,
+      };
+    }
+
+    setFacetFilters({ ...updateFacet });
+  };
+
+  const handleEndMRNAChange = (e) => {
+    const updateFacet = facetFilter;
+    const { value } = e.target;
+
+    if (updateFacet.mRNA) {
+      updateFacet.mRNA = {
+        ...updateFacet.mRNA,
+        end: value,
+      };
+    } else {
+      updateFacet.mRNA = {
+        end: value,
+      };
+    }
+
+    setFacetFilters({ ...updateFacet });
+  };
+
   const filterIHC = (event) => {
     const { value } = event.target;
-
-    const inputValue = value;
-    setIHCArr((prevIHCArr) => {
-      let updatedIHCArr;
-      let IHCQuery;
-      if (value === "not detected") {
-        // Special case for "not detected"
-        updatedIHCArr = [false, !prevIHCArr[1], false, false, false];
-        setihcC(!prevIHCArr[1]); // Update ihcC based on the second checkbox
-        setIHCVal(`not*`);
-
-        IHCQuery =
-          prevIHCArr[1] === false
-            ? {
-                bool: {
-                  must: [],
-                  must_not: [],
-                  filter: [
-                    {
-                      wildcard: {
-                        IHC: {
-                          value: "*not*",
-                          case_insensitive: true,
-                        },
-                      },
-                    },
-                  ],
-                },
-              }
-            : null;
-      } else if (value === "n/a") {
-        // Special case for "n/a"
-        updatedIHCArr = [false, false, false, !prevIHCArr[3], false];
-        setihcC(!prevIHCArr[3]); // Update ihcC based on the fourth checkbox
-        setIHCVal(`*a*`);
-        IHCQuery =
-          prevIHCArr[3] === false
-            ? {
-                bool: {
-                  must: [],
-                  must_not: [],
-                  filter: [
-                    {
-                      wildcard: {
-                        IHC: {
-                          value: "*a*",
-                          case_insensitive: true,
-                        },
-                      },
-                    },
-                  ],
-                },
-              }
-            : null;
-      } else {
-        updatedIHCArr = prevIHCArr.map((isChecked, index) =>
-          index === IHCValues.indexOf(value) ? !isChecked : isChecked
-        );
-
-        // Check if any checkbox is checked
-        const anyChecked = updatedIHCArr.some((isChecked) => isChecked);
-
-        // Update ihcC and IHCVal based on checked status
-        if (anyChecked) {
-          setihcC(true);
-          setIHCVal(`${value}*`);
-          IHCQuery =
-            prevIHCArr[IHCValues.indexOf(value)] === false
-              ? {
-                  bool: {
-                    must: [],
-                    must_not: [],
-                    filter: [
-                      {
-                        wildcard: {
-                          IHC: {
-                            value: `${value}`,
-                            case_insensitive: true,
-                          },
-                        },
-                      },
-                    ],
-                  },
-                }
-              : null;
-        } else {
-          setihcC(false);
-          setIHCVal("");
-          IHCQuery =
-            prevIHCArr[IHCValues.indexOf(value)] === false
-              ? {
-                  bool: {
-                    must: [],
-                    must_not: [],
-                    filter: [
-                      {
-                        wildcard: {
-                          IHC: {
-                            value: `${value}`,
-                            case_insensitive: true,
-                          },
-                        },
-                      },
-                    ],
-                  },
-                }
-              : null;
-        }
-      }
-      console.log(IHCQuery);
-      updateQuery(IHCQuery, "IHC");
-      return updatedIHCArr;
-    });
+    const valIndex = IHCValues.indexOf(value);
+    const updatedIHCArr = IHCArr;
+    updatedIHCArr[valIndex] = !IHCArr[valIndex];
+    setihcC(updatedIHCArr);
   };
 
-  const rowHeight = 80;
+  /**
+   * Track which column is selected for sort by user
+   */
+  const onSortChanged = () => {
+    const columnState = columnApi.getColumnState();
+    const sortedColumn = columnState.filter((col) => col.sort !== null);
 
-  const recordsPerPageList = [
-    {
-      value: 50,
-      label: 50,
-    },
-    {
-      value: 100,
-      label: 100,
-    },
-    {
-      value: 500,
-      label: 500,
-    },
-    {
-      value: 1000,
-      label: 1000,
-    },
-  ];
+    if (sortedColumn.length !== 0) {
+      const { sort, colId } = sortedColumn[0];
+      setSortedColumn({ attribute: colId, order: sort });
+    } else {
+      setSortedColumn(null);
+    }
+  };
 
   return (
     <>
@@ -2324,15 +1123,14 @@ function App() {
           width: "100%",
           display: "flex",
           paddingLeft: "0px !important",
-          // paddingRight: "0px !important",
         }}
       >
         <Box
           sx={{
             backgroundColor: "#f9f8f7",
-            width: "270px",
-            height: "47rem",
+            width: "285px",
             overflow: "scroll",
+            maxHeight: "760px",
           }}
         >
           <h1
@@ -2351,9 +1149,9 @@ function App() {
             <Stack direction="row" spacing={1} alignItems="center">
               <Typography color="common.black">And</Typography>
               <Switch
-                checked={orChecked}
+                checked={orFilterOn}
                 inputProps={{ "aria-label": "ant design" }}
-                onChange={(event) => setorChecked(event.target.checked)}
+                onChange={(event) => setOrFilterOn(event.target.checked)}
               />
               <Typography color="common.black">Or</Typography>
             </Stack>
@@ -2387,7 +1185,7 @@ function App() {
                     },
                   }}
                   onChange={handleAccessionChange}
-                  value={prefix}
+                  name="accession"
                 />
               </AccordionDetails>
             </Accordion>
@@ -2419,7 +1217,6 @@ function App() {
                     },
                   }}
                   onChange={handleGeneChange}
-                  value={genePrefix}
                 />
               </AccordionDetails>
             </Accordion>
@@ -2451,7 +1248,6 @@ function App() {
                     },
                   }}
                   onChange={handleNameChange}
-                  value={namePrefix}
                 />
               </AccordionDetails>
             </Accordion>
@@ -2472,43 +1268,72 @@ function App() {
                   Expert Opinion
                 </Typography>
               </AccordionSummary>
-              <AccordionDetails>
-                <List
-                  component="div"
-                  disablePadding
-                  sx={{ border: "1px groove" }}
-                >
-                  {opCount.map((child, key) =>
-                    child.key !== "" &&
-                    child.key !== "D.D.S." &&
-                    child.key != "Unknown" ? (
-                      <FormGroup key={key} sx={{ ml: "10px" }}>
-                        {child.key === "Unsubstantiated" ? (
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={opArr[0]}
-                                onChange={filterOpUS}
-                              />
-                            }
-                            label={"US (" + child.doc_count + ")"}
+              <List
+                component="div"
+                disablePadding
+                sx={{ border: "1px groove" }}
+              >
+                {opCount.map((child, key) => (
+                  <FormGroup key={key} sx={{ ml: "10px" }}>
+                    {child.key === "Unsubstantiated" ? (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={opArr[0]}
+                            onClick={(e) => {
+                              const { checked } = e.target;
+
+                              if (!checked) {
+                                delete facetFilter["expert_opinion"];
+                              }
+
+                              const updatedOpArr = [!opArr[0], opArr[1]];
+
+                              setOpArr(updatedOpArr);
+
+                              setFacetFilters({
+                                ...facetFilter,
+                                ...(checked && {
+                                  expert_opinion: "Unsubstantiated",
+                                }), // Only pass when checked
+                              });
+                            }}
                           />
-                        ) : (
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={opArr[1]}
-                                onChange={filterOpC}
-                              />
-                            }
-                            label={"C (" + (child.doc_count - 1) + ")"}
+                        }
+                        label={"US (" + child.doc_count + ")"}
+                      />
+                    ) : (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={opArr[1]}
+                            onClick={(e) => {
+                              const { checked } = e.target;
+
+                              if (!checked) {
+                                delete facetFilter["expert_opinion"];
+                              }
+
+                              const updatedOpArr = [opArr[0], !opArr[1]];
+
+                              setOpArr(updatedOpArr);
+
+                              setFacetFilters({
+                                ...facetFilter,
+                                ...(checked && {
+                                  expert_opinion: "Confirmed",
+                                }), // Only pass when checked
+                              });
+                            }}
                           />
-                        )}
-                      </FormGroup>
-                    ) : null
-                  )}
-                </List>
-              </AccordionDetails>
+                        }
+                        label={"C (" + child.doc_count + ")"}
+                      />
+                    )}
+                  </FormGroup>
+                ))}
+              </List>
+              <AccordionDetails></AccordionDetails>
             </Accordion>
             <Accordion>
               <AccordionSummary
@@ -2545,6 +1370,20 @@ function App() {
                               } // Set the checked attribute based on IHCArr
                               onChange={filterIHC}
                               value={child.key}
+                              onClick={(e) => {
+                                const { value, checked } = e.target;
+
+                                if (!checked) {
+                                  delete facetFilter["IHC"];
+                                }
+
+                                setFacetFilters({
+                                  ...facetFilter,
+                                  ...(checked && {
+                                    IHC: value,
+                                  }), // Only pass when checked
+                                });
+                              }}
                             />
                           }
                           label={child.key + " (" + child.doc_count + ")"}
@@ -2569,7 +1408,7 @@ function App() {
                     lineHeight: "normal",
                   }}
                 >
-                  MS WS
+                  Whole Saliva
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -2583,8 +1422,7 @@ function App() {
                       borderRadius: "16px",
                     },
                   }}
-                  onChange={handlestartWSChange}
-                  value={wsStart}
+                  onChange={handleStartWSChange}
                 />
                 <Typography
                   variant="p"
@@ -2595,7 +1433,6 @@ function App() {
                     justifyContent: "center",
                   }}
                 >
-                  {" "}
                   to
                 </Typography>
                 <TextField
@@ -2608,8 +1445,7 @@ function App() {
                       borderRadius: "16px",
                     },
                   }}
-                  onChange={handleendWSChange}
-                  value={wsEnd}
+                  onChange={handleEndWSChange}
                 />
               </AccordionDetails>
             </Accordion>
@@ -2627,7 +1463,7 @@ function App() {
                     lineHeight: "normal",
                   }}
                 >
-                  MS Par
+                  Parotid Glands
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -2641,8 +1477,7 @@ function App() {
                       borderRadius: "16px",
                     },
                   }}
-                  onChange={handlestartParChange}
-                  value={parStart}
+                  onChange={handleStartParChange}
                 />
                 <Typography
                   variant="p"
@@ -2653,7 +1488,6 @@ function App() {
                     justifyContent: "center",
                   }}
                 >
-                  {" "}
                   to
                 </Typography>
                 <TextField
@@ -2666,8 +1500,7 @@ function App() {
                       borderRadius: "16px",
                     },
                   }}
-                  onChange={handleendParChange}
-                  value={parEnd}
+                  onChange={handleEndParChange}
                 />
               </AccordionDetails>
             </Accordion>
@@ -2685,7 +1518,7 @@ function App() {
                     lineHeight: "normal",
                   }}
                 >
-                  MS Sub
+                  SM/SL Glands
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -2699,8 +1532,7 @@ function App() {
                       borderRadius: "16px",
                     },
                   }}
-                  onChange={handlestartSubChange}
-                  value={subStart}
+                  onChange={handleStartSubChange}
                 />
                 <Typography
                   variant="p"
@@ -2711,7 +1543,6 @@ function App() {
                     justifyContent: "center",
                   }}
                 >
-                  {" "}
                   to
                 </Typography>
                 <TextField
@@ -2724,8 +1555,7 @@ function App() {
                       borderRadius: "16px",
                     },
                   }}
-                  onChange={handleendSubChange}
-                  value={subEnd}
+                  onChange={handleEndSubChange}
                 />
               </AccordionDetails>
             </Accordion>
@@ -2743,7 +1573,7 @@ function App() {
                     lineHeight: "normal",
                   }}
                 >
-                  MS B
+                  Blood
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -2751,24 +1581,12 @@ function App() {
                   <Stack direction="row" spacing={1} alignItems="center">
                     <Typography color="common.black">Include</Typography>
                     <Switch
-                      checked={exclude}
-                      inputProps={{ "aria-label": "ant design" }}
+                      checked={msBExcludeOn}
+                      inputProps={{
+                        "aria-label": "ant design",
+                      }}
                       onChange={(event) => {
-                        handlestartBChange({
-                          target: {
-                            value: pStart,
-                            exclude: event.target.checked,
-                          },
-                        });
-
-                        handleendBChange({
-                          target: {
-                            value: pEnd,
-                            exclude: event.target.checked,
-                          },
-                        });
-
-                        setExclude(event.target.checked);
+                        setMsBExcludeOn(event.target.checked);
                       }}
                     />
                     <Typography color="common.black">Exclude</Typography>
@@ -2784,8 +1602,7 @@ function App() {
                     },
                   }}
                   type="number"
-                  onChange={handlestartBChange}
-                  value={pStart}
+                  onChange={handleStartBChange}
                 />
                 <Typography
                   variant="p"
@@ -2796,7 +1613,6 @@ function App() {
                     justifyContent: "center",
                   }}
                 >
-                  {" "}
                   to
                 </Typography>
                 <TextField
@@ -2809,8 +1625,7 @@ function App() {
                     },
                   }}
                   type="number"
-                  onChange={handleendBChange}
-                  value={pEnd}
+                  onChange={handleEndBChange}
                 />
               </AccordionDetails>
             </Accordion>
@@ -2828,7 +1643,7 @@ function App() {
                     lineHeight: "normal",
                   }}
                 >
-                  mRNA Val
+                  mRNA
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -2841,8 +1656,8 @@ function App() {
                       borderRadius: "16px",
                     },
                   }}
-                  onChange={handlestartmRNAChange}
-                  value={mRNAStart}
+                  onChange={handleStartMRNAChange}
+                  type="number"
                 />
                 <Typography
                   variant="p"
@@ -2853,7 +1668,6 @@ function App() {
                     justifyContent: "center",
                   }}
                 >
-                  {" "}
                   to
                 </Typography>
                 <TextField
@@ -2865,30 +1679,28 @@ function App() {
                       borderRadius: "16px",
                     },
                   }}
-                  onChange={handleendmRNAChange}
-                  value={mRNAEnd}
+                  onChange={handleEndMRNAChange}
+                  type="number"
                 />
               </AccordionDetails>
             </Accordion>
           </div>
         </Box>
-
         <Container maxWidth="xl" sx={{ marginTop: "30px", marginLeft: "20px" }}>
           <Box sx={{ display: "flex" }}>
-            <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
+            <Box
+              style={{
+                display: "flex",
+                width: "100%",
+                maxWidth: "550px",
+              }}
+            >
               <TextField
                 variant="outlined"
                 size="small"
                 label="Search..."
                 value={searchText}
-                onChange={(e) => {
-                  setSearchText(e.target.value);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    onFilterTextBoxChanged(e.target.value);
-                  }
-                }}
+                onChange={(e) => handleGlobalSearch(e.target.value)}
                 InputProps={{
                   style: {
                     height: "44px",
@@ -2900,7 +1712,7 @@ function App() {
                       <IconButton
                         aria-label="clear search"
                         onClick={() => {
-                          clearSearch();
+                          clearSearchBar();
                         }}
                         edge="end"
                         size="small"
@@ -2923,11 +1735,7 @@ function App() {
                   borderRadius: "0 16px 16px 0",
                 }}
                 onClick={() => {
-                  const syntheticEvent = {
-                    target: { value: searchText },
-                    nativeEvent: { inputType: "insertText" }, // Mimic an input event
-                  };
-                  onFilterTextBoxChanged(syntheticEvent);
+                  handleGlobalSearch(searchText);
                 }}
               >
                 <SearchIcon sx={{ color: "white" }} />
@@ -2988,10 +1796,10 @@ function App() {
                     borderRadius: "10px",
                   },
                 }}
-                value={pageNum ? pageNum : 1}
+                value={pageNum === 0 ? 1 : pageNum + 1}
                 sx={{ marginLeft: "10px", marginRight: "10px" }}
                 onChange={(event) => {
-                  setPageNum(event.target.value);
+                  setPageNum(event.target.value - 1);
                 }}
               >
                 {Array.from(
@@ -3015,18 +1823,18 @@ function App() {
                 out of {Math.ceil(docCount / pageSize)}
               </Typography>
               <button
-                onClick={onBtPrevious}
-                disabled={pageNum === 1}
+                onClick={setPrevPage}
+                disabled={pageNum === 0}
                 style={{
-                  color: pageNum === 1 ? "#D3D3D3" : "#F6921E",
+                  color: pageNum === 0 ? "#D3D3D3" : "#F6921E",
                   background: "white",
                   fontSize: "20px",
                   border: "none",
-                  cursor: pageNum === 1 ? "default" : "pointer",
-                  transition: pageNum === 1 ? "none" : "background 0.3s",
+                  cursor: pageNum === 0 ? "default" : "pointer",
+                  transition: pageNum === 0 ? "none" : "background 0.3s",
                   borderRadius: "5px",
                   marginRight: "15px",
-                  pointerEvents: pageNum === 1 ? "none" : "auto",
+                  pointerEvents: pageNum === 0 ? "none" : "auto",
                   paddingBottom: "5px",
                 }}
                 onMouseEnter={(e) =>
@@ -3047,11 +1855,11 @@ function App() {
                 prev
               </button>
               <button
-                onClick={onBtNext}
-                disabled={pageNum === Math.ceil(docCount / pageSize)}
+                onClick={setNextPage}
+                disabled={pageNum === Math.ceil(docCount / pageSize - 1)}
                 style={{
                   color:
-                    pageNum === Math.ceil(docCount / pageSize)
+                    pageNum === Math.ceil(docCount / pageSize - 1)
                       ? "#D3D3D3"
                       : "#F6921E",
                   background: "white",
@@ -3091,7 +1899,6 @@ function App() {
               </button>
             </Box>
           </Box>
-
           <Box
             sx={{
               marginTop: "20px",
@@ -3107,16 +1914,16 @@ function App() {
                 columnDefs={columns}
                 ref={gridRef}
                 defaultColDef={defColumnDefs}
-                frameworkComponents={{
+                components={{
                   LinkComponent,
                   WSComponent,
                   IHCComponent,
                   opinionComponent,
                   proteinLinkComponent,
                 }}
-                noRowsOverlayComponent={noRowsOverlayComponent}
-                loadingOverlayComponent={loadingOverlayComponent}
+                onSortChanged={onSortChanged}
                 onGridReady={onGridReady}
+                loadingOverlayComponent={loadingOverlayComponent}
                 pagination={true}
                 enableCellTextSelection={true}
                 paginationPageSize={pageSize}
@@ -3137,7 +1944,7 @@ function App() {
                 cursor: "pointer",
               }}
             >
-              <Download_Logo
+              <DownloadLogo
                 style={{
                   marginRight: "10px",
                   paddingTop: "5px",
@@ -3155,4 +1962,4 @@ function App() {
   );
 }
 
-export default App;
+export default SalivaryProteinTable;
