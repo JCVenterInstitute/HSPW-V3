@@ -4,7 +4,9 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 import { TableBody } from "@mui/material";
+import { TableBody } from "@mui/material";
 import { HashLink as Link } from "react-router-hash-link";
+import { useEffect, useState } from "react";
 import { useEffect, useState } from "react";
 import Divider from "@mui/material/Divider";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
@@ -148,10 +150,7 @@ const Protein_Detail = (props) => {
             }}
             className="head_background"
           >
-            <h1
-              className="head_title"
-              align="left"
-            >
+            <h1 className="head_title" align="left">
               Protein: {data[0]["_source"]["salivary_proteins"]["protein_name"]}
             </h1>
             <p
@@ -187,68 +186,39 @@ const Protein_Detail = (props) => {
                 Names and Origin
               </Link>
               |
-              <Link
-                to="#sequence-attributes"
-                className="hero-link"
-              >
+              <Link to="#sequence-attributes" className="hero-link">
                 Sequence Attributes
               </Link>
               |
-              <Link
-                to="#feature-map"
-                className="hero-link"
-              >
+              <Link to="#feature-map" className="hero-link">
                 Feature Map
               </Link>
               |
-              <Link
-                to="#expression"
-                className="hero-link"
-              >
+              <Link to="#expression" className="hero-link">
                 Expression
               </Link>
               |
-              <Link
-                to="#glycan"
-                className="hero-link"
-              >
+              <Link to="#glycan" className="hero-link">
                 Glycan
               </Link>
               |
-              <Link
-                to="#proteomics"
-                className="hero-link"
-              >
+              <Link to="#proteomics" className="hero-link">
                 Proteomics
               </Link>
               |
-              <Link
-                to="#cross-reference"
-                className="hero-link"
-              >
+              <Link to="#cross-reference" className="hero-link">
                 Cross References
               </Link>
               |
-
-              <Link
-                to="#keywords"
-                className="hero-link"
-              >
+              <Link to="#keywords" className="hero-link">
                 Keywords
               </Link>
               |
-              <Link
-                to="#references"
-                className="hero-link"
-              >
-
+              <Link to="#references" className="hero-link">
                 References
               </Link>
               |
-              <Link
-                to="#entry-info"
-                className="hero-link"
-              >
+              <Link to="#entry-info" className="hero-link">
                 Entry Info
               </Link>
             </div>
@@ -1244,7 +1214,6 @@ const Protein_Detail = (props) => {
               Entry Information
             </h2>
 
-
             <TableContainer>
               <Table>
                 <TableBody>
@@ -1320,7 +1289,6 @@ const Protein_Detail = (props) => {
                 </TableBody>
               </Table>
             </TableContainer>
-
           </div>
         </TabPanel>
         <TabPanel>
@@ -1364,10 +1332,7 @@ const Protein_Detail = (props) => {
                     </TableCell>
                   </TableRow>
                   <TableRow sx={{ border: "1px solid black" }}>
-                    <TableCell
-                      sx={th}
-                      style={{ maxWidth: "20%" }}
-                    >
+                    <TableCell sx={th} style={{ maxWidth: "20%" }}>
                       Abundance level
                     </TableCell>
                     <TableCell
@@ -1376,10 +1341,7 @@ const Protein_Detail = (props) => {
                     ></TableCell>
                   </TableRow>
                   <TableRow sx={{ border: "1px solid black" }}>
-                    <TableCell
-                      sx={th}
-                      style={{ maxWidth: "20%" }}
-                    >
+                    <TableCell sx={th} style={{ maxWidth: "20%" }}>
                       Curator
                     </TableCell>
                     <TableCell

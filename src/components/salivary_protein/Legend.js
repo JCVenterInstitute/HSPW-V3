@@ -43,14 +43,8 @@ const Legend = () => {
       </AccordionSummary>
       {isActive && (
         <AccordionDetails>
-          <Grid
-            container
-            spacing={2}
-          >
-            <Grid
-              item
-              xs={6}
-            >
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
               <div
                 style={{
                   borderRadius: "10px 10px 0 0",
@@ -64,10 +58,7 @@ const Legend = () => {
                   Differential Expression:
                 </div>
               </div>
-              <TableContainer
-                component={Paper}
-                style={{ padding: "10px" }}
-              >
+              <TableContainer component={Paper} style={{ padding: "10px" }}>
                 <Table aria-label="simple table">
                   <TableBody>
                     <TableRow>
@@ -92,10 +83,7 @@ const Legend = () => {
                 </Table>
               </TableContainer>
             </Grid>
-            <Grid
-              item
-              xs={6}
-            >
+            <Grid item xs={6}>
               <div
                 style={{
                   borderRadius: "10px 10px 0 0",
@@ -109,10 +97,7 @@ const Legend = () => {
                   Expert Opinion
                 </div>
               </div>
-              <TableContainer
-                component={Paper}
-                style={{ padding: "10px" }}
-              >
+              <TableContainer component={Paper} style={{ padding: "10px" }}>
                 <Table aria-label="simple table">
                   <TableBody>
                     <TableRow>
@@ -156,10 +141,7 @@ const Legend = () => {
                 </Table>
               </TableContainer>
             </Grid>
-            <Grid
-              item
-              xs={6}
-            >
+            <Grid item xs={6}>
               <div
                 style={{
                   borderRadius: "10px 10px 0 0",
@@ -173,10 +155,7 @@ const Legend = () => {
                   Abundance Indicator:
                 </div>
               </div>
-              <TableContainer
-                component={Paper}
-                style={{ padding: "10px" }}
-              >
+              <TableContainer component={Paper} style={{ padding: "10px" }}>
                 <Table aria-label="simple table">
                   <TableBody>
                     <TableRow>
@@ -202,16 +181,8 @@ const Legend = () => {
                       <TableCell
                         style={{ paddingRight: "5px", marginLeft: "35px" }}
                       >
-                        <svg
-                          width={18}
-                          height={18}
-                          className="table-cell"
-                        >
-                          <rect
-                            width={18}
-                            height={18}
-                            fill="rgb(0,100,0)"
-                          >
+                        <svg width={18} height={18} className="table-cell">
+                          <rect width={18} height={18} fill="rgb(0,100,0)">
                             <title>High</title>
                           </rect>
                         </svg>
@@ -227,16 +198,8 @@ const Legend = () => {
                       <TableCell
                         style={{ paddingRight: "5px", marginLeft: "35px" }}
                       >
-                        <svg
-                          width={18}
-                          height={18}
-                          className="table-cell"
-                        >
-                          <rect
-                            width={18}
-                            height={18}
-                            fill="rgb(100,0,0)"
-                          >
+                        <svg width={18} height={18} className="table-cell">
+                          <rect width={18} height={18} fill="rgb(100,0,0)">
                             <title>High</title>
                           </rect>
                         </svg>
@@ -256,16 +219,8 @@ const Legend = () => {
                       <TableCell
                         style={{ paddingRight: "5px", marginLeft: "35px" }}
                       >
-                        <svg
-                          width={18}
-                          height={18}
-                          className="table-cell"
-                        >
-                          <rect
-                            width={18}
-                            height={18}
-                            fill="rgb(70,170,70)"
-                          >
+                        <svg width={18} height={18} className="table-cell">
+                          <rect width={18} height={18} fill="rgb(70,170,70)">
                             <title>Medium</title>
                           </rect>
                         </svg>
@@ -281,16 +236,8 @@ const Legend = () => {
                       <TableCell
                         style={{ paddingRight: "5px", marginLeft: "35px" }}
                       >
-                        <svg
-                          width={18}
-                          height={18}
-                          className="table-cell"
-                        >
-                          <rect
-                            width={18}
-                            height={18}
-                            fill="rgb(190,70,70)"
-                          >
+                        <svg width={18} height={18} className="table-cell">
+                          <rect width={18} height={18} fill="rgb(190,70,70)">
                             <title>Medium</title>
                           </rect>
                         </svg>
@@ -310,16 +257,8 @@ const Legend = () => {
                       <TableCell
                         style={{ paddingRight: "5px", marginLeft: "35px" }}
                       >
-                        <svg
-                          width={18}
-                          height={18}
-                          className="table-cell"
-                        >
-                          <rect
-                            width={18}
-                            height={18}
-                            fill="rgb(180,250,180)"
-                          >
+                        <svg width={18} height={18} className="table-cell">
+                          <rect width={18} height={18} fill="rgb(180,250,180)">
                             <title>Low</title>
                           </rect>
                         </svg>
@@ -335,16 +274,8 @@ const Legend = () => {
                       <TableCell
                         style={{ paddingRight: "5px", marginLeft: "35px" }}
                       >
-                        <svg
-                          width={18}
-                          height={18}
-                          className="table-cell"
-                        >
-                          <rect
-                            width={18}
-                            height={18}
-                            fill="rgb(250,180,180)"
-                          >
+                        <svg width={18} height={18} className="table-cell">
+                          <rect width={18} height={18} fill="rgb(250,180,180)">
                             <title>Low</title>
                           </rect>
                         </svg>
@@ -367,11 +298,7 @@ const Legend = () => {
                           height={18}
                           style={{ stroke: "black", alignItems: "center" }}
                         >
-                          <rect
-                            width={18}
-                            height={18}
-                            fill="rgb(255,255,255)"
-                          >
+                          <rect width={18} height={18} fill="rgb(255,255,255)">
                             <title>Not uniquely observed</title>
                           </rect>
                         </svg>
@@ -382,11 +309,7 @@ const Legend = () => {
                           height={18}
                           style={{ stroke: "black", alignItems: "center" }}
                         >
-                          <rect
-                            width={18}
-                            height={18}
-                            fill="rgb(255,255,255)"
-                          >
+                          <rect width={18} height={18} fill="rgb(255,255,255)">
                             <title>Not uniquely observed</title>
                           </rect>
                         </svg>
@@ -457,10 +380,46 @@ const Legend = () => {
                 </Table>
               </TableContainer>
             </Grid>
-            <Grid
-              item
-              xs={6}
-            >
+            <Grid item xs={6}>
+              <div
+                style={{
+                  borderRadius: "10px 10px 0 0",
+                  backgroundColor: "#E7E7E7",
+                  border: "hidden",
+                  borderColor: "#C2C2C2",
+                  padding: "10px",
+                }}
+              >
+                <div style={{ color: "#616161", textAlign: "center" }}>
+                  Differential Expression:
+                </div>
+              </div>
+              <TableContainer component={Paper} style={{ padding: "10px" }}>
+                <Table aria-label="simple table">
+                  <TableBody>
+                    <TableRow>
+                      <TableCell style={{ fontWeight: "bold" }}>
+                        Label
+                      </TableCell>
+                      <TableCell style={{ fontWeight: "bold" }}>
+                        Specificity
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>1</TableCell>
+                      <TableCell>Salivary gland specific</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>2</TableCell>
+                      <TableCell>
+                        Specific to salivary glands and a few other tissues
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Grid>
+            <Grid item xs={6}>
               <div
                 style={{
                   borderRadius: "10px 10px 0 0",
@@ -474,10 +433,7 @@ const Legend = () => {
                   Expert Opinion
                 </div>
               </div>
-              <TableContainer
-                component={Paper}
-                style={{ padding: "10px" }}
-              >
+              <TableContainer component={Paper} style={{ padding: "10px" }}>
                 <Table aria-label="simple table">
                   <TableBody>
                     <TableRow>
@@ -521,6 +477,49 @@ const Legend = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
+            </Grid>
+            <Grid item xs={6}>
+              <div
+                style={{
+                  borderRadius: "10px 10px 0 0",
+                  backgroundColor: "#E7E7E7",
+                  border: "hidden",
+                  borderColor: "#C2C2C2",
+                  padding: "10px",
+                }}
+              >
+                <div style={{ color: "#616161", textAlign: "center" }}>
+                  Specificity Score
+                </div>
+                <TableContainer component={Paper} style={{ padding: "10px" }}>
+                  <Table aria-label="simple table">
+                    <TableBody>
+                      <TableRow>
+                        <TableCell style={{ fontWeight: "bold" }}>
+                          Label
+                        </TableCell>
+                        <TableCell style={{ fontWeight: "bold" }}>
+                          Specificity Score
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Higher</TableCell>
+                        <TableCell>
+                          On average higher in salivary glands than in other
+                          tissues
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Lower</TableCell>
+                        <TableCell>
+                          On average lower in salivary glands than in other
+                          tissues
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </div>
             </Grid>
           </Grid>
         </AccordionDetails>
