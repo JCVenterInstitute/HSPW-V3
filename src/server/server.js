@@ -1917,6 +1917,64 @@ async function search_protein() {
   return response.body.hits.hits;
 }
 
+const search_go_nodes = async (id) => {
+  // Initialize the client.
+  var client = await getClient();
+
+  var query = {
+    size: 10000,
+    query: {
+      query_string: {
+        default_field: "id",
+        query: id,
+      },
+    },
+  };
+
+  const response = await client.search({
+    index: "go_nodes",
+    body: query,
+  });
+  return response.body.hits.hits;
+};
+
+app.get("/api/go_nodes/:id", (req, res) => {
+  let a = search_go_nodes(req.params.id);
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+const search_go_nodes_usage = async (id) => {
+  // Initialize the client.
+  var client = await getClient1();
+  console.log(id);
+  var query = {
+    size: 10000,
+    _source: ["id"],
+    query: {
+      query_string: {
+        query: `*GO*${id}*`,
+        fields: [],
+      },
+    },
+  };
+
+  const response = await client.search({
+    index: "salivary-proteins-112023",
+    body: query,
+  });
+  return response.body.hits.hits;
+};
+
+app.get("/api/go_nodes_usage/:id", (req, res) => {
+  console.log(req.params.id);
+  let a = search_go_nodes_usage(req.params.id);
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
 app.get("/protein", (req, res) => {
   let a = search_protein();
   a.then(function (result) {
