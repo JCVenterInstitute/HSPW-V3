@@ -128,6 +128,7 @@ const AdvancedSearch = () => {
           ...row,
           selectedProperty: propertyList[0] || "",
           selectedOperation: "",
+          value: "",
         }))
       );
     } catch (error) {
