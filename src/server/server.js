@@ -2247,6 +2247,7 @@ app.get("/api/properties/:entity", async (req, res) => {
  * @param {Object[]} filter All applied filters applied by user in facet menu
  * @param {Object[]} sort Sort query for column selected to sort by from table
  * @param {Object} keyword String entered by user into search bar
+ * @param {Boolean} filterByOr True if using or filters, false otherwise
  * @returns
  */
 async function querySalivaryProtein(
@@ -2254,7 +2255,8 @@ async function querySalivaryProtein(
   from,
   filter,
   sort = null,
-  keyword = null
+  keyword = null,
+  filterByOr = false
 ) {
   const client = await getClient();
 
@@ -2278,7 +2280,7 @@ async function querySalivaryProtein(
       },
       query: {
         bool: {
-          filter,
+          ...(filterByOr === true ? { should: filter } : { filter }),
           ...(keyword && { must: [keyword] }), // Apply global search if present
         },
       },
@@ -2292,10 +2294,17 @@ async function querySalivaryProtein(
 }
 
 app.post("/api/salivary-proteins/:size/:from/", (req, res) => {
-  const { filters, sort, keyword } = req.body;
+  const { filters, sort, keyword, filterByOr } = req.body;
   const { size, from } = req.params;
 
-  const results = querySalivaryProtein(size, from, filters, sort, keyword);
+  const results = querySalivaryProtein(
+    size,
+    from,
+    filters,
+    sort,
+    keyword,
+    filterByOr
+  );
 
   results.then((result) => {
     res.json(result);

@@ -654,6 +654,7 @@ function SalivaryProteinTable() {
   const fetchData = async () => {
     const apiPayload = {
       filters: queryBuilder(facetFilter),
+      filterByOr: orFilterOn, // True if Or filter toggled
       // Pass sort query if any sort is applied
       ...(sortedColumn && createSortQuery()),
       ...(searchText && { keyword: createGlobalSearchQuery() }),
@@ -711,7 +712,7 @@ function SalivaryProteinTable() {
     }, 1000);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [facetFilter, pageSize, msBExcludeOn, searchText]);
+  }, [facetFilter, pageSize, msBExcludeOn, searchText, orFilterOn]);
 
   // Update records when new sort is applied & go back to first page
   useEffect(() => {
