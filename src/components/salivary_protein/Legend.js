@@ -61,6 +61,115 @@ const Legend = () => {
                 }}
               >
                 <div style={{ color: "#616161", textAlign: "center" }}>
+                  Differential Expression:
+                </div>
+              </div>
+              <TableContainer
+                component={Paper}
+                style={{ padding: "10px" }}
+              >
+                <Table aria-label="simple table">
+                  <TableBody>
+                    <TableRow>
+                      <TableCell style={{ fontWeight: "bold" }}>
+                        Label
+                      </TableCell>
+                      <TableCell style={{ fontWeight: "bold" }}>
+                        Specificity
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>1</TableCell>
+                      <TableCell>Salivary gland specific</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>2</TableCell>
+                      <TableCell>
+                        Specific to salivary glands and a few other tissues
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+            >
+              <div
+                style={{
+                  borderRadius: "10px 10px 0 0",
+                  backgroundColor: "#E7E7E7",
+                  border: "hidden",
+                  borderColor: "#C2C2C2",
+                  padding: "10px",
+                }}
+              >
+                <div style={{ color: "#616161", textAlign: "center" }}>
+                  Expert Opinion
+                </div>
+              </div>
+              <TableContainer
+                component={Paper}
+                style={{ padding: "10px" }}
+              >
+                <Table aria-label="simple table">
+                  <TableBody>
+                    <TableRow>
+                      <TableCell
+                        style={{
+                          fontWeight: "bold",
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        Acronym
+                      </TableCell>
+                      <TableCell style={{ fontWeight: "bold" }}>
+                        Definition
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        style={{ paddingRight: "5px", marginLeft: "35px" }}
+                      >
+                        US
+                      </TableCell>
+                      <TableCell
+                        style={{ paddingRight: "5px", marginLeft: "35px" }}
+                      >
+                        Unsubstantiated
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        style={{ paddingRight: "5px", marginLeft: "35px" }}
+                      >
+                        C
+                      </TableCell>
+                      <TableCell
+                        style={{ paddingRight: "5px", marginLeft: "35px" }}
+                      >
+                        Confirmed
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+            >
+              <div
+                style={{
+                  borderRadius: "10px 10px 0 0",
+                  backgroundColor: "#E7E7E7",
+                  border: "hidden",
+                  borderColor: "#C2C2C2",
+                  padding: "10px",
+                }}
+              >
+                <div style={{ color: "#616161", textAlign: "center" }}>
                   Abundance Indicator:
                 </div>
               </div>
@@ -362,51 +471,6 @@ const Legend = () => {
                 }}
               >
                 <div style={{ color: "#616161", textAlign: "center" }}>
-                  Differential Expression:
-                </div>
-              </div>
-              <TableContainer
-                component={Paper}
-                style={{ padding: "10px" }}
-              >
-                <Table aria-label="simple table">
-                  <TableBody>
-                    <TableRow>
-                      <TableCell style={{ fontWeight: "bold" }}>
-                        Label
-                      </TableCell>
-                      <TableCell style={{ fontWeight: "bold" }}>
-                        Specificity
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>1</TableCell>
-                      <TableCell>Salivary gland specific</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>2</TableCell>
-                      <TableCell>
-                        Specific to salivary glands and a few other tissues
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-            >
-              <div
-                style={{
-                  borderRadius: "10px 10px 0 0",
-                  backgroundColor: "#E7E7E7",
-                  border: "hidden",
-                  borderColor: "#C2C2C2",
-                  padding: "10px",
-                }}
-              >
-                <div style={{ color: "#616161", textAlign: "center" }}>
                   Expert Opinion
                 </div>
               </div>
@@ -420,91 +484,43 @@ const Legend = () => {
                       <TableCell
                         style={{
                           fontWeight: "bold",
-                          wordBreak: "break-word",
                         }}
                       >
-                        Acronym
+                        Label
                       </TableCell>
                       <TableCell style={{ fontWeight: "bold" }}>
-                        Definition
+                        Specificity Score
                       </TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell
                         style={{ paddingRight: "5px", marginLeft: "35px" }}
                       >
-                        US
+                        Higher
                       </TableCell>
                       <TableCell
                         style={{ paddingRight: "5px", marginLeft: "35px" }}
                       >
-                        Unsubstantiated
+                        On average higher in salivary glands than in other
+                        tissues
                       </TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell
                         style={{ paddingRight: "5px", marginLeft: "35px" }}
                       >
-                        C
+                        Lower
                       </TableCell>
                       <TableCell
                         style={{ paddingRight: "5px", marginLeft: "35px" }}
                       >
-                        Confirmed
+                        On average lower in salivary glands than in other
+                        tissues
                       </TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>
               </TableContainer>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-            >
-              <div
-                style={{
-                  borderRadius: "10px 10px 0 0",
-                  backgroundColor: "#E7E7E7",
-                  border: "hidden",
-                  borderColor: "#C2C2C2",
-                  padding: "10px",
-                }}
-              >
-                <div style={{ color: "#616161", textAlign: "center" }}>
-                  Specificity Score
-                </div>
-                <TableContainer
-                  component={Paper}
-                  style={{ padding: "10px" }}
-                >
-                  <Table aria-label="simple table">
-                    <TableBody>
-                      <TableRow>
-                        <TableCell style={{ fontWeight: "bold" }}>
-                          Label
-                        </TableCell>
-                        <TableCell style={{ fontWeight: "bold" }}>
-                          Specificity Score
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>Higher</TableCell>
-                        <TableCell>
-                          On average higher in salivary glands than in other
-                          tissues
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>Lower</TableCell>
-                        <TableCell>
-                          On average lower in salivary glands than in other
-                          tissues
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </div>
             </Grid>
           </Grid>
         </AccordionDetails>
