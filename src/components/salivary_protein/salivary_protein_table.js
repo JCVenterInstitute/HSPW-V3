@@ -47,7 +47,12 @@ const styles1 = {
 };
 
 const Accordion = styled((props) => (
-  <MuiAccordion disableGutters elevation={0} square {...props} />
+  <MuiAccordion
+    disableGutters
+    elevation={0}
+    square
+    {...props}
+  />
 ))(({ theme }) => ({
   marginBottom: "15px",
   "&:not(:last-child)": {
@@ -156,7 +161,11 @@ function WSComponent(props) {
         height={18}
         style={{ stroke: "black", alignItems: "center" }}
       >
-        <rect width={18} height={18} fill="rgb(255,255,255)">
+        <rect
+          width={18}
+          height={18}
+          fill="rgb(255,255,255)"
+        >
           <title>Not uniquely observed</title>
         </rect>
       </svg>
@@ -193,7 +202,11 @@ function WSComponent(props) {
             ></rect>
           </pattern>
         </defs>
-        <rect width={18} height={18} style={{ fill: "url(#stripe2)" }}>
+        <rect
+          width={18}
+          height={18}
+          style={{ fill: "url(#stripe2)" }}
+        >
           <title>Data not available</title>
         </rect>
       </svg>
@@ -1147,7 +1160,11 @@ function SalivaryProteinTable() {
             Filters
           </h1>
           <FormGroup style={{ marginLeft: "18%" }}>
-            <Stack direction="row" spacing={1} alignItems="center">
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+            >
               <Typography color="common.black">And</Typography>
               <Switch
                 checked={orFilterOn}
@@ -1269,72 +1286,76 @@ function SalivaryProteinTable() {
                   Expert Opinion
                 </Typography>
               </AccordionSummary>
-              <List
-                component="div"
-                disablePadding
-                sx={{ border: "1px groove" }}
-              >
-                {opCount.map((child, key) => (
-                  <FormGroup key={key} sx={{ ml: "10px" }}>
-                    {child.key === "Unsubstantiated" ? (
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={opArr[0]}
-                            onClick={(e) => {
-                              const { checked } = e.target;
+              <AccordionDetails>
+                <List
+                  component="div"
+                  disablePadding
+                  sx={{ border: "1px groove" }}
+                >
+                  {opCount.map((child, key) => (
+                    <FormGroup
+                      key={key}
+                      sx={{ ml: "10px" }}
+                    >
+                      {child.key === "Unsubstantiated" ? (
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={opArr[0]}
+                              onClick={(e) => {
+                                const { checked } = e.target;
 
-                              if (!checked) {
-                                delete facetFilter["expert_opinion"];
-                              }
+                                if (!checked) {
+                                  delete facetFilter["expert_opinion"];
+                                }
 
-                              const updatedOpArr = [!opArr[0], opArr[1]];
+                                const updatedOpArr = [!opArr[0], opArr[1]];
 
-                              setOpArr(updatedOpArr);
+                                setOpArr(updatedOpArr);
 
-                              setFacetFilters({
-                                ...facetFilter,
-                                ...(checked && {
-                                  expert_opinion: "Unsubstantiated",
-                                }), // Only pass when checked
-                              });
-                            }}
-                          />
-                        }
-                        label={"US (" + child.doc_count + ")"}
-                      />
-                    ) : (
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={opArr[1]}
-                            onClick={(e) => {
-                              const { checked } = e.target;
+                                setFacetFilters({
+                                  ...facetFilter,
+                                  ...(checked && {
+                                    expert_opinion: "Unsubstantiated",
+                                  }), // Only pass when checked
+                                });
+                              }}
+                            />
+                          }
+                          label={"US (" + child.doc_count + ")"}
+                        />
+                      ) : (
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={opArr[1]}
+                              onClick={(e) => {
+                                const { checked } = e.target;
 
-                              if (!checked) {
-                                delete facetFilter["expert_opinion"];
-                              }
+                                if (!checked) {
+                                  delete facetFilter["expert_opinion"];
+                                }
 
-                              const updatedOpArr = [opArr[0], !opArr[1]];
+                                const updatedOpArr = [opArr[0], !opArr[1]];
 
-                              setOpArr(updatedOpArr);
+                                setOpArr(updatedOpArr);
 
-                              setFacetFilters({
-                                ...facetFilter,
-                                ...(checked && {
-                                  expert_opinion: "Confirmed",
-                                }), // Only pass when checked
-                              });
-                            }}
-                          />
-                        }
-                        label={"C (" + child.doc_count + ")"}
-                      />
-                    )}
-                  </FormGroup>
-                ))}
-              </List>
-              <AccordionDetails></AccordionDetails>
+                                setFacetFilters({
+                                  ...facetFilter,
+                                  ...(checked && {
+                                    expert_opinion: "Confirmed",
+                                  }), // Only pass when checked
+                                });
+                              }}
+                            />
+                          }
+                          label={"C (" + child.doc_count + ")"}
+                        />
+                      )}
+                    </FormGroup>
+                  ))}
+                </List>
+              </AccordionDetails>
             </Accordion>
             <Accordion>
               <AccordionSummary
@@ -1353,7 +1374,6 @@ function SalivaryProteinTable() {
                   IHC
                 </Typography>
               </AccordionSummary>
-
               <AccordionDetails>
                 <List
                   component="div"
@@ -1362,7 +1382,10 @@ function SalivaryProteinTable() {
                 >
                   {IHCCount.map((child, i) =>
                     child.key !== "?" ? (
-                      <FormGroup key={i} sx={{ ml: "10px" }}>
+                      <FormGroup
+                        key={i}
+                        sx={{ ml: "10px" }}
+                      >
                         <FormControlLabel
                           control={
                             <Checkbox
@@ -1579,7 +1602,11 @@ function SalivaryProteinTable() {
               </AccordionSummary>
               <AccordionDetails>
                 <FormGroup style={{ marginLeft: "2%" }}>
-                  <Stack direction="row" spacing={1} alignItems="center">
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                  >
                     <Typography color="common.black">Include</Typography>
                     <Switch
                       checked={msBExcludeOn}
@@ -1687,7 +1714,10 @@ function SalivaryProteinTable() {
             </Accordion>
           </div>
         </Box>
-        <Container maxWidth="xl" sx={{ marginTop: "30px", marginLeft: "20px" }}>
+        <Container
+          maxWidth="xl"
+          sx={{ marginTop: "30px", marginLeft: "20px" }}
+        >
           <Box sx={{ display: "flex" }}>
             <Box
               style={{
@@ -1774,7 +1804,10 @@ function SalivaryProteinTable() {
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
               >
                 {recordsPerPageList.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
+                  <MenuItem
+                    key={option.value}
+                    value={option.value}
+                  >
                     {option.label}
                   </MenuItem>
                 ))}
@@ -1806,7 +1839,10 @@ function SalivaryProteinTable() {
                 {Array.from(
                   { length: Math.ceil(docCount / pageSize) },
                   (_, index) => (
-                    <MenuItem key={index + 1} value={index + 1}>
+                    <MenuItem
+                      key={index + 1}
+                      value={index + 1}
+                    >
                       {index + 1}
                     </MenuItem>
                   )
