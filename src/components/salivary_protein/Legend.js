@@ -323,7 +323,7 @@ const Legend = () => {
                             height={18}
                             style={{ fill: "url(#stripe2)" }}
                           >
-                            <title>Not available</title>
+                            <title>Not Available</title>
                           </rect>
                         </svg>
                       </TableCell>
@@ -338,11 +338,11 @@ const Legend = () => {
                             height={18}
                             style={{ fill: "url(#stripe2)" }}
                           >
-                            <title>Not available</title>
+                            <title>Not Available</title>
                           </rect>
                         </svg>
                       </TableCell>
-                      <TableCell>Not available</TableCell>
+                      <TableCell>Not Available</TableCell>
                       <TableCell>n/a</TableCell>
                     </TableRow>
                   </TableBody>
