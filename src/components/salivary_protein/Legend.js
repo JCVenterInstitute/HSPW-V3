@@ -7,7 +7,6 @@ import TableContainer from "@mui/material/TableContainer";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
-import Typography from "@mui/material/Typography";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Grid } from "@mui/material";
@@ -390,13 +389,6 @@ const Legend = () => {
                         Specific to salivary glands and a few other tissues
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell>3</TableCell>
-                      <TableCell>
-                        On average higher in salivary glands than in other
-                        tissues
-                      </TableCell>
-                    </TableRow>
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -464,6 +456,55 @@ const Legend = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+            >
+              <div
+                style={{
+                  borderRadius: "10px 10px 0 0",
+                  backgroundColor: "#E7E7E7",
+                  border: "hidden",
+                  borderColor: "#C2C2C2",
+                  padding: "10px",
+                }}
+              >
+                <div style={{ color: "#616161", textAlign: "center" }}>
+                  Specificity Score
+                </div>
+                <TableContainer
+                  component={Paper}
+                  style={{ padding: "10px" }}
+                >
+                  <Table aria-label="simple table">
+                    <TableBody>
+                      <TableRow>
+                        <TableCell style={{ fontWeight: "bold" }}>
+                          Label
+                        </TableCell>
+                        <TableCell style={{ fontWeight: "bold" }}>
+                          Specificity Score
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Higher</TableCell>
+                        <TableCell>
+                          On average higher in salivary glands than in other
+                          tissues
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Lower</TableCell>
+                        <TableCell>
+                          On average lower in salivary glands than in other
+                          tissues
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </div>
             </Grid>
           </Grid>
         </AccordionDetails>
