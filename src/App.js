@@ -34,6 +34,7 @@ import DifferentialExpressionResults from "./pages/Analyze/DifferentialExpressio
 import AdvancedSearch from "./pages/Search/AdvancedSearch.js";
 import ProteinSequence from "./pages/saliva_protein/protein_detail_sequence";
 import GoNodes from "./pages/GoTerms/GoNode";
+import GoTable from "./pages/GoTerms/GoTable";
 
 function App() {
   return (
@@ -92,6 +93,7 @@ function App() {
           element={<ProteinSequence />}
         />
         <Route path="GoNodes/:id" element={<GoNodes />} />
+        <Route path="GoTable" element={<GoTable />} />
       </Routes>
       <Footer />
     </Router>
