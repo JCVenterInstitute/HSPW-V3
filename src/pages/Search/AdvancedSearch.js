@@ -38,6 +38,9 @@ const generateColumnDefs = (entity, data) => {
   } else if (entity === "Protein Signatures") {
     fields = fields.filter((field) => field !== "InterPro ID");
     fields.unshift("InterPro ID");
+  } else if (entity === "PubMed Citations") {
+    fields = fields.filter((field) => field !== "CitationID");
+    fields.unshift("CitationID");
   }
 
   // Generate column definitions based on the keys
@@ -132,6 +135,8 @@ const AdvancedSearch = () => {
         propertyList = propertyList.filter((item) => item !== "uniprot_id");
       } else if (e.target.value === "Protein Signatures") {
         propertyList = propertyList.filter((item) => item !== "InterPro ID");
+      } else if (e.target.value === "PubMed Citations") {
+        propertyList = propertyList.filter((item) => item !== "CitationID");
       }
       setProperties(propertyList);
 
