@@ -606,7 +606,6 @@ function SalivaryProteinTable() {
   const [pageSize, setPageSize] = useState(50); // Default page data to 50 records per page
   const [pageNum, setPageNum] = useState(0);
   const [docCount, setDocCount] = useState(0); // Total # of records available for display
-  const [ihcC, setihcC] = useState(false);
   const [opCount, setOpCount] = useState([]);
   const [IHCCount, setIHCCount] = useState([]);
   const [rowData, setRowData] = useState([]);
@@ -729,7 +728,7 @@ function SalivaryProteinTable() {
     const delayDebounceFn = setTimeout(() => {
       setPageNum(0);
       fetchData();
-    }, 1000);
+    }, 600);
 
     return () => clearTimeout(delayDebounceFn);
   }, [facetFilter, pageSize, msBExcludeOn, searchText, orFilterOn]);
@@ -1118,7 +1117,6 @@ function SalivaryProteinTable() {
     const valIndex = IHCValues.indexOf(value);
     const updatedIHCArr = IHCArr;
     updatedIHCArr[valIndex] = !IHCArr[valIndex];
-    setihcC(updatedIHCArr);
   };
 
   /**
