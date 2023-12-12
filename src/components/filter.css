@@ -144,18 +144,18 @@ input[type="checkbox"]:checked ~ .price__container {
 
 .download-link {
   position: relative;
-  display: inline-block;
 }
+
 .download-hover-content {
   position: absolute;
-  bottom: -15px; /* Adjust the distance from the image */
-  left: 60%;
+  bottom: -10px; /* Adjust the distance from the image */
+  left: 70%;
   transform: translateX(-50%);
   text-align: center;
 }
 
 .download-hover-image {
   width: 40px; /* Adjust the width of the image */
-  height: auto;
-  margin-right: 5px;
+  height: 70%;
+  margin-right: 10px;
 }

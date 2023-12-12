@@ -77,6 +77,96 @@ app.get("/a123", (req, res) => {
   });
 });
 
+async function cluster_member_count() {
+  var client = await getClient();
+
+  var response = await client.search({
+    index: "protein_cluster",
+    body: {
+      size: 0,
+      aggs: {
+        number_of_members_2: {
+          filter: {
+            term: {
+              number_of_members: 2,
+            },
+          },
+        },
+        number_of_members_3: {
+          filter: {
+            term: {
+              number_of_members: 3,
+            },
+          },
+        },
+        number_of_members_4: {
+          filter: {
+            term: {
+              number_of_members: 4,
+            },
+          },
+        },
+        number_of_members_5: {
+          filter: {
+            term: {
+              number_of_members: 5,
+            },
+          },
+        },
+        number_of_members_6: {
+          filter: {
+            term: {
+              number_of_members: 6,
+            },
+          },
+        },
+        number_of_members_7: {
+          filter: {
+            term: {
+              number_of_members: 7,
+            },
+          },
+        },
+        number_of_members_8: {
+          filter: {
+            term: {
+              number_of_members: 8,
+            },
+          },
+        },
+        number_of_members_9: {
+          filter: {
+            term: {
+              number_of_members: 9,
+            },
+          },
+        },
+        number_of_members_10_or_more: {
+          filter: {
+            script: {
+              script: {
+                source: "doc['number_of_members'].value >= params.param1",
+                params: {
+                  param1: 10,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+  return response.body.aggregations;
+}
+
+app.get("/api/protein_cluster_member_count", (req, res) => {
+  let a = cluster_member_count();
+  a.then(function (result) {
+    console.log(result);
+    res.json(result);
+  });
+});
+
 async function search_cluster() {
   // Initialize the client.
   var client = await getClient();
@@ -2443,6 +2533,78 @@ app.post("/api/advanced-search/build-query", async (req, res) => {
   }
 });
 
+/**
+ * Query data used for Salivary Protein page table
+ * @param {Number} size Number of records to return
+ * @param {Number} from Starting point for the data page to return
+ * @param {Object[]} filter All applied filters applied by user in facet menu
+ * @param {Object[]} sort Sort query for column selected to sort by from table
+ * @param {Object} keyword String entered by user into search bar
+ * @param {Boolean} filterByOr True if using or filters, false otherwise
+ * @returns
+ */
+async function querySalivaryProtein(
+  size,
+  from,
+  filter,
+  sort = null,
+  keyword = null,
+  filterByOr = false
+) {
+  const client = await getClient();
+
+  const payload = {
+    index: "new_saliva_protein_test",
+    body: {
+      track_total_hits: true,
+      size: size,
+      from: from,
+      aggs: {
+        IHC: {
+          terms: {
+            field: "IHC.keyword",
+          },
+        },
+        expert_opinion: {
+          terms: {
+            field: "expert_opinion.keyword",
+          },
+        },
+      },
+      query: {
+        bool: {
+          ...(filterByOr === true ? { should: filter } : { filter }),
+          ...(keyword && { must: [keyword] }), // Apply global search if present
+        },
+      },
+      ...(sort && { sort }), // Apply sort if present
+    },
+  };
+
+  const response = await client.search(payload);
+
+  return response.body;
+}
+
+app.post("/api/salivary-proteins/:size/:from/", (req, res) => {
+  const { filters, sort, keyword, filterByOr } = req.body;
+  const { size, from } = req.params;
+
+  const results = querySalivaryProtein(
+    size,
+    from,
+    filters,
+    sort,
+    keyword,
+    filterByOr
+  );
+
+  results.then((result) => {
+    res.json(result);
+  });
+});
+
+/**
 /**
  * Query data used for Salivary Protein page table
  * @param {Number} size Number of records to return
