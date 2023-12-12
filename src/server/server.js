@@ -77,6 +77,96 @@ app.get("/a123", (req, res) => {
   });
 });
 
+async function cluster_member_count() {
+  var client = await getClient();
+
+  var response = await client.search({
+    index: "protein_cluster",
+    body: {
+      size: 0,
+      aggs: {
+        number_of_members_2: {
+          filter: {
+            term: {
+              number_of_members: 2,
+            },
+          },
+        },
+        number_of_members_3: {
+          filter: {
+            term: {
+              number_of_members: 3,
+            },
+          },
+        },
+        number_of_members_4: {
+          filter: {
+            term: {
+              number_of_members: 4,
+            },
+          },
+        },
+        number_of_members_5: {
+          filter: {
+            term: {
+              number_of_members: 5,
+            },
+          },
+        },
+        number_of_members_6: {
+          filter: {
+            term: {
+              number_of_members: 6,
+            },
+          },
+        },
+        number_of_members_7: {
+          filter: {
+            term: {
+              number_of_members: 7,
+            },
+          },
+        },
+        number_of_members_8: {
+          filter: {
+            term: {
+              number_of_members: 8,
+            },
+          },
+        },
+        number_of_members_9: {
+          filter: {
+            term: {
+              number_of_members: 9,
+            },
+          },
+        },
+        number_of_members_10_or_more: {
+          filter: {
+            script: {
+              script: {
+                source: "doc['number_of_members'].value >= params.param1",
+                params: {
+                  param1: 10,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+  return response.body.aggregations;
+}
+
+app.get("/api/protein_cluster_member_count", (req, res) => {
+  let a = cluster_member_count();
+  a.then(function (result) {
+    console.log(result);
+    res.json(result);
+  });
+});
+
 async function search_cluster() {
   // Initialize the client.
   var client = await getClient();

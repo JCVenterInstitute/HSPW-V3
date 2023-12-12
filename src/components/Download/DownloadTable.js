@@ -142,6 +142,7 @@ function DownloadTable() {
       autoHeight: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
+      autoHeight: true,
     },
   ];
 

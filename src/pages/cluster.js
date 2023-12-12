@@ -1,194 +1,145 @@
-import React, { useState, useEffect } from 'react';
-import Cluster from '../components/cluster_table';
-import Chart from 'react-google-charts';
-import main_feature from '../components/hero.jpeg'
-import './style.css'
-import MultilineChart from "../components/MultilineChart.js";
-import BChart from '../components/bubbleChart_d3.tsx';
+import React, { useState, useEffect } from "react";
+import Cluster from "../components/cluster_table";
+import Chart from "react-google-charts";
+import main_feature from "../components/hero.jpeg";
+import "./style.css";
+import LinearProgress from "@mui/material/LinearProgress";
+import Box from "@mui/material/Box";
 
-
-const mystyle = {
-    color: "white",
-    marginTop:'10px',
-    marginLeft:'20px',
-    textAlign:'left',
-    fontSize:'20px',
-    marginBottom:'10px',
-
-};
-  
-export const data = [
-    ["Number of Members", "# of Members","Frequency","ID",'size'],
-    ["2",2, Math.log(119)+5,119,Math.log(119)],
-    ["3",3, Math.log(62)+5,62,Math.log(62)],
-    ["4",4, Math.log(39)+5,39,Math.log(39)],
-    ["5",5,Math.log(22)+5,22,Math.log(22)],
-    ["6",6,Math.log(13)+5,13,Math.log(13)],
-    ["7",7,Math.log(13)+5,13,Math.log(13)],
-    ["8",8,Math.log(9)+5,9,Math.log(9)],
-    ["9",9,Math.log(6)+5,6,Math.log(6)],
-    ["≥10",10,Math.log(33)+5,33,Math.log(33)],
-  ];
-  
-  export const data2 = [
-    {
-      "frequency": 119,
-      "pop": 119,
-      "number_of_member": 2
+export const options = {
+  legend: { position: "none" },
+  titlePosition: "none",
+  hAxis: {
+    title: "Number of Members",
+    viewWindow: {
+      min: 1,
+      max: 11, // Adjust this to be greater than the largest number of members
     },
-    {
-      "frequency": 62,
-      "pop": 62,
-      "number_of_member": 3
+  },
+  vAxis: {
+    title: "Frequency",
+    viewWindow: {
+      min: 5,
+      max: 13, // 'auto' or a suitable maximum for your data
     },
-    {
-      "frequency": 39,
-      "pop": 39,
-      "number_of_member": 4
-    },
-    {
-      "frequency": 22,
-      "pop": 22,
-      "number_of_member": 5
-    },
-    {
-      "frequency": 13,
-      "pop": 13,
-      "number_of_member": 6
-    },
-    {
-      "frequency": 13,
-      "pop": 13,
-      "number_of_member": 7
-    },
-    {
-      "frequency": 9,
-      "pop": 9,
-      "number_of_member": 8
-    },
-    {
-      "frequency": 6,
-      "pop": 6,
-      "number_of_member": 9
-    },
-    {
-      "frequency": 33,
-      "pop": 33,
-      "number_of_member": 10
-    },
-  ];
-  const data1 = [
-    {
-      "number_of_member": 2,
-      "frequency": 119,
-      "pop":119
-    },
-    {
-      "number_of_member": 3,
-      "frequency": 62,
-      "pop":62
-    },
-    {
-      "number_of_member": 4,
-      "frequency": 39,
-      "pop":39
-    },
-    {
-      "number_of_member": 5,
-      "frequency": 22,
-      "pop":22
-    },
-    {
-      "number_of_member": 6,
-      "frequency": 13,
-      "pop":13
-    },
-    {
-      "number_of_member": 7,
-      "frequency": 13,
-      "pop":13
-    },
-    {
-      "number_of_member": 8,
-      "frequency": 9,
-      "pop":9
-    },
-    {
-      "number_of_member": 9,
-      "frequency": 6,
-      "pop":6
-    },
-    {
-      "number_of_member": 10,
-      "frequency": 33,
-      "pop":62
-    },
-  ];
-  
-
-  export const options = {
-    legend: {
-      position: "none"
-    },
-    titlePosition:'none',
-  hAxis:{title:"Number of Members"},
-  vAxis:{title:"Frequency"},
+  },
   bubble: { textStyle: { fontSize: 11 } },
-  };
-  
+  chartArea: {
+    left: "10%",
+    top: "5%",
+    width: "75%", // Decrease if necessary to allow space for bubbles
+    height: "50%",
+  },
+};
 
 const Protein_Cluster = () => {
   const [message, setMessage] = useState("");
-  const [number, setNumber] = useState("");
+  const [number, setNumber] = useState({});
+  const [isLoading, setLoading] = useState(true);
+
   useEffect(() => {
     fetch("http://localhost:8000/protein_cluster")
       .then((res) => res.json())
-      .then((data) => setMessage(data["Cluster ID"]));
+      .then((data) => setMessage(data["Cluster ID"]))
+      .catch((error) =>
+        console.error("Error fetching protein cluster data:", error)
+      );
 
-      fetch("http://localhost:8000/protein_cluster")
+    fetch("http://localhost:8000/api/protein_cluster_member_count")
       .then((res) => res.json())
-      .then((data) => setNumber(data["# of Members Salivary Protein"]));
+      .then((data) => {
+        if (data) {
+          setNumber(data);
+        } else {
+          console.error("Data is missing or has an unexpected structure.");
+        }
+        setLoading(false); // Set loading to false when data is received
+      })
+      .catch((error) =>
+        console.error("Error fetching member count data:", error)
+      );
   }, []);
 
+  const getCount = (key) => {
+    const count = number[key]?.doc_count || 0;
+    return { count, logCount: Math.log(count) + 5 };
+  };
+
+  const data = [
+    ["Number of Members", "# of Members", "Width", "Counts", "size"],
+    ...[2, 3, 4, 5, 6, 7, 8, 9].map((num) => {
+      const { count, logCount } = getCount(`number_of_members_${num}`);
+      return [num.toString(), num, logCount, count, logCount];
+    }),
+    [
+      "≥10",
+      10,
+      getCount("number_of_members_10_or_more").logCount,
+      getCount("number_of_members_10_or_more").count,
+      getCount("number_of_members_10_or_more").logCount,
+    ],
+  ];
+
+  if (isLoading) {
+    return (
+      <Box sx={{ width: "100%" }}>
+        <LinearProgress sx={{ mb: "500px", margin: "20px" }} />
+      </Box>
+    );
+  }
 
   return (
     <>
-    <div style={{height: '40%',backgroundImage: `url(${main_feature})`,paddingBottom:'10px'}}>
-      <h1 style={{color:'white',textAlign:'center',display:'left',marginLeft:'20px',marginBottom:'1rem'}} align="left">Protein Cluster</h1>
-      <p style={{textAlign:'left', color:'white',fontSize:'20px', paddingBottom:'15px', marginLeft:'20px',marginRight:'20px'}}>A protein cluster in the Human Salivary Proteome Project consists of protein identifications matching identical peptide lists. Each cluster contains at least one unique peptide not found in the other clusters.</p>
-      <p style={{textAlign:'left', color:'white',fontSize:'20px', paddingBottom:'15px', marginLeft:'20px',marginRight:'20px'}}>The representative protein within a cluster is chosen by applying the following steps sequentially:</p>
-      <ol style={mystyle}>
-            <li style={mystyle}>
-                The protein reported by the maximum number of research groups.
-            </li>
-            <li style={mystyle}>
-                The protein with the highest number of distinct peptide hits.
-            </li>
-            <li style={mystyle}>
-                The protein with a well-defined description in the IPI database or is cross-referenced to the Swiss-Prot database.
-            </li>
-            <li style={mystyle}>
-                The protein with the lowest IPI accession number.
-            </li>
+      <div
+        style={{
+          height: "40%",
+          backgroundImage: `url(${main_feature})`,
+          paddingBottom: "10px",
+        }}
+      >
+        <h1 className="head_title" align="left">
+          Protein Cluster
+        </h1>
+        <p className="head_text">
+          A protein cluster in the Human Salivary Proteome Project consists of
+          protein identifications matching identical peptide lists. Each cluster
+          contains at least one unique peptide not found in the other clusters.
+        </p>
+        <p className="head_text">
+          The representative protein within a cluster is chosen by applying the
+          following steps sequentially:
+        </p>
+        <ol className="head_text">
+          <li>
+            The protein reported by the maximum number of research groups.
+          </li>
+          <li>The protein with the highest number of distinct peptide hits.</li>
+          <li>
+            The protein with a well-defined description in the IPI database or
+            is cross-referenced to the Swiss-Prot database.
+          </li>
+          <li>The protein with the lowest IPI accession number.</li>
         </ol>
-        <p style={mystyle}>Add a new protein cluster entry <a href="" className='linksa'>here</a>.</p>
-    </div>
-    <div className="App">
-      <h2>{message}</h2>
-    </div>
-    <h2>{number}</h2>
-    <h2 style={{textAlign:'center',marginTop:'20px'}}>Cluster Size</h2>
-    <Chart
-            chartType="BubbleChart"
-            width="1200px"
-            height="600px"
-            data={data}
-            options={options}
-            style={{display: 'block', marginLeft: 'auto', marginRight: 'auto',paddingBottom:'20px'}}
-        />
-        <h2 style={{textAlign:'center',marginTop:'20px'}}>Cluster Size</h2>
-    <Cluster /></>
+      </div>
+
+      <h2 style={{ textAlign: "center", marginTop: "20px" }}>Cluster Size</h2>
+      <Chart
+        chartType="BubbleChart"
+        width="1200px"
+        height="600px"
+        data={data}
+        options={options}
+        style={{
+          display: "block",
+          marginLeft: "auto",
+          marginRight: "auto",
+          paddingBottom: "5px",
+        }}
+      />
+
+      <Cluster />
+    </>
   );
 };
-  
+
 export default Protein_Cluster;
