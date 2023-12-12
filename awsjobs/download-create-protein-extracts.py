@@ -111,10 +111,11 @@ def main():
                 print(f"Total files processed:{processed_files}/{total_files}")
                 print(f"Downloaded:{downloaded}\tFailed:{failed}\n")
                 
-            # Trigger the 'create-protein-extracts' Glue job with retry mechanism
-            job_name = 'create-protein-extracts'
-            job_parameters = {"--batch_id": str(batch_id), "--batch": json.dumps(batch)}
-            trigger_glue_job_with_retry(job_name, job_parameters)
+            if batch_id <= len(id_batches):
+                # Trigger the 'create-protein-extracts' Glue job with retry mechanism
+                job_name = 'create-protein-extracts'
+                job_parameters = {"--batch_id": str(batch_id), "--batch": json.dumps(batch)}
+                trigger_glue_job_with_retry(job_name, job_parameters)
 
 if __name__ == "__main__":
     main()

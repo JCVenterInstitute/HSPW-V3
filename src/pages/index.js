@@ -83,6 +83,7 @@ class Home extends React.Component {
               title: "Download Datasets",
               blurb:
                 "Download datasets from database with protein abundance and sequence.",
+              location: "/download",
             },
             {
               imageSrc: pubmed,

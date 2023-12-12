@@ -39,22 +39,21 @@ def download_glycan_image(bucket_name, folder_name, protein_id):
 
                 # Glycan data
                 if glycosylations:
-                    glytoucan_ac = glycosylations[0].get("glytoucan_ac", "")
-                    
-                    if glytoucan_ac:
-                        glycan_image_name = f'glycan_{protein_id}.png'
-                        # Download image
-                        glycan_image_url = f'https://api.glygen.org/glycan/image/{glytoucan_ac}'
-                        temp_image_path, _ = urllib.request.urlretrieve(glycan_image_url)
-    
-                        # Save image to S3 bucket
-                        s3_client.upload_file(temp_image_path, bucket_name, f'{folder_name}/{glycan_image_name}')
-                        os.remove(temp_image_path)
-                        print(f"{glycan_image_name} downloaded successfully and saved to {bucket_name}/{folder_name}/{glycan_image_name}")
-                        return True
-                    else:
-                        logger.error(f"Glytoucan accession id not found for protein id {protein_id}\n")
-                        return None
+                    for glycosylation in glycosylations:
+                        glytoucan_ac = glycosylation.get("glytoucan_ac", "")
+                        if glytoucan_ac:
+                            glycan_image_name = f'glycan_{protein_id}_{glytoucan_ac}.png'
+                            # Download image
+                            glycan_image_url = f'https://api.glygen.org/glycan/image/{glytoucan_ac}'
+                            temp_image_path, _ = urllib.request.urlretrieve(glycan_image_url)
+                            
+                            # Save image to S3 bucket
+                            s3_client.upload_file(temp_image_path, bucket_name, f'{folder_name}/{glycan_image_name}')
+                            os.remove(temp_image_path)
+                            print(f"{glycan_image_name} downloaded successfully and saved to {bucket_name}/{folder_name}/{glycan_image_name}")
+                        else:
+                            print(f"Glytoucan accession id not found for protein id {protein_id}\n")
+                    return protein_id
                 else:
                     logger.error(f"No Glycosylation data available for protein id {protein_id}\n")
                     return None

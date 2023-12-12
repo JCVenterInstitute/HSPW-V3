@@ -13,13 +13,19 @@ logger = logging.getLogger(__name__)
 # S3 client
 s3_client = boto3.client('s3')
 
+# S3 bucket
+proteins_reference_bucket = 'proteins-reference'
+
 # Atlas data 
 # RNA Tissue
-s3_path = "s3://proteins-reference/rna_tissue_consensus.tsv"
-rna_tissue_df = pd.read_csv(s3_path, sep='\t', header=0)
+rna_s3_path = f"s3://{proteins_reference_bucket}/rna_tissue_consensus.tsv"
+rna_tissue_df = pd.read_csv(rna_s3_path, sep='\t', header=0)
+
 # Normal Tissue
-s3_path = "s3://proteins-reference/normal_tissue.tsv"
-normal_tissue_df = pd.read_csv(s3_path, sep='\t', header=0)
+normal_s3_path = f"s3://{proteins_reference_bucket}/normal_tissue.tsv"
+normal_tissue_df = pd.read_csv(normal_s3_path, sep='\t', header=0)
+normal_tissue_df = normal_tissue_df[normal_tissue_df['Level'] != 'Not detected']
+normal_tissue_df = normal_tissue_df.groupby(['Gene', 'Gene name', 'Tissue'], as_index=False).agg(','.join)
 
 # Read all protein ids from protein_id csv file
 def get_protein_ids(bucket_name, file_name):
@@ -41,6 +47,7 @@ def read_extract_data(bucket_name, file_name):
     
 # Create salivary proteins extract
 def create_salivary_protein_extract(protein_extract, glycan_extract):
+    data = []
     salivary_protein_extract = {}
 
     # ______________________________________________________________________________________________________________________________________________________
@@ -89,30 +96,34 @@ def create_salivary_protein_extract(protein_extract, glycan_extract):
     # Add "KEYWORDS"
     # Add "IHC"
     protein_ensembl_g = protein_extract["genes"]["ensembl_g"]
-
+    ihc_level = ''
     if protein_ensembl_g:
         # Filter the DataFrame based on the gene name
-        ihc_level = normal_tissue_df[(normal_tissue_df['Gene'] == protein_ensembl_g) & (normal_tissue_df['Tissue'] == 'salivary gland')]['Level'].tolist()[0]
-
+        filtered_df = normal_tissue_df[(normal_tissue_df['Gene'] == protein_ensembl_g) & (normal_tissue_df['Tissue'] == 'salivary gland')]
+        
+        if not filtered_df.empty:
+            ihc_level = ','.join(filtered_df['Level'])
+        
     # Add "ATLAS"
     atlas_rna_tissues_arr = []
     protein_ensembl_g = protein_extract["genes"]["ensembl_g"]
 
     if protein_ensembl_g:
         # Filter the DataFrame based on the gene name
-        result_df = rna_tissue_df[rna_tissue_df['Gene'] == protein_ensembl_g]
+        result_rna_df = rna_tissue_df[rna_tissue_df['Gene'] == protein_ensembl_g]
+        result_normal_df = normal_tissue_df[normal_tissue_df['Gene'] == protein_ensembl_g]
         
         # Create the JSON object array
-        for _, row in result_df.iterrows():
+        for _, row in result_rna_df.iterrows():
+            normal_tissue = result_normal_df[result_normal_df['Tissue'] == row['Tissue']]
+            
             atlas_rna_tissues_obj = {
                 "tissue": row['Tissue'],
                 "nx": str(row['nTPM']),
-                "score": "",
-                "enriched": ""
+                "score": ','.join(normal_tissue['Level']),
+                "enriched": ','.join(normal_tissue['Reliability'])
             }
             atlas_rna_tissues_arr.append(atlas_rna_tissues_obj)
-        
-        #json_string = json.dumps(json_array)
     
     # Add ANNOTATIONS
     if ("comments" in protein_extract) and ("cross_references" in protein_extract) and ("features" in protein_extract):
@@ -178,6 +189,10 @@ def create_salivary_protein_extract(protein_extract, glycan_extract):
         annotation_arr = []
 
     #Add "GLYCANS"
+    if glycan_extract:
+        glycans = glycan_extract["glycans"]
+    else:
+        glycans = []
 
     # ______________________________________________________________________________________________________________________________________________________
     # SALIVARY PROTEINS
@@ -185,41 +200,47 @@ def create_salivary_protein_extract(protein_extract, glycan_extract):
 
     # Salivary proteins object
     salivary_protein_obj = {
-        "uniprot_accession": protein_extract["primary_accession"],
-        "gene_symbol": gene_symbol,
-        "protein_name": protein_extract["proteins_description"]["protein_recommended_name"],
-        "protein_alternate_names": protein_extract["proteins_description"]["protein_alternative_names"],
-        "expert_opinion": "",
-        "protein_sequence_length": protein_extract["sequence"]["length"],
-        "protein_sequence": protein_extract["sequence"]["value"],
-        "reference_sequence": protein_extract["sequence"]["ref_seq"],
-        "mass": protein_extract["sequence"]["mass"],
-        "primary_gene_names": protein_extract["genes"]["gene_names"],
-        "protein_names": protein_extract["proteins_description"]["protein_alternative_names"],
-        "p_db": protein_extract["cross_reference_databases"]["PDB"],
-        "alpha_fold_db": protein_extract["cross_reference_databases"]["AlphaFoldDB"],
-        "intact": protein_extract["cross_reference_databases"]["IntAct"],
-        "peptide_atlas": protein_extract["cross_reference_databases"]["PeptideAtlas"],
-        "massive": protein_extract["cross_reference_databases"]["MassIVE"],
-        "pride": protein_extract["cross_reference_databases"]["PRIDE"],
-        "ensembl": protein_extract["cross_reference_databases"]["Ensembl"],
-        "ensembl_g": protein_extract["genes"]["ensembl_g"],
-        "kegg": protein_extract["cross_reference_databases"]["KEGG"],
-        "gene_cards": protein_extract["cross_reference_databases"]["GeneCards"],
-        "glygen": protein_extract["primary_accession"],
-        "created_on": protein_extract["entry_audit"]["first_public_date"],
-        "last_modified": protein_extract["entry_audit"]["last_sequence_update_date"],
-        "uniparc_id": protein_extract["uniparc_id"],
-        "plasma_abundance": "",
-        "ev_abundance": "",
-        "cites": citation_arr,
-        "keywords": protein_extract["keywords"],
-        "ihc": ihc_level,
-        "atlas": atlas_rna_tissues_arr,
-        "annotations": annotation_arr,
-        "glycans": glycan_extract["glycans"]
+        "id": protein_extract["primary_accession"],
+        "salivary_proteins": {
+            "uniprot_accession": protein_extract["primary_accession"],
+            "status": protein_extract["status"],
+            "gene_symbol": gene_symbol,
+            "protein_name": protein_extract["proteins_description"]["protein_recommended_name"],
+            "protein_alternate_names": protein_extract["proteins_description"]["protein_alternative_names"],
+            "expert_opinion": "",
+            "protein_sequence_length": protein_extract["sequence"]["length"],
+            "protein_sequence": protein_extract["sequence"]["value"],
+            "reference_sequence": protein_extract["sequence"]["ref_seq"],
+            "mass": protein_extract["sequence"]["mass"],
+            "primary_gene_names": protein_extract["genes"]["gene_names"],
+            "protein_names": protein_extract["proteins_description"]["protein_alternative_names"],
+            "p_db": protein_extract["cross_reference_databases"]["PDB"],
+            "alpha_fold_db": protein_extract["cross_reference_databases"]["AlphaFoldDB"],
+            "intact": protein_extract["cross_reference_databases"]["IntAct"],
+            "peptide_atlas": protein_extract["cross_reference_databases"]["PeptideAtlas"],
+            "massive": protein_extract["cross_reference_databases"]["MassIVE"],
+            "pride": protein_extract["cross_reference_databases"]["PRIDE"],
+            "ensembl": protein_extract["cross_reference_databases"]["Ensembl"],
+            "ensembl_g": protein_extract["genes"]["ensembl_g"],
+            "kegg": protein_extract["cross_reference_databases"]["KEGG"],
+            "gene_cards": protein_extract["cross_reference_databases"]["GeneCards"],
+            "glygen": protein_extract["primary_accession"],
+            "created_on": protein_extract["entry_audit"]["first_public_date"],
+            "last_modified": protein_extract["entry_audit"]["last_sequence_update_date"],
+            "uniparc_id": protein_extract["uniparc_id"],
+            "plasma_abundance": "",
+            "ev_abundance": "",
+            "cites": citation_arr,
+            "keywords": protein_extract["keywords"],
+            "ihc": ihc_level,
+            "atlas": atlas_rna_tissues_arr,
+            "annotations": annotation_arr,
+            "glycans": glycans
+        }
     }
-    salivary_protein_extract["salivary_proteins"] = salivary_protein_obj
+    
+    data.append(salivary_protein_obj)
+    salivary_protein_extract["data"] = data
     return salivary_protein_extract
     
 # Move files to completed/failed
@@ -242,15 +263,19 @@ def process_salivary_protein_file(uniprot_proteins_bucket, salivary_proteins_buc
         # Read protein extract
         print(f'Reading protein extract {protein_extract_name}...')
         protein_extract = read_extract_data(uniprot_proteins_bucket, f'protein_extracts/{protein_extract_name}')
+        if not protein_extract:
+            print(f'Protein data not found for Protein Id {protein_id}!')
         # Read glycan extract
         print(f'Reading glycan extract {glycan_extract_name}...\n')
         glycan_extract = read_extract_data(uniprot_proteins_bucket, f'glycan_extracts/{glycan_extract_name}')
-
-        if protein_extract and glycan_extract:
+        if not glycan_extract:
+            print(f'Glycan data not found for Protein Id {protein_id}!')
+    
+        if protein_extract:
             print(f"Creating salivary protein extract {salivary_protein_extract_name}...")
             # Create salivary protein extract
             salivary_protein_extract = create_salivary_protein_extract(protein_extract, glycan_extract)
-
+    
             if salivary_protein_extract:
                 # Save to S3 bucket
                 s3_client.put_object(Bucket=salivary_proteins_bucket, Key=salivary_protein_extract_path, Body=json.dumps(salivary_protein_extract))
@@ -263,6 +288,7 @@ def process_salivary_protein_file(uniprot_proteins_bucket, salivary_proteins_buc
             logger.error(f'File not found for Protein ID {protein_id}: protein_extract/glycan_extract')
     except Exception as e:
         logger.exception(f"An error occurred while processing file {salivary_protein_extract_name}: {e}")
+
         
     # Move protein/glycan extract to failed
     #move_file(uniprot_proteins_bucket, 'protein_extracts', 'protein_extracts/failed', protein_extract_name)

@@ -24,6 +24,8 @@ import {
   Checkbox,
   InputAdornment,
   IconButton,
+  Button,
+  Modal,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -34,6 +36,7 @@ import CustomHeaderGroup from "../customHeaderGroup.jsx";
 import { ReactComponent as DownloadLogo } from "../table_icon/download.svg";
 import "../filter.css";
 import "../table.css";
+import Legend from "./Legend.js";
 
 // TODO: Move to some sort of env file
 const HOST_ENDPOINT = `http://localhost:8000`;
@@ -47,7 +50,12 @@ const styles1 = {
 };
 
 const Accordion = styled((props) => (
-  <MuiAccordion disableGutters elevation={0} square {...props} />
+  <MuiAccordion
+    disableGutters
+    elevation={0}
+    square
+    {...props}
+  />
 ))(({ theme }) => ({
   marginBottom: "15px",
   "&:not(:last-child)": {
@@ -156,7 +164,11 @@ function WSComponent(props) {
         height={18}
         style={{ stroke: "black", alignItems: "center" }}
       >
-        <rect width={18} height={18} fill="rgb(255,255,255)">
+        <rect
+          width={18}
+          height={18}
+          fill="rgb(255,255,255)"
+        >
           <title>Not uniquely observed</title>
         </rect>
       </svg>
@@ -193,7 +205,11 @@ function WSComponent(props) {
             ></rect>
           </pattern>
         </defs>
-        <rect width={18} height={18} style={{ fill: "url(#stripe2)" }}>
+        <rect
+          width={18}
+          height={18}
+          style={{ fill: "url(#stripe2)" }}
+        >
           <title>Data not available</title>
         </rect>
       </svg>
@@ -590,7 +606,6 @@ function SalivaryProteinTable() {
   const [pageSize, setPageSize] = useState(50); // Default page data to 50 records per page
   const [pageNum, setPageNum] = useState(0);
   const [docCount, setDocCount] = useState(0); // Total # of records available for display
-  const [ihcC, setihcC] = useState(false);
   const [opCount, setOpCount] = useState([]);
   const [IHCCount, setIHCCount] = useState([]);
   const [rowData, setRowData] = useState([]);
@@ -603,6 +618,10 @@ function SalivaryProteinTable() {
   const [columnApi, setColumnApi] = useState(null);
   const [gridApi, setGridApi] = useState(null);
   const [sortedColumn, setSortedColumn] = useState(null);
+  const [openLegend, setOpenLegend] = useState(false);
+
+  const handleOpenLegend = () => setOpenLegend(true);
+  const handleCloseLegend = () => setOpenLegend(false);
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
@@ -709,7 +728,7 @@ function SalivaryProteinTable() {
     const delayDebounceFn = setTimeout(() => {
       setPageNum(0);
       fetchData();
-    }, 1000);
+    }, 600);
 
     return () => clearTimeout(delayDebounceFn);
   }, [facetFilter, pageSize, msBExcludeOn, searchText, orFilterOn]);
@@ -1098,7 +1117,6 @@ function SalivaryProteinTable() {
     const valIndex = IHCValues.indexOf(value);
     const updatedIHCArr = IHCArr;
     updatedIHCArr[valIndex] = !IHCArr[valIndex];
-    setihcC(updatedIHCArr);
   };
 
   /**
@@ -1114,6 +1132,17 @@ function SalivaryProteinTable() {
     } else {
       setSortedColumn(null);
     }
+  };
+
+  /** Reset all search filters */
+  const resetFilters = () => {
+    setFacetFilters({});
+    setSearchText("");
+    setSortedColumn(null);
+    setOrFilterOn(false);
+    setMsBExcludeOn(false);
+    setOpArr([false, false]);
+    setIHCArr([false, false, false, false, false]);
   };
 
   return (
@@ -1141,13 +1170,30 @@ function SalivaryProteinTable() {
               textAlign: "center",
               paddingTop: "30px",
               fontSize: "25px",
-              paddingBottom: "40px",
+              // paddingBottom: "40px",
             }}
           >
             Filters
           </h1>
+          <Button
+            variant="text"
+            size="small"
+            sx={{
+              display: "block",
+              marginBottom: "20px",
+              marginX: "auto",
+              textAlign: "center",
+            }}
+            onClick={resetFilters}
+          >
+            Reset Filters
+          </Button>
           <FormGroup style={{ marginLeft: "18%" }}>
-            <Stack direction="row" spacing={1} alignItems="center">
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+            >
               <Typography color="common.black">And</Typography>
               <Switch
                 checked={orFilterOn}
@@ -1185,6 +1231,11 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["UniProt Accession"]
+                      ? facetFilter["UniProt Accession"]
+                      : ""
+                  }
                   onChange={handleAccessionChange}
                   name="accession"
                 />
@@ -1217,6 +1268,9 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["Gene Symbol"] ? facetFilter["Gene Symbol"] : ""
+                  }
                   onChange={handleGeneChange}
                 />
               </AccordionDetails>
@@ -1248,6 +1302,11 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["Protein Name"]
+                      ? facetFilter["Protein Name"]
+                      : ""
+                  }
                   onChange={handleNameChange}
                 />
               </AccordionDetails>
@@ -1276,7 +1335,10 @@ function SalivaryProteinTable() {
                   sx={{ border: "1px groove" }}
                 >
                   {opCount.map((child, key) => (
-                    <FormGroup key={key} sx={{ ml: "10px" }}>
+                    <FormGroup
+                      key={key}
+                      sx={{ ml: "10px" }}
+                    >
                       {child.key === "Unsubstantiated" ? (
                         <FormControlLabel
                           control={
@@ -1362,7 +1424,10 @@ function SalivaryProteinTable() {
                 >
                   {IHCCount.map((child, i) =>
                     child.key !== "?" ? (
-                      <FormGroup key={i} sx={{ ml: "10px" }}>
+                      <FormGroup
+                        key={i}
+                        sx={{ ml: "10px" }}
+                      >
                         <FormControlLabel
                           control={
                             <Checkbox
@@ -1423,6 +1488,12 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["saliva_abundance"] &&
+                    facetFilter["saliva_abundance"].start
+                      ? facetFilter["saliva_abundance"].start
+                      : ""
+                  }
                   onChange={handleStartWSChange}
                 />
                 <Typography
@@ -1446,6 +1517,12 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["saliva_abundance"] &&
+                    facetFilter["saliva_abundance"].end
+                      ? facetFilter["saliva_abundance"].end
+                      : ""
+                  }
                   onChange={handleEndWSChange}
                 />
               </AccordionDetails>
@@ -1478,6 +1555,12 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["parotid_gland_abundance"] &&
+                    facetFilter["parotid_gland_abundance"].start
+                      ? facetFilter["parotid_gland_abundance"].start
+                      : ""
+                  }
                   onChange={handleStartParChange}
                 />
                 <Typography
@@ -1501,6 +1584,12 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["parotid_gland_abundance"] &&
+                    facetFilter["parotid_gland_abundance"].end
+                      ? facetFilter["parotid_gland_abundance"].end
+                      : ""
+                  }
                   onChange={handleEndParChange}
                 />
               </AccordionDetails>
@@ -1526,7 +1615,6 @@ function SalivaryProteinTable() {
                 <TextField
                   variant="outlined"
                   size="small"
-                  type="number"
                   label="Start..."
                   type="number"
                   InputProps={{
@@ -1534,6 +1622,12 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["sm/sl_abundance"] &&
+                    facetFilter["sm/sl_abundance"].start
+                      ? facetFilter["sm/sl_abundance"].start
+                      : ""
+                  }
                   onChange={handleStartSubChange}
                 />
                 <Typography
@@ -1550,7 +1644,6 @@ function SalivaryProteinTable() {
                 <TextField
                   variant="outlined"
                   size="small"
-                  type="number"
                   label="End..."
                   type="number"
                   InputProps={{
@@ -1558,6 +1651,12 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["sm/sl_abundance"] &&
+                    facetFilter["sm/sl_abundance"].end
+                      ? facetFilter["sm/sl_abundance"].end
+                      : ""
+                  }
                   onChange={handleEndSubChange}
                 />
               </AccordionDetails>
@@ -1581,7 +1680,11 @@ function SalivaryProteinTable() {
               </AccordionSummary>
               <AccordionDetails>
                 <FormGroup style={{ marginLeft: "2%" }}>
-                  <Stack direction="row" spacing={1} alignItems="center">
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                  >
                     <Typography color="common.black">Include</Typography>
                     <Switch
                       checked={msBExcludeOn}
@@ -1605,6 +1708,12 @@ function SalivaryProteinTable() {
                     },
                   }}
                   type="number"
+                  value={
+                    facetFilter["plasma_abundance"] &&
+                    facetFilter["plasma_abundance"].start
+                      ? facetFilter["plasma_abundance"].start
+                      : ""
+                  }
                   onChange={handleStartBChange}
                 />
                 <Typography
@@ -1628,6 +1737,12 @@ function SalivaryProteinTable() {
                     },
                   }}
                   type="number"
+                  value={
+                    facetFilter["plasma_abundance"] &&
+                    facetFilter["plasma_abundance"].end
+                      ? facetFilter["plasma_abundance"].end
+                      : ""
+                  }
                   onChange={handleEndBChange}
                 />
               </AccordionDetails>
@@ -1659,6 +1774,11 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["mRNA"] && facetFilter["mRNA"].start
+                      ? facetFilter["mRNA"].start
+                      : ""
+                  }
                   onChange={handleStartMRNAChange}
                   type="number"
                 />
@@ -1682,6 +1802,11 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["mRNA"] && facetFilter["mRNA"].end
+                      ? facetFilter["mRNA"].end
+                      : ""
+                  }
                   onChange={handleEndMRNAChange}
                   type="number"
                 />
@@ -1689,7 +1814,10 @@ function SalivaryProteinTable() {
             </Accordion>
           </div>
         </Box>
-        <Container maxWidth="xl" sx={{ marginTop: "30px", marginLeft: "20px" }}>
+        <Container
+          maxWidth="xl"
+          sx={{ marginTop: "30px", marginLeft: "20px" }}
+        >
           <Box sx={{ display: "flex" }}>
             <Box
               style={{
@@ -1776,7 +1904,10 @@ function SalivaryProteinTable() {
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
               >
                 {recordsPerPageList.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
+                  <MenuItem
+                    key={option.value}
+                    value={option.value}
+                  >
                     {option.label}
                   </MenuItem>
                 ))}
@@ -1808,7 +1939,10 @@ function SalivaryProteinTable() {
                 {Array.from(
                   { length: Math.ceil(docCount / pageSize) },
                   (_, index) => (
-                    <MenuItem key={index + 1} value={index + 1}>
+                    <MenuItem
+                      key={index + 1}
+                      value={index + 1}
+                    >
                       {index + 1}
                     </MenuItem>
                   )
@@ -1934,30 +2068,73 @@ function SalivaryProteinTable() {
                 suppressPaginationPanel={true}
               />
             </div>
-            <button
-              onClick={onBtExport}
-              style={{
-                fontWeight: "bold",
-                textAlign: "center",
-                marginTop: "10px",
-                color: "#F6921E",
-                background: "white",
-                fontSize: "20",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              <DownloadLogo
-                style={{
-                  marginRight: "10px",
-                  paddingTop: "5px",
-                  display: "inline",
-                  position: "relative",
-                  top: "0.15em",
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <Button
+                onClick={onBtExport}
+                sx={{
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  marginTop: "10px",
+                  textTransform: "unset",
+                  color: "#F6921E",
+                  fontSize: "20",
+                  "&:hover": {
+                    backgroundColor: "inherit",
+                  },
                 }}
-              />
-              Download Spreadsheet
-            </button>
+              >
+                <DownloadLogo
+                  style={{
+                    marginRight: "10px",
+                  }}
+                />
+                Download Spreadsheet
+              </Button>
+              <Button
+                sx={{
+                  fontWeight: "bold",
+                  textDecoration: "none",
+                  textTransform: "unset",
+                  color: "#F6921E",
+                  background: "white",
+                  fontSize: "20",
+                  "&:hover": {
+                    backgroundColor: "inherit", // Keeps the same background color on hover
+                  },
+                }}
+                onClick={handleOpenLegend}
+              >
+                Show Legend
+              </Button>
+            </div>
+            <Modal
+              open={openLegend}
+              onClose={handleCloseLegend}
+            >
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "15%",
+                  left: "50%",
+                  transform: "translate(-50%, -15%)",
+                  bgcolor: "background.paper",
+                  boxShadow: 24,
+                  p: 2,
+                  width: "60vw",
+                  overflow: "scroll",
+                }}
+              >
+                <Typography
+                  id="legend-modal-title"
+                  variant="h6"
+                  component="h2"
+                  sx={{ textAlign: "center" }}
+                >
+                  Table Legend
+                </Typography>
+                <Legend />
+              </Box>
+            </Modal>
           </Box>
         </Container>
       </Container>
