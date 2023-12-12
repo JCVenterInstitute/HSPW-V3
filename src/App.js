@@ -9,7 +9,7 @@ import Gene from "./pages/gene";
 import Contact from "./pages/contact";
 import Footer from "./components/footer.js";
 import Signature from "./pages/signature";
-import Cluster from "./pages/cluster";
+import Cluster from "./pages/cluster/cluster";
 import Gene_Detail from "./pages/gene_detail";
 import Salivary_Protein from "./pages/saliva_protein/salivary_protein";
 import Protein_Detail from "./pages/saliva_protein/protein_detail";
@@ -20,7 +20,7 @@ import Signature_Detail from "./pages/signature_detail";
 
 import Experiment_Search from "./pages/experiment_search";
 import Protein_Set_Search from "./pages/protein_set_search";
-import Cluster_detail from "./pages/cluster_detail";
+import Cluster_detail from "./pages/cluster/cluster_detail";
 import ClustalOmegaResults from "./pages/Analyze/ClustalOmegaResults";
 import ClustalOmega from "./pages/Analyze/ClustalOmega";
 import InterProScanResults from "./pages/Analyze/InterProScanResults";

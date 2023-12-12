@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Cluster from "../components/cluster/cluster_table";
+import Cluster from "../../components/cluster/cluster_table.js";
+
 import Chart from "react-google-charts";
-import main_feature from "../components/hero.jpeg";
-import "./style.css";
+import main_feature from "../../components/hero.jpeg";
+import "../style.css";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 
