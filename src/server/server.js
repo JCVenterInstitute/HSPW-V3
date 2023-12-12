@@ -1917,6 +1917,64 @@ async function search_protein() {
   return response.body.hits.hits;
 }
 
+const search_go_nodes = async (id) => {
+  // Initialize the client.
+  var client = await getClient();
+
+  var query = {
+    size: 10000,
+    query: {
+      query_string: {
+        default_field: "id",
+        query: id,
+      },
+    },
+  };
+
+  const response = await client.search({
+    index: "go_nodes",
+    body: query,
+  });
+  return response.body.hits.hits;
+};
+
+app.get("/api/go_nodes/:id", (req, res) => {
+  let a = search_go_nodes(req.params.id);
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+const search_go_nodes_usage = async (id) => {
+  // Initialize the client.
+  var client = await getClient1();
+  console.log(id);
+  var query = {
+    size: 10000,
+    _source: ["id"],
+    query: {
+      query_string: {
+        query: `*GO*${id}*`,
+        fields: [],
+      },
+    },
+  };
+
+  const response = await client.search({
+    index: "salivary-proteins-112023",
+    body: query,
+  });
+  return response.body.hits.hits;
+};
+
+app.get("/api/go_nodes_usage/:id", (req, res) => {
+  console.log(req.params.id);
+  let a = search_go_nodes_usage(req.params.id);
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
 app.get("/protein", (req, res) => {
   let a = search_protein();
   a.then(function (result) {
@@ -2184,6 +2242,77 @@ app.get("/api/properties/:entity", async (req, res) => {
   await getProperties(entityIndexMapping[entity]).then((properties) =>
     res.json(properties)
   );
+});
+
+/**
+ * Query data used for Salivary Protein page table
+ * @param {Number} size Number of records to return
+ * @param {Number} from Starting point for the data page to return
+ * @param {Object[]} filter All applied filters applied by user in facet menu
+ * @param {Object[]} sort Sort query for column selected to sort by from table
+ * @param {Object} keyword String entered by user into search bar
+ * @param {Boolean} filterByOr True if using or filters, false otherwise
+ * @returns
+ */
+async function querySalivaryProtein(
+  size,
+  from,
+  filter,
+  sort = null,
+  keyword = null,
+  filterByOr = false
+) {
+  const client = await getClient();
+
+  const payload = {
+    index: "new_saliva_protein_test",
+    body: {
+      track_total_hits: true,
+      size: size,
+      from: from,
+      aggs: {
+        IHC: {
+          terms: {
+            field: "IHC.keyword",
+          },
+        },
+        expert_opinion: {
+          terms: {
+            field: "expert_opinion.keyword",
+          },
+        },
+      },
+      query: {
+        bool: {
+          ...(filterByOr === true ? { should: filter } : { filter }),
+          ...(keyword && { must: [keyword] }), // Apply global search if present
+        },
+      },
+      ...(sort && { sort }), // Apply sort if present
+    },
+  };
+
+  const response = await client.search(payload);
+
+  return response.body;
+}
+
+app.post("/api/salivary-proteins/:size/:from/", (req, res) => {
+  const { filters, sort, keyword, filterByOr } = req.body;
+  const { size, from } = req.params;
+
+  const results = querySalivaryProtein(
+    size,
+    from,
+    filters,
+    sort,
+    keyword,
+    filterByOr
+  );
+
+  results.then((result) => {
+    res.json(result);
+  });
 });
 
 app.listen(8000, () => {
