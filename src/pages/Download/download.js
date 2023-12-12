@@ -1,5 +1,5 @@
 import React from "react";
-import AgGrid from "../../components/Download/DownloadTable.js";
+import DownloadTable from "../../components/Download/DownloadTable.js";
 import "../style.css";
 import { components } from "react-select";
 
@@ -63,7 +63,7 @@ const Download = () => {
         </p>
       </div>
 
-      <AgGrid />
+      <DownloadTable />
     </>
   );
 };
