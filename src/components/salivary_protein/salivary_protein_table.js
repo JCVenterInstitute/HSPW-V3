@@ -827,13 +827,15 @@ function SalivaryProteinTable() {
    * @returns
    */
   const createStringQuery = ({ attrName, value }) => {
+    const escapedInput = escapeSpecialCharacters(searchText);
+
     return {
       bool: {
         filter: [
           {
             regexp: {
               [`${attrName}.keyword`]: {
-                value: `${value}.*`,
+                value: `${escapedInput}.*`,
                 flags: "ALL",
                 case_insensitive: true,
               },
