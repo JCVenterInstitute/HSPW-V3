@@ -71,7 +71,7 @@ exports.formQuery = async (
     }
   };
 
-  // Function to map each operation to its corresponding OpenSearch clause
+  // Function to map each operation to its corresponding OpenSearch clause for Salivary Protein
   const mapOperationToClauseSalivaryProtein = (item) => {
     // Append '.keyword' to each field name
     const field =
