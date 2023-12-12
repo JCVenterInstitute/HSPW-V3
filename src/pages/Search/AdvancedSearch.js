@@ -19,6 +19,8 @@ import SelectAllTransferList from "../../components/Search/SelectAllTransferList
 import CircleCheckedFilled from "@mui/icons-material/CheckCircle";
 import CircleUnchecked from "@mui/icons-material/RadioButtonUnchecked";
 import SearchResultsTable from "../../components/Search/SearchResultsTable";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 const generateColumnDefs = (entity, data) => {
   if (!data || data.length === 0) return [];
@@ -50,6 +52,14 @@ const generateColumnDefs = (entity, data) => {
   }));
 };
 
+const isRowInvalid = (row) => {
+  return (
+    !row.selectedProperty ||
+    (!row.selectedOperation && row.selectedOperation !== "exists") ||
+    (row.selectedOperation !== "exists" && !row.value)
+  );
+};
+
 const AdvancedSearch = () => {
   const [entity, setEntity] = useState("");
   const [booleanOperator, setBooleanOperator] = useState("AND");
@@ -62,6 +72,7 @@ const AdvancedSearch = () => {
   const [searchStarted, setSearchStarted] = useState(false);
   const [searchResults, setSearchResults] = useState();
   const [columnDefs, setColumnDefs] = useState();
+  const [recordsPerPage, setRecordsPerPage] = useState(50);
 
   const entities = [
     "Genes",
@@ -432,7 +443,11 @@ const AdvancedSearch = () => {
             mb: 3,
           }}
         >
-          <Button variant="contained" onClick={handleSearch}>
+          <Button
+            variant="contained"
+            onClick={handleSearch}
+            disabled={rows.some(isRowInvalid)}
+          >
             Search
           </Button>
           <Button variant="outlined" onClick={handleReset}>
@@ -452,10 +467,163 @@ const AdvancedSearch = () => {
             >
               Search Results
             </legend>
+            <Box sx={{ display: "flex" }}>
+              <Box
+                sx={{
+                  textAlign: "right",
+                  justifyContent: "flex-end", // To push content to the right
+                  flexGrow: 1, // To make the right Box occupy remaining space
+                }}
+              >
+                <Typography
+                  display="inline"
+                  sx={{
+                    fontFamily: "Lato",
+                    fontSize: "18px",
+                    color: "#464646",
+                  }}
+                >
+                  Records Per Page
+                </Typography>
+                <TextField
+                  select
+                  size="small"
+                  InputProps={{
+                    style: {
+                      borderRadius: "10px",
+                    },
+                  }}
+                  value={recordsPerPage}
+                  onChange={(event) => {
+                    setRecordsPerPage(event.target.value);
+                    // setTotalPageNumber(
+                    //   Math.ceil(totalRecordCount / event.target.value)
+                    // );
+                    // gridApi.paginationSetPageSize(Number(event.target.value));
+                  }}
+                  sx={{ marginLeft: "10px", marginRight: "30px" }}
+                >
+                  {[50, 100, 500, 1000].map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <Typography
+                  display="inline"
+                  sx={{
+                    fontFamily: "Lato",
+                    fontSize: "18px",
+                    color: "#464646",
+                  }}
+                >
+                  Page
+                </Typography>
+                <TextField
+                  select
+                  size="small"
+                  InputProps={{
+                    style: {
+                      borderRadius: "10px",
+                    },
+                  }}
+                  // value={pageNumber}
+                  sx={{ marginLeft: "10px", marginRight: "10px" }}
+                  // onChange={(event) => {
+                  //   setPageNumber(event.target.value);
+                  //   gridApi.paginationGoToPage(event.target.value - 1);
+                  // }}
+                >
+                  {/* {Array.from({ length: totalPageNumber }, (_, index) => (
+              <MenuItem key={index + 1} value={index + 1}>
+                {index + 1}
+              </MenuItem>
+            ))} */}
+                </TextField>
+                <Typography
+                  display="inline"
+                  sx={{
+                    fontFamily: "Lato",
+                    fontSize: "18px",
+                    color: "#464646",
+                    marginRight: "30px",
+                  }}
+                >
+                  out of
+                </Typography>
+                <button
+                  // onClick={onPrevPage}
+                  // disabled={pageNumber === 1}
+                  style={{
+                    // color: pageNumber === 1 ? "#D3D3D3" : "#F6921E",
+                    background: "white",
+                    fontSize: "20px",
+                    border: "none",
+                    // cursor: pageNumber === 1 ? "default" : "pointer",
+                    // transition: pageNumber === 1 ? "none" : "background 0.3s",
+                    borderRadius: "5px",
+                    marginRight: "15px",
+                    // pointerEvents: pageNumber === 1 ? "none" : "auto",
+                    paddingBottom: "5px",
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.background =
+                      "rgba(246, 146, 30, 0.2)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.background = "white")
+                  }
+                >
+                  <ArrowBackIosIcon
+                    style={{
+                      display: "inline",
+                      position: "relative",
+                      top: "0.2em",
+                      fontWeight: "bold",
+                    }}
+                  />
+                  prev
+                </button>
+                <button
+                  // onClick={onNextPage}
+                  // disabled={pageNumber === totalPageNumber}
+                  style={{
+                    // color: pageNumber === totalPageNumber ? "#D3D3D3" : "#F6921E",
+                    background: "white",
+                    fontSize: "20px",
+                    border: "none",
+                    // cursor: pageNumber === totalPageNumber ? "default" : "pointer",
+                    // transition:
+                    // pageNumber === totalPageNumber ? "none" : "background 0.3s",
+                    borderRadius: "5px",
+                    // pointerEvents: pageNumber === totalPageNumber ? "none" : "auto",
+                    paddingBottom: "5px",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background =
+                      "rgba(246, 146, 30, 0.2)";
+                  }}
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.background = "white")
+                  }
+                >
+                  next
+                  <ArrowForwardIosIcon
+                    style={{
+                      display: "inline",
+                      position: "relative",
+                      top: "0.2em",
+                      fontWeight: "bold",
+                    }}
+                  />
+                </button>
+              </Box>
+            </Box>
             <SearchResultsTable
               entity={entity}
               searchResults={searchResults}
               columnDefs={columnDefs}
+              recordsPerPage={recordsPerPage}
             />
           </Box>
         )}

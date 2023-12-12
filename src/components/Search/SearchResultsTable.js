@@ -3,8 +3,14 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import CustomLoadingOverlay from "./CustomLoadingOverlay";
+import { Box } from "@mui/material";
 
-const SearchResultsTable = ({ entity, searchResults, columnDefs }) => {
+const SearchResultsTable = ({
+  entity,
+  searchResults,
+  columnDefs,
+  recordsPerPage,
+}) => {
   const [rowData, setRowData] = useState([]);
   const [columns, setColumns] = useState([]);
 
@@ -87,24 +93,31 @@ const SearchResultsTable = ({ entity, searchResults, columnDefs }) => {
   }, []);
 
   return (
-    <div
-      id="differential"
-      className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
-      style={{ height: 800 }}
+    <Box
+      sx={{
+        marginTop: "10px",
+      }}
     >
-      <AgGridReact
-        className="ag-cell-wrap-text"
-        rowData={rowData}
-        columnDefs={columns}
-        defaultColDef={defaultColDef}
-        onGridReady={onGridReady}
-        enableCellTextSelection={true}
-        pagination={true}
-        paginationPageSize={50}
-        loadingOverlayComponent={loadingOverlayComponent}
-        suppressScrollOnNewData={true}
-      ></AgGridReact>
-    </div>
+      <div
+        id="differential"
+        className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
+        style={{ height: 800 }}
+      >
+        <AgGridReact
+          className="ag-cell-wrap-text"
+          rowData={rowData}
+          columnDefs={columns}
+          defaultColDef={defaultColDef}
+          onGridReady={onGridReady}
+          enableCellTextSelection={true}
+          pagination={true}
+          paginationPageSize={recordsPerPage}
+          suppressPaginationPanel={true}
+          loadingOverlayComponent={loadingOverlayComponent}
+          suppressScrollOnNewData={true}
+        ></AgGridReact>
+      </div>
+    </Box>
   );
 };
 
