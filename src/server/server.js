@@ -15,6 +15,7 @@ const path = require("path");
 const { processGroupData } = require("./utils/processGroupData");
 const { processFile } = require("./utils/processFile");
 const { s3Download } = require("./utils/s3Download");
+const { formQuery } = require("./utils/formQuery");
 
 app.use(cors());
 app.use(express.json());
@@ -2225,6 +2226,42 @@ const getProperties = async (index) => {
   }
 };
 
+const getSalivaryProperties = async (index) => {
+  // Initialize the client.
+  const client = await getClient();
+
+  try {
+    // Get the mapping of the specified index.
+    const response = await client.indices.getMapping({ index: index });
+
+    return response.body[`${index}`].mappings.properties["Salivary Proteins"]
+      .properties;
+    // return response.body[`${index}`].mappings.properties["salivary_proteins"]
+    //   .properties;
+  } catch (error) {
+    // Handle any errors that occur during the API call.
+    console.error("Error getting mapping:", error);
+    throw error;
+  }
+};
+
+const getAnnotationProperties = async (index) => {
+  // Initialize the client.
+  const client = await getClient();
+
+  try {
+    // Get the mapping of the specified index.
+    const response = await client.indices.getMapping({ index: index });
+
+    return response.body[`${index}`].mappings.properties["Salivary Proteins"]
+      .properties;
+  } catch (error) {
+    // Handle any errors that occur during the API call.
+    console.error("Error getting mapping:", error);
+    throw error;
+  }
+};
+
 app.get("/api/properties/:entity", async (req, res) => {
   const entity = req.params.entity;
   console.log(`Getting properties for entity: ${entity}`);
@@ -2236,12 +2273,118 @@ app.get("/api/properties/:entity", async (req, res) => {
     Proteins: "study_protein",
     "PubMed Citations": "citation",
     "Salivary Proteins": "protein",
+    // "Salivary Proteins": "salivary-proteins-102023",
     Annotations: "protein",
   };
 
-  await getProperties(entityIndexMapping[entity]).then((properties) =>
-    res.json(properties)
+  if (entity === "Salivary Proteins") {
+    await getSalivaryProperties(entityIndexMapping[entity]).then(
+      (properties) => {
+        const result = [];
+        for (const [key, value] of Object.entries(properties)) {
+          if (key !== "Annotations") {
+            if (value.properties) {
+              for (const subKey in value.properties) {
+                if (value.properties[subKey].properties) {
+                  // Handle another level of nested properties
+                  for (const nestedKey in value.properties[subKey].properties) {
+                    result.push(`${key}.${subKey}.${nestedKey}`);
+                  }
+                } else {
+                  result.push(`${key}.${subKey}`);
+                }
+              }
+            } else {
+              result.push(key);
+            }
+          }
+        }
+        res.json(result);
+      }
+    );
+  } else if (entity === "Annotations") {
+    await getAnnotationProperties(entityIndexMapping[entity]).then(
+      (properties) => {
+        const result = [];
+        for (const [key, value] of Object.entries(properties)) {
+          if (key === "Annotations") {
+            if (value.properties) {
+              for (const subKey in value.properties) {
+                if (value.properties[subKey].properties) {
+                  // Handle another level of nested properties
+                  for (const nestedKey in value.properties[subKey].properties) {
+                    result.push(`${subKey}.${nestedKey}`);
+                  }
+                } else {
+                  result.push(`${subKey}`);
+                }
+              }
+            }
+          }
+        }
+        res.json(result);
+      }
+    );
+  } else {
+    await getProperties(entityIndexMapping[entity]).then((properties) => {
+      const result = [];
+      for (const [key, value] of Object.entries(properties)) {
+        result.push(key);
+      }
+      res.json(result);
+    });
+  }
+});
+
+const advancedSearch = async (
+  index,
+  rows,
+  booleanOperator,
+  selectedProperties
+) => {
+  // Initialize the client.
+  const client = await getClient();
+
+  const query = await formQuery(
+    index,
+    rows,
+    booleanOperator,
+    selectedProperties
   );
+
+  const response = await client.search({
+    index: index,
+    body: query,
+  });
+
+  return response.body.hits.hits;
+};
+
+app.post("/api/advanced-search/build-query", async (req, res) => {
+  try {
+    const { entity, rows, booleanOperator, selectedProperties } = req.body;
+
+    const entityIndexMapping = {
+      Genes: "genes",
+      "Protein Clusters": "protein_cluster",
+      "Protein Signatures": "protein_signature",
+      Proteins: "study_protein",
+      "PubMed Citations": "citation",
+      "Salivary Proteins": "protein",
+      // "Salivary Proteins": "salivary-proteins-102023",
+      Annotations: "protein",
+    };
+
+    const result = await advancedSearch(
+      entityIndexMapping[entity],
+      rows,
+      booleanOperator,
+      selectedProperties
+    );
+    res.json(result);
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 /**
