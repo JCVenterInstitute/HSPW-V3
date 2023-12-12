@@ -1,5 +1,5 @@
 exports.formQuery = async (
-  index,
+  entity,
   query,
   booleanOperator,
   selectedProperties,
@@ -132,22 +132,22 @@ exports.formQuery = async (
 
   // Map each item in the query array to an OpenSearch clause
   let clauses;
-  if (index === "salivary-proteins-112023") {
+  if (entity === "Salivary Proteins") {
     clauses = query.map(mapOperationToClauseSalivaryProtein);
   } else {
     clauses = query.map(mapOperationToClause);
   }
 
   let combinedSelectedProperties = [];
-  if (index === "genes") {
+  if (entity === "Genes") {
     combinedSelectedProperties = ["GeneID", ...selectedProperties];
-  } else if (index === "protein_cluster") {
+  } else if (entity === "Protein Clusters") {
     combinedSelectedProperties = ["uniprot_id", ...selectedProperties];
-  } else if (index === "protein_signature") {
+  } else if (entity === "Protein Signatures") {
     combinedSelectedProperties = ["InterPro ID", ...selectedProperties];
-  } else if (index === "citation") {
+  } else if (entity === "PubMed Citations") {
     combinedSelectedProperties = ["CitationID", ...selectedProperties];
-  } else if (index === "salivary-proteins-112023") {
+  } else if (entity === "Salivary Proteins") {
     const modifiedSelectedProperties = selectedProperties.map(
       (item) => `salivary_proteins.${item}`
     );
