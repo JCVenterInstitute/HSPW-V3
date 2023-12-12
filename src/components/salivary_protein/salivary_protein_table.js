@@ -1143,6 +1143,8 @@ function SalivaryProteinTable() {
     setSortedColumn(null);
     setOrFilterOn(false);
     setMsBExcludeOn(false);
+    setOpArr([false, false]);
+    setIHCArr([false, false, false, false, false]);
   };
 
   return (
