@@ -1918,6 +1918,34 @@ async function search_protein() {
   return response.body.hits.hits;
 }
 
+const search_go_nodes_type = async (type) => {
+  // Initialize the client.
+  var client = await getClient();
+
+  var query = {
+    size: 10000,
+    query: {
+      query_string: {
+        query: `*type*`,
+        fields: [],
+      },
+    },
+  };
+
+  const response = await client.search({
+    index: "go_nodes",
+    body: query,
+  });
+  return response.body.hits.hits;
+};
+
+app.get("/api/go_nodes_type/:type", (req, res) => {
+  let a = search_go_nodes_type(req.params.type);
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
 const search_go_nodes = async (id) => {
   // Initialize the client.
   var client = await getClient();
@@ -1941,6 +1969,34 @@ const search_go_nodes = async (id) => {
 
 app.get("/api/go_nodes/:id", (req, res) => {
   let a = search_go_nodes(req.params.id);
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+const search_go_edges = async (id) => {
+  // Initialize the client.
+  var client = await getClient();
+  console.log(`GO:*${id}*`);
+  var query = {
+    size: 10000,
+    query: {
+      query_string: {
+        query: `*GO*${id}*`,
+        fields: [],
+      },
+    },
+  };
+
+  const response = await client.search({
+    index: "go_edges",
+    body: query,
+  });
+  return response.body.hits.hits;
+};
+
+app.get("/api/go_edges/:id", (req, res) => {
+  let a = search_go_edges(req.params.id);
   a.then(function (result) {
     res.json(result);
   });

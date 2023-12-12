@@ -1,30 +1,24 @@
-import React from "react";
-import main_feature from "../../components/hero.jpeg";
-import { Typography, Container } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router";
 import axios from "axios";
-import { useEffect, useState, params } from "react";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
-import { styled } from "@mui/material/styles";
-import { useParams } from "react-router";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
-
 import TableRow from "@mui/material/TableRow";
-
+import { styled } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+import main_feature from "../../components/hero.jpeg";
+import { Paper } from "@mui/material";
 import FontAwesome from "react-fontawesome";
-const StyledTable = styled(Table)({
-  borderRadius: "10px 0 0 10px",
-});
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  borderTopLeftRadius: theme.shape.borderRadius,
-}));
-
-const StyledDiv = styled("div")(({ theme }) => ({
-  borderTopRightRadius: theme.shape.borderRadius,
-  padding: theme.spacing(1), // Adjust as needed
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: "center",
+  color: theme.palette.text.secondary,
 }));
 
 const table = {
@@ -63,45 +57,76 @@ const th_first_row = {
   fontWeight: "bold",
   borderTopLeftRadius: "10px",
 };
+
 const GoNode = () => {
   const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState("");
+  const [data, setData] = useState(null);
   const params = useParams();
-  const [usageData, setUsageData] = useState("");
-  const fetchData = async () => {
-    const response = await axios.get(
-      `http://localhost:8000/api/go_nodes/${params.id}`
-    );
-
-    const json = response.data;
-    return json;
-  };
-
-  const processData = async () => {
-    const goTermResult = await fetchData().catch(console.error);
-    if (goTermResult) {
-      setData(goTermResult);
-    }
-    const usageResult = await fetchUsageData().catch(console.error);
-    if (usageResult) {
-      setUsageData(usageResult);
-      setLoading(false);
-    }
-  };
-
-  const fetchUsageData = async () => {
-    const response = await axios.get(
-      `http://localhost:8000/api/go_nodes_usage/${params.id.split("_")[1]}`
-    );
-    const json = response.data;
-    return json;
-  };
-
+  const [usageData, setUsageData] = useState([]);
+  const [parentData, setParentData] = useState([]);
+  const [siblingData, setSibilingData] = useState([]);
+  const [childrenData, setChildrenData] = useState([]);
   useEffect(() => {
-    processData();
-  }, []);
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/go_nodes/${params.id}`
+        );
+        console.log("75", response.data);
+        setData(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-  if (isLoading === true) {
+    const fetchUsageData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/go_nodes_usage/${params.id.split("_")[1]}`
+        );
+        setUsageData(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const fetchEdgeData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/go_edges/${params.id.split("_")[1]}`
+        );
+        const edgeResult = response.data;
+        const parentEdges = edgeResult.filter(
+          (edge) =>
+            edge["_source"].pred.includes("is_a") &&
+            edge["_source"].sub.includes(params.id)
+        );
+        setParentData(parentEdges.map((edge) => edge["_source"]));
+        const sibilingEdges = edgeResult.filter(
+          (edge) =>
+            edge["_source"].pred.includes("BFO_0000050") ||
+            edge["_source"].pred.includes("BFO_0000051") ||
+            edge["_source"].pred.includes("BFO_0000066")
+        );
+        setSibilingData(sibilingEdges.map((edge) => edge["_source"]));
+        const childrenEdges = edgeResult.filter(
+          (edge) =>
+            edge["_source"].pred.includes("is_a") &&
+            edge["_source"].obj.includes(params.id)
+        );
+        setChildrenData(childrenEdges.map((edge) => edge["_source"]));
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+    fetchUsageData();
+    fetchEdgeData();
+  }, [params.id]);
+
+  if (isLoading) {
     return (
       <Box sx={{ width: "100%" }}>
         <LinearProgress sx={{ mb: "500px", margin: "20px" }} />
@@ -141,7 +166,6 @@ const GoNode = () => {
           borderTopLeftRadius: "10px",
           marginTop: "3%",
         }}
-        sx={table}
       >
         <TableBody>
           <TableRow>
@@ -221,6 +245,78 @@ const GoNode = () => {
                 </ul>
               ) : null}
             </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+
+      <Table
+        style={{
+          marginLeft: "10%",
+          marginTop: "3%",
+          marginBottom: "5%",
+          width: "80%",
+          borderTopLeftRadius: "10px",
+          borderTopRightRadius: "10px",
+        }}
+      >
+        <TableBody>
+          <TableRow>
+            {parentData.length !== 0 ? (
+              <TableCell variant="head" sx={th_first_row} align="center">
+                Parents ({parentData.length})
+              </TableCell>
+            ) : null}
+            {siblingData.length !== 0 ? (
+              <TableCell variant="head" sx={th} align="center">
+                Siblings ({siblingData.length})
+              </TableCell>
+            ) : null}
+            {childrenData.length !== 0 ? (
+              <TableCell variant="head" sx={th} align="center">
+                Children ({childrenData.length})
+              </TableCell>
+            ) : null}
+          </TableRow>
+          <TableRow sx={td}>
+            {parentData.length !== 0 ? (
+              <TableCell sx={td}>
+                <ul style={{ marginLeft: "40px" }}>
+                  {parentData.map((val, index) => (
+                    <li key={index} style={{ margin: "5px" }}>
+                      <a href={"http://localhost:3000/GoNodes/" + val.obj}>
+                        {val.obj}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </TableCell>
+            ) : null}
+            {siblingData.length !== 0 ? (
+              <TableCell sx={td}>
+                <ul style={{ marginLeft: "40px" }}>
+                  {siblingData.map((val, index) => (
+                    <li key={index} style={{ margin: "5px" }}>
+                      <a href={"http://localhost:3000/GoNodes/" + val.obj}>
+                        {val.obj}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </TableCell>
+            ) : null}
+            {childrenData.length !== 0 ? (
+              <TableCell sx={td}>
+                <ul style={{ marginLeft: "40px" }}>
+                  {childrenData.map((val, index) => (
+                    <li key={index} style={{ margin: "5px" }}>
+                      <a href={"http://localhost:3000/GoNodes/" + val.sub}>
+                        {val.sub}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </TableCell>
+            ) : null}
           </TableRow>
         </TableBody>
       </Table>
