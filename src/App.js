@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import Navbar from "./components/index";
+import Navbar from "./components/Navbar";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages";
 import Download from "./pages/Download/download";
@@ -39,37 +39,83 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-        <Route exact path="/" element={<Home />} />
-        <Route path="/download" element={<Download />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/analysis_home" element={<Analysis_Home />} />
-        <Route path="/gene" element={<Gene />} />
-        <Route path="/protein_signature" element={<Signature />} />
+        <Route
+          exact
+          path="/"
+          element={<Home />}
+        />
+        <Route
+          path="/download"
+          element={<Download />}
+        />
+        <Route
+          path="/contact"
+          element={<Contact />}
+        />
+        <Route
+          path="/analysis_home"
+          element={<Analysis_Home />}
+        />
+        <Route
+          path="/gene"
+          element={<Gene />}
+        />
+        <Route
+          path="/protein_signature"
+          element={<Signature />}
+        />
         <Route
           path="/protein_signature/:interproid"
           element={<Signature_Detail />}
         />
-        <Route path="/protein_cluster" element={<Cluster />} />
-        <Route path="/gene/:geneid" element={<Gene_Detail />} />
+        <Route
+          path="/protein_cluster"
+          element={<Cluster />}
+        />
+        <Route
+          path="/gene/:geneid"
+          element={<Gene_Detail />}
+        />
         <Route
           path="/protein_cluster/:clusterid"
           element={<Cluster_detail />}
         />
-        <Route path="/salivary_protein" element={<Salivary_Protein />} />
-        <Route path="/protein/:proteinid" element={<Protein_Detail />} />
-        <Route path="/analysis" element={<Analysis />} />
+        <Route
+          path="/salivary_protein"
+          element={<Salivary_Protein />}
+        />
+        <Route
+          path="/protein/:proteinid"
+          element={<Protein_Detail />}
+        />
+        <Route
+          path="/analysis"
+          element={<Analysis />}
+        />
         <Route
           path="/clustalo/results/:jobId"
           element={<ClustalOmegaResults />}
         />
-        <Route path="/clustalo" element={<ClustalOmega />} />
+        <Route
+          path="/clustalo"
+          element={<ClustalOmega />}
+        />
         <Route
           path="/iprscan5/results/:jobId"
           element={<InterProScanResults />}
         />
-        <Route path="/iprscan5" element={<InterProScan />} />
-        <Route path="/psiblast/results/:jobId" element={<PSIBlastResults />} />
-        <Route path="/psiblast" element={<PSIBlast />} />
+        <Route
+          path="/iprscan5"
+          element={<InterProScan />}
+        />
+        <Route
+          path="/psiblast/results/:jobId"
+          element={<PSIBlastResults />}
+        />
+        <Route
+          path="/psiblast"
+          element={<PSIBlast />}
+        />
         <Route
           path="/differential-expression/results/:jobId"
           element={<DifferentialExpressionResults />}
@@ -78,14 +124,38 @@ function App() {
           path="/differential-expression"
           element={<DifferentialExpression />}
         />
-        <Route path="/citation" element={<Citation />} />
-        <Route path="/citation/:citationid" element={<Citation_Detail />} />
-        <Route path="/Basic_Search" element={<Basic_Search />} />
-        <Route path="/advanced-search" element={<AdvancedSearch />}></Route>
-        <Route path="/Experiment_Search" element={<Experiment_Search />} />
-        <Route path="/Protein_Set_Search" element={<Protein_Set_Search />} />
-        <Route path="/About" element={<About />} />
-        <Route path="/Team" element={<Team />} />
+        <Route
+          path="/citation"
+          element={<Citation />}
+        />
+        <Route
+          path="/citation/:citationid"
+          element={<Citation_Detail />}
+        />
+        <Route
+          path="/Basic_Search"
+          element={<Basic_Search />}
+        />
+        <Route
+          path="/advanced-search"
+          element={<AdvancedSearch />}
+        ></Route>
+        <Route
+          path="/Experiment_Search"
+          element={<Experiment_Search />}
+        />
+        <Route
+          path="/Protein_Set_Search"
+          element={<Protein_Set_Search />}
+        />
+        <Route
+          path="/About"
+          element={<About />}
+        />
+        <Route
+          path="/Team"
+          element={<Team />}
+        />
         <Route
           path="protein_sequence/:proteinid"
           element={<ProteinSequence />}

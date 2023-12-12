@@ -24,6 +24,8 @@ import {
   Checkbox,
   InputAdornment,
   IconButton,
+  Button,
+  Modal,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -34,6 +36,7 @@ import CustomHeaderGroup from "../customHeaderGroup.jsx";
 import { ReactComponent as DownloadLogo } from "../table_icon/download.svg";
 import "../filter.css";
 import "../table.css";
+import Legend from "./Legend.js";
 
 // TODO: Move to some sort of env file
 const HOST_ENDPOINT = `http://localhost:8000`;
@@ -616,6 +619,10 @@ function SalivaryProteinTable() {
   const [columnApi, setColumnApi] = useState(null);
   const [gridApi, setGridApi] = useState(null);
   const [sortedColumn, setSortedColumn] = useState(null);
+  const [openLegend, setOpenLegend] = useState(false);
+
+  const handleOpenLegend = () => setOpenLegend(true);
+  const handleCloseLegend = () => setOpenLegend(false);
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
@@ -667,6 +674,7 @@ function SalivaryProteinTable() {
   const fetchData = async () => {
     const apiPayload = {
       filters: queryBuilder(facetFilter),
+      filterByOr: orFilterOn, // True if Or filter toggled
       // Pass sort query if any sort is applied
       ...(sortedColumn && createSortQuery()),
       ...(searchText && { keyword: createGlobalSearchQuery() }),
@@ -724,7 +732,7 @@ function SalivaryProteinTable() {
     }, 1000);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [facetFilter, pageSize, msBExcludeOn, searchText]);
+  }, [facetFilter, pageSize, msBExcludeOn, searchText, orFilterOn]);
 
   // Update records when new sort is applied & go back to first page
   useEffect(() => {
@@ -1128,6 +1136,15 @@ function SalivaryProteinTable() {
     }
   };
 
+  /** Reset all search filters */
+  const resetFilters = () => {
+    setFacetFilters({});
+    setSearchText("");
+    setSortedColumn(null);
+    setOrFilterOn(false);
+    setMsBExcludeOn(false);
+  };
+
   return (
     <>
       <Container
@@ -1153,11 +1170,23 @@ function SalivaryProteinTable() {
               textAlign: "center",
               paddingTop: "30px",
               fontSize: "25px",
-              paddingBottom: "40px",
             }}
           >
             Filters
           </h1>
+          <Button
+            variant="text"
+            size="small"
+            sx={{
+              display: "block",
+              marginBottom: "20px",
+              marginX: "auto",
+              textAlign: "center",
+            }}
+            onClick={resetFilters}
+          >
+            Reset Filters
+          </Button>
           <FormGroup style={{ marginLeft: "18%" }}>
             <Stack
               direction="row"
@@ -1201,6 +1230,11 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["UniProt Accession"]
+                      ? facetFilter["UniProt Accession"]
+                      : ""
+                  }
                   onChange={handleAccessionChange}
                   name="accession"
                 />
@@ -1233,6 +1267,9 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["Gene Symbol"] ? facetFilter["Gene Symbol"] : ""
+                  }
                   onChange={handleGeneChange}
                 />
               </AccordionDetails>
@@ -1264,6 +1301,11 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["Protein Name"]
+                      ? facetFilter["Protein Name"]
+                      : ""
+                  }
                   onChange={handleNameChange}
                 />
               </AccordionDetails>
@@ -1285,75 +1327,76 @@ function SalivaryProteinTable() {
                   Expert Opinion
                 </Typography>
               </AccordionSummary>
-              <List
-                component="div"
-                disablePadding
-                sx={{ border: "1px groove" }}
-              >
-                {opCount.map((child, key) => (
-                  <FormGroup
-                    key={key}
-                    sx={{ ml: "10px" }}
-                  >
-                    {child.key === "Unsubstantiated" ? (
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={opArr[0]}
-                            onClick={(e) => {
-                              const { checked } = e.target;
+              <AccordionDetails>
+                <List
+                  component="div"
+                  disablePadding
+                  sx={{ border: "1px groove" }}
+                >
+                  {opCount.map((child, key) => (
+                    <FormGroup
+                      key={key}
+                      sx={{ ml: "10px" }}
+                    >
+                      {child.key === "Unsubstantiated" ? (
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={opArr[0]}
+                              onClick={(e) => {
+                                const { checked } = e.target;
 
-                              if (!checked) {
-                                delete facetFilter["expert_opinion"];
-                              }
+                                if (!checked) {
+                                  delete facetFilter["expert_opinion"];
+                                }
 
-                              const updatedOpArr = [!opArr[0], opArr[1]];
+                                const updatedOpArr = [!opArr[0], opArr[1]];
 
-                              setOpArr(updatedOpArr);
+                                setOpArr(updatedOpArr);
 
-                              setFacetFilters({
-                                ...facetFilter,
-                                ...(checked && {
-                                  expert_opinion: "Unsubstantiated",
-                                }), // Only pass when checked
-                              });
-                            }}
-                          />
-                        }
-                        label={"US (" + child.doc_count + ")"}
-                      />
-                    ) : (
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={opArr[1]}
-                            onClick={(e) => {
-                              const { checked } = e.target;
+                                setFacetFilters({
+                                  ...facetFilter,
+                                  ...(checked && {
+                                    expert_opinion: "Unsubstantiated",
+                                  }), // Only pass when checked
+                                });
+                              }}
+                            />
+                          }
+                          label={"US (" + child.doc_count + ")"}
+                        />
+                      ) : (
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={opArr[1]}
+                              onClick={(e) => {
+                                const { checked } = e.target;
 
-                              if (!checked) {
-                                delete facetFilter["expert_opinion"];
-                              }
+                                if (!checked) {
+                                  delete facetFilter["expert_opinion"];
+                                }
 
-                              const updatedOpArr = [opArr[0], !opArr[1]];
+                                const updatedOpArr = [opArr[0], !opArr[1]];
 
-                              setOpArr(updatedOpArr);
+                                setOpArr(updatedOpArr);
 
-                              setFacetFilters({
-                                ...facetFilter,
-                                ...(checked && {
-                                  expert_opinion: "Confirmed",
-                                }), // Only pass when checked
-                              });
-                            }}
-                          />
-                        }
-                        label={"C (" + child.doc_count + ")"}
-                      />
-                    )}
-                  </FormGroup>
-                ))}
-              </List>
-              <AccordionDetails></AccordionDetails>
+                                setFacetFilters({
+                                  ...facetFilter,
+                                  ...(checked && {
+                                    expert_opinion: "Confirmed",
+                                  }), // Only pass when checked
+                                });
+                              }}
+                            />
+                          }
+                          label={"C (" + child.doc_count + ")"}
+                        />
+                      )}
+                    </FormGroup>
+                  ))}
+                </List>
+              </AccordionDetails>
             </Accordion>
             <Accordion>
               <AccordionSummary
@@ -1372,7 +1415,6 @@ function SalivaryProteinTable() {
                   IHC
                 </Typography>
               </AccordionSummary>
-
               <AccordionDetails>
                 <List
                   component="div"
@@ -1445,6 +1487,12 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["saliva_abundance"] &&
+                    facetFilter["saliva_abundance"].start
+                      ? facetFilter["saliva_abundance"].start
+                      : ""
+                  }
                   onChange={handleStartWSChange}
                 />
                 <Typography
@@ -1468,6 +1516,12 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["saliva_abundance"] &&
+                    facetFilter["saliva_abundance"].end
+                      ? facetFilter["saliva_abundance"].end
+                      : ""
+                  }
                   onChange={handleEndWSChange}
                 />
               </AccordionDetails>
@@ -1500,6 +1554,12 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["parotid_gland_abundance"] &&
+                    facetFilter["parotid_gland_abundance"].start
+                      ? facetFilter["parotid_gland_abundance"].start
+                      : ""
+                  }
                   onChange={handleStartParChange}
                 />
                 <Typography
@@ -1523,6 +1583,12 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["parotid_gland_abundance"] &&
+                    facetFilter["parotid_gland_abundance"].end
+                      ? facetFilter["parotid_gland_abundance"].end
+                      : ""
+                  }
                   onChange={handleEndParChange}
                 />
               </AccordionDetails>
@@ -1555,6 +1621,12 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["sm/sl_abundance"] &&
+                    facetFilter["sm/sl_abundance"].start
+                      ? facetFilter["sm/sl_abundance"].start
+                      : ""
+                  }
                   onChange={handleStartSubChange}
                 />
                 <Typography
@@ -1578,6 +1650,12 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["sm/sl_abundance"] &&
+                    facetFilter["sm/sl_abundance"].end
+                      ? facetFilter["sm/sl_abundance"].end
+                      : ""
+                  }
                   onChange={handleEndSubChange}
                 />
               </AccordionDetails>
@@ -1629,6 +1707,12 @@ function SalivaryProteinTable() {
                     },
                   }}
                   type="number"
+                  value={
+                    facetFilter["plasma_abundance"] &&
+                    facetFilter["plasma_abundance"].start
+                      ? facetFilter["plasma_abundance"].start
+                      : ""
+                  }
                   onChange={handleStartBChange}
                 />
                 <Typography
@@ -1652,6 +1736,12 @@ function SalivaryProteinTable() {
                     },
                   }}
                   type="number"
+                  value={
+                    facetFilter["plasma_abundance"] &&
+                    facetFilter["plasma_abundance"].end
+                      ? facetFilter["plasma_abundance"].end
+                      : ""
+                  }
                   onChange={handleEndBChange}
                 />
               </AccordionDetails>
@@ -1683,6 +1773,11 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["mRNA"] && facetFilter["mRNA"].start
+                      ? facetFilter["mRNA"].start
+                      : ""
+                  }
                   onChange={handleStartMRNAChange}
                   type="number"
                 />
@@ -1706,6 +1801,11 @@ function SalivaryProteinTable() {
                       borderRadius: "16px",
                     },
                   }}
+                  value={
+                    facetFilter["mRNA"] && facetFilter["mRNA"].end
+                      ? facetFilter["mRNA"].end
+                      : ""
+                  }
                   onChange={handleEndMRNAChange}
                   type="number"
                 />
@@ -1967,30 +2067,78 @@ function SalivaryProteinTable() {
                 suppressPaginationPanel={true}
               />
             </div>
-            <button
-              onClick={onBtExport}
+            <div
               style={{
-                fontWeight: "bold",
-                textAlign: "center",
-                marginTop: "10px",
-                color: "#F6921E",
-                background: "white",
-                fontSize: "20",
-                border: "none",
-                cursor: "pointer",
+                display: "flex",
+                justifyContent: "space-between",
               }}
             >
-              <DownloadLogo
-                style={{
-                  marginRight: "10px",
-                  paddingTop: "5px",
-                  display: "inline",
-                  position: "relative",
-                  top: "0.15em",
+              <Button
+                onClick={onBtExport}
+                sx={{
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  marginTop: "10px",
+                  textTransform: "unset",
+                  color: "#F6921E",
+                  fontSize: "20",
+                  "&:hover": {
+                    backgroundColor: "inherit",
+                  },
                 }}
-              />
-              Download Spreadsheet
-            </button>
+              >
+                <DownloadLogo
+                  style={{
+                    marginRight: "10px",
+                  }}
+                />
+                Download Spreadsheet
+              </Button>
+              <Button
+                sx={{
+                  fontWeight: "bold",
+                  textDecoration: "none",
+                  textTransform: "unset",
+                  color: "#F6921E",
+                  background: "white",
+                  fontSize: "20",
+                  "&:hover": {
+                    backgroundColor: "inherit", // Keeps the same background color on hover
+                  },
+                }}
+                onClick={handleOpenLegend}
+              >
+                Show Legend
+              </Button>
+            </div>
+            <Modal
+              open={openLegend}
+              onClose={handleCloseLegend}
+            >
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "15%",
+                  left: "50%",
+                  transform: "translate(-50%, -15%)",
+                  bgcolor: "background.paper",
+                  boxShadow: 24,
+                  p: 2,
+                  width: "60vw",
+                  overflow: "scroll",
+                }}
+              >
+                <Typography
+                  id="legend-modal-title"
+                  variant="h6"
+                  component="h2"
+                  sx={{ textAlign: "center" }}
+                >
+                  Table Legend
+                </Typography>
+                <Legend />
+              </Box>
+            </Modal>
           </Box>
         </Container>
       </Container>
