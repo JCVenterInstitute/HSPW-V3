@@ -135,7 +135,7 @@ const AdvancedSearch = () => {
       {
         id: Date.now(),
         selectedProperty: properties[0] || "",
-        selectedOperation: properties[0] || "",
+        selectedOperation: "",
         value: "",
       },
     ]);
@@ -438,7 +438,10 @@ const AdvancedSearch = () => {
                     }
                   >
                     {row.selectedProperty === "number_of_members" ||
-                    row.selectedProperty === "experiment_id_key"
+                    row.selectedProperty === "experiment_id_key" ||
+                    row.selectedProperty === "glycans.mass" ||
+                    row.selectedProperty === "mass" ||
+                    row.selectedProperty === "protein_sequence_length"
                       ? numericOperations.map((operation) => (
                           <MenuItem key={operation} value={operation}>
                             {operation}
