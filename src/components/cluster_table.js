@@ -1,7 +1,23 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
+import {
+  Container,
+  TextField,
+  Box,
+  MenuItem,
+  Stack,
+  Checkbox,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ClearIcon from "@mui/icons-material/Clear";
+import SearchIcon from "@mui/icons-material/Search";
+import MuiAccordion from "@mui/material/Accordion";
+import MuiAccordionSummary from "@mui/material/AccordionSummary";
+import MuiAccordionDetails from "@mui/material/AccordionDetails";
+import { styled } from "@mui/material/styles";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AgGridReact } from "ag-grid-react";
@@ -15,6 +31,53 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { DATA } from "./data_cluster";
 import "./filter.css";
 import "./table.css";
+
+const Accordion = styled((props) => (
+  <MuiAccordion disableGutters elevation={0} square {...props} />
+))(({ theme }) => ({
+  marginBottom: "15px",
+  "&:not(:last-child)": {
+    borderBottom: 0,
+  },
+  "&:before": {
+    display: "none",
+  },
+  "&:hover": {
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? "rgba(255, 255, 255, .1)"
+        : "rgba(0, 0, 0, .05)",
+  },
+}));
+
+const AccordionSummary = styled((props) => (
+  <MuiAccordionSummary
+    expandIcon={<PlayArrowIcon sx={{ fontSize: "1.1rem", color: "#454545" }} />}
+    {...props}
+  />
+))(({ theme }) => ({
+  paddingLeft: "25px",
+  backgroundColor:
+    theme.palette.mode === "dark"
+      ? "rgba(255, 255, 255, .05)"
+      : "rgba(0, 0, 0, .03)",
+  flexDirection: "row-reverse",
+  "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
+    transform: "rotate(90deg)",
+  },
+  "& .MuiAccordionSummary-content": {
+    marginLeft: theme.spacing(2),
+  },
+}));
+
+const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderTop: "1px solid rgba(0, 0, 0, .125)",
+  backgroundColor: "#f9f8f7",
+  color: "#454545",
+  fontFamily: "Montserrat",
+}));
+
 function App() {
   const [message, setMessage] = useState("");
   const [pageSize, setPageSize] = useState(50);
@@ -53,7 +116,7 @@ function App() {
     },
     {
       headerName: "Representative Protein Name",
-      field: "Representative_Protein_Name",
+      field: "protein_name",
       sortable: true,
       wrapText: true,
       autoHeight: true,
@@ -119,6 +182,129 @@ function App() {
 
   return (
     <>
+      <Container
+        maxWidth="false"
+        sx={{
+          width: "100%",
+          display: "flex",
+          paddingLeft: "0px !important",
+          // paddingRight: "0px !important",
+        }}
+      >
+        <Box
+          sx={{
+            backgroundColor: "#f9f8f7",
+            width: "270px",
+            height: "47rem",
+            overflow: "scroll",
+          }}
+        >
+          <h1
+            style={{
+              color: "#1463B9",
+              display: "center",
+              textAlign: "center",
+              paddingTop: "30px",
+              fontSize: "25px",
+              paddingBottom: "40px",
+            }}
+          >
+            Filters
+          </h1>
+          <div>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  Representative Protein
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Search..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  Representative Protein Name
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Search..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                style={{ flexDirection: "row-reverse" }}
+              >
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  # of Members
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Search..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                />
+              </AccordionDetails>
+            </Accordion>
+          </div>
+        </Box>
+      </Container>
       <div className="rowC">
         <div className="sidebar1" style={{ height: "45rem" }}>
           <h2
