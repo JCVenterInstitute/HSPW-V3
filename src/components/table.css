@@ -56,6 +56,11 @@
   padding: 0px !important;
 }
 
+.ag-cell-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
 .salivary-proteins-colored-cell .ag-cell-wrapper {
   width: 100%;
   height: 100%;

@@ -2,9 +2,7 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import CustomHeaderGroup from "./CustomHeaderGroup";
 import CustomLoadingOverlay from "./CustomLoadingOverlay";
-import CustomNoRowsOverlay from "./CustomNoRowsOverlay";
 
 const SearchResultsTable = ({ entity, searchResults, columnDefs }) => {
   const [rowData, setRowData] = useState([]);
@@ -15,7 +13,6 @@ const SearchResultsTable = ({ entity, searchResults, columnDefs }) => {
     resizable: true,
     sortable: true,
     minWidth: 170,
-    autoHeight: true,
     filter: "agTextColumnFilter",
   };
 
@@ -79,17 +76,15 @@ const SearchResultsTable = ({ entity, searchResults, columnDefs }) => {
       setColumns(modifiedColumnDefs);
     }
     setRowData(searchResults);
-  }, [searchResults, columnDefs, history]);
+  }, [searchResults, columnDefs]);
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
   }, []);
 
-  const noRowsOverlayComponent = useMemo(() => {
-    return CustomNoRowsOverlay;
+  const onGridReady = useCallback((params) => {
+    params.api.showLoadingOverlay();
   }, []);
-
-  const onGridReady = useCallback((params) => {}, []);
 
   return (
     <div
@@ -106,7 +101,6 @@ const SearchResultsTable = ({ entity, searchResults, columnDefs }) => {
         enableCellTextSelection={true}
         pagination={true}
         paginationPageSize={50}
-        noRowsOverlayComponent={noRowsOverlayComponent}
         loadingOverlayComponent={loadingOverlayComponent}
         suppressScrollOnNewData={true}
       ></AgGridReact>
