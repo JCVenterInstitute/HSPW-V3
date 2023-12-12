@@ -98,6 +98,7 @@ const AdvancedSearch = () => {
   const [recordsPerPage, setRecordsPerPage] = useState(50);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [gridApi, setGridApi] = useState();
 
   const entities = [
     "Genes",
@@ -122,6 +123,10 @@ const AdvancedSearch = () => {
   ];
 
   const numericOperations = ["exists", "is equal to", "is unequal to"];
+
+  const handleGridApiChange = (params) => {
+    setGridApi(params);
+  };
 
   const handleAddRow = () => {
     // Use a unique ID for key purposes, like a timestamp
@@ -211,6 +216,7 @@ const AdvancedSearch = () => {
   };
 
   const handlePageChange = (newPage) => {
+    gridApi.showLoadingOverlay();
     setCurrentPage(newPage);
     handleSearch(newPage);
   };
@@ -545,6 +551,7 @@ const AdvancedSearch = () => {
                   onChange={(event) => {
                     const newRecordsPerPage = event.target.value;
                     setRecordsPerPage(newRecordsPerPage);
+                    gridApi.showLoadingOverlay();
                     setCurrentPage(1);
                     handleSearch(1, newRecordsPerPage);
                   }}
@@ -670,6 +677,7 @@ const AdvancedSearch = () => {
               searchResults={searchResults}
               columnDefs={columnDefs}
               recordsPerPage={recordsPerPage}
+              handleGridApiChange={handleGridApiChange}
             />
           </Box>
         )}

@@ -10,6 +10,7 @@ const SearchResultsTable = ({
   searchResults,
   columnDefs,
   recordsPerPage,
+  handleGridApiChange,
 }) => {
   const [rowData, setRowData] = useState([]);
   const [columns, setColumns] = useState([]);
@@ -105,6 +106,7 @@ const SearchResultsTable = ({
 
   const onGridReady = useCallback((params) => {
     params.api.showLoadingOverlay();
+    handleGridApiChange(params.api);
   }, []);
 
   return (
