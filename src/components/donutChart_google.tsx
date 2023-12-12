@@ -6,31 +6,31 @@ export const data = [
   ["COVID-19", 120],
   ["Oral Squamous Cell Carcinoma", 10],
   ["Sjogren's Syndrome", 7],
-  ["Disease Free", 859] // CSS-style declaration
+  ["Disease Free", 859], // CSS-style declaration
 ];
 
 export const options = {
-  title: "Disease Types",
+  title: "Condition Types",
   pieHole: 0.4,
   is3D: false,
-  titlePosition:'out',
-  titleTextStyle:{
-    fontSize:'22',
-    bold:true,
-    fontColor:'#565656',
-    fontName:'Lato'
+  titlePosition: "out",
+  titleTextStyle: {
+    fontSize: "22",
+    bold: true,
+    fontColor: "#565656",
+    fontName: "Lato",
   },
-  colors:['#C3F968','#A5F1F2','#91F7AB','#71E2E8'],
-  legend:{
-    textStyle:{
+  colors: ["#C3F968", "#71E2E8", "#527E8C", "#F3CA3A"],
+  legend: {
+    textStyle: {
       fontSize: 16,
-        fontColor:'#565656',
-        fontName:'Lato'
-    }
+      fontColor: "#565656",
+      fontName: "Lato",
+    },
   },
-  pieSliceTextStyle:{
-    color:'#565656'
-  }
+  pieSliceTextStyle: {
+    color: "#565656",
+  },
 };
 
 export function donutChart_google() {

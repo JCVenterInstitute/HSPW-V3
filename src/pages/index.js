@@ -1,24 +1,22 @@
-import * as React from 'react';
-import ReactDOM from 'react-dom/client';
-import { StyledEngineProvider } from '@mui/material/styles';
-import Demo from '../components/NavBar1.tsx';
-import BasicCard from '../components/basic-card.js';
-import Carousel from '../components/carousel';
-import Footer from '../components/footer.js';
-import salivary_protein from '../components/icon-salivary-protein.png';
-import analysis from '../components/icon-analyze.png';
-import download from '../components/icon-download.png';
-import upload from '../components/icon-upload.png';
-import pubmed from '../components/icon-pubmed.png';
-import gene from '../components/icon-gene.png';
-import protein_cluster from '../components/icon-clustering.png';
-import api from '../components/icon-api.png';
-import help from '../components/icon-help.png';
-import { Timeline } from 'react-twitter-widgets'
-import Chord from '../components/chord.js';
-import { PopupService } from 'ag-grid-community';
-
-
+import * as React from "react";
+import ReactDOM from "react-dom/client";
+import { StyledEngineProvider } from "@mui/material/styles";
+import Demo from "../components/NavBar1.tsx";
+import BasicCard from "../components/basic-card.js";
+import Carousel from "../components/carousel";
+import Footer from "../components/footer.js";
+import salivary_protein from "../components/icon-salivary-protein.png";
+import analysis from "../components/icon-analyze.png";
+import download from "../components/icon-download.png";
+import upload from "../components/icon-upload.png";
+import pubmed from "../components/icon-pubmed.png";
+import gene from "../components/icon-gene.png";
+import protein_cluster from "../components/icon-clustering.png";
+import api from "../components/icon-api.png";
+import help from "../components/icon-help.png";
+import { Timeline } from "react-twitter-widgets";
+import Chord from "../components/chord.js";
+import { PopupService } from "ag-grid-community";
 
 /*
   Note: I've tried to be non-destructive with the changes where I can.  Depending on what
@@ -46,92 +44,126 @@ import { PopupService } from 'ag-grid-community';
 class Home extends React.Component {
   constructor(props) {
     super(props);
-    const base = '/hspw_new/';
-    const iconFolder = base + 'public/assets/images/icons/';
+    const base = "/hspw_new/";
+    const iconFolder = base + "public/assets/images/icons/";
     this.state = {
-      activePage: '/',
+      activePage: "/",
       pages: {
-        '/' : {
-          layout: 'fixed',
+        "/": {
+          layout: "fixed",
           hero: {
-            width: 'fullscreen',
-            title: 'Welcome to the Human Salivary Proteome Wiki (HSPW)',
-            blurb: 'HSPW is a collaborative, community-based Web portal to more than 1,000 unique human saliva proteins identified by high-throughput proteomic technologies. The wiki is developed for the research community and the public to harness the knowledge in the data and to further enhance the value of the proteome. You are very welcome to share your thoughts in the forums; add your own data to the growing database; annotate the proteins; or just explore the site.'
+            width: "fullscreen",
+            title: "Welcome to the Human Salivary Proteome Wiki (HSPW)",
+            blurb:
+              "HSPW is a collaborative, community-based Web portal to more than 1,000 unique human saliva proteins identified by high-throughput proteomic technologies. The wiki is developed for the research community and the public to harness the knowledge in the data and to further enhance the value of the proteome. You are very welcome to share your thoughts in the forums; add your own data to the growing database; annotate the proteins; or just explore the site.",
           },
           basicCards: [
             {
               imageSrc: salivary_protein,
-              title: 'Salivary Protein',
-              blurb: 'Search for specific salivary proteins found in our database.'
+              title: "Salivary Protein",
+              blurb:
+                "Search for specific salivary proteins found in our database.",
+              location: "/salivary_protein",
             },
             {
               imageSrc: analysis,
-              title: 'Protein Analysis',
-              blurb: 'Evaluate proteins, quantify abundance and perform statistics.',
-              location: '/analysis_home'
+              title: "Protein Analysis",
+              blurb:
+                "Evaluate proteins, quantify abundance and perform statistics.",
+              location: "/analysis_home",
             },
             {
               imageSrc: upload,
-              title: 'Upload Experiment',
-              blurb: 'Upload experiment to the database. Files have to be in mzTab format.'
+              title: "Upload Experiment",
+              blurb:
+                "Upload experiment to the database. Files have to be in mzTab format.",
             },
             {
               imageSrc: download,
-              title: 'Download Datasets',
-              blurb: 'Download datasets from database with protein abundance and sequence.'
+              title: "Download Datasets",
+              blurb:
+                "Download datasets from database with protein abundance and sequence.",
             },
             {
               imageSrc: pubmed,
-              title: 'PubMed',
-              blurb: 'Includes links to full text articles and other related resources.',
-              location: '/citation'
+              title: "PubMed",
+              blurb:
+                "Includes links to full text articles and other related resources.",
+              location: "/citation",
             },
             {
               imageSrc: gene,
-              title: 'Find Gene',
-              blurb: 'A locatable region of genomic sequence, corresponding to a unit of inheritance.',
-              location:"/gene"
+              title: "Find Gene",
+              blurb:
+                "A locatable region of genomic sequence, corresponding to a unit of inheritance.",
+              location: "/gene",
             },
             {
               imageSrc: protein_cluster,
-              title: 'Cluster Search',
-              blurb: 'Search clusters that share one or more common proteins are merged further.',
-              location: '/protein_cluster'
+              title: "Cluster Search",
+              blurb:
+                "Search clusters that share one or more common proteins are merged further.",
+              location: "/protein_cluster",
             },
             {
               imageSrc: api,
-              title: 'API',
-              blurb: 'Allows access to the datasets by retrieving requested data in JSON format.',
+              title: "API",
+              blurb:
+                "Allows access to the datasets by retrieving requested data in JSON format.",
             },
             {
               destination: false,
-              rawContent:
-                <div className='basic-card-content basic-card-content-centered'>
-                  <Timeline dataSource={{ sourceType: "profile", screenName: "reactjs" }} options={{ borderColor: "#FF0000", width: "300", height: "310" }}/>            
+              rawContent: (
+                <div className="basic-card-content basic-card-content-centered">
+                  <Timeline
+                    dataSource={{
+                      sourceType: "profile",
+                      screenName: "reactjs",
+                    }}
+                    options={{
+                      borderColor: "#FF0000",
+                      width: "300",
+                      height: "310",
+                    }}
+                  />
                 </div>
+              ),
             },
             {
               destination: false,
-              rawContent:
-                <div className='basic-card-content basic-card-content-centered'>
-                    <h3>Information for HSPW Users</h3>
-                    <img src={help}></img>
-                    <ul className="bulletless">
-                      <li>The new HSPW is built on the AWS system. Data and analysis tools and services from HSPW have now been integrated into the resource.</li>
-                    </ul>
-                  </div>
-            },
-            {
-              size: '2',
-              destination: false,
-              rawContent: 
-                <div className="basic-card-content basic-card-content-centered embed-responsive" style={{height: '300px'}}>
-                  <iframe className="embed-responsive-item" src="https://youtube.com/embed/u4JN1FmLGE4" width="100%"></iframe>
+              rawContent: (
+                <div className="basic-card-content basic-card-content-centered">
+                  <h3>Information for HSPW Users</h3>
+                  <img src={help}></img>
+                  <ul className="bulletless">
+                    <li>
+                      The new HSPW is built on the AWS system. Data and analysis
+                      tools and services from HSPW have now been integrated into
+                      the resource.
+                    </li>
+                  </ul>
                 </div>
-            }
-          ]
-        }
-      }
+              ),
+            },
+            {
+              size: "2",
+              destination: false,
+              rawContent: (
+                <div
+                  className="basic-card-content basic-card-content-centered embed-responsive"
+                  style={{ height: "300px" }}
+                >
+                  <iframe
+                    className="embed-responsive-item"
+                    src="https://youtube.com/embed/u4JN1FmLGE4"
+                    width="100%"
+                  ></iframe>
+                </div>
+              ),
+            },
+          ],
+        },
+      },
     };
   }
 
@@ -142,30 +174,28 @@ class Home extends React.Component {
         <StyledEngineProvider injectFirst>
           <div id="application" data-layout={page.layout}>
             <Carousel />
-          
+
             <div id="page-content">
               <div className="basic-card-container">
-                { 
-                  page.basicCards.map((props, i) => {
-                    return (
-                      <BasicCard
-                        key={i}
-                        rawContent={props.rawContent}
-                        size={props.size}
-                        destination={props.destination}
-                        imageSrc={props.imageSrc}
-                        title={props.title}
-                        blurb={props.blurb}
-                        location={props.location}
-                      />
-                    );
-                  })
-                }
+                {page.basicCards.map((props, i) => {
+                  return (
+                    <BasicCard
+                      key={i}
+                      rawContent={props.rawContent}
+                      size={props.size}
+                      destination={props.destination}
+                      imageSrc={props.imageSrc}
+                      title={props.title}
+                      blurb={props.blurb}
+                      location={props.location}
+                    />
+                  );
+                })}
               </div>
             </div>
           </div>
         </StyledEngineProvider>
-      </React.StrictMode>      
+      </React.StrictMode>
     );
   }
 }
