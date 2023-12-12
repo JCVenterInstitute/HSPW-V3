@@ -9,6 +9,7 @@ import Paper from "@mui/material/Paper";
 import { useEffect, useState } from "react";
 import main_feature from "../components/hero.jpeg";
 import { useParams } from "react-router";
+import FontAwesome from "react-fontawesome";
 
 const th = {
   background: "#f2f2f2",
@@ -203,7 +204,14 @@ const Gene_detail = (props) => {
                     style={{ color: "/*#116988*/#0b5989" }}
                     href="https://www.uniprot.org/taxonomy/9606 "
                   >
-                    Homo sapiens
+                    Homo sapiens{" "}
+                    <FontAwesome
+                      className="super-crazy-colors"
+                      name="external-link"
+                      style={{
+                        textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                      }}
+                    />
                   </a>
                 </TableCell>
               </TableRow>
@@ -368,7 +376,10 @@ const Gene_detail = (props) => {
                       {data[0]["_source"]["Gene Products"].map(
                         (value, i, arr) => {
                           return (
-                            <TableRow style={{ border: "1px solid white" }}>
+                            <TableRow
+                              style={{ border: "1px solid white" }}
+                              key={i}
+                            >
                               <TableCell
                                 style={{
                                   borderRight: "1px solid grey",
@@ -396,7 +407,14 @@ const Gene_detail = (props) => {
                                 <a
                                   href={`https://www.uniprot.org/uniprotkb/${value}/entry`}
                                 >
-                                  UniProt
+                                  UniProt{" "}
+                                  <FontAwesome
+                                    className="super-crazy-colors"
+                                    name="external-link"
+                                    style={{
+                                      textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                                    }}
+                                  />
                                 </a>
                               </TableCell>
                             </TableRow>
@@ -423,7 +441,14 @@ const Gene_detail = (props) => {
                 </TableCell>
                 <TableCell style={{ fontFamily: "Lato", fontSize: "14px" }}>
                   <a href={gene_link + data[0]["_source"]["GeneID"]}>
-                    Entrez Gene
+                    Entrez Gene{" "}
+                    <FontAwesome
+                      className="super-crazy-colors"
+                      name="external-link"
+                      style={{
+                        textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                      }}
+                    />
                   </a>
                 </TableCell>
               </TableRow>
