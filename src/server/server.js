@@ -167,34 +167,86 @@ app.get("/api/protein_cluster_member_count", (req, res) => {
   });
 });
 
-async function search_cluster() {
-  // Initialize the client.
-  var client = await getClient();
+async function querySalivaryProtein(
+  size,
+  from,
+  filter,
+  sort = null,
+  keyword = null,
+  filterByOr = false
+) {
+  const client = await getClient();
 
-  var query = {
-    size: 10000,
-    query: {
-      match_all: {},
+  const payload = {
+    index: "new_saliva_protein_test",
+    body: {
+      track_total_hits: true,
+      size: size,
+      from: from,
+      aggs: {
+        IHC: {
+          terms: {
+            field: "IHC.keyword",
+          },
+        },
+        expert_opinion: {
+          terms: {
+            field: "expert_opinion.keyword",
+          },
+        },
+      },
+      query: {
+        bool: {
+          ...(filterByOr === true ? { should: filter } : { filter }),
+          ...(keyword && { must: [keyword] }), // Apply global search if present
+        },
+      },
+      ...(sort && { sort }), // Apply sort if present
     },
   };
 
-  var response = await client.search({
-    index: "protein_cluster",
-    body: query,
-  });
-  console.log(
-    Object.keys(JSON.parse(JSON.stringify(response.body.hits.hits))).length
-  );
-  console.log(
-    JSON.stringify(response.body.hits.hits[0]["_source"]["Cluster ID"])
-  );
-  return response.body.hits.hits;
+  const response = await client.search(payload);
+
+  return response.body;
 }
 
-app.get("/protein_cluster", (req, res) => {
-  let a = search_cluster();
+async function and_search_cluster(
+  size,
+  from,
+  filter,
+  sort = null,
+  keyword = null
+) {
+  var client = await getClient();
+
+  const payload = {
+    index: "protein_cluster",
+    body: {
+      track_total_hits: true,
+      size: size,
+      from: from,
+
+      query: {
+        bool: {
+          ...(filter && { filter }),
+          ...(keyword && { must: [keyword] }), // Apply global search if present
+        },
+      },
+      ...(sort && { sort }), // Apply sort if present
+    },
+  };
+  console.log(payload);
+  var response = await client.search(payload);
+
+  return response.body;
+}
+
+app.post("/api/cluster_search/:size/:from/", (req, res) => {
+  const { filters, sort, keyword } = req.body;
+  const { size, from } = req.params;
+  console.log(size, from);
+  let a = and_search_cluster(size, from, filters, sort, keyword);
   a.then(function (result) {
-    console.log(result);
     res.json(result);
   });
 });
@@ -2679,10 +2731,3 @@ app.post("/api/salivary-proteins/:size/:from/", (req, res) => {
 app.listen(8000, () => {
   console.log(`Server is running on port 8000.`);
 });
-
-search_cluster().catch(console.log);
-search_gene().catch(console.log);
-search_signature().catch(console.log);
-search_citation().catch(console.log);
-search_geneID("EntrezGene:1").catch(console.log);
-search_proteinID("P04908").catch(console.log);

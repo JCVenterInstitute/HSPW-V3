@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Cluster from "../components/cluster_table";
+import Cluster from "../components/cluster/cluster_table";
 import Chart from "react-google-charts";
 import main_feature from "../components/hero.jpeg";
 import "./style.css";
