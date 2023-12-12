@@ -454,7 +454,7 @@ const columns = [
     cellClass: ["table-border"],
   },
   {
-    headerName: "MS (obs.)",
+    headerName: `MS (obs.)`,
     headerGroupComponent: CustomHeaderGroup,
     headerClass: ["header-border", "salivary-protein-header"],
     cellClass: ["table-border"],
@@ -827,7 +827,7 @@ function SalivaryProteinTable() {
    * @returns
    */
   const createStringQuery = ({ attrName, value }) => {
-    const escapedInput = escapeSpecialCharacters(searchText);
+    const escapedInput = escapeSpecialCharacters(value);
 
     return {
       bool: {
