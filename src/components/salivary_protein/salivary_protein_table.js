@@ -425,7 +425,7 @@ const columns = [
     field: "UniProt Accession",
     checkboxSelection: false,
     headerCheckboxSelection: false,
-    wordWrap: true,
+    wrapText: true,
     cellStyle: { wordBreak: "break-word" },
     cellClass: ["table-border"],
     cellRenderer: "proteinLinkComponent",
@@ -443,7 +443,6 @@ const columns = [
   },
   {
     headerName: "Protein Name",
-    maxHeight: "5",
     field: "Protein Name",
     cellClass: ["table-border"],
     cellStyle: { wordBreak: "break-word", overflow: "scroll" },
@@ -1922,32 +1921,34 @@ function SalivaryProteinTable() {
               >
                 Page
               </Typography>
-              <TextField
-                select
-                size="small"
-                InputProps={{
-                  style: {
-                    borderRadius: "10px",
-                  },
-                }}
-                value={pageNum === 0 ? 1 : pageNum + 1}
-                sx={{ marginLeft: "10px", marginRight: "10px" }}
-                onChange={(event) => {
-                  setPageNum(event.target.value - 1);
-                }}
-              >
-                {Array.from(
-                  { length: Math.ceil(docCount / pageSize) },
-                  (_, index) => (
-                    <MenuItem
-                      key={index + 1}
-                      value={index + 1}
-                    >
-                      {index + 1}
-                    </MenuItem>
-                  )
-                )}
-              </TextField>
+              {rowData.length !== 0 && (
+                <TextField
+                  select
+                  size="small"
+                  InputProps={{
+                    style: {
+                      borderRadius: "10px",
+                    },
+                  }}
+                  value={pageNum === 0 ? 1 : pageNum + 1}
+                  sx={{ marginLeft: "10px", marginRight: "10px" }}
+                  onChange={(event) => {
+                    setPageNum(event.target.value - 1);
+                  }}
+                >
+                  {Array.from(
+                    { length: Math.ceil(docCount / pageSize) },
+                    (_, index) => (
+                      <MenuItem
+                        key={index + 1}
+                        value={index + 1}
+                      >
+                        {index + 1}
+                      </MenuItem>
+                    )
+                  )}
+                </TextField>
+              )}
               <Typography
                 display="inline"
                 sx={{

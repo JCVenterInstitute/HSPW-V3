@@ -17,7 +17,6 @@ export const MuiDrawer = () => {
   const [anchorEl1, setAnchorEl1] = React.useState(null);
   const [anchorEl2, setAnchorEl2] = React.useState(null);
   const [anchorEl3, setAnchorEl3] = React.useState(null);
-  const [anchorEl4, setAnchorEl4] = React.useState(null);
 
   function handleClick(event) {
     if (anchorEl !== event.currentTarget) {
@@ -43,12 +42,6 @@ export const MuiDrawer = () => {
     }
   }
 
-  function handleClick4(event) {
-    if (anchorEl4 !== event.currentTarget) {
-      setAnchorEl4(event.currentTarget);
-    }
-  }
-
   function handleClose() {
     setAnchorEl(null);
   }
@@ -63,10 +56,6 @@ export const MuiDrawer = () => {
 
   function handleClose3() {
     setAnchorEl3(null);
-  }
-
-  function handleClose4() {
-    setAnchorEl4(null);
   }
 
   return (
@@ -302,35 +291,6 @@ export const MuiDrawer = () => {
                     Team
                   </MenuItem>
                   <MenuItem onClick={handleClose3}>Contact Us</MenuItem>
-                </Menu>
-              </React.Fragment>
-            )}
-          </PopupState>
-          <PopupState
-            variant="popover"
-            popupId="demo-popup-menu"
-          >
-            {(popupState) => (
-              <React.Fragment>
-                <Button
-                  {...bindTrigger(popupState)}
-                  endIcon={<KeyboardArrowDownIcon />}
-                  style={{ fontSize: "20px" }}
-                  aria-owns={anchorEl4 ? "simple-menu4" : undefined}
-                  aria-haspopup="true"
-                  onClick={handleClick4}
-                >
-                  Team
-                </Button>
-                <Menu
-                  id="simple-menu4"
-                  anchorEl={anchorEl4}
-                  open={Boolean(anchorEl4)}
-                  onClose={handleClose4}
-                  MenuListProps={{ onMouseLeave: handleClose4 }}
-                >
-                  <MenuItem onClick={handleClose4}>Current Team</MenuItem>
-                  <MenuItem onClick={handleClose4}>Founding Team</MenuItem>
                 </Menu>
               </React.Fragment>
             )}
