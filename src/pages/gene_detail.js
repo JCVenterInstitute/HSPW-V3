@@ -10,7 +10,8 @@ import { useEffect, useState } from "react";
 import main_feature from "../components/hero.jpeg";
 import { useParams } from "react-router";
 import FontAwesome from "react-fontawesome";
-
+import LinearProgress from "@mui/material/LinearProgress";
+import Box from "@mui/material/Box";
 const th = {
   background: "#f2f2f2",
   textAlign: "center",
@@ -97,7 +98,11 @@ const Gene_detail = (props) => {
   }, [message]);
 
   if (isLoading === true) {
-    return <h2>Loading</h2>;
+    return (
+      <Box sx={{ width: "100%" }}>
+        <LinearProgress sx={{ mb: "500px", margin: "20px" }} />
+      </Box>
+    );
   }
 
   return (
@@ -334,12 +339,7 @@ const Gene_detail = (props) => {
                             borderTopLeftRadius: "10px",
                           }}
                         >
-                          <a
-                            style={{ color: "white" }}
-                            href="https://salivaryproteome.org/public/index.php/Property:Has_accession_number"
-                          >
-                            Accession Number
-                          </a>
+                          Accession Number
                         </TableCell>
                         <TableCell
                           style={{
@@ -351,12 +351,7 @@ const Gene_detail = (props) => {
                             border: "1px solid white",
                           }}
                         >
-                          <a
-                            style={{ color: "white" }}
-                            href="https://salivaryproteome.org/public/index.php/Property:Known_officially_as"
-                          >
-                            Protein Name
-                          </a>
+                          Protein Name
                         </TableCell>
                         <TableCell
                           style={{
