@@ -41,6 +41,9 @@ const generateColumnDefs = (entity, data) => {
   } else if (entity === "PubMed Citations") {
     fields = fields.filter((field) => field !== "CitationID");
     fields.unshift("CitationID");
+  } else if (entity === "Salivary Proteins") {
+    fields = fields.filter((field) => field !== "uniprot_accession");
+    fields.unshift("uniprot_accession");
   }
 
   // Generate column definitions based on the keys
@@ -137,6 +140,10 @@ const AdvancedSearch = () => {
         propertyList = propertyList.filter((item) => item !== "InterPro ID");
       } else if (e.target.value === "PubMed Citations") {
         propertyList = propertyList.filter((item) => item !== "CitationID");
+      } else if (e.target.value === "Salivary Proteins") {
+        propertyList = propertyList.filter(
+          (item) => item !== "uniprot_accession"
+        );
       }
       setProperties(propertyList);
 
@@ -211,7 +218,11 @@ const AdvancedSearch = () => {
         from,
       })
       .then((res) => {
+        console.log(res.data.hits);
         setTotalPages(Math.ceil(res.data.total.value / pageSize));
+        if (entity === "Salivary Proteins") {
+          return res.data.hits.map((item) => item._source.salivary_proteins);
+        }
         return res.data.hits.map((item) => item._source);
       });
 
