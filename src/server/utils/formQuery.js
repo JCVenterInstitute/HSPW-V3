@@ -11,7 +11,8 @@ exports.formQuery = async (
     // Append '.keyword' to each field name
     const field =
       item.selectedProperty === "number_of_members" ||
-      item.selectedProperty === "experiment_id_key"
+      item.selectedProperty === "experiment_id_key" ||
+      item.selectedProperty === "Name"
         ? item.selectedProperty
         : item.selectedProperty + ".keyword";
     const value = item.value;
