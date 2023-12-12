@@ -73,6 +73,8 @@ const AdvancedSearch = () => {
   const [searchResults, setSearchResults] = useState();
   const [columnDefs, setColumnDefs] = useState();
   const [recordsPerPage, setRecordsPerPage] = useState(50);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
   const entities = [
     "Genes",
@@ -179,9 +181,18 @@ const AdvancedSearch = () => {
     setSelectedProperties(newSelectedProperties);
   };
 
-  const handleSearch = async () => {
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    handleSearch(newPage);
+  };
+
+  const handleSearch = async (
+    page = currentPage,
+    pageSize = recordsPerPage
+  ) => {
     console.log("> Searching...");
     console.log("> Search Query:", rows);
+    const from = (page - 1) * pageSize;
 
     setSearchStarted(true);
 
@@ -191,9 +202,13 @@ const AdvancedSearch = () => {
         rows,
         booleanOperator,
         selectedProperties,
+        size: pageSize,
+        from,
       })
-      .then((res) => res.data.map((item) => item._source));
-    console.log(result);
+      .then((res) => {
+        setTotalPages(Math.ceil(res.data.total.value / pageSize));
+        return res.data.hits.map((item) => item._source);
+      });
 
     const columns = generateColumnDefs(entity, result);
 
@@ -445,7 +460,7 @@ const AdvancedSearch = () => {
         >
           <Button
             variant="contained"
-            onClick={handleSearch}
+            onClick={() => handleSearch(currentPage)}
             disabled={rows.some(isRowInvalid)}
           >
             Search
@@ -495,11 +510,10 @@ const AdvancedSearch = () => {
                   }}
                   value={recordsPerPage}
                   onChange={(event) => {
-                    setRecordsPerPage(event.target.value);
-                    // setTotalPageNumber(
-                    //   Math.ceil(totalRecordCount / event.target.value)
-                    // );
-                    // gridApi.paginationSetPageSize(Number(event.target.value));
+                    const newRecordsPerPage = event.target.value;
+                    setRecordsPerPage(newRecordsPerPage);
+                    setCurrentPage(1);
+                    handleSearch(1, newRecordsPerPage);
                   }}
                   sx={{ marginLeft: "10px", marginRight: "30px" }}
                 >
@@ -519,27 +533,26 @@ const AdvancedSearch = () => {
                 >
                   Page
                 </Typography>
-                <TextField
-                  select
-                  size="small"
-                  InputProps={{
-                    style: {
-                      borderRadius: "10px",
-                    },
-                  }}
-                  // value={pageNumber}
-                  sx={{ marginLeft: "10px", marginRight: "10px" }}
-                  // onChange={(event) => {
-                  //   setPageNumber(event.target.value);
-                  //   gridApi.paginationGoToPage(event.target.value - 1);
-                  // }}
-                >
-                  {/* {Array.from({ length: totalPageNumber }, (_, index) => (
-              <MenuItem key={index + 1} value={index + 1}>
-                {index + 1}
-              </MenuItem>
-            ))} */}
-                </TextField>
+                {searchResults && (
+                  <TextField
+                    select
+                    size="small"
+                    InputProps={{
+                      style: {
+                        borderRadius: "10px",
+                      },
+                    }}
+                    value={currentPage}
+                    sx={{ marginLeft: "10px", marginRight: "10px" }}
+                    onChange={(e) => handlePageChange(e.target.value)}
+                  >
+                    {Array.from({ length: totalPages }, (_, index) => (
+                      <MenuItem key={index + 1} value={index + 1}>
+                        {index + 1}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
                 <Typography
                   display="inline"
                   sx={{
@@ -549,21 +562,21 @@ const AdvancedSearch = () => {
                     marginRight: "30px",
                   }}
                 >
-                  out of
+                  out of {totalPages}
                 </Typography>
                 <button
-                  // onClick={onPrevPage}
-                  // disabled={pageNumber === 1}
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
                   style={{
-                    // color: pageNumber === 1 ? "#D3D3D3" : "#F6921E",
+                    color: currentPage === 1 ? "#D3D3D3" : "#F6921E",
                     background: "white",
                     fontSize: "20px",
                     border: "none",
-                    // cursor: pageNumber === 1 ? "default" : "pointer",
-                    // transition: pageNumber === 1 ? "none" : "background 0.3s",
+                    cursor: currentPage === 1 ? "default" : "pointer",
+                    transition: currentPage === 1 ? "none" : "background 0.3s",
                     borderRadius: "5px",
                     marginRight: "15px",
-                    // pointerEvents: pageNumber === 1 ? "none" : "auto",
+                    pointerEvents: currentPage === 1 ? "none" : "auto",
                     paddingBottom: "5px",
                   }}
                   onMouseEnter={(e) =>
@@ -585,18 +598,18 @@ const AdvancedSearch = () => {
                   prev
                 </button>
                 <button
-                  // onClick={onNextPage}
-                  // disabled={pageNumber === totalPageNumber}
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
                   style={{
-                    // color: pageNumber === totalPageNumber ? "#D3D3D3" : "#F6921E",
+                    color: currentPage === totalPages ? "#D3D3D3" : "#F6921E",
                     background: "white",
                     fontSize: "20px",
                     border: "none",
-                    // cursor: pageNumber === totalPageNumber ? "default" : "pointer",
-                    // transition:
-                    // pageNumber === totalPageNumber ? "none" : "background 0.3s",
+                    cursor: currentPage === totalPages ? "default" : "pointer",
+                    transition:
+                      currentPage === totalPages ? "none" : "background 0.3s",
                     borderRadius: "5px",
-                    // pointerEvents: pageNumber === totalPageNumber ? "none" : "auto",
+                    pointerEvents: currentPage === totalPages ? "none" : "auto",
                     paddingBottom: "5px",
                   }}
                   onMouseEnter={(e) => {

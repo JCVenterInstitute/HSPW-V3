@@ -2,7 +2,9 @@ exports.formQuery = async (
   index,
   query,
   booleanOperator,
-  selectedProperties
+  selectedProperties,
+  size,
+  from
 ) => {
   console.log("> Forming query...");
 
@@ -80,7 +82,9 @@ exports.formQuery = async (
 
   // Form the final query
   const finalQuery = {
-    size: 10000,
+    track_total_hits: true,
+    size: size,
+    from: from,
     _source: combinedSelectedProperties,
     query: {
       bool: {

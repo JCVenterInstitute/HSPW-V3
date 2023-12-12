@@ -2396,7 +2396,9 @@ const advancedSearch = async (
   index,
   rows,
   booleanOperator,
-  selectedProperties
+  selectedProperties,
+  size,
+  from
 ) => {
   // Initialize the client.
   const client = await getClient();
@@ -2405,7 +2407,9 @@ const advancedSearch = async (
     index,
     rows,
     booleanOperator,
-    selectedProperties
+    selectedProperties,
+    size,
+    from
   );
 
   const response = await client.search({
@@ -2413,12 +2417,13 @@ const advancedSearch = async (
     body: query,
   });
 
-  return response.body.hits.hits;
+  return response.body.hits;
 };
 
 app.post("/api/advanced-search/build-query", async (req, res) => {
   try {
-    const { entity, rows, booleanOperator, selectedProperties } = req.body;
+    const { entity, rows, booleanOperator, selectedProperties, size, from } =
+      req.body;
 
     const entityIndexMapping = {
       Genes: "genes",
@@ -2435,7 +2440,9 @@ app.post("/api/advanced-search/build-query", async (req, res) => {
       entityIndexMapping[entity],
       rows,
       booleanOperator,
-      selectedProperties
+      selectedProperties,
+      size,
+      from
     );
     res.json(result);
   } catch (error) {
