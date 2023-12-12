@@ -101,7 +101,7 @@ class Home extends React.Component {
             },
             {
               imageSrc: protein_cluster,
-              title: "Cluster Search",
+              title: "Protein Cluster",
               blurb:
                 "Search clusters that share one or more common proteins are merged further.",
               location: "/protein_cluster",
@@ -173,7 +173,10 @@ class Home extends React.Component {
     return (
       <React.StrictMode>
         <StyledEngineProvider injectFirst>
-          <div id="application" data-layout={page.layout}>
+          <div
+            id="application"
+            data-layout={page.layout}
+          >
             <Carousel />
 
             <div id="page-content">

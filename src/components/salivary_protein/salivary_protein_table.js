@@ -354,7 +354,7 @@ function IHCComponent(props) {
           paddingTop: "25%",
         }}
       >
-        n/a
+        na
       </div>
     );
   }
@@ -571,7 +571,7 @@ const recordsPerPageList = [
 
 const rowHeight = 80;
 
-const IHCValues = ["medium", "not detected", "low", "n/a", "high"];
+const IHCValues = ["medium", "not detected", "low", "na", "high"];
 
 /**
  * Escape all special characters for input string
