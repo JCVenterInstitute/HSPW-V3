@@ -454,7 +454,7 @@ const columns = [
     cellClass: ["table-border"],
   },
   {
-    headerName: `MS (obs.)`,
+    headerName: "MS (obs.)",
     headerGroupComponent: CustomHeaderGroup,
     headerClass: ["header-border", "salivary-protein-header"],
     cellClass: ["table-border"],
