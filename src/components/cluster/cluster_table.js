@@ -107,6 +107,17 @@ function App() {
     return CustomLoadingOverlay;
   }, []);
 
+  function LinkComponent(props) {
+    return (
+      <a
+        rel="noopener noreferrer"
+        href={"http://localhost:3000/protein_cluster/" + props.value}
+      >
+        {props.value}
+      </a>
+    );
+  }
+
   const createSortQuery = () => {
     const { attribute, order } = sortedColumn;
 
@@ -300,6 +311,7 @@ function App() {
       wrapText: true,
       suppressSizeToFit: true,
       sortable: true,
+      cellRenderer: "LinkComponent",
     },
     {
       headerName: "Representative Protein Name",
@@ -860,6 +872,9 @@ function App() {
                 loadingOverlayComponent={loadingOverlayComponent}
                 paginationPageSize={pageSize}
                 suppressPaginationPanel={true}
+                components={{
+                  LinkComponent,
+                }}
               />
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
