@@ -54,6 +54,23 @@ const generateColumnDefs = (entity, data) => {
     minWidth: 200,
     headerClass: ["header-border"],
     cellClass: ["differential-cell"],
+    cellRenderer: (params) => {
+      const dataValue = params.value;
+
+      // Check if dataValue is an array
+      if (Array.isArray(dataValue)) {
+        // Check if the array contains objects
+        if (dataValue.length > 0 && typeof dataValue[0] === "object") {
+          return JSON.stringify(dataValue);
+        } else {
+          // If it's an array of strings (or other non-object values), join them with a comma
+          return dataValue.join(", ");
+        }
+      }
+
+      // For non-array values, just return the value
+      return dataValue;
+    },
     // Add other common properties here if needed
   }));
 };
