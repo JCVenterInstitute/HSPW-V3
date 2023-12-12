@@ -718,6 +718,7 @@ function SalivaryProteinTable() {
 
   // Initial data fetch on page load
   useEffect(() => {
+    if (gridApi) gridApi.showLoadingOverlay();
     fetchData();
   }, []);
 
@@ -744,6 +745,8 @@ function SalivaryProteinTable() {
   // Fetch data for new page selected
   // No delay needed when switching pages no filter updates
   useEffect(() => {
+    if (gridApi) gridApi.showLoadingOverlay();
+
     fetchData();
   }, [pageNum]);
 
@@ -756,6 +759,7 @@ function SalivaryProteinTable() {
   };
 
   const onGridReady = (params) => {
+    params.api.showLoadingOverlay();
     setGridApi(params.api);
     setColumnApi(params.columnApi);
     gridRef.current.api.sizeColumnsToFit();
