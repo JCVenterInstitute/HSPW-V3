@@ -111,6 +111,7 @@ const DifferentialExpression = () => {
   const [foldChangeThreshold, setFoldChangeThreshold] = useState("2.0");
   const [pValueThreshold, setPValueThreshold] = useState("0.05");
   const [pValueType, setPValueType] = useState("Raw");
+  const [parametricTest, setParametricTest] = useState("T");
   const [filterKeyword, setFilterKeyword] = useState("");
   const [sampleIdFilter, setSampleIdFilter] = useState("");
   const [sampleTitleFilter, setSampleTitleFilter] = useState("");
@@ -594,6 +595,7 @@ const DifferentialExpression = () => {
             foldChangeThreshold,
             pValueThreshold,
             pValueType,
+            parametricTest,
             timestamp: {
               year,
               month,
@@ -622,6 +624,7 @@ const DifferentialExpression = () => {
           foldChangeThreshold,
           pValueThreshold,
           pValueType,
+          parametricTest,
           timestamp: {
             year,
             month,
@@ -1432,6 +1435,44 @@ const DifferentialExpression = () => {
                 sx={{ fontFamily: "Lato", color: "#464646" }}
               >
                 FDR
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  color: "#1463B9",
+                  fontFamily: "Montserrat",
+                  fontWeight: 600,
+                  mt: 3,
+                }}
+              >
+                Parametric Test:
+              </Typography>
+              <Checkbox
+                icon={<CircleUnchecked />}
+                checkedIcon={<CircleCheckedFilled />}
+                checked={parametricTest === "T"}
+                onChange={() => setParametricTest("T")}
+                sx={{ paddingLeft: 0 }}
+              />
+              <Typography
+                display="inline"
+                variant="body2"
+                sx={{ fontFamily: "Lato", color: "#464646", mr: 2 }}
+              >
+                T-Test
+              </Typography>
+              <Checkbox
+                icon={<CircleUnchecked />}
+                checkedIcon={<CircleCheckedFilled />}
+                checked={parametricTest === "F"}
+                onChange={() => setParametricTest("F")}
+              />
+              <Typography
+                display="inline"
+                variant="body2"
+                sx={{ fontFamily: "Lato", color: "#464646" }}
+              >
+                Wilcoxon Signed-rank Test
               </Typography>
             </Box>
             <Button variant="contained" sx={{ mt: 5 }} onClick={handleAnalyze}>

@@ -44,18 +44,8 @@ function App() {
   };
   const columns = [
     {
-      headerName: "Cluster",
-      field: "Cluster ID",
-      headerCheckboxSelection: true,
-      maxWidth: 195,
-      minWidth: 195,
-      checkboxSelection: false,
-      headerCheckboxSelection: false,
-      wrapText: true,
-    },
-    {
       headerName: "Representative Protein",
-      field: "Representative Salivary Protein",
+      field: "uniprot_id",
       maxWidth: 205,
       wrapText: true,
       suppressSizeToFit: true,
@@ -71,7 +61,7 @@ function App() {
     },
     {
       headerName: "# of Members",
-      field: "# of Members Salivary Protein.length",
+      field: "number_of_members",
       sortable: true,
       wrapText: true,
       maxWidth: 145,

@@ -10,6 +10,9 @@ import {
   Typography,
   MenuItem,
 } from "@mui/material";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { ReactComponent as Download_Logo } from "../table_icon/download.svg";
@@ -17,6 +20,17 @@ import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ClearIcon from "@mui/icons-material/Clear";
+
+const th = {
+  background: "#f2f2f2",
+  textAlign: "center",
+  border: "1px solid #aaa",
+  fontWeight: "bold",
+  fontSize: "20px",
+  padding: "0.2em",
+  maxWidth: "1000px",
+};
+
 function LinkComponent(props) {
   return (
     <a
@@ -86,6 +100,12 @@ function Comment_Table(props) {
             return `${evidence.source}:${evidence.id}`;
           });
 
+        const featuresList = features.map((feature) => ({
+          type: feature.type || "",
+          position: feature.position ? feature.position.join(", ") : "",
+          description: feature.description || "",
+        }));
+
         return {
           annotation_type,
           annotation_description: annotation_description_text || "",
@@ -93,19 +113,97 @@ function Comment_Table(props) {
           annotationDescription_evidenceCode: annotationDescription_evidences1
             .map((evidence) => evidence.evidenceCode)
             .join(", "),
-          features_type: features ? features.type : "", // Extracting Features Type
-          features_position: features ? features.position : "", // Extracting Features Position
+          featuresList,
         };
       });
     });
-    console.log(transformedData);
+
     setRowData(transformedData);
-  }, []);
+  }, [props.data]);
 
   let data1 = [];
   for (let i = 0; i < message.length; i++) {
     data1.push(message[i]["_source"]);
   }
+
+  const FeaturesRenderer = ({ value }) => (
+    <>
+      {value.length !== 0 ? (
+        <TableHead>
+          <TableRow>
+            <TableCell
+              sx={th}
+              style={{
+                backgroundColor: "#1463B9",
+                color: "white",
+                fontFamily: "Montserrat",
+                fontSize: "17px",
+                fontWeight: "bold",
+                border: "1px solid #3592E4",
+                borderTopLeftRadius: "10px",
+              }}
+            >
+              Type
+            </TableCell>
+            <TableCell
+              sx={th}
+              style={{
+                backgroundColor: "#1463B9",
+                color: "white",
+                fontFamily: "Montserrat",
+                fontSize: "17px",
+                fontWeight: "bold",
+                border: "1px solid #3592E4",
+              }}
+            >
+              Description
+            </TableCell>
+            <TableCell
+              sx={th}
+              style={{
+                backgroundColor: "#1463B9",
+                color: "white",
+                fontFamily: "Montserrat",
+                fontSize: "17px",
+                fontWeight: "bold",
+                border: "1px solid #3592E4",
+                borderTopRightRadius: "10px",
+              }}
+            >
+              Position
+            </TableCell>
+          </TableRow>
+          {value.map((feature, index) => (
+            <React.Fragment key={index}>
+              <TableRow>
+                <TableCell
+                  style={{
+                    border: "1px solid #CACACA",
+                  }}
+                >
+                  {feature.type}
+                </TableCell>
+                <TableCell
+                  style={{
+                    border: "1px solid #CACACA",
+                  }}
+                >
+                  {feature.description}
+                </TableCell>
+                <TableCell
+                  style={{
+                    border: "1px solid #CACACA",
+                  }}
+                >
+                  {feature.position}
+                </TableCell>
+              </TableRow>
+            </React.Fragment>
+          ))}
+        </TableHead>
+      ) : null}
+    </>
+  );
 
   const columns = [
     {
@@ -117,6 +215,7 @@ function Comment_Table(props) {
       wrapText: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
+      sortable: true,
     },
     {
       headerName: "Description",
@@ -126,7 +225,8 @@ function Comment_Table(props) {
       headerClass: ["header-border"],
       cellClass: ["table-border", "comment_table_description"],
       resizable: true,
-      autoHeight: true, // Make sure this is set
+      autoHeight: true,
+      sortable: true,
     },
     {
       headerName: "Evidences ID",
@@ -138,7 +238,7 @@ function Comment_Table(props) {
       headerClass: ["header-border"],
       cellClass: ["table-border"],
       resizable: true,
-
+      sortable: true,
       cellRenderer: (params) => {
         const ids = Array.isArray(params.value) ? params.value : "";
         const links = ids.map((id, index) => (
@@ -163,22 +263,14 @@ function Comment_Table(props) {
       cellClass: ["table-border"],
     },
     {
-      headerName: "Features Type",
-      field: "features_type",
+      headerName: "Features",
+      field: "featuresList",
+      cellRenderer: FeaturesRenderer,
       wrapText: true,
-      maxWidth: 145,
-      sortable: true,
+      maxWidth: 500,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
-    },
-    {
-      headerName: "Features Position",
-      field: "features_position",
-      wrapText: true,
-      maxWidth: 145,
-      sortable: true,
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
+      autoHeight: true,
     },
   ];
 
