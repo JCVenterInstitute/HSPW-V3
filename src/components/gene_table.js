@@ -608,7 +608,7 @@ function App() {
   };
 
   const onBtExport = useCallback(() => {
-    gridRef.current.api.exportDataAsExcel();
+    gridRef.current.api.exportDataAsCsv();
   }, []);
 
   const onBtNext = (event) => {
