@@ -48,7 +48,7 @@ const generateColumnDefs = (entity, data) => {
 
   // Generate column definitions based on the keys
   return fields.map((field) => ({
-    headerName: field,
+    headerName: field.charAt(0).toUpperCase() + field.slice(1),
     field: field,
     wrapText: true,
     minWidth: 200,
@@ -57,15 +57,23 @@ const generateColumnDefs = (entity, data) => {
     cellRenderer: (params) => {
       const dataValue = params.value;
 
-      // Check if dataValue is an array
+      // Special handling for 'keywords' field
+      if (field === "keywords" && Array.isArray(dataValue)) {
+        return dataValue.map((keywordObj) => keywordObj.keyword).join(", ");
+      }
+
+      // Check if dataValue is an array of objects
+      if (
+        Array.isArray(dataValue) &&
+        dataValue.length > 0 &&
+        typeof dataValue[0] === "object"
+      ) {
+        return JSON.stringify(dataValue);
+      }
+
+      // If it's an array of strings (or other non-object values), join them with a comma
       if (Array.isArray(dataValue)) {
-        // Check if the array contains objects
-        if (dataValue.length > 0 && typeof dataValue[0] === "object") {
-          return JSON.stringify(dataValue);
-        } else {
-          // If it's an array of strings (or other non-object values), join them with a comma
-          return dataValue.join(", ");
-        }
+        return dataValue.join(", ");
       }
 
       // For non-array values, just return the value

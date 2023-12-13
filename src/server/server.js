@@ -2430,7 +2430,7 @@ app.get("/api/properties/:entity", async (req, res) => {
       (properties) => {
         const result = [];
         for (const [key, value] of Object.entries(properties)) {
-          if (key !== "annotations") {
+          if (key !== "annotations" && key !== "atlas" && key !== "glycans") {
             if (value.properties) {
               for (const subKey in value.properties) {
                 if (value.properties[subKey].properties) {
