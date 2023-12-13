@@ -238,31 +238,18 @@ function Comment_Table(props) {
       headerClass: ["header-border"],
       cellClass: ["table-border"],
       resizable: true,
+      sortable: true,
       cellRenderer: (params) => {
-        const ids = Array.isArray(params.value) ? params.value : [];
-        const links = ids.map((id, index) => {
-          let url;
-          // Use if statement to determine the URL
-          if (id.includes("PROSITE")) {
-            url = `https://prosite.expasy.org/rule/${id.split(":")[1]}`;
-          } else if (id.includes("PubMed")) {
-            url = `https://pubmed.ncbi.nlm.nih.gov/${id.split(":")[1]}`;
-          } else if (id.includes("UniProtKB")) {
-            url = `https://www.uniprot.org/uniprotkb/${id.split(":")[1]}`;
-          } else {
-            url = id;
-          }
-
-          return (
-            <React.Fragment key={index}>
-              <a href={url} target="_blank" rel="noopener noreferrer">
-                {id}
-              </a>
-              {index < ids.length - 1 ? <br /> : null}{" "}
-              {/* Add line break if it's not the last element */}
-            </React.Fragment>
-          );
-        });
+        const ids = Array.isArray(params.value) ? params.value : "";
+        const links = ids.map((id, index) => (
+          <React.Fragment key={index}>
+            <a href={`${id}`} target="_blank">
+              {id}
+            </a>
+            {index < ids.length - 1 && <br />}{" "}
+            {/* Add line break if it's not the last element */}
+          </React.Fragment>
+        ));
         return <>{links}</>;
       },
     },
