@@ -20,72 +20,111 @@ const Cluster_Detail = (props) => {
   const [disease, setDisease] = useState("");
   const [institute, setInstitute] = useState("");
   const params = useParams();
+  const [studyDetails, setStudyDetails] = useState({});
 
-  const fetchCluster = async () => {
+  const fetchProteinData = async (memberId) => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/protein_cluster/${params.clusterid}`
+        `http://localhost:8000/api/study_protein_uniprot/${memberId}`
       );
       if (!response.ok) {
         throw new Error(`An error has occurred: ${response.status}`);
       }
-      const cluster = await response.json();
-      setData(cluster);
-      console.log(cluster);
-      if (cluster && cluster.length > 0 && cluster[0]._source) {
-        // Now the data is available, so you can log and process it
+      return await response.json();
+    } catch (error) {
+      console.error("Failed to fetch protein data:", error);
+      return null; // Return null or some error indicator
+    }
+  };
 
-        for (let i = 0; i < cluster[0]["_source"].cluster_members.length; i++) {
-          try {
-            const proteinResponse = await fetchProtein(
-              cluster[0]._source.cluster_members[i]
-            );
-            const protein = await proteinResponse.json();
-            console.log(protein);
-            // Perform further operations with 'protein' here
-          } catch (error) {
-            console.error("Failed to fetch protein:", error);
-            // Handle errors for individual protein fetches here
+  const fetchStudyDetails = async (experiment_id) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/study/${experiment_id}`
+      );
+      if (!response.ok) {
+        throw new Error(`An error has occurred: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Failed to fetch study details:", error);
+      return null; // Return null or some error indicator
+    }
+  };
+
+  const fetchCluster = async () => {
+    try {
+      const clusterResponse = await fetch(
+        `http://localhost:8000/api/protein_cluster/${params.clusterid}`
+      );
+      if (!clusterResponse.ok) {
+        throw new Error(`An error has occurred: ${clusterResponse.status}`);
+      }
+      const cluster = await clusterResponse.json();
+      setData(cluster); // Set cluster data
+
+      if (cluster && cluster.length > 0 && cluster[0]._source) {
+        let proteinDetails = []; // Array to hold details for each protein
+
+        for (let memberId of cluster[0]._source.cluster_members) {
+          const proteinData = await fetchProteinData(memberId);
+          if (proteinData && proteinData.length > 0) {
+            for (let protein of proteinData) {
+              let detail = {
+                uniprot_id: memberId,
+                protein_name: "Unknown",
+                peptide_count: "N/A",
+                abundance_cleavages: "N/A",
+                study_details: {},
+              };
+              if (protein["_source"]) {
+                detail.protein_name =
+                  protein["_source"].protein_name || "Unknown";
+                // Assuming peptide count is part of protein data
+                detail.peptide_count =
+                  protein["_source"].peptide_count || "N/A";
+                detail.abundance_cleavages =
+                  protein["_source"].abundance_cleavages || "N/A";
+                const studyData = await fetchStudyDetails(
+                  protein["_source"].experiment_id_key
+                );
+                if (studyData) {
+                  detail.study_details = studyData; // Add study details
+                }
+              }
+              proteinDetails.push(detail);
+            }
+          } else {
+            proteinDetails.push({
+              uniprot_id: memberId,
+              protein_name: "Error Fetching",
+              peptide_count: "N/A",
+              abundance_cleavages: "N/A",
+              study_details: {},
+            });
           }
         }
+        console.log(proteinDetails);
+        setProteinDetails(proteinDetails); // Update state with all protein details
       } else {
-        // Handle the scenario where the data is not in the expected format
+        // Handle the scenario where the cluster data is not in the expected format.
       }
     } catch (error) {
       console.error("Failed to fetch cluster:", error);
-      // Handle the error scenario
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    setTimeout(() => {
-      fetchCluster();
-    }, 3000);
-  }, []);
-
-  const fetchProtein = async (id) => {
-    try {
-      const response = await fetch(
-        `http://localhost:8000/api/study_protein_uniprot/${id}`
-      );
-      if (!response.ok) {
-        throw new Error(`An error has occurred: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Failed to fetch protein:", error);
-      // Handle the error scenario, possibly return a placeholder or error indicator
-    }
-  };
+  // Make sure to define the state for proteinDetails
+  const [proteinDetails, setProteinDetails] = useState([]);
 
   useEffect(() => {
     setTimeout(() => {
       fetchCluster();
     }, 3000);
   }, []);
+
   if (isLoading === true) {
     return (
       <Box sx={{ width: "100%" }}>
@@ -119,115 +158,147 @@ const Cluster_Detail = (props) => {
           Number of Members: {data[0]["_source"]["number_of_members"]}
         </p>
       </div>
-      <Table style={{ margin: "40px", maxWidth: "90%" }}>
-        <TableHead>
-          <TableRow style={{ border: "1px solid white" }}>
-            <TableCell
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "16px",
-                fontWeight: "bold",
-                border: "1px solid white",
-                borderTopLeftRadius: "10px",
-              }}
-            >
-              Accession Number
-            </TableCell>
-            <TableCell
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "16px",
-                fontWeight: "bold",
-                border: "1px solid white",
-              }}
-            >
-              Name
-            </TableCell>
-            <TableCell
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "16px",
-                fontWeight: "bold",
-                border: "1px solid white",
-              }}
-            >
-              Peptide Count
-            </TableCell>
-            <TableCell
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "16px",
-                fontWeight: "bold",
-                border: "1px solid white",
-              }}
-            >
-              Abundance
-            </TableCell>
-            <TableCell
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "16px",
-                fontWeight: "bold",
-                border: "1px solid white",
-              }}
-            >
-              Tissue
-            </TableCell>
-            <TableCell
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "16px",
-                fontWeight: "bold",
-                border: "1px solid white",
-              }}
-            >
-              Disease State
-            </TableCell>
-            <TableCell
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "16px",
-                fontWeight: "bold",
-                border: "1px solid white",
-                borderTopRightRadius: "10px",
-              }}
-            >
-              Institute
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data[0]["_source"]["cluster_members"].map((value, i) => {
-            return (
+      <TableContainer style={{ maxHeight: "400px", overflowY: "auto" }}>
+        <Table style={{ margin: "40px", maxWidth: "90%" }}>
+          <TableHead>
+            <TableRow style={{ border: "1px solid white" }}>
+              <TableCell
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  border: "1px solid white",
+                  borderTopLeftRadius: "10px",
+                }}
+              >
+                Accession Number
+              </TableCell>
+              <TableCell
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  border: "1px solid white",
+                }}
+              >
+                Name
+              </TableCell>
+              <TableCell
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  border: "1px solid white",
+                }}
+              >
+                Peptide Count
+              </TableCell>
+              <TableCell
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  border: "1px solid white",
+                }}
+              >
+                Abundance
+              </TableCell>
+              <TableCell
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  border: "1px solid white",
+                }}
+              >
+                Tissue
+              </TableCell>
+              <TableCell
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  border: "1px solid white",
+                }}
+              >
+                Disease State
+              </TableCell>
+              <TableCell
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  border: "1px solid white",
+                  borderTopRightRadius: "10px",
+                }}
+              >
+                Institute
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {proteinDetails.map((protein, i) => (
               <TableRow key={i}>
-                <TableCell
-                  style={{
-                    borderRight: "1px solid grey",
-                    borderBottom: "1px solid grey",
-                    width: "15%",
-                  }}
-                >
-                  {value}
+                <TableCell>
+                  {protein.protein_name !== "Unknown" &&
+                  protein.protein_name !== "Error Fetching" ? (
+                    <a
+                      href={`http://localhost:3000/protein/${protein.uniprot_id}`}
+                    >
+                      {protein.uniprot_id}
+                    </a>
+                  ) : (
+                    protein.uniprot_id
+                  )}
                 </TableCell>
+
+                <TableCell>
+                  {protein.protein_name !== "Unknown" &&
+                  protein.protein_name !== "Error Fetching"
+                    ? protein.protein_name
+                    : "N/A"}
+                </TableCell>
+                <TableCell>{protein.peptide_count}</TableCell>
+                <TableCell>{protein.abundance_cleavages}</TableCell>
+                {protein.study_details[0] !== undefined ? (
+                  <>
+                    <TableCell>
+                      {protein.study_details[0]["_source"].sample_type || "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      {protein.study_details[0]["_source"].condition_type ||
+                        "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      {protein.study_details[0]["_source"].institution || "N/A"}
+                    </TableCell>
+                  </>
+                ) : (
+                  <>
+                    <TableCell>N/A</TableCell>
+                    <TableCell>N/A</TableCell>
+                    <TableCell>N/A</TableCell>
+                  </>
+                )}
               </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </>
   );
 };
