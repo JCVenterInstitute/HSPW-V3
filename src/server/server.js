@@ -2410,6 +2410,25 @@ const getAnnotationProperties = async (index) => {
   }
 };
 
+const getGlycansProperties = async (index) => {
+  // Initialize the client.
+  const client = await getClient1();
+
+  try {
+    // Get the mapping of the specified index.
+    const response = await client.indices.getMapping({ index: index });
+
+    // return response.body[`${index}`].mappings.properties["Salivary Proteins"]
+    //   .properties;
+    return response.body[`${index}`].mappings.properties["salivary_proteins"]
+      .properties;
+  } catch (error) {
+    // Handle any errors that occur during the API call.
+    console.error("Error getting mapping:", error);
+    throw error;
+  }
+};
+
 app.get("/api/properties/:entity", async (req, res) => {
   const entity = req.params.entity;
   console.log(`Getting properties for entity: ${entity}`);
@@ -2423,6 +2442,7 @@ app.get("/api/properties/:entity", async (req, res) => {
     // "Salivary Proteins": "protein",
     "Salivary Proteins": "salivary-proteins-112023",
     Annotations: "salivary-proteins-112023",
+    Glycans: "salivary-proteins-112023",
   };
 
   if (entity === "Salivary Proteins") {
@@ -2473,6 +2493,29 @@ app.get("/api/properties/:entity", async (req, res) => {
         res.json(result);
       }
     );
+  } else if (entity === "Glycans") {
+    await getGlycansProperties(entityIndexMapping[entity]).then(
+      (properties) => {
+        const result = [];
+        for (const [key, value] of Object.entries(properties)) {
+          if (key === "glycans") {
+            if (value.properties) {
+              for (const subKey in value.properties) {
+                if (value.properties[subKey].properties) {
+                  // Handle another level of nested properties
+                  for (const nestedKey in value.properties[subKey].properties) {
+                    result.push(`${subKey}.${nestedKey}`);
+                  }
+                } else {
+                  result.push(`${subKey}`);
+                }
+              }
+            }
+          }
+        }
+        res.json(result);
+      }
+    );
   } else {
     await getProperties(entityIndexMapping[entity]).then((properties) => {
       const result = [];
@@ -2493,7 +2536,16 @@ const advancedSearch = async (
   from
 ) => {
   // Initialize the client.
-  const client = await getClient1();
+  let client;
+  if (
+    entity === "Salivary Proteins" ||
+    entity === "Annotations" ||
+    entity === "Glycans"
+  ) {
+    client = await getClient1();
+  } else {
+    client = await getClient();
+  }
 
   const entityIndexMapping = {
     Genes: "genes",
@@ -2504,6 +2556,7 @@ const advancedSearch = async (
     // "Salivary Proteins": "protein",
     "Salivary Proteins": "salivary-proteins-112023",
     Annotations: "salivary-proteins-112023",
+    Glycans: "salivary-proteins-112023",
   };
 
   const query = await formQuery(

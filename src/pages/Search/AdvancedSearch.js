@@ -116,6 +116,7 @@ const AdvancedSearch = () => {
     "PubMed Citations",
     "Salivary Proteins",
     "Annotations",
+    "Glycans",
   ];
 
   const operations = [
@@ -251,7 +252,7 @@ const AdvancedSearch = () => {
       .then((res) => {
         console.log(res.data.hits);
         setTotalPages(Math.ceil(res.data.total.value / pageSize));
-        if (entity === "Salivary Proteins") {
+        if (entity === "Salivary Proteins" || entity === "Annotations") {
           return res.data.hits.map((item) => item._source.salivary_proteins);
         }
         return res.data.hits.map((item) => item._source);

@@ -15,10 +15,7 @@ exports.formQuery = async (
       item.selectedProperty === "number_of_members" ||
       item.selectedProperty === "experiment_id_key" ||
       item.selectedProperty === "Name" ||
-      item.selectedProperty === "Gene Name" ||
-      item.selectedProperty === "glycans.mass" ||
-      item.selectedProperty === "mass" ||
-      item.selectedProperty === "protein_sequence_length"
+      item.selectedProperty === "Gene Name"
         ? item.selectedProperty
         : item.selectedProperty + ".keyword";
     const value = item.value;
@@ -75,7 +72,6 @@ exports.formQuery = async (
   const mapOperationToClauseSalivaryProtein = (item) => {
     // Append '.keyword' to each field name
     const field =
-      item.selectedProperty === "glycans.mass" ||
       item.selectedProperty === "mass" ||
       item.selectedProperty === "protein_sequence_length"
         ? "salivary_proteins." + item.selectedProperty
@@ -130,10 +126,67 @@ exports.formQuery = async (
     }
   };
 
+  // Function to map each operation to its corresponding OpenSearch clause for Annotations
+  const mapOperationToClauseAnnotations = (item) => {
+    // Append '.keyword' to each field name
+    const field =
+      "salivary_proteins.annotations." + item.selectedProperty + ".keyword";
+    const value = item.value;
+
+    switch (item.selectedOperation) {
+      case "exists":
+        return { exists: { field: field } };
+      case "is equal to":
+        return { term: { [field]: value } };
+      case "is unequal to":
+        return { bool: { must_not: { term: { [field]: value } } } };
+      case "starts with":
+        return { prefix: { [field]: value } };
+      case "ends with":
+        // Note: Ends with operation using a script
+        return {
+          script: {
+            script: {
+              source: `doc['${field}'].value.endsWith(params.value)`,
+              params: { value: value },
+            },
+          },
+        };
+      case "contains":
+        return { wildcard: { [field]: `*${value}*` } };
+      case "doesn't start with":
+        // Note: Using a script query for doesn't start with operation
+        return {
+          script: {
+            script: {
+              source: `!doc['${field}'].value.startsWith(params.value)`,
+              params: { value: value },
+            },
+          },
+        };
+      case "doesn't end with":
+        // Note: Using a script query for doesn't end with operation
+        return {
+          script: {
+            script: {
+              source: `!doc['${field}'].value.endsWith(params.value)`,
+              params: { value: value },
+            },
+          },
+        };
+      case "doesn't contain":
+        return { bool: { must_not: { wildcard: { [field]: `*${value}*` } } } };
+      default:
+        throw new Error(`Unsupported operation: ${item.selectedOperation}`);
+    }
+  };
+
   // Map each item in the query array to an OpenSearch clause
   let clauses;
   if (entity === "Salivary Proteins") {
     clauses = query.map(mapOperationToClauseSalivaryProtein);
+  } else if (entity === "Annotations") {
+    clauses = query.map(mapOperationToClauseAnnotations);
   } else {
     clauses = query.map(mapOperationToClause);
   }
@@ -150,6 +203,14 @@ exports.formQuery = async (
   } else if (entity === "Salivary Proteins") {
     const modifiedSelectedProperties = selectedProperties.map(
       (item) => `salivary_proteins.${item}`
+    );
+    combinedSelectedProperties = [
+      "salivary_proteins.uniprot_accession",
+      ...modifiedSelectedProperties,
+    ];
+  } else if (entity === "Annotations") {
+    const modifiedSelectedProperties = selectedProperties.map(
+      (item) => `salivary_proteins.annotations.${item}`
     );
     combinedSelectedProperties = [
       "salivary_proteins.uniprot_accession",
