@@ -67,21 +67,21 @@ export const MuiDrawer = () => {
                     component="a"
                     href="/salivary_protein"
                   >
-                    Salivary proteins
+                    Salivary Proteins
                   </MenuItem>
                   <MenuItem
                     onClick={popupState.close}
                     component="a"
                     href="/protein_cluster"
                   >
-                    Protein clusters
+                    Protein Clusters
                   </MenuItem>
                   <MenuItem
                     onClick={popupState.close}
                     component="a"
                     href="/protein_signature"
                   >
-                    Protein signatures
+                    Protein Signatures
                   </MenuItem>
                   <MenuItem
                     onClick={popupState.close}
@@ -134,7 +134,7 @@ export const MuiDrawer = () => {
                     Experiment Search
                   </MenuItem>
                   <MenuItem onClick={popupState.close}>
-                    Protein search by identifiers
+                    Protein Search By Identifiers
                   </MenuItem>
                 </HoverMenu>
               </React.Fragment>
@@ -159,12 +159,12 @@ export const MuiDrawer = () => {
                   anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                   transformOrigin={{ vertical: "top", horizontal: "left" }}
                 >
-                  <MenuItem>Annotation report</MenuItem>
+                  <MenuItem>Annotation Report</MenuItem>
                   <MenuItem
                     component="a"
                     href="/clustalo"
                   >
-                    Multiple sequence alignment
+                    Multiple Sequence Alignment
                   </MenuItem>
                   <MenuItem
                     component="a"
@@ -176,13 +176,13 @@ export const MuiDrawer = () => {
                     component="a"
                     href="/iprscan5"
                   >
-                    Protein signature search
+                    Protein Signature Search
                   </MenuItem>
                   <MenuItem
                     component="a"
                     href="/psiblast"
                   >
-                    Protein similarity search (BLAST)
+                    Protein Similarity Search (BLAST)
                   </MenuItem>
                 </HoverMenu>
               </React.Fragment>
