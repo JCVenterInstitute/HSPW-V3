@@ -103,7 +103,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 function WSComponent(props) {
   const d = props.value;
 
-  if (d < 10 || d === "low") {
+  if (d < 10 || d === "Low") {
     return (
       <div
         style={{
@@ -121,7 +121,7 @@ function WSComponent(props) {
         {Number(d).toFixed(2)}
       </div>
     );
-  } else if (d < 100 || d === "medium") {
+  } else if (d < 100 || d === "Medium") {
     return (
       <div
         style={{
@@ -139,7 +139,7 @@ function WSComponent(props) {
         {Number(d).toFixed(2)}
       </div>
     );
-  } else if (d > 100 || d === "high") {
+  } else if (d > 100 || d === "High") {
     return (
       <div
         style={{
@@ -157,7 +157,7 @@ function WSComponent(props) {
         {Number(d).toFixed(2)}
       </div>
     );
-  } else if (d === "not detected" || d === 0) {
+  } else if (d === "ND" || d === 0) {
     return (
       <svg
         width={18}
@@ -231,7 +231,7 @@ function opinionComponent(props) {
 
 function IHCComponent(props) {
   const d = props.value;
-  if (d === "low") {
+  if (d === "Low") {
     return (
       <>
         <div
@@ -251,7 +251,7 @@ function IHCComponent(props) {
         </div>
       </>
     );
-  } else if (d === "medium") {
+  } else if (d === "Medium") {
     return (
       <>
         <div
@@ -271,7 +271,7 @@ function IHCComponent(props) {
         </div>
       </>
     );
-  } else if (d === "high") {
+  } else if (d === "High") {
     return (
       <>
         <div
@@ -291,52 +291,23 @@ function IHCComponent(props) {
         </div>
       </>
     );
-  } else if (d === "not detected") {
+  } else if (d === "ND") {
     return (
       <>
-        <svg
+        <div
           style={{
-            stroke: "black",
-            alignItems: "center",
             width: "100%",
             height: "100%",
+            color: "black",
+            fontFamily: "Lato",
+            fontSize: "16px",
+            lineHeight: "24px",
+            textAlign: "center",
+            paddingTop: "22%",
           }}
         >
-          <defs>
-            <pattern
-              id="stripe2"
-              patternUnits="userSpaceOnUse"
-              patternTransform="rotate(45)"
-              x="0"
-              y="0"
-              width="4"
-              height="4"
-              viewBox="0 0 10 10"
-            >
-              <rect
-                width="100%"
-                height={4}
-                fill={rgb(220, 220, 220)}
-                style={styles}
-              ></rect>
-              <rect
-                width="100%"
-                height={4}
-                fill={rgb(255, 255, 255)}
-                style={styles1}
-              ></rect>
-            </pattern>
-          </defs>
-          <rect
-            style={{
-              fill: "url(#stripe2)",
-              width: "100%",
-              height: "100%",
-            }}
-          >
-            <title>Data not available</title>
-          </rect>
-        </svg>
+          <span style={{ textAlign: "center" }}>ND</span>
+        </div>
       </>
     );
   } else {
@@ -354,7 +325,7 @@ function IHCComponent(props) {
           paddingTop: "25%",
         }}
       >
-        na
+        NA
       </div>
     );
   }
@@ -571,7 +542,7 @@ const recordsPerPageList = [
 
 const rowHeight = 80;
 
-const IHCValues = ["medium", "not detected", "low", "na", "high"];
+const IHCValues = ["Medium", "ND", "Low", "NA", "High"];
 
 /**
  * Escape all special characters for input string
