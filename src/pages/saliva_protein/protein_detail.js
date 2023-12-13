@@ -98,19 +98,21 @@ const Protein_Detail = (props) => {
     }
     const data = await response.json();
 
-    authorArr = data[0]["_source"]["author_names"];
-    if (authorArr.length === 2) {
-      line = `${authorArr[0]} and ${authorArr[1]}`;
-    } else if (authorArr.length >= 3) {
-      line = `${authorArr[0]}, et al.`;
+    if (data[0]) {
+      authorArr = data[0]["_source"]["author_names"];
+      if (authorArr.length === 2) {
+        line = `${authorArr[0]} and ${authorArr[1]}`;
+      } else if (authorArr.length >= 3) {
+        line = `${authorArr[0]}, et al.`;
+      }
+      yearTitle = ` (${data[0]["_source"]["PubYear"]}) ${data[0]["_source"]["Title"]} `;
+      setauthorName((prevLines) => [...prevLines, line]);
+      setYear((prevLines) => [...prevLines, yearTitle]);
+      setJournal((prevLines) => [
+        ...prevLines,
+        data[0]["_source"]["journal_title"],
+      ]);
     }
-    yearTitle = ` (${data[0]["_source"]["PubYear"]}) ${data[0]["_source"]["Title"]} `;
-    setauthorName((prevLines) => [...prevLines, line]);
-    setYear((prevLines) => [...prevLines, yearTitle]);
-    setJournal((prevLines) => [
-      ...prevLines,
-      data[0]["_source"]["journal_title"],
-    ]);
   };
 
   useEffect(() => {
