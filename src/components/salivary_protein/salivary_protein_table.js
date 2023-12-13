@@ -1146,7 +1146,6 @@ function SalivaryProteinTable() {
               textAlign: "center",
               paddingTop: "30px",
               fontSize: "25px",
-              // paddingBottom: "40px",
             }}
           >
             Filters
