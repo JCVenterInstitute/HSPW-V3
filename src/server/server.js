@@ -2622,7 +2622,7 @@ async function querySalivaryProtein(
   keyword = null,
   filterByOr = false
 ) {
-  const client = await getClient1();
+  const client = await getClient();
 
   const payload = {
     index: "new_saliva_protein_test",
