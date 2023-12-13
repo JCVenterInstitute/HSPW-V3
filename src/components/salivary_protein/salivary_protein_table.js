@@ -560,6 +560,7 @@ const stringAttributes = [
   "Protein Name",
   "IHC",
   "expert_opinion",
+  "Specificity_Score",
 ];
 
 const numberAttributes = [
