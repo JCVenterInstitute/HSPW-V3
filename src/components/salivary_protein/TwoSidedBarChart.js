@@ -96,7 +96,7 @@ const TwoSidedBarChart = React.memo((props) => {
     var x1 = d3
       .scaleLinear()
       .domain([-0.1, maxV])
-      .rangeRound([0, barsWidthTotal - 50]);
+      .rangeRound([0, barsWidthTotal - 60]);
     var x2 = d3
       .scaleLinear()
       .domain([0, maxMappedScore])
@@ -272,7 +272,7 @@ const TwoSidedBarChart = React.memo((props) => {
         if (d.nx.includes("?")) {
           return 0;
         } else {
-          return -x1(parseInt(d.nx)) - 8;
+          return -x1(parseInt(d.nx)) - 55;
         }
       })
       .attr("y", (d, i) => y(i))
