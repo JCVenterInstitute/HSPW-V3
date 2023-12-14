@@ -116,7 +116,6 @@ const AdvancedSearch = () => {
     "PubMed Citations",
     "Salivary Proteins",
     "Annotations",
-    "Glycans",
   ];
 
   const operations = [
@@ -311,7 +310,10 @@ const AdvancedSearch = () => {
         </p>
       </div>
       <Container>
-        <Box component="fieldset" sx={{ p: 2, mb: 2, mt: 3 }}>
+        <Box
+          component="fieldset"
+          sx={{ p: 2, mb: 2, mt: 3 }}
+        >
           <legend
             style={{
               fontSize: "100%",
@@ -330,7 +332,10 @@ const AdvancedSearch = () => {
               gap: 1, // Adds space between children
             }}
           >
-            <Typography display="inline" sx={{ color: "black" }}>
+            <Typography
+              display="inline"
+              sx={{ color: "black" }}
+            >
               Search for
             </Typography>
             <TextField
@@ -342,12 +347,18 @@ const AdvancedSearch = () => {
               sx={{ width: "200px" }}
             >
               {entities.map((option) => (
-                <MenuItem key={option} value={option}>
+                <MenuItem
+                  key={option}
+                  value={option}
+                >
                   {option}
                 </MenuItem>
               ))}
             </TextField>
-            <Typography display="inline" sx={{ color: "black" }}>
+            <Typography
+              display="inline"
+              sx={{ color: "black" }}
+            >
               containing
             </Typography>
             <Checkbox
@@ -357,7 +368,10 @@ const AdvancedSearch = () => {
               onChange={() => setBooleanOperator("AND")}
               sx={{ p: 0, ml: 2 }}
             />
-            <Typography display="inline" sx={{ mr: 2 }}>
+            <Typography
+              display="inline"
+              sx={{ mr: 2 }}
+            >
               (AND) all of the following properties
             </Typography>
             <Checkbox
@@ -372,7 +386,10 @@ const AdvancedSearch = () => {
             </Typography>
           </Box>
         </Box>
-        <Box component="fieldset" sx={{ p: 2, mb: 2, mt: 3 }}>
+        <Box
+          component="fieldset"
+          sx={{ p: 2, mb: 2, mt: 3 }}
+        >
           <legend
             style={{
               fontSize: "100%",
@@ -399,15 +416,27 @@ const AdvancedSearch = () => {
           <Typography sx={{ mt: 4, mb: 2, color: "#1463B9" }}>
             Builder
           </Typography> */}
-          <Grid container spacing={2}>
+          <Grid
+            container
+            spacing={2}
+          >
             {rows.map((row, index) => (
               <React.Fragment key={row.id}>
-                <Grid item xs={0.5}>
-                  <IconButton onClick={handleAddRow} color="primary">
+                <Grid
+                  item
+                  xs={0.5}
+                >
+                  <IconButton
+                    onClick={handleAddRow}
+                    color="primary"
+                  >
                     <AddCircleOutlineIcon />
                   </IconButton>
                 </Grid>
-                <Grid item xs={0.5}>
+                <Grid
+                  item
+                  xs={0.5}
+                >
                   {rows.length > 1 && (
                     <IconButton
                       onClick={() => handleRemoveRow(row.id)}
@@ -417,7 +446,10 @@ const AdvancedSearch = () => {
                     </IconButton>
                   )}
                 </Grid>
-                <Grid item xs={3}>
+                <Grid
+                  item
+                  xs={3}
+                >
                   <TextField
                     select
                     label="Property"
@@ -429,13 +461,19 @@ const AdvancedSearch = () => {
                     }
                   >
                     {propertiesOptions.map((property) => (
-                      <MenuItem key={property} value={property}>
+                      <MenuItem
+                        key={property}
+                        value={property}
+                      >
                         {property}
                       </MenuItem>
                     ))}
                   </TextField>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid
+                  item
+                  xs={3}
+                >
                   <TextField
                     select
                     label="Operation"
@@ -448,22 +486,30 @@ const AdvancedSearch = () => {
                   >
                     {row.selectedProperty === "number_of_members" ||
                     row.selectedProperty === "experiment_id_key" ||
-                    row.selectedProperty === "glycans.mass" ||
                     row.selectedProperty === "mass" ||
                     row.selectedProperty === "protein_sequence_length"
                       ? numericOperations.map((operation) => (
-                          <MenuItem key={operation} value={operation}>
+                          <MenuItem
+                            key={operation}
+                            value={operation}
+                          >
                             {operation}
                           </MenuItem>
                         ))
                       : operations.map((operation) => (
-                          <MenuItem key={operation} value={operation}>
+                          <MenuItem
+                            key={operation}
+                            value={operation}
+                          >
                             {operation}
                           </MenuItem>
                         ))}
                   </TextField>
                 </Grid>
-                <Grid item xs={5}>
+                <Grid
+                  item
+                  xs={5}
+                >
                   <TextField
                     fullWidth
                     label="Value"
@@ -478,7 +524,10 @@ const AdvancedSearch = () => {
             ))}
           </Grid>
         </Box>
-        <Box component="fieldset" sx={{ p: 2, mb: 2, mt: 3 }}>
+        <Box
+          component="fieldset"
+          sx={{ p: 2, mb: 2, mt: 3 }}
+        >
           <legend
             style={{
               fontSize: "100%",
@@ -516,12 +565,18 @@ const AdvancedSearch = () => {
           >
             Search
           </Button>
-          <Button variant="outlined" onClick={handleReset}>
+          <Button
+            variant="outlined"
+            onClick={handleReset}
+          >
             Reset
           </Button>
         </Box>
         {searchStarted && (
-          <Box component="fieldset" sx={{ p: 2, mb: 2, mt: 3 }}>
+          <Box
+            component="fieldset"
+            sx={{ p: 2, mb: 2, mt: 3 }}
+          >
             <legend
               style={{
                 fontSize: "100%",
@@ -570,7 +625,10 @@ const AdvancedSearch = () => {
                   sx={{ marginLeft: "10px", marginRight: "30px" }}
                 >
                   {[50, 100, 500, 1000].map((option) => (
-                    <MenuItem key={option} value={option}>
+                    <MenuItem
+                      key={option}
+                      value={option}
+                    >
                       {option}
                     </MenuItem>
                   ))}
@@ -599,7 +657,10 @@ const AdvancedSearch = () => {
                     onChange={(e) => handlePageChange(e.target.value)}
                   >
                     {Array.from({ length: totalPages }, (_, index) => (
-                      <MenuItem key={index + 1} value={index + 1}>
+                      <MenuItem
+                        key={index + 1}
+                        value={index + 1}
+                      >
                         {index + 1}
                       </MenuItem>
                     ))}
