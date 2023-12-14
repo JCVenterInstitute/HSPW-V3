@@ -2391,25 +2391,6 @@ const getSalivaryProperties = async (index) => {
   }
 };
 
-const getAnnotationProperties = async (index) => {
-  // Initialize the client.
-  const client = await getClient1();
-
-  try {
-    // Get the mapping of the specified index.
-    const response = await client.indices.getMapping({ index: index });
-
-    // return response.body[`${index}`].mappings.properties["Salivary Proteins"]
-    //   .properties;
-    return response.body[`${index}`].mappings.properties["salivary_proteins"]
-      .properties;
-  } catch (error) {
-    // Handle any errors that occur during the API call.
-    console.error("Error getting mapping:", error);
-    throw error;
-  }
-};
-
 app.get("/api/properties/:entity", async (req, res) => {
   const entity = req.params.entity;
   console.log(`Getting properties for entity: ${entity}`);
@@ -2451,23 +2432,30 @@ app.get("/api/properties/:entity", async (req, res) => {
       }
     );
   } else if (entity === "Annotations") {
-    await getAnnotationProperties(entityIndexMapping[entity]).then(
+    await getSalivaryProperties(entityIndexMapping[entity]).then(
       (properties) => {
         const result = [];
         for (const [key, value] of Object.entries(properties)) {
           if (key === "annotations") {
             if (value.properties) {
               for (const subKey in value.properties) {
-                if (value.properties[subKey].properties) {
-                  // Handle another level of nested properties
-                  for (const nestedKey in value.properties[subKey].properties) {
-                    result.push(`${subKey}.${nestedKey}`);
+                if (subKey !== "features") {
+                  if (value.properties[subKey].properties) {
+                    // Handle another level of nested properties
+                    for (const nestedKey in value.properties[subKey]
+                      .properties) {
+                      if (nestedKey !== "evidences") {
+                        result.push(`${subKey}.${nestedKey}`);
+                      }
+                    }
+                  } else {
+                    result.push(`${subKey}`);
                   }
-                } else {
-                  result.push(`${subKey}`);
                 }
               }
             }
+          } else if (key === "uniprot_accession") {
+            result.push(key);
           }
         }
         res.json(result);

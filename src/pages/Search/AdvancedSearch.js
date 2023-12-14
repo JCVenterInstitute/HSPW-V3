@@ -162,6 +162,7 @@ const AdvancedSearch = () => {
         .get(`http://localhost:8000/api/properties/${e.target.value}`)
         .then((res) => res.data);
       setPropertiesOptions(propertyList);
+
       if (e.target.value === "Genes") {
         propertyList = propertyList.filter((item) => item !== "GeneID");
       } else if (e.target.value === "Protein Clusters") {
@@ -251,11 +252,42 @@ const AdvancedSearch = () => {
       .then((res) => {
         console.log(res.data.hits);
         setTotalPages(Math.ceil(res.data.total.value / pageSize));
-        if (entity === "Salivary Proteins" || entity === "Annotations") {
+        if (entity === "Salivary Proteins") {
           return res.data.hits.map((item) => item._source.salivary_proteins);
+        } else if (entity === "Annotations") {
+          return res.data.hits.flatMap((hit) => {
+            const uniprotAccession =
+              hit._source.salivary_proteins.uniprot_accession;
+            return hit._source.salivary_proteins.annotations.flatMap(
+              (annotation) => {
+                if (
+                  annotation.annotation_description &&
+                  annotation.annotation_description.length
+                ) {
+                  return annotation.annotation_description.map(
+                    (description) => ({
+                      uniprot_accession: uniprotAccession,
+                      annotation_type: annotation.annotation_type,
+                      annotation_description: description.description,
+                    })
+                  );
+                } else {
+                  return [
+                    {
+                      uniprot_accession: uniprotAccession,
+                      annotation_type: annotation.annotation_type,
+                      annotation_description: "No description available",
+                    },
+                  ];
+                }
+              }
+            );
+          });
         }
         return res.data.hits.map((item) => item._source);
       });
+
+    console.log("Result:", result);
 
     const columns = generateColumnDefs(entity, result);
 
