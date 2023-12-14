@@ -17,9 +17,9 @@ import ProtvistaUniprot from "protvista-uniprot";
 import "font-awesome/css/font-awesome.min.css";
 import "resize-observer-polyfill";
 
-import BChart from "../../components/salivary_protein/TwoSidedBarChart";
-import Comment_Table from "../../components/salivary_protein/comment_table";
-import Glycan_Table from "../../components/salivary_protein/Glycan_Table";
+import BChart from "../../components/SalivaryProtein/TwoSidedBarChart";
+import CommentTable from "../../components/SalivaryProtein/CommentTable";
+import GlycanTable from "../../components/SalivaryProtein/GlycanTable";
 import main_feature from "../../components/hero.jpeg";
 import "../style.css";
 
@@ -42,7 +42,7 @@ const td = {
   fontSize: "18px",
 };
 
-const Protein_Detail = (props) => {
+const ProteinDetail = (props) => {
   const params = useParams();
   let url = "http://localhost:8000/protein/" + params["proteinid"];
 
@@ -148,7 +148,10 @@ const Protein_Detail = (props) => {
             }}
             className="head_background"
           >
-            <h1 className="head_title" align="left">
+            <h1
+              className="head_title"
+              align="left"
+            >
               Protein: {data[0]["_source"]["salivary_proteins"]["protein_name"]}
             </h1>
             <p
@@ -184,39 +187,66 @@ const Protein_Detail = (props) => {
                 Names and Origin
               </Link>
               |
-              <Link to="#sequence-attributes" className="hero-link">
+              <Link
+                to="#sequence-attributes"
+                className="hero-link"
+              >
                 Sequence Attributes
               </Link>
               |
-              <Link to="#feature-map" className="hero-link">
+              <Link
+                to="#feature-map"
+                className="hero-link"
+              >
                 Feature Map
               </Link>
               |
-              <Link to="#expression" className="hero-link">
+              <Link
+                to="#expression"
+                className="hero-link"
+              >
                 Expression
               </Link>
               |
-              <Link to="#glycan" className="hero-link">
+              <Link
+                to="#glycan"
+                className="hero-link"
+              >
                 Glycan
               </Link>
               |
-              <Link to="#proteomics" className="hero-link">
+              <Link
+                to="#proteomics"
+                className="hero-link"
+              >
                 Proteomics
               </Link>
               |
-              <Link to="#cross-reference" className="hero-link">
+              <Link
+                to="#cross-reference"
+                className="hero-link"
+              >
                 Cross References
               </Link>
               |
-              <Link to="#keyword" className="hero-link">
+              <Link
+                to="#keyword"
+                className="hero-link"
+              >
                 Keywords
               </Link>
               |
-              <Link to="#reference" className="hero-link">
+              <Link
+                to="#reference"
+                className="hero-link"
+              >
                 References
               </Link>
               |
-              <Link to="#entry-info" className="hero-link">
+              <Link
+                to="#entry-info"
+                className="hero-link"
+              >
                 Entry Info
               </Link>
             </div>
@@ -531,7 +561,7 @@ const Protein_Detail = (props) => {
             >
               Comments
             </h2>
-            <Comment_Table
+            <CommentTable
               data={data[0]["_source"]["salivary_proteins"]["annotations"]}
             />
             <Divider
@@ -579,7 +609,7 @@ const Protein_Detail = (props) => {
             >
               Glycans
             </h2>
-            <Glycan_Table data={data} />
+            <GlycanTable data={data} />
 
             <Divider sx={{ marginBottom: "10px", borderColor: "#1463B9" }} />
             <h2
@@ -1358,7 +1388,10 @@ const Protein_Detail = (props) => {
                     </TableCell>
                   </TableRow>
                   <TableRow sx={{ border: "1px solid black" }}>
-                    <TableCell sx={th} style={{ maxWidth: "20%" }}>
+                    <TableCell
+                      sx={th}
+                      style={{ maxWidth: "20%" }}
+                    >
                       Abundance level
                     </TableCell>
                     <TableCell
@@ -1367,7 +1400,10 @@ const Protein_Detail = (props) => {
                     ></TableCell>
                   </TableRow>
                   <TableRow sx={{ border: "1px solid black" }}>
-                    <TableCell sx={th} style={{ maxWidth: "20%" }}>
+                    <TableCell
+                      sx={th}
+                      style={{ maxWidth: "20%" }}
+                    >
                       Curator
                     </TableCell>
                     <TableCell
@@ -1387,4 +1423,4 @@ const Protein_Detail = (props) => {
   );
 };
 
-export default Protein_Detail;
+export default ProteinDetail;

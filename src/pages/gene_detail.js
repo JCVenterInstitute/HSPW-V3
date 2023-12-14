@@ -36,6 +36,7 @@ const Gene_detail = (props) => {
   const [data, setData] = useState("");
   let gene_id = 0;
   let gene_link = "https://www.ncbi.nlm.nih.gov/gene/";
+
   const fetchGenes = async () => {
     console.log("hi");
     const response = await fetch(url);
@@ -107,7 +108,10 @@ const Gene_detail = (props) => {
         }}
         className="head_background"
       >
-        <h1 className="head_title" align="left">
+        <h1
+          className="head_title"
+          align="left"
+        >
           Gene: EntrezGene:{data[0]["_source"]["GeneID"]}
         </h1>
         <p

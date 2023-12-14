@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
-import Cluster from "../components/cluster_table";
-import Chart from "react-google-charts";
-import main_feature from "../components/hero.jpeg";
-import "./style.css";
 import LinearProgress from "@mui/material/LinearProgress";
+import React, { useState, useEffect } from "react";
+import Chart from "react-google-charts";
 import Box from "@mui/material/Box";
+
+import main_feature from "../../components/hero.jpeg";
+import Cluster from "../../components/ProteinClusterTable";
+import "../style.css";
 
 export const options = {
   legend: { position: "none" },
@@ -32,20 +33,24 @@ export const options = {
   },
 };
 
-const Protein_Cluster = () => {
+const HOST_NAME = "http://localhost:8000";
+
+const ProteinCluster = () => {
   const [message, setMessage] = useState("");
   const [number, setNumber] = useState({});
   const [isLoading, setLoading] = useState(true);
 
+  const fetchData = () => {};
+
   useEffect(() => {
-    fetch("http://localhost:8000/protein_cluster")
+    fetch(`${HOST_NAME}/protein_cluster`)
       .then((res) => res.json())
       .then((data) => setMessage(data["Cluster ID"]))
       .catch((error) =>
         console.error("Error fetching protein cluster data:", error)
       );
 
-    fetch("http://localhost:8000/api/protein_cluster_member_count")
+    fetch(`${HOST_NAME}/api/protein_cluster_member_count`)
       .then((res) => res.json())
       .then((data) => {
         if (data) {
@@ -92,12 +97,14 @@ const Protein_Cluster = () => {
     <>
       <div
         style={{
-          height: "40%",
           backgroundImage: `url(${main_feature})`,
-          paddingBottom: "10px",
         }}
+        className="head_background"
       >
-        <h1 className="head_title" align="left">
+        <h1
+          className="head_title"
+          align="left"
+        >
           Protein Cluster
         </h1>
         <p className="head_text">
@@ -109,7 +116,10 @@ const Protein_Cluster = () => {
           The representative protein within a cluster is chosen by applying the
           following steps sequentially:
         </p>
-        <ol className="head_text">
+        <ol
+          className="head_text"
+          style={{ paddingLeft: "25px" }}
+        >
           <li>
             The protein reported by the maximum number of research groups.
           </li>
@@ -121,7 +131,6 @@ const Protein_Cluster = () => {
           <li>The protein with the lowest IPI accession number.</li>
         </ol>
       </div>
-
       <h2 style={{ textAlign: "center", marginTop: "20px" }}>Cluster Size</h2>
       <Chart
         chartType="BubbleChart"
@@ -136,10 +145,9 @@ const Protein_Cluster = () => {
           paddingBottom: "5px",
         }}
       />
-
       <Cluster />
     </>
   );
 };
 
-export default Protein_Cluster;
+export default ProteinCluster;

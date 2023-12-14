@@ -11,7 +11,7 @@ const navMenuStyles = {
   fontSize: "22px",
 };
 
-export const MuiDrawer = () => {
+export const NavBar = () => {
   return (
     <AppBar
       position="static"
@@ -236,4 +236,4 @@ export const MuiDrawer = () => {
   );
 };
 
-export default MuiDrawer;
+export default NavBar;

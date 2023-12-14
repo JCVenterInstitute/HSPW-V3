@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/Navbar.js";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages";
 import Download from "./pages/Download/download";
@@ -9,10 +9,10 @@ import Gene from "./pages/gene";
 import Contact from "./pages/contact";
 import Footer from "./components/footer.js";
 import Signature from "./pages/signature";
-import Cluster from "./pages/cluster";
+import Cluster from "./pages/ProteinCluster/ProteinCluster.js";
 import Gene_Detail from "./pages/gene_detail";
-import Salivary_Protein from "./pages/saliva_protein/salivary_protein";
-import Protein_Detail from "./pages/saliva_protein/protein_detail";
+import Salivary_Protein from "./pages/SalivaryProtein/SalivaryProtein";
+import Protein_Detail from "./pages/SalivaryProtein/ProteinDetail";
 import Analysis from "./pages/analysis";
 import Citation from "./pages/Citation/citation";
 import Citation_Detail from "./pages/Citation/citation_detail";
@@ -20,7 +20,7 @@ import Signature_Detail from "./pages/signature_detail";
 import Basic_Search from "./pages/basic_search";
 import Experiment_Search from "./pages/experiment_search";
 import Protein_Set_Search from "./pages/protein_set_search";
-import Cluster_detail from "./pages/cluster_detail";
+import Cluster_detail from "./pages/ProteinCluster/ProteinClusterDetail.js";
 import ClustalOmegaResults from "./pages/Analyze/ClustalOmegaResults";
 import ClustalOmega from "./pages/Analyze/ClustalOmega";
 import InterProScanResults from "./pages/Analyze/InterProScanResults";
@@ -32,7 +32,7 @@ import Team from "./pages/Help/Team";
 import DifferentialExpression from "./pages/Analyze/DifferentialExpression.js";
 import DifferentialExpressionResults from "./pages/Analyze/DifferentialExpressionResults.js";
 import AdvancedSearch from "./pages/Search/AdvancedSearch.js";
-import ProteinSequence from "./pages/saliva_protein/protein_detail_sequence";
+import ProteinSequence from "./pages/SalivaryProtein/ProteinDetailSequence.js";
 import GoNodes from "./pages/GoTerms/GoNode";
 import GoTable from "./pages/GoTerms/GoTable";
 
@@ -162,8 +162,14 @@ function App() {
           path="protein_sequence/:proteinid"
           element={<ProteinSequence />}
         />
-        <Route path="GoNodes/:id" element={<GoNodes />} />
-        <Route path="GoTable" element={<GoTable />} />
+        <Route
+          path="GoNodes/:id"
+          element={<GoNodes />}
+        />
+        <Route
+          path="GoTable"
+          element={<GoTable />}
+        />
       </Routes>
       <Footer />
     </Router>
