@@ -2667,7 +2667,6 @@ app.post("/api/salivary-proteins/:size/:from/", (req, res) => {
 });
 
 /**
-/**
  * Query data used for Salivary Protein page table
  * @param {Number} size Number of records to return
  * @param {Number} from Starting point for the data page to return
@@ -2732,6 +2731,50 @@ app.post("/api/salivary-proteins/:size/:from/", (req, res) => {
     keyword,
     filterByOr
   );
+
+  results.then((result) => {
+    res.json(result);
+  });
+});
+
+async function queryCitationData(
+  size,
+  from,
+  filter,
+  sort = null,
+  keyword = null
+) {
+  const client = await getClient1();
+
+  const returnFields = ["PubMed_ID", "PubDate", "Title", "journal_title"];
+
+  const payload = {
+    index: "citation",
+    body: {
+      track_total_hits: true,
+      size: size,
+      from: from,
+      query: {
+        bool: {
+          ...(filter && { filter }),
+          ...(keyword && { must: [keyword] }), // Apply global search if present
+        },
+      },
+      ...(sort && { sort }), // Apply sort if present
+      _source: returnFields,
+    },
+  };
+
+  const response = await client.search(payload);
+
+  return response.body;
+}
+
+app.post("/api/citations/:size/:from/", (req, res) => {
+  const { filters, sort, keyword } = req.body;
+  const { size, from } = req.params;
+
+  const results = queryCitationData(size, from, filters, sort, keyword);
 
   results.then((result) => {
     res.json(result);

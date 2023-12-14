@@ -103,7 +103,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 function WSComponent(props) {
   const d = props.value;
 
-  if (d < 10 || d === "low") {
+  if (d < 10 || d === "Low") {
     return (
       <div
         style={{
@@ -121,7 +121,7 @@ function WSComponent(props) {
         {Number(d).toFixed(2)}
       </div>
     );
-  } else if (d < 100 || d === "medium") {
+  } else if (d < 100 || d === "Medium") {
     return (
       <div
         style={{
@@ -139,7 +139,7 @@ function WSComponent(props) {
         {Number(d).toFixed(2)}
       </div>
     );
-  } else if (d > 100 || d === "high") {
+  } else if (d > 100 || d === "High") {
     return (
       <div
         style={{
@@ -157,7 +157,7 @@ function WSComponent(props) {
         {Number(d).toFixed(2)}
       </div>
     );
-  } else if (d === "not detected" || d === 0) {
+  } else if (d === "ND" || d === 0) {
     return (
       <svg
         width={18}
@@ -231,7 +231,7 @@ function opinionComponent(props) {
 
 function IHCComponent(props) {
   const d = props.value;
-  if (d === "low") {
+  if (d === "Low") {
     return (
       <>
         <div
@@ -251,7 +251,7 @@ function IHCComponent(props) {
         </div>
       </>
     );
-  } else if (d === "medium") {
+  } else if (d === "Medium") {
     return (
       <>
         <div
@@ -271,7 +271,7 @@ function IHCComponent(props) {
         </div>
       </>
     );
-  } else if (d === "high") {
+  } else if (d === "High") {
     return (
       <>
         <div
@@ -291,52 +291,23 @@ function IHCComponent(props) {
         </div>
       </>
     );
-  } else if (d === "not detected") {
+  } else if (d === "ND") {
     return (
       <>
-        <svg
+        <div
           style={{
-            stroke: "black",
-            alignItems: "center",
             width: "100%",
             height: "100%",
+            color: "black",
+            fontFamily: "Lato",
+            fontSize: "16px",
+            lineHeight: "24px",
+            textAlign: "center",
+            paddingTop: "22%",
           }}
         >
-          <defs>
-            <pattern
-              id="stripe2"
-              patternUnits="userSpaceOnUse"
-              patternTransform="rotate(45)"
-              x="0"
-              y="0"
-              width="4"
-              height="4"
-              viewBox="0 0 10 10"
-            >
-              <rect
-                width="100%"
-                height={4}
-                fill={rgb(220, 220, 220)}
-                style={styles}
-              ></rect>
-              <rect
-                width="100%"
-                height={4}
-                fill={rgb(255, 255, 255)}
-                style={styles1}
-              ></rect>
-            </pattern>
-          </defs>
-          <rect
-            style={{
-              fill: "url(#stripe2)",
-              width: "100%",
-              height: "100%",
-            }}
-          >
-            <title>Data not available</title>
-          </rect>
-        </svg>
+          <span style={{ textAlign: "center" }}>ND</span>
+        </div>
       </>
     );
   } else {
@@ -354,7 +325,7 @@ function IHCComponent(props) {
           paddingTop: "25%",
         }}
       >
-        n/a
+        NA
       </div>
     );
   }
@@ -425,7 +396,7 @@ const columns = [
     field: "UniProt Accession",
     checkboxSelection: false,
     headerCheckboxSelection: false,
-    wordWrap: true,
+    wrapText: true,
     cellStyle: { wordBreak: "break-word" },
     cellClass: ["table-border"],
     cellRenderer: "proteinLinkComponent",
@@ -443,7 +414,6 @@ const columns = [
   },
   {
     headerName: "Protein Name",
-    maxHeight: "5",
     field: "Protein Name",
     cellClass: ["table-border"],
     cellStyle: { wordBreak: "break-word", overflow: "scroll" },
@@ -572,7 +542,7 @@ const recordsPerPageList = [
 
 const rowHeight = 80;
 
-const IHCValues = ["medium", "not detected", "low", "n/a", "high"];
+const IHCValues = ["Medium", "ND", "Low", "NA", "High"];
 
 /**
  * Escape all special characters for input string
@@ -719,6 +689,7 @@ function SalivaryProteinTable() {
 
   // Initial data fetch on page load
   useEffect(() => {
+    if (gridApi) gridApi.showLoadingOverlay();
     fetchData();
   }, []);
 
@@ -745,6 +716,8 @@ function SalivaryProteinTable() {
   // Fetch data for new page selected
   // No delay needed when switching pages no filter updates
   useEffect(() => {
+    if (gridApi) gridApi.showLoadingOverlay();
+
     fetchData();
   }, [pageNum]);
 
@@ -757,6 +730,7 @@ function SalivaryProteinTable() {
   };
 
   const onGridReady = (params) => {
+    params.api.showLoadingOverlay();
     setGridApi(params.api);
     setColumnApi(params.columnApi);
     gridRef.current.api.sizeColumnsToFit();
@@ -824,13 +798,15 @@ function SalivaryProteinTable() {
    * @returns
    */
   const createStringQuery = ({ attrName, value }) => {
+    const escapedInput = escapeSpecialCharacters(value);
+
     return {
       bool: {
         filter: [
           {
             regexp: {
               [`${attrName}.keyword`]: {
-                value: `${value}.*`,
+                value: `${escapedInput}.*`,
                 flags: "ALL",
                 case_insensitive: true,
               },
@@ -1170,7 +1146,6 @@ function SalivaryProteinTable() {
               textAlign: "center",
               paddingTop: "30px",
               fontSize: "25px",
-              // paddingBottom: "40px",
             }}
           >
             Filters
@@ -1922,32 +1897,34 @@ function SalivaryProteinTable() {
               >
                 Page
               </Typography>
-              <TextField
-                select
-                size="small"
-                InputProps={{
-                  style: {
-                    borderRadius: "10px",
-                  },
-                }}
-                value={pageNum === 0 ? 1 : pageNum + 1}
-                sx={{ marginLeft: "10px", marginRight: "10px" }}
-                onChange={(event) => {
-                  setPageNum(event.target.value - 1);
-                }}
-              >
-                {Array.from(
-                  { length: Math.ceil(docCount / pageSize) },
-                  (_, index) => (
-                    <MenuItem
-                      key={index + 1}
-                      value={index + 1}
-                    >
-                      {index + 1}
-                    </MenuItem>
-                  )
-                )}
-              </TextField>
+              {rowData.length !== 0 && (
+                <TextField
+                  select
+                  size="small"
+                  InputProps={{
+                    style: {
+                      borderRadius: "10px",
+                    },
+                  }}
+                  value={pageNum === 0 ? 1 : pageNum + 1}
+                  sx={{ marginLeft: "10px", marginRight: "10px" }}
+                  onChange={(event) => {
+                    setPageNum(event.target.value - 1);
+                  }}
+                >
+                  {Array.from(
+                    { length: Math.ceil(docCount / pageSize) },
+                    (_, index) => (
+                      <MenuItem
+                        key={index + 1}
+                        value={index + 1}
+                      >
+                        {index + 1}
+                      </MenuItem>
+                    )
+                  )}
+                </TextField>
+              )}
               <Typography
                 display="inline"
                 sx={{

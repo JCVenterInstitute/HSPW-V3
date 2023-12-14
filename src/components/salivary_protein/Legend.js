@@ -37,7 +37,7 @@ const Legend = () => {
           }}
         >
           <div style={{ color: "#616161", textAlign: "center" }}>
-            Differential Expression:
+            Differential Expression
           </div>
         </div>
         <TableContainer
@@ -134,7 +134,7 @@ const Legend = () => {
           }}
         >
           <div style={{ color: "#616161", textAlign: "center" }}>
-            Abundance Indicator:
+            Abundance Indicator
           </div>
         </div>
         <TableContainer
@@ -322,7 +322,7 @@ const Legend = () => {
                       height={18}
                       fill="rgb(255,255,255)"
                     >
-                      <title>Not uniquely observed</title>
+                      <title>Not Detected</title>
                     </rect>
                   </svg>
                 </TableCell>
@@ -337,11 +337,11 @@ const Legend = () => {
                       height={18}
                       fill="rgb(255,255,255)"
                     >
-                      <title>Not uniquely observed</title>
+                      <title>Not Detected</title>
                     </rect>
                   </svg>
                 </TableCell>
-                <TableCell>Not Detected</TableCell>
+                <TableCell>ND (Not Detected)</TableCell>
                 <TableCell>na</TableCell>
               </TableRow>
               <TableRow>
@@ -351,35 +351,10 @@ const Legend = () => {
                     height={18}
                     style={{ stroke: "black", alignItems: "center" }}
                   >
-                    <defs>
-                      <pattern
-                        id="stripe2"
-                        patternUnits="userSpaceOnUse"
-                        patternTransform="rotate(45)"
-                        x="0"
-                        y="0"
-                        width="4"
-                        height="4"
-                        viewBox="0 0 10 10"
-                      >
-                        <rect
-                          width={2}
-                          height={4}
-                          fill={rgb(220, 220, 220)}
-                          style={styles}
-                        ></rect>
-                        <rect
-                          width={2}
-                          height={4}
-                          fill={rgb(255, 255, 255)}
-                          style={styles1}
-                        ></rect>
-                      </pattern>
-                    </defs>
                     <rect
                       width={18}
                       height={18}
-                      style={{ fill: "url(#stripe2)" }}
+                      fill="rgb(255,255,255)"
                     >
                       <title>Not Available</title>
                     </rect>
@@ -400,7 +375,7 @@ const Legend = () => {
                     </rect>
                   </svg>
                 </TableCell>
-                <TableCell>Not Available</TableCell>
+                <TableCell>NA (Not Available)</TableCell>
                 <TableCell>na</TableCell>
               </TableRow>
             </TableBody>
