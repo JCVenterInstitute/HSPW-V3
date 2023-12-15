@@ -121,7 +121,7 @@ const rowHeight = 80;
 
 const customHeaders = { "Content-Type": "application/json" };
 
-function App() {
+const CitationTable = () => {
   const gridRef = useRef();
 
   const [rowData, setRowData] = useState([]);
@@ -130,6 +130,8 @@ function App() {
   const [pageSize, setPageSize] = useState(50);
   const [pageNum, setPageNum] = useState(0);
   const [docCount, setDocCount] = useState(0);
+  const [sortedColumn, setSortedColumn] = useState(null);
+  const [columnApi, setColumnApi] = useState(null);
 
   const [facetFilters, setFacetFilters] = useState({
     PubDate: {
@@ -204,6 +206,7 @@ function App() {
         body: JSON.stringify({
           filters: filterQueries,
           ...(searchText && { keyword: createGlobalSearchQuery() }),
+          ...(sortedColumn && createSortQuery()),
         }),
       }
     ).then((res) => res.json());
@@ -216,9 +219,20 @@ function App() {
     setRowData(tableData);
   };
 
-  useEffect(() => {
-    fetchCitationData();
-  }, []);
+  /**
+   * Track which column is selected for sort by user
+   */
+  const onSortChanged = () => {
+    const columnState = columnApi.getColumnState();
+    const sortedColumn = columnState.filter((col) => col.sort !== null);
+
+    if (sortedColumn.length !== 0) {
+      const { sort, colId } = sortedColumn[0];
+      setSortedColumn({ attribute: colId, order: sort });
+    } else {
+      setSortedColumn(null);
+    }
+  };
 
   /**
    * Creates a range query for a number field for OpenSearch
@@ -328,6 +342,10 @@ function App() {
   };
 
   useEffect(() => {
+    fetchCitationData();
+  }, []);
+
+  useEffect(() => {
     // Needed to delay search so users can type before triggering search
     const delayDebounceFn = setTimeout(() => {
       setPageNum(0);
@@ -341,6 +359,37 @@ function App() {
     // FIXME: Pagination work
     fetchCitationData();
   }, [pageSize, pageNum]);
+
+  // Update records when new sort is applied & go back to first page
+  useEffect(() => {
+    if (gridApi) {
+      gridApi.showLoadingOverlay();
+      setPageNum(0);
+      fetchCitationData();
+    }
+  }, [sortedColumn]);
+
+  /**
+   * Create a proper sort query for whichever sort attribute is selected
+   */
+  const createSortQuery = () => {
+    const { attribute, order } = sortedColumn;
+
+    // Have to include .keyword when sorting string attributes
+    const sortAttrKey = `${sortedColumn.attribute}${
+      stringAttributes.includes(attribute) ? ".keyword" : ""
+    }`;
+
+    return {
+      sort: [
+        {
+          [sortAttrKey]: {
+            order,
+          },
+        },
+      ],
+    };
+  };
 
   /**
    * Handle Publications date range filter changes
@@ -399,7 +448,8 @@ function App() {
   };
 
   const onGridReady = (params) => {
-    setGridApi(params);
+    setGridApi(params.api);
+    setColumnApi(params.columnApi);
   };
 
   // Export current page as CSV file
@@ -875,6 +925,7 @@ function App() {
                   LinkComponent,
                 }}
                 enableCellTextSelection={true}
+                onSortChanged={onSortChanged}
                 rowHeight={rowHeight}
                 paginationPageSize={pageSize}
               />
@@ -907,6 +958,6 @@ function App() {
       </Container>
     </>
   );
-}
+};
 
-export default App;
+export default CitationTable;
