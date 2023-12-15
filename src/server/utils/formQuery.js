@@ -218,19 +218,6 @@ exports.formQuery = async (
     ];
   }
 
-  if (entity === "Annotations") {
-    return {
-      track_total_hits: true,
-      size: 10000,
-      _source: combinedSelectedProperties,
-      query: {
-        bool: {
-          [booleanOperator === "OR" ? "should" : "must"]: clauses,
-        },
-      },
-    };
-  }
-
   // Form the final query
   const finalQuery = {
     track_total_hits: true,

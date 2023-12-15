@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useEffect, useRef } from "react";
 import { useState } from "react";
 import main_feature from "../../components/hero.jpeg";
 import {
@@ -22,6 +22,10 @@ import SearchResultsTable from "../../components/Search/SearchResultsTable";
 import AnnotationsSearchResultsTable from "../../components/Search/AnnotationsSearchResultsTable";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { AgGridReact } from "ag-grid-react";
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-material.css";
+import CustomLoadingOverlay from "../../components/Search/CustomLoadingOverlay";
 
 const generateColumnDefs = (entity, data) => {
   if (!data || data.length === 0) return [];
@@ -108,6 +112,104 @@ const AdvancedSearch = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [gridApi, setGridApi] = useState();
+  const [gridOptions, setGridOptions] = useState({
+    rowModelType: "infinite",
+    cacheBlockSize: 100,
+    infiniteInitialRowCount: 1,
+  });
+  const [flattenedData, setFlattenedData] = useState([]);
+  const [nextFrom, setNextFrom] = useState(0);
+  const nextFromRef = useRef(nextFrom); // Ref to keep track of the current value of nextFrom
+  const flattenedDataRef = useRef(flattenedData); // Ref to keep track of the current value of nextFrom
+
+  const defaultColDef = {
+    flex: 1,
+    resizable: true,
+    sortable: true,
+    minWidth: 170,
+    filter: "agTextColumnFilter",
+  };
+
+  const loadingOverlayComponent = useMemo(() => {
+    return CustomLoadingOverlay;
+  }, []);
+
+  const flattenData = (hits) => {
+    return hits.flatMap((hit) => {
+      const uniprotAccession = hit._source.salivary_proteins.uniprot_accession;
+      return hit._source.salivary_proteins.annotations.flatMap((annotation) => {
+        if (
+          annotation.annotation_description &&
+          annotation.annotation_description.length
+        ) {
+          return annotation.annotation_description.map((description) => ({
+            uniprot_accession: uniprotAccession,
+            annotation_type: annotation.annotation_type,
+            annotation_description: description.description,
+          }));
+        } else {
+          return [
+            {
+              uniprot_accession: uniprotAccession,
+              annotation_type: annotation.annotation_type,
+              annotation_description: "No description available",
+            },
+          ];
+        }
+      });
+    });
+  };
+
+  useEffect(() => {
+    nextFromRef.current = nextFrom; // Update the ref whenever nextFrom changes
+    flattenedData.current = flattenedData;
+  }, [nextFrom, flattenedData]);
+
+  const dataSource = {
+    async getRows(params) {
+      try {
+        const response = await axios.post(
+          "http://localhost:8000/api/advanced-search/build-query",
+          {
+            entity,
+            rows,
+            booleanOperator,
+            selectedProperties,
+            size: 10, // Fetch more records than needed to account for flattening
+            from: nextFromRef.current,
+          }
+        );
+
+        const newFlattenedData = flattenData(response.data.hits);
+        const updatedFlattenedData =
+          flattenedDataRef.current.concat(newFlattenedData);
+        console.log(updatedFlattenedData);
+
+        // Update state
+        setFlattenedData(updatedFlattenedData);
+        setColumnDefs(generateColumnDefs("Annotations", updatedFlattenedData));
+
+        const rowsThisBlock = updatedFlattenedData.slice(
+          params.startRow,
+          params.endRow
+        );
+        const lastRow =
+          updatedFlattenedData.length >= response.data.total.value
+            ? updatedFlattenedData.length
+            : -1;
+
+        if (params.endRow >= updatedFlattenedData.length - 50) {
+          // Use functional update to ensure we always get the latest value of nextFrom
+          setNextFrom((prevNextFrom) => prevNextFrom + 10);
+        }
+
+        params.successCallback(rowsThisBlock, lastRow);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        params.failCallback();
+      }
+    },
+  };
 
   const entities = [
     "Genes",
@@ -241,59 +343,30 @@ const AdvancedSearch = () => {
 
     setSearchStarted(true);
 
-    const result = await axios
-      .post("http://localhost:8000/api/advanced-search/build-query", {
-        entity,
-        rows,
-        booleanOperator,
-        selectedProperties,
-        size: pageSize,
-        from,
-      })
-      .then((res) => {
-        console.log(res.data.hits);
-        setTotalPages(Math.ceil(res.data.total.value / pageSize));
-        if (entity === "Salivary Proteins") {
-          return res.data.hits.map((item) => item._source.salivary_proteins);
-        } else if (entity === "Annotations") {
-          return res.data.hits.flatMap((hit) => {
-            const uniprotAccession =
-              hit._source.salivary_proteins.uniprot_accession;
-            return hit._source.salivary_proteins.annotations.flatMap(
-              (annotation) => {
-                if (
-                  annotation.annotation_description &&
-                  annotation.annotation_description.length
-                ) {
-                  return annotation.annotation_description.map(
-                    (description) => ({
-                      uniprot_accession: uniprotAccession,
-                      annotation_type: annotation.annotation_type,
-                      annotation_description: description.description,
-                    })
-                  );
-                } else {
-                  return [
-                    {
-                      uniprot_accession: uniprotAccession,
-                      annotation_type: annotation.annotation_type,
-                      annotation_description: "No description available",
-                    },
-                  ];
-                }
-              }
-            );
-          });
-        }
-        return res.data.hits.map((item) => item._source);
-      });
+    if (entity !== "Annotations") {
+      const result = await axios
+        .post("http://localhost:8000/api/advanced-search/build-query", {
+          entity,
+          rows,
+          booleanOperator,
+          selectedProperties,
+          size: pageSize,
+          from,
+        })
+        .then((res) => {
+          console.log(res.data.hits);
+          setTotalPages(Math.ceil(res.data.total.value / pageSize));
+          if (entity === "Salivary Proteins") {
+            return res.data.hits.map((item) => item._source.salivary_proteins);
+          }
+          return res.data.hits.map((item) => item._source);
+        });
 
-    console.log("Result:", result);
+      const columns = generateColumnDefs(entity, result);
 
-    const columns = generateColumnDefs(entity, result);
-
-    setColumnDefs(columns);
-    setSearchResults(result);
+      setColumnDefs(columns);
+      setSearchResults(result);
+    }
   };
 
   const handleReset = () => {
@@ -806,13 +879,23 @@ const AdvancedSearch = () => {
               >
                 Search Results
               </legend>
-              <AnnotationsSearchResultsTable
-                entity={entity}
-                searchResults={searchResults}
-                columnDefs={columnDefs}
-                recordsPerPage={recordsPerPage}
-                handleGridApiChange={handleGridApiChange}
-              />
+              <div
+                id="differential"
+                className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
+                style={{ height: 800, width: "100%" }}
+              >
+                <AgGridReact
+                  className="ag-cell-wrap-text"
+                  gridOptions={gridOptions}
+                  columnDefs={columnDefs}
+                  defaultColDef={defaultColDef}
+                  onGridReady={(params) => {
+                    params.api.showLoadingOverlay();
+                    params.api.setDatasource(dataSource);
+                  }}
+                  loadingOverlayComponent={loadingOverlayComponent}
+                />
+              </div>
             </Box>
           ))}
       </Container>
