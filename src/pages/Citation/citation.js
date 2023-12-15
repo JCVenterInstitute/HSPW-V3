@@ -1,9 +1,10 @@
-import React, { Component } from "react";
-import Citation from "../../components/citation_table";
-import "../style.css";
-import main_feature from "../../components/hero.jpeg";
+import React from "react";
 
-const citation = () => {
+import CitationTable from "../../components/CitationTable";
+import main_feature from "../../components/hero.jpeg";
+import "../style.css";
+
+const CitationPage = () => {
   return (
     <>
       <div
@@ -12,7 +13,10 @@ const citation = () => {
         }}
         className="head_background"
       >
-        <h1 className="head_title" align="left">
+        <h1
+          className="head_title"
+          align="left"
+        >
           Citation
         </h1>
         <p
@@ -34,9 +38,9 @@ const citation = () => {
       <h2 style={{ textAlign: "center", marginTop: "10px" }}>
         PubMed Citations
       </h2>
-      <Citation />
+      <CitationTable />
     </>
   );
 };
 
-export default citation;
+export default CitationPage;

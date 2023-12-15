@@ -1,8 +1,15 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
 import {
   Container,
   TextField,
   Box,
+  Button,
   MenuItem,
   InputAdornment,
   IconButton,
@@ -20,7 +27,8 @@ import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AgGridReact } from "ag-grid-react";
 
-import { ReactComponent as Download_Logo } from "./table_icon/download.svg";
+import { ReactComponent as DownloadLogo } from "./table_icon/download.svg";
+import CustomLoadingOverlay from "./customLoadingOverlay.jsx";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import "./filter.css";
@@ -100,22 +108,35 @@ const HOST_NAME = "http://localhost:8000";
 
 const ProteinClusterTable = () => {
   const gridRef = useRef();
-  const [gridApi, setGridApi] = useState();
+  const [gridApi, setGridApi] = useState(null);
+  const [columnApi, setColumnApi] = useState(null);
   const [pageSize, setPageSize] = useState(50);
   const [pageNum, setPageNum] = useState(0);
   const [docCount, setDocCount] = useState(0);
   const [searchText, setSearchText] = useState("");
   const [facetFilters, setFacetFilters] = useState({});
   const [sortedColumn, setSortedColumn] = useState(null);
+  const [rowData, setRowData] = useState([]);
+
+  const stringAttributes = ["uniprot_id", "cluster_members", "protein_name"];
+  const numberAttributes = ["number_of_members"];
 
   const defColumnDefs = {
     flex: 1,
-    filter: true,
     wrapHeaderText: true,
     autoHeaderHeight: true,
   };
 
   const columns = [
+    {
+      headerName: "Cluster",
+      field: "cluster_members",
+      maxWidth: 205,
+      wrapText: true,
+      suppressSizeToFit: true,
+      sortable: true,
+      cellStyle: { textAlign: "center", marginX: "auto", fontSize: "10px" },
+    },
     {
       headerName: "Representative Protein",
       field: "uniprot_id",
@@ -123,6 +144,7 @@ const ProteinClusterTable = () => {
       wrapText: true,
       suppressSizeToFit: true,
       sortable: true,
+      cellStyle: { textAlign: "center" },
     },
     {
       headerName: "Representative Protein Name",
@@ -138,17 +160,86 @@ const ProteinClusterTable = () => {
       sortable: true,
       wrapText: true,
       maxWidth: 145,
-      maxWidth: 145,
     },
   ];
 
-  useEffect(() => {
-    const data = fetch(`${HOST_NAME}/protein_cluster`)
+  const customHeaders = {
+    "Content-Type": "application/json",
+  };
+
+  /**
+   * Escape all special characters for input string
+   * Special Characters include: [-[\]{}()*+?.,\\^$|#\s
+   * @param {String} inputVal Non-escaped string value entered by user
+   * @returns String where special characters are escaped with slashes
+   */
+  const escapeSpecialCharacters = (inputVal) => {
+    return inputVal.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  };
+
+  /**
+   * Create a proper search query for whichever search string is entered into the search bar
+   */
+  const createGlobalSearchQuery = () => {
+    const escapedInput = escapeSpecialCharacters(searchText);
+
+    return {
+      query_string: {
+        query: `*${escapedInput}*`,
+        fields: [...stringAttributes],
+        default_operator: "AND",
+        analyze_wildcard: true,
+      },
+    };
+  };
+
+  /**
+   * Create a proper sort query for whichever sort attribute is selected
+   */
+  const createSortQuery = () => {
+    const { attribute, order } = sortedColumn;
+
+    // Have to include .keyword when sorting string attributes
+    const sortAttrKey = `${sortedColumn.attribute}${
+      stringAttributes.includes(attribute) ? ".keyword" : ""
+    }`;
+
+    return {
+      sort: [
+        {
+          [sortAttrKey]: {
+            order,
+          },
+        },
+      ],
+    };
+  };
+
+  const fetchData = () => {
+    const filterQueries = queryBuilder(facetFilters);
+
+    fetch(
+      `${HOST_NAME}/api/protein-cluster/${pageSize}/${pageSize * pageNum}`,
+      {
+        method: "POST",
+        headers: customHeaders,
+        body: JSON.stringify({
+          filters: filterQueries,
+          ...(searchText && { keyword: createGlobalSearchQuery() }),
+          ...(sortedColumn && createSortQuery()),
+        }),
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
-        const { hits } = data;
-        return hits;
+        const { hits, total } = data.hits;
+        setRowData(hits.map((rec) => rec._source));
+        setDocCount(total.value);
       });
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   const setNextPage = () => {
@@ -164,7 +255,9 @@ const ProteinClusterTable = () => {
   };
 
   const onGridReady = (params) => {
-    setGridApi(params);
+    params.api.showLoadingOverlay();
+    setGridApi(params.api);
+    setColumnApi(params.columnApi);
   };
 
   const onBtExport = useCallback(() => {
@@ -183,6 +276,141 @@ const ProteinClusterTable = () => {
     setFacetFilters({});
     setSearchText("");
     setSortedColumn(null);
+  };
+
+  useEffect(() => {
+    // Needed to delay search so users can type before triggering search
+    const delayDebounceFn = setTimeout(() => {
+      setPageNum(0);
+      fetchData();
+    }, 600);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [facetFilters, searchText, pageSize]);
+
+  // Fetch data for new page selected
+  // No delay needed when switching pages no filter updates
+  useEffect(() => {
+    if (gridApi) gridApi.showLoadingOverlay();
+    fetchData();
+  }, [pageNum, gridApi]);
+
+  // Update records when new sort is applied & go back to first page
+  useEffect(() => {
+    if (gridApi) {
+      gridApi.showLoadingOverlay();
+      setPageNum(0);
+      fetchData();
+    }
+  }, [sortedColumn]);
+
+  /**
+   * Handle Input changes for all the text boxes
+   */
+  const handleInputChange = (e) => {
+    const { value, name } = e.target;
+    const currentFilters = facetFilters;
+
+    if (currentFilters[name] !== undefined && value === "") {
+      // Remove empty filter
+      delete currentFilters[name];
+      setFacetFilters({
+        ...currentFilters,
+      });
+    } else {
+      // Add new filter
+      setFacetFilters({
+        ...currentFilters,
+        [name]: value,
+      });
+    }
+  };
+
+  /**
+   * Creates a range query for a number field for OpenSearch
+   * @param {{ attrName, start, end }} input Necessary fields for range query
+   * @returns OpenSearch range query based on inputs
+   */
+  const createRangeQuery = ({ attrName, start, end }) => {
+    let rangeQuery = {
+      range: {
+        [attrName]: {
+          ...(start && { gte: start }),
+          ...(end && { lte: end }),
+        },
+      },
+    };
+
+    return {
+      bool: {
+        filter: [rangeQuery],
+      },
+    };
+  };
+
+  /**
+   * Creates a query for a string field for OpenSearch
+   * @param {{attrName, value}} input necessary fields for string query
+   * @returns
+   */
+  const createStringQuery = ({ attrName, value }) => {
+    const escapedInput = escapeSpecialCharacters(value);
+
+    return {
+      bool: {
+        filter: [
+          {
+            regexp: {
+              [`${attrName}.keyword`]: {
+                value: `${escapedInput}.*`,
+                flags: "ALL",
+                case_insensitive: true,
+              },
+            },
+          },
+        ],
+      },
+    };
+  };
+
+  const loadingOverlayComponent = useMemo(() => {
+    return CustomLoadingOverlay;
+  }, []);
+
+  /**
+   * Build OpenSearch Query based on user facet filters
+   * @param {Object} filters Object containing all key & values for all user selected facet filters
+   * @returns Returns an array of queries for each non empty filter applied by user
+   */
+  const queryBuilder = (filters) => {
+    const queries = [];
+
+    for (const attr of Object.keys(filters)) {
+      if (stringAttributes.includes(attr)) {
+        queries.push(
+          createStringQuery({ attrName: attr, value: filters[attr] })
+        );
+      } else if (numberAttributes.includes(attr)) {
+        queries.push(createRangeQuery({ attrName: attr, ...filters[attr] }));
+      }
+    }
+
+    return queries;
+  };
+
+  /**
+   * Track which column is selected for sort by user
+   */
+  const onSortChanged = () => {
+    const columnState = columnApi.getColumnState();
+    const sortedColumn = columnState.filter((col) => col.sort !== null);
+
+    if (sortedColumn.length !== 0) {
+      const { sort, colId } = sortedColumn[0];
+      setSortedColumn({ attribute: colId, order: sort });
+    } else {
+      setSortedColumn(null);
+    }
   };
 
   return (
@@ -242,56 +470,25 @@ const ProteinClusterTable = () => {
                     lineHeight: "normal",
                   }}
                 >
-                  InterPro ID
+                  Cluster
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <input
-                  type="text"
-                  id="filter-id-box"
-                  placeholder="Search..."
-                  style={{
-                    width: "80%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
-                  }}
-                />
-              </AccordionDetails>
-            </Accordion>
-            <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
-                <Typography
-                  sx={{
-                    color: "#454545",
-                    fontFamily: "Montserrat",
-                    fontSize: "16px",
-                    fontStyle: "normal",
-                    lineHeight: "normal",
-                  }}
-                >
-                  Name
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <input
-                  type="text"
-                  id="filter-name-box"
-                  placeholder="Search..."
-                  style={{
-                    width: "80%",
-                    marginLeft: "10px",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "10px",
-                    borderColor: "#1463B9",
-                    display: "inline",
-                    position: "relative",
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Search..."
+                  onChange={handleInputChange}
+                  name="cluster_members"
+                  value={
+                    facetFilters["cluster_members"]
+                      ? facetFilters["cluster_members"]
+                      : ""
+                  }
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
                   }}
                 />
               </AccordionDetails>
@@ -318,6 +515,11 @@ const ProteinClusterTable = () => {
                   variant="outlined"
                   size="small"
                   label="Search..."
+                  onChange={handleInputChange}
+                  name="uniprot_id"
+                  value={
+                    facetFilters["uniprot_id"] ? facetFilters["uniprot_id"] : ""
+                  }
                   InputProps={{
                     style: {
                       borderRadius: "16px",
@@ -348,6 +550,13 @@ const ProteinClusterTable = () => {
                   variant="outlined"
                   size="small"
                   label="Search..."
+                  onChange={handleInputChange}
+                  name="protein_name"
+                  value={
+                    facetFilters["protein_name"]
+                      ? facetFilters["protein_name"]
+                      : ""
+                  }
                   InputProps={{
                     style: {
                       borderRadius: "16px",
@@ -378,6 +587,14 @@ const ProteinClusterTable = () => {
                   variant="outlined"
                   size="small"
                   label="Search..."
+                  type="number"
+                  onChange={handleInputChange}
+                  name="number_of_members"
+                  value={
+                    facetFilters["number_of_members"]
+                      ? facetFilters["number_of_members"]
+                      : ""
+                  }
                   InputProps={{
                     style: {
                       borderRadius: "16px",
@@ -623,16 +840,16 @@ const ProteinClusterTable = () => {
             >
               <AgGridReact
                 className="ag-cell-wrap-text"
+                onSortChanged={onSortChanged}
                 ref={gridRef}
                 rowData={rowData}
                 columnDefs={columns}
                 defaultColDef={defColumnDefs}
                 onGridReady={onGridReady}
-                cacheQuickFilter={true}
                 enableCellTextSelection={true}
-                overlayNoRowsTemplate={
-                  '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
-                }
+                suppressDragLeaveHidesColumns
+                suppressMovable
+                loadingOverlayComponent={loadingOverlayComponent}
               />
             </div>
             <div>
@@ -648,7 +865,7 @@ const ProteinClusterTable = () => {
                   cursor: "pointer",
                 }}
               >
-                <Download_Logo
+                <DownloadLogo
                   style={{
                     marginRight: "10px",
                     paddingTop: "5px",

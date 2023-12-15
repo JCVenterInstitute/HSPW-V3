@@ -717,7 +717,6 @@ function SalivaryProteinTable() {
   // No delay needed when switching pages no filter updates
   useEffect(() => {
     if (gridApi) gridApi.showLoadingOverlay();
-
     fetchData();
   }, [pageNum]);
 
@@ -868,7 +867,6 @@ function SalivaryProteinTable() {
       }
     }
 
-    console.log("> Queries", queries);
     return queries;
   };
 
@@ -2042,7 +2040,8 @@ function SalivaryProteinTable() {
                 enableCellTextSelection={true}
                 paginationPageSize={pageSize}
                 rowHeight={rowHeight}
-                suppressPaginationPanel={true}
+                suppressDragLeaveHidesColumns
+                suppressMovable
               />
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
