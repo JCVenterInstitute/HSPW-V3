@@ -5,7 +5,7 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import CustomLoadingOverlay from "./CustomLoadingOverlay";
 import { Box } from "@mui/material";
 
-const SearchResultsTable = ({
+const AnnotationsSearchResultsTable = ({
   entity,
   searchResults,
   columnDefs,
@@ -129,7 +129,7 @@ const SearchResultsTable = ({
           enableCellTextSelection={true}
           pagination={true}
           paginationPageSize={recordsPerPage}
-          suppressPaginationPanel={true}
+          // suppressPaginationPanel={true}
           loadingOverlayComponent={loadingOverlayComponent}
           suppressScrollOnNewData={true}
         ></AgGridReact>
@@ -138,4 +138,4 @@ const SearchResultsTable = ({
   );
 };
 
-export default SearchResultsTable;
+export default AnnotationsSearchResultsTable;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useEffect, useRef } from "react";
 import { useState } from "react";
 import main_feature from "../../components/hero.jpeg";
 import {
@@ -19,6 +19,13 @@ import SelectAllTransferList from "../../components/Search/SelectAllTransferList
 import CircleCheckedFilled from "@mui/icons-material/CheckCircle";
 import CircleUnchecked from "@mui/icons-material/RadioButtonUnchecked";
 import SearchResultsTable from "../../components/Search/SearchResultsTable";
+import AnnotationsSearchResultsTable from "../../components/Search/AnnotationsSearchResultsTable";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { AgGridReact } from "ag-grid-react";
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-material.css";
+import CustomLoadingOverlay from "../../components/Search/CustomLoadingOverlay";
 
 const generateColumnDefs = (entity, data) => {
   if (!data || data.length === 0) return [];
@@ -36,18 +43,57 @@ const generateColumnDefs = (entity, data) => {
   } else if (entity === "Protein Signatures") {
     fields = fields.filter((field) => field !== "InterPro ID");
     fields.unshift("InterPro ID");
+  } else if (entity === "PubMed Citations") {
+    fields = fields.filter((field) => field !== "CitationID");
+    fields.unshift("CitationID");
+  } else if (entity === "Salivary Proteins") {
+    fields = fields.filter((field) => field !== "uniprot_accession");
+    fields.unshift("uniprot_accession");
   }
 
   // Generate column definitions based on the keys
   return fields.map((field) => ({
-    headerName: field,
+    headerName: field.charAt(0).toUpperCase() + field.slice(1),
     field: field,
     wrapText: true,
     minWidth: 200,
     headerClass: ["header-border"],
     cellClass: ["differential-cell"],
+    cellRenderer: (params) => {
+      const dataValue = params.value;
+
+      // Special handling for 'keywords' field
+      if (field === "keywords" && Array.isArray(dataValue)) {
+        return dataValue.map((keywordObj) => keywordObj.keyword).join(", ");
+      }
+
+      // Check if dataValue is an array of objects
+      if (
+        Array.isArray(dataValue) &&
+        dataValue.length > 0 &&
+        typeof dataValue[0] === "object"
+      ) {
+        return JSON.stringify(dataValue);
+      }
+
+      // If it's an array of strings (or other non-object values), join them with a comma
+      if (Array.isArray(dataValue)) {
+        return dataValue.join(", ");
+      }
+
+      // For non-array values, just return the value
+      return dataValue;
+    },
     // Add other common properties here if needed
   }));
+};
+
+const isRowInvalid = (row) => {
+  return (
+    !row.selectedProperty ||
+    (!row.selectedOperation && row.selectedOperation !== "exists") ||
+    (row.selectedOperation !== "exists" && !row.value)
+  );
 };
 
 const AdvancedSearch = () => {
@@ -62,6 +108,108 @@ const AdvancedSearch = () => {
   const [searchStarted, setSearchStarted] = useState(false);
   const [searchResults, setSearchResults] = useState();
   const [columnDefs, setColumnDefs] = useState();
+  const [recordsPerPage, setRecordsPerPage] = useState(50);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [gridApi, setGridApi] = useState();
+  const [gridOptions, setGridOptions] = useState({
+    rowModelType: "infinite",
+    cacheBlockSize: 100,
+    infiniteInitialRowCount: 1,
+  });
+  const [flattenedData, setFlattenedData] = useState([]);
+  const [nextFrom, setNextFrom] = useState(0);
+  const nextFromRef = useRef(nextFrom); // Ref to keep track of the current value of nextFrom
+  const flattenedDataRef = useRef(flattenedData); // Ref to keep track of the current value of nextFrom
+
+  const defaultColDef = {
+    flex: 1,
+    resizable: true,
+    sortable: true,
+    minWidth: 170,
+    filter: "agTextColumnFilter",
+  };
+
+  const loadingOverlayComponent = useMemo(() => {
+    return CustomLoadingOverlay;
+  }, []);
+
+  const flattenData = (hits) => {
+    return hits.flatMap((hit) => {
+      const uniprotAccession = hit._source.salivary_proteins.uniprot_accession;
+      return hit._source.salivary_proteins.annotations.flatMap((annotation) => {
+        if (
+          annotation.annotation_description &&
+          annotation.annotation_description.length
+        ) {
+          return annotation.annotation_description.map((description) => ({
+            uniprot_accession: uniprotAccession,
+            annotation_type: annotation.annotation_type,
+            annotation_description: description.description,
+          }));
+        } else {
+          return [
+            {
+              uniprot_accession: uniprotAccession,
+              annotation_type: annotation.annotation_type,
+              annotation_description: "No description available",
+            },
+          ];
+        }
+      });
+    });
+  };
+
+  useEffect(() => {
+    nextFromRef.current = nextFrom; // Update the ref whenever nextFrom changes
+    flattenedData.current = flattenedData;
+  }, [nextFrom, flattenedData]);
+
+  const dataSource = {
+    async getRows(params) {
+      try {
+        const response = await axios.post(
+          "http://localhost:8000/api/advanced-search/build-query",
+          {
+            entity,
+            rows,
+            booleanOperator,
+            selectedProperties,
+            size: 10, // Fetch more records than needed to account for flattening
+            from: nextFromRef.current,
+          }
+        );
+
+        const newFlattenedData = flattenData(response.data.hits);
+        const updatedFlattenedData =
+          flattenedDataRef.current.concat(newFlattenedData);
+        console.log(updatedFlattenedData);
+
+        // Update state
+        setFlattenedData(updatedFlattenedData);
+        setColumnDefs(generateColumnDefs("Annotations", updatedFlattenedData));
+
+        const rowsThisBlock = updatedFlattenedData.slice(
+          params.startRow,
+          params.endRow
+        );
+        const lastRow =
+          updatedFlattenedData.length >= response.data.total.value
+            ? updatedFlattenedData.length
+            : -1;
+
+        if (params.endRow >= updatedFlattenedData.length - 50) {
+          // Use functional update to ensure we always get the latest value of nextFrom
+          setNextFrom((prevNextFrom) => prevNextFrom + 10);
+        }
+
+        params.successCallback(rowsThisBlock, lastRow);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        params.failCallback();
+      }
+    },
+  };
 
   const entities = [
     "Genes",
@@ -87,6 +235,10 @@ const AdvancedSearch = () => {
 
   const numericOperations = ["exists", "is equal to", "is unequal to"];
 
+  const handleGridApiChange = (params) => {
+    setGridApi(params);
+  };
+
   const handleAddRow = () => {
     // Use a unique ID for key purposes, like a timestamp
     setRows([
@@ -94,7 +246,7 @@ const AdvancedSearch = () => {
       {
         id: Date.now(),
         selectedProperty: properties[0] || "",
-        selectedOperation: properties[0] || "",
+        selectedOperation: "",
         value: "",
       },
     ]);
@@ -113,12 +265,19 @@ const AdvancedSearch = () => {
         .get(`http://localhost:8000/api/properties/${e.target.value}`)
         .then((res) => res.data);
       setPropertiesOptions(propertyList);
+
       if (e.target.value === "Genes") {
         propertyList = propertyList.filter((item) => item !== "GeneID");
       } else if (e.target.value === "Protein Clusters") {
         propertyList = propertyList.filter((item) => item !== "uniprot_id");
       } else if (e.target.value === "Protein Signatures") {
         propertyList = propertyList.filter((item) => item !== "InterPro ID");
+      } else if (e.target.value === "PubMed Citations") {
+        propertyList = propertyList.filter((item) => item !== "CitationID");
+      } else if (e.target.value === "Salivary Proteins") {
+        propertyList = propertyList.filter(
+          (item) => item !== "uniprot_accession"
+        );
       }
       setProperties(propertyList);
 
@@ -168,26 +327,46 @@ const AdvancedSearch = () => {
     setSelectedProperties(newSelectedProperties);
   };
 
-  const handleSearch = async () => {
+  const handlePageChange = (newPage) => {
+    gridApi.showLoadingOverlay();
+    setCurrentPage(newPage);
+    handleSearch(newPage);
+  };
+
+  const handleSearch = async (
+    page = currentPage,
+    pageSize = recordsPerPage
+  ) => {
     console.log("> Searching...");
     console.log("> Search Query:", rows);
+    const from = (page - 1) * pageSize;
 
     setSearchStarted(true);
 
-    const result = await axios
-      .post("http://localhost:8000/api/advanced-search/build-query", {
-        entity,
-        rows,
-        booleanOperator,
-        selectedProperties,
-      })
-      .then((res) => res.data.map((item) => item._source));
-    console.log(result);
+    if (entity !== "Annotations") {
+      const result = await axios
+        .post("http://localhost:8000/api/advanced-search/build-query", {
+          entity,
+          rows,
+          booleanOperator,
+          selectedProperties,
+          size: pageSize,
+          from,
+        })
+        .then((res) => {
+          console.log(res.data.hits);
+          setTotalPages(Math.ceil(res.data.total.value / pageSize));
+          if (entity === "Salivary Proteins") {
+            return res.data.hits.map((item) => item._source.salivary_proteins);
+          }
+          return res.data.hits.map((item) => item._source);
+        });
 
-    const columns = generateColumnDefs(entity, result);
+      const columns = generateColumnDefs(entity, result);
 
-    setColumnDefs(columns);
-    setSearchResults(result);
+      setColumnDefs(columns);
+      setSearchResults(result);
+    }
   };
 
   const handleReset = () => {
@@ -237,7 +416,10 @@ const AdvancedSearch = () => {
         </p>
       </div>
       <Container>
-        <Box component="fieldset" sx={{ p: 2, mb: 2, mt: 3 }}>
+        <Box
+          component="fieldset"
+          sx={{ p: 2, mb: 2, mt: 3 }}
+        >
           <legend
             style={{
               fontSize: "100%",
@@ -256,7 +438,10 @@ const AdvancedSearch = () => {
               gap: 1, // Adds space between children
             }}
           >
-            <Typography display="inline" sx={{ color: "black" }}>
+            <Typography
+              display="inline"
+              sx={{ color: "black" }}
+            >
               Search for
             </Typography>
             <TextField
@@ -268,12 +453,18 @@ const AdvancedSearch = () => {
               sx={{ width: "200px" }}
             >
               {entities.map((option) => (
-                <MenuItem key={option} value={option}>
+                <MenuItem
+                  key={option}
+                  value={option}
+                >
                   {option}
                 </MenuItem>
               ))}
             </TextField>
-            <Typography display="inline" sx={{ color: "black" }}>
+            <Typography
+              display="inline"
+              sx={{ color: "black" }}
+            >
               containing
             </Typography>
             <Checkbox
@@ -283,7 +474,10 @@ const AdvancedSearch = () => {
               onChange={() => setBooleanOperator("AND")}
               sx={{ p: 0, ml: 2 }}
             />
-            <Typography display="inline" sx={{ mr: 2 }}>
+            <Typography
+              display="inline"
+              sx={{ mr: 2 }}
+            >
               (AND) all of the following properties
             </Typography>
             <Checkbox
@@ -298,7 +492,10 @@ const AdvancedSearch = () => {
             </Typography>
           </Box>
         </Box>
-        <Box component="fieldset" sx={{ p: 2, mb: 2, mt: 3 }}>
+        <Box
+          component="fieldset"
+          sx={{ p: 2, mb: 2, mt: 3 }}
+        >
           <legend
             style={{
               fontSize: "100%",
@@ -325,15 +522,27 @@ const AdvancedSearch = () => {
           <Typography sx={{ mt: 4, mb: 2, color: "#1463B9" }}>
             Builder
           </Typography> */}
-          <Grid container spacing={2}>
+          <Grid
+            container
+            spacing={2}
+          >
             {rows.map((row, index) => (
               <React.Fragment key={row.id}>
-                <Grid item xs={0.5}>
-                  <IconButton onClick={handleAddRow} color="primary">
+                <Grid
+                  item
+                  xs={0.5}
+                >
+                  <IconButton
+                    onClick={handleAddRow}
+                    color="primary"
+                  >
                     <AddCircleOutlineIcon />
                   </IconButton>
                 </Grid>
-                <Grid item xs={0.5}>
+                <Grid
+                  item
+                  xs={0.5}
+                >
                   {rows.length > 1 && (
                     <IconButton
                       onClick={() => handleRemoveRow(row.id)}
@@ -343,7 +552,10 @@ const AdvancedSearch = () => {
                     </IconButton>
                   )}
                 </Grid>
-                <Grid item xs={3}>
+                <Grid
+                  item
+                  xs={3}
+                >
                   <TextField
                     select
                     label="Property"
@@ -355,13 +567,19 @@ const AdvancedSearch = () => {
                     }
                   >
                     {propertiesOptions.map((property) => (
-                      <MenuItem key={property} value={property}>
+                      <MenuItem
+                        key={property}
+                        value={property}
+                      >
                         {property}
                       </MenuItem>
                     ))}
                   </TextField>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid
+                  item
+                  xs={3}
+                >
                   <TextField
                     select
                     label="Operation"
@@ -373,20 +591,31 @@ const AdvancedSearch = () => {
                     }
                   >
                     {row.selectedProperty === "number_of_members" ||
-                    row.selectedProperty === "experiment_id_key"
+                    row.selectedProperty === "experiment_id_key" ||
+                    row.selectedProperty === "mass" ||
+                    row.selectedProperty === "protein_sequence_length"
                       ? numericOperations.map((operation) => (
-                          <MenuItem key={operation} value={operation}>
+                          <MenuItem
+                            key={operation}
+                            value={operation}
+                          >
                             {operation}
                           </MenuItem>
                         ))
                       : operations.map((operation) => (
-                          <MenuItem key={operation} value={operation}>
+                          <MenuItem
+                            key={operation}
+                            value={operation}
+                          >
                             {operation}
                           </MenuItem>
                         ))}
                   </TextField>
                 </Grid>
-                <Grid item xs={5}>
+                <Grid
+                  item
+                  xs={5}
+                >
                   <TextField
                     fullWidth
                     label="Value"
@@ -401,7 +630,10 @@ const AdvancedSearch = () => {
             ))}
           </Grid>
         </Box>
-        <Box component="fieldset" sx={{ p: 2, mb: 2, mt: 3 }}>
+        <Box
+          component="fieldset"
+          sx={{ p: 2, mb: 2, mt: 3 }}
+        >
           <legend
             style={{
               fontSize: "100%",
@@ -432,33 +664,240 @@ const AdvancedSearch = () => {
             mb: 3,
           }}
         >
-          <Button variant="contained" onClick={handleSearch}>
+          <Button
+            variant="contained"
+            onClick={() => handleSearch(currentPage)}
+            disabled={rows.some(isRowInvalid)}
+          >
             Search
           </Button>
-          <Button variant="outlined" onClick={handleReset}>
+          <Button
+            variant="outlined"
+            onClick={handleReset}
+          >
             Reset
           </Button>
         </Box>
-        {searchStarted && (
-          <Box component="fieldset" sx={{ p: 2, mb: 2, mt: 3 }}>
-            <legend
-              style={{
-                fontSize: "100%",
-                backgroundColor: "#e5e5e5",
-                color: "#222",
-                padding: "0.1em 0.5em",
-                border: "2px solid #d8d8d8",
-              }}
+        {searchStarted &&
+          (entity !== "Annotations" ? (
+            <Box
+              component="fieldset"
+              sx={{ p: 2, mb: 2, mt: 3 }}
             >
-              Search Results
-            </legend>
-            <SearchResultsTable
-              entity={entity}
-              searchResults={searchResults}
-              columnDefs={columnDefs}
-            />
-          </Box>
-        )}
+              <legend
+                style={{
+                  fontSize: "100%",
+                  backgroundColor: "#e5e5e5",
+                  color: "#222",
+                  padding: "0.1em 0.5em",
+                  border: "2px solid #d8d8d8",
+                }}
+              >
+                Search Results
+              </legend>
+              <Box sx={{ display: "flex" }}>
+                <Box
+                  sx={{
+                    textAlign: "right",
+                    justifyContent: "flex-end", // To push content to the right
+                    flexGrow: 1, // To make the right Box occupy remaining space
+                  }}
+                >
+                  <Typography
+                    display="inline"
+                    sx={{
+                      fontFamily: "Lato",
+                      fontSize: "18px",
+                      color: "#464646",
+                    }}
+                  >
+                    Records Per Page
+                  </Typography>
+                  <TextField
+                    select
+                    size="small"
+                    InputProps={{
+                      style: {
+                        borderRadius: "10px",
+                      },
+                    }}
+                    value={recordsPerPage}
+                    onChange={(event) => {
+                      const newRecordsPerPage = event.target.value;
+                      setRecordsPerPage(newRecordsPerPage);
+                      gridApi.showLoadingOverlay();
+                      setCurrentPage(1);
+                      handleSearch(1, newRecordsPerPage);
+                    }}
+                    sx={{ marginLeft: "10px", marginRight: "30px" }}
+                  >
+                    {[50, 100, 500, 1000].map((option) => (
+                      <MenuItem
+                        key={option}
+                        value={option}
+                      >
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                  <Typography
+                    display="inline"
+                    sx={{
+                      fontFamily: "Lato",
+                      fontSize: "18px",
+                      color: "#464646",
+                    }}
+                  >
+                    Page
+                  </Typography>
+                  {searchResults && (
+                    <TextField
+                      select
+                      size="small"
+                      InputProps={{
+                        style: {
+                          borderRadius: "10px",
+                        },
+                      }}
+                      value={currentPage}
+                      sx={{ marginLeft: "10px", marginRight: "10px" }}
+                      onChange={(e) => handlePageChange(e.target.value)}
+                    >
+                      {Array.from({ length: totalPages }, (_, index) => (
+                        <MenuItem
+                          key={index + 1}
+                          value={index + 1}
+                        >
+                          {index + 1}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  )}
+                  <Typography
+                    display="inline"
+                    sx={{
+                      fontFamily: "Lato",
+                      fontSize: "18px",
+                      color: "#464646",
+                      marginRight: "30px",
+                    }}
+                  >
+                    out of {totalPages}
+                  </Typography>
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    style={{
+                      color: currentPage === 1 ? "#D3D3D3" : "#F6921E",
+                      background: "white",
+                      fontSize: "20px",
+                      border: "none",
+                      cursor: currentPage === 1 ? "default" : "pointer",
+                      transition:
+                        currentPage === 1 ? "none" : "background 0.3s",
+                      borderRadius: "5px",
+                      marginRight: "15px",
+                      pointerEvents: currentPage === 1 ? "none" : "auto",
+                      paddingBottom: "5px",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.background =
+                        "rgba(246, 146, 30, 0.2)")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = "white")
+                    }
+                  >
+                    <ArrowBackIosIcon
+                      style={{
+                        display: "inline",
+                        position: "relative",
+                        top: "0.2em",
+                        fontWeight: "bold",
+                      }}
+                    />
+                    prev
+                  </button>
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    style={{
+                      color: currentPage === totalPages ? "#D3D3D3" : "#F6921E",
+                      background: "white",
+                      fontSize: "20px",
+                      border: "none",
+                      cursor:
+                        currentPage === totalPages ? "default" : "pointer",
+                      transition:
+                        currentPage === totalPages ? "none" : "background 0.3s",
+                      borderRadius: "5px",
+                      pointerEvents:
+                        currentPage === totalPages ? "none" : "auto",
+                      paddingBottom: "5px",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background =
+                        "rgba(246, 146, 30, 0.2)";
+                    }}
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = "white")
+                    }
+                  >
+                    next
+                    <ArrowForwardIosIcon
+                      style={{
+                        display: "inline",
+                        position: "relative",
+                        top: "0.2em",
+                        fontWeight: "bold",
+                      }}
+                    />
+                  </button>
+                </Box>
+              </Box>
+              <SearchResultsTable
+                entity={entity}
+                searchResults={searchResults}
+                columnDefs={columnDefs}
+                recordsPerPage={recordsPerPage}
+                handleGridApiChange={handleGridApiChange}
+              />
+            </Box>
+          ) : (
+            <Box
+              component="fieldset"
+              sx={{ p: 2, mb: 2, mt: 3 }}
+            >
+              <legend
+                style={{
+                  fontSize: "100%",
+                  backgroundColor: "#e5e5e5",
+                  color: "#222",
+                  padding: "0.1em 0.5em",
+                  border: "2px solid #d8d8d8",
+                }}
+              >
+                Search Results
+              </legend>
+              <div
+                id="differential"
+                className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
+                style={{ height: 800, width: "100%" }}
+              >
+                <AgGridReact
+                  className="ag-cell-wrap-text"
+                  gridOptions={gridOptions}
+                  columnDefs={columnDefs}
+                  defaultColDef={defaultColDef}
+                  onGridReady={(params) => {
+                    params.api.showLoadingOverlay();
+                    params.api.setDatasource(dataSource);
+                  }}
+                  loadingOverlayComponent={loadingOverlayComponent}
+                />
+              </div>
+            </Box>
+          ))}
       </Container>
     </>
   );

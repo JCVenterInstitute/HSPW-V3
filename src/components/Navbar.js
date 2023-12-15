@@ -123,6 +123,7 @@ export const NavBar = () => {
                 >
                   <MenuItem
                     onClick={popupState.close}
+                    component="a"
                     href="/advanced-search"
                   >
                     Advanced Search

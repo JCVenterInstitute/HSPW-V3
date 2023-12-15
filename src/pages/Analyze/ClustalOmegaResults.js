@@ -188,14 +188,11 @@ const ClustalOmegaResults = () => {
       </Container>
       {!isFinished ? (
         <Container>
-          <Typography
-            variant="h3"
-            sx={{ fontWeight: "bold", mt: 3, color: "blue" }}
-          >
+          <Typography variant="h5" sx={{ mt: 3, color: "#1463B9" }}>
             Your job is now queued and will be running shortly... please be
             patient!
           </Typography>
-          <Typography variant="h6" sx={{ mt: 3, color: "black" }}>
+          <Typography variant="h6" sx={{ mt: 3, color: "#1463B9" }}>
             Your result of your job will appear in this browser window.
           </Typography>
         </Container>
