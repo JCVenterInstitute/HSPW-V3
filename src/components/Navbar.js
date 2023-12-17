@@ -79,7 +79,7 @@ export const NavBar = () => {
                   <MenuItem
                     onClick={popupState.close}
                     component="a"
-                    href="/protein_signature"
+                    href="/protein-signature"
                   >
                     Protein Signatures
                   </MenuItem>

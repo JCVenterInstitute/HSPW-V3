@@ -135,7 +135,7 @@ const ProteinClusterTable = () => {
       wrapText: true,
       suppressSizeToFit: true,
       sortable: true,
-      cellStyle: { textAlign: "center", marginX: "auto", fontSize: "10px" },
+      cellStyle: { paddingLeft: "15px", textAlign: "center !important" },
     },
     {
       headerName: "Representative Protein",
@@ -144,7 +144,7 @@ const ProteinClusterTable = () => {
       wrapText: true,
       suppressSizeToFit: true,
       sortable: true,
-      cellStyle: { textAlign: "center" },
+      cellStyle: { paddingLeft: "15px !important" },
     },
     {
       headerName: "Representative Protein Name",

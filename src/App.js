@@ -8,7 +8,7 @@ import Analysis_Home from "./pages/analysis_home";
 import Gene from "./pages/gene";
 import Contact from "./pages/contact";
 import Footer from "./components/footer.js";
-import Signature from "./pages/signature";
+import ProteinSignature from "./pages/ProteinSignature";
 import Cluster from "./pages/ProteinCluster/ProteinCluster.js";
 import Gene_Detail from "./pages/gene_detail";
 import Salivary_Protein from "./pages/SalivaryProtein/SalivaryProtein";
@@ -63,8 +63,8 @@ function App() {
           element={<Gene />}
         />
         <Route
-          path="/protein_signature"
-          element={<Signature />}
+          path="/protein-signature"
+          element={<ProteinSignature />}
         />
         <Route
           path="/protein_signature/:interproid"
