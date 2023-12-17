@@ -1,26 +1,26 @@
 import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import "./App.css";
 import NavBar from "./components/NavBar.js";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages";
-import Download from "./pages/Download/download";
-import Analysis_Home from "./pages/analysis_home";
-import Gene from "./pages/gene";
-import Contact from "./pages/contact";
-import Footer from "./components/footer.js";
-import ProteinSignature from "./pages/ProteinSignature";
-import Cluster from "./pages/ProteinCluster/ProteinCluster.js";
-import Gene_Detail from "./pages/gene_detail";
-import Salivary_Protein from "./pages/SalivaryProtein/SalivaryProtein";
-import Protein_Detail from "./pages/SalivaryProtein/ProteinDetail";
-import Analysis from "./pages/analysis";
-import Citation from "./pages/Citation/citation";
-import Citation_Detail from "./pages/Citation/citation_detail";
-import Signature_Detail from "./pages/signature_detail";
-import Basic_Search from "./pages/basic_search";
-import Experiment_Search from "./pages/experiment_search";
-import Protein_Set_Search from "./pages/protein_set_search";
-import Cluster_detail from "./pages/ProteinCluster/ProteinClusterDetail.js";
+import Download from "./pages/Help/Download.js";
+import AnalysisHome from "./pages/AnalysisHome";
+import Gene from "./pages/Browse/Gene/Gene.js";
+import Contact from "./pages/Help/Contact.js";
+import Footer from "./components/Footer.js";
+import ProteinSignature from "./pages/Browse/ProteinSignature/ProteinSignature.js";
+import ProteinCluster from "./pages/Browse/ProteinCluster/ProteinCluster.js";
+import GeneDetail from "./pages/Browse/Gene/GeneDetail.js";
+import Salivary_Protein from "./pages/Browse/SalivaryProtein/SalivaryProtein";
+import Protein_Detail from "./pages/Browse/SalivaryProtein/ProteinDetail";
+import Analysis from "./pages/Analysis.js";
+import Citation from "./pages/Browse/Citation/Citation";
+import CitationDetail from "./pages/Browse/Citation/CitationDetail";
+import ProteinSignatureDetail from "./pages/Browse/ProteinSignature/ProteinSignatureDetail.js";
+import ExperimentSearch from "./pages/Search/ExperimentSearch.js";
+import ProteinSetSearch from "./pages/ProteinSetSearch.js";
+import ProteinClusterDetail from "./pages/Browse/ProteinCluster/ProteinClusterDetail.js";
 import ClustalOmegaResults from "./pages/Analyze/ClustalOmegaResults";
 import ClustalOmega from "./pages/Analyze/ClustalOmega";
 import InterProScanResults from "./pages/Analyze/InterProScanResults";
@@ -32,7 +32,7 @@ import Team from "./pages/Help/Team";
 import DifferentialExpression from "./pages/Analyze/DifferentialExpression.js";
 import DifferentialExpressionResults from "./pages/Analyze/DifferentialExpressionResults.js";
 import AdvancedSearch from "./pages/Search/AdvancedSearch.js";
-import ProteinSequence from "./pages/SalivaryProtein/ProteinDetailSequence.js";
+import ProteinSequence from "./pages/Browse/SalivaryProtein/ProteinDetailSequence.js";
 import GoNodes from "./pages/GoTerms/GoNode";
 import GoTable from "./pages/GoTerms/GoTable";
 
@@ -55,8 +55,8 @@ function App() {
           element={<Contact />}
         />
         <Route
-          path="/analysis_home"
-          element={<Analysis_Home />}
+          path="/analysis-home"
+          element={<AnalysisHome />}
         />
         <Route
           path="/gene"
@@ -67,23 +67,23 @@ function App() {
           element={<ProteinSignature />}
         />
         <Route
-          path="/protein_signature/:interproid"
-          element={<Signature_Detail />}
+          path="/protein-signature/:interproid"
+          element={<ProteinSignatureDetail />}
         />
         <Route
-          path="/protein_cluster"
-          element={<Cluster />}
+          path="/protein-cluster"
+          element={<ProteinCluster />}
         />
         <Route
           path="/gene/:geneid"
-          element={<Gene_Detail />}
+          element={<GeneDetail />}
         />
         <Route
-          path="/protein_cluster/:clusterid"
-          element={<Cluster_detail />}
+          path="/protein-cluster/:clusterid"
+          element={<ProteinClusterDetail />}
         />
         <Route
-          path="/salivary_protein"
+          path="/salivary-protein"
           element={<Salivary_Protein />}
         />
         <Route
@@ -132,23 +132,19 @@ function App() {
         />
         <Route
           path="/citation/:citationid"
-          element={<Citation_Detail />}
-        />
-        <Route
-          path="/Basic_Search"
-          element={<Basic_Search />}
+          element={<CitationDetail />}
         />
         <Route
           path="/advanced-search"
           element={<AdvancedSearch />}
         ></Route>
         <Route
-          path="/Experiment_Search"
-          element={<Experiment_Search />}
+          path="/experiment-search"
+          element={<ExperimentSearch />}
         />
         <Route
-          path="/Protein_Set_Search"
-          element={<Protein_Set_Search />}
+          path="/Protein-Set-Search"
+          element={<ProteinSetSearch />}
         />
         <Route
           path="/About"
@@ -159,7 +155,7 @@ function App() {
           element={<Team />}
         />
         <Route
-          path="protein_sequence/:proteinid"
+          path="protein-sequence/:proteinid"
           element={<ProteinSequence />}
         />
         <Route

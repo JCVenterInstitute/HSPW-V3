@@ -28,8 +28,8 @@ import { styled } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
 import { ReactComponent as DownloadLogo } from "../assets/table-icon/download.svg";
-import "./filter.css";
-import "./table.css";
+import "./Filter.css";
+import "./Table.css";
 
 const recordsPerPageList = [
   {
@@ -106,7 +106,7 @@ function LinkComponent(props) {
     <a
       target="_blank"
       rel="noopener noreferrer"
-      href={`/protein_signature/${props.value}`}
+      href={`/protein-signature/${props.value}`}
     >
       {props.value}
     </a>
@@ -243,7 +243,7 @@ const ProteinSignatureTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetch(
-        `${HOST_ENDPOINT}/protein_signature/` + pageSize + "/" + pageNum
+        `${HOST_ENDPOINT}/protein-signature/` + pageSize + "/" + pageNum
       );
       const json = data.json();
       return json;
@@ -370,10 +370,10 @@ const ProteinSignatureTable = () => {
 
   const globalSearch = async () => {
     const data = await fetch(
-      `http://localhost:8000/multi_search/protein_signature/${searchText}`
+      `http://localhost:8000/multi_search/protein-signature/${searchText}`
     );
     console.log(
-      `http://localhost:8000/multi_search/protein_signature/${searchText}`
+      `http://localhost:8000/multi_search/protein-signature/${searchText}`
     );
     const json = data.json();
 

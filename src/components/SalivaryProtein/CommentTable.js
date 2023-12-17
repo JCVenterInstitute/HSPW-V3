@@ -1,4 +1,3 @@
-import "../filter.css";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import {
@@ -15,11 +14,13 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import { ReactComponent as Download_Logo } from "../../assets/table-icon/download.svg";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ClearIcon from "@mui/icons-material/Clear";
+
+import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
+import "../Filter.css";
 
 const th = {
   background: "#f2f2f2",
@@ -611,7 +612,7 @@ function Comment_Table(props) {
           cursor: "pointer",
         }}
       >
-        <Download_Logo
+        <DownloadLogo
           style={{
             marginRight: "10px",
             paddingTop: "5px",

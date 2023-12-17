@@ -28,7 +28,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 import { ReactComponent as DownloadLogo } from "../assets/table-icon/download.svg";
-import "./filter.css";
+import "./Filter.css";
 
 // TODO: Move
 const HOST_ENDPOINT = "http://localhost:8000";

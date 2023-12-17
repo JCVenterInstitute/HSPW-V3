@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import "./index.css";
 import jcvi from "../assets/logo-jcvi.svg";
 import forsyth from "../assets/logo-forsyth.png";
-import uthsc from "./logo-uthsc.svg";
+import uthsc from "../assets/logo-uthsc.svg";
 import ub from "../assets/logo-ub.png";
 import nih from "../assets/logo-nih-nidcr.png";
 

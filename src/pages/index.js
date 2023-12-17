@@ -1,7 +1,7 @@
 import * as React from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
-import BasicCard from "../components/basic-card.js";
-import Carousel from "../components/carousel";
+import BasicCard from "../components/BasicCard.js";
+import Carousel from "../components/Carousel.js";
 import salivary_protein from "../assets/icon-salivary-protein.png";
 import analysis from "../assets/icon-analyze.png";
 import download from "../assets/icon-download.png";
@@ -65,7 +65,7 @@ class Home extends React.Component {
               title: "Protein Analysis",
               blurb:
                 "Evaluate proteins, quantify abundance and perform statistics.",
-              location: "/analysis_home",
+              location: "/analysis-home",
             },
             {
               imageSrc: upload,

@@ -28,11 +28,11 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AgGridReact } from "ag-grid-react";
 
 import { ReactComponent as DownloadLogo } from "../assets/table-icon/download.svg";
-import CustomLoadingOverlay from "./customLoadingOverlay.jsx";
+import CustomLoadingOverlay from "./CustomLoadingOverlay";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import "./filter.css";
-import "./table.css";
+import "./Filter.css";
+import "./Table.css";
 
 const Accordion = styled((props) => (
   <MuiAccordion

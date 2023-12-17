@@ -63,35 +63,30 @@ export const NavBar = () => {
                   transformOrigin={{ vertical: "top", horizontal: "left" }}
                 >
                   <MenuItem
-                    onClick={popupState.close}
                     component="a"
-                    href="/salivary_protein"
+                    href="/salivary-protein"
                   >
                     Salivary Proteins
                   </MenuItem>
                   <MenuItem
-                    onClick={popupState.close}
                     component="a"
-                    href="/protein_cluster"
+                    href="/protein-cluster"
                   >
                     Protein Clusters
                   </MenuItem>
                   <MenuItem
-                    onClick={popupState.close}
                     component="a"
                     href="/protein-signature"
                   >
                     Protein Signatures
                   </MenuItem>
                   <MenuItem
-                    onClick={popupState.close}
                     component="a"
                     href="/gene"
                   >
                     Genes
                   </MenuItem>
                   <MenuItem
-                    onClick={popupState.close}
                     component="a"
                     href="/citation"
                   >
@@ -122,21 +117,19 @@ export const NavBar = () => {
                   transformOrigin={{ vertical: "top", horizontal: "left" }}
                 >
                   <MenuItem
-                    onClick={popupState.close}
                     component="a"
                     href="/advanced-search"
                   >
                     Advanced Search
                   </MenuItem>
-                  <MenuItem onClick={popupState.close}>
-                    Semantic Search
-                  </MenuItem>
-                  <MenuItem onClick={popupState.close}>
+                  <MenuItem>Semantic Search</MenuItem>
+                  <MenuItem
+                    component="a"
+                    href="/experiment-search"
+                  >
                     Experiment Search
                   </MenuItem>
-                  <MenuItem onClick={popupState.close}>
-                    Protein Search By Identifiers
-                  </MenuItem>
+                  <MenuItem>Protein Search By Identifiers</MenuItem>
                 </HoverMenu>
               </React.Fragment>
             )}
@@ -210,7 +203,7 @@ export const NavBar = () => {
                 >
                   <MenuItem
                     component="a"
-                    href="/About"
+                    href="/about"
                   >
                     About
                   </MenuItem>
@@ -226,7 +219,12 @@ export const NavBar = () => {
                   >
                     Team
                   </MenuItem>
-                  <MenuItem>Contact Us</MenuItem>
+                  <MenuItem
+                    component="a"
+                    href="/contact"
+                  >
+                    Contact Us
+                  </MenuItem>
                 </HoverMenu>
               </React.Fragment>
             )}

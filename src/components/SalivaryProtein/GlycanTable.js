@@ -1,4 +1,3 @@
-import "../filter.css";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import TableCell from "@mui/material/TableCell";
@@ -6,7 +5,6 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 import FontAwesome from "react-fontawesome";
 import {
   Container,
@@ -21,6 +19,10 @@ import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ClearIcon from "@mui/icons-material/Clear";
+
+import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
+import "../Filter.css";
+
 const th = {
   background: "#f2f2f2",
   textAlign: "center",

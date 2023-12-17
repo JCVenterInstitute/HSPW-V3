@@ -63,7 +63,7 @@ const AnnotationsSearchResultsTable = ({
             return (
               <span
                 onClick={() =>
-                  window.open(`/protein_signature/${params.value}`, "_blank")
+                  window.open(`/protein-signature/${params.value}`, "_blank")
                 }
                 style={{
                   cursor: "pointer",

@@ -222,7 +222,7 @@ async function search_clusterID(id) {
   return response.body.hits.hits;
 }
 
-app.get("/protein_cluster/:id", (req, res) => {
+app.get("/protein-cluster/:id", (req, res) => {
   console.log(req.params.id);
   let a = search_clusterID(req.params.id);
   a.then(function (result) {
@@ -334,7 +334,7 @@ async function search_signature(size, from) {
   return response.body.hits;
 }
 
-app.get("/protein_signature/:size/:from", (req, res) => {
+app.get("/protein-signature/:size/:from", (req, res) => {
   let a = search_signature(req.params.size, req.params.from);
   a.then(function (result) {
     console.log(result);
@@ -559,7 +559,7 @@ async function search_signatureID(id) {
   return response.body.hits.hits;
 }
 
-app.get("/protein_signature/:id", (req, res) => {
+app.get("/protein-signature/:id", (req, res) => {
   console.log(req.params.id);
   let a = search_signatureID(req.params.id);
   a.then(function (result) {

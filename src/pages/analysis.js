@@ -4,8 +4,8 @@ import { components } from "react-select";
 import "react-tabs/style/react-tabs.css";
 import { saveAs } from "file-saver";
 
-import Analysis_Filter from "../components/analysis_filter.js";
-import Table from "../components/csv_to_json_table.js";
+import AnalysisFilter from "../components/AnalysisFilter.js";
+import Table from "../components/CsvToJsonTable.js";
 import heatmap from "../assets/top100var_heatmap_626170.png";
 import "./style.css";
 
@@ -74,7 +74,7 @@ const Analysis = () => {
               Analysis
             </h2>
           </div>
-          <Analysis_Filter />
+          <AnalysisFilter />
         </div>
         <div className="charts">
           <div style={{ margin: "10px" }}>

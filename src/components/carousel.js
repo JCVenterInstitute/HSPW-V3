@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import "./carousel.css";
-import { images } from "./CarouselData.js";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
-import Chord from "./chord.js";
+
+import { images } from "./CarouselData.js";
+import "./Carousel.css";
+import Chord from "./Chord.js";
 
 function Carousel() {
   const [currImg, setCurrImg] = useState(0);

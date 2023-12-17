@@ -31,11 +31,11 @@ import { styled } from "@mui/material/styles";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
-import CustomLoadingOverlay from "../customLoadingOverlay.jsx";
-import CustomHeaderGroup from "../customHeaderGroup.jsx";
+import CustomLoadingOverlay from "../CustomLoadingOverlay";
+import CustomHeaderGroup from "../CustomHeaderGroup";
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
-import "../filter.css";
-import "../table.css";
+import "../Filter.css";
+import "../Table.css";
 import Legend from "./Legend.js";
 
 // TODO: Move to some sort of env file

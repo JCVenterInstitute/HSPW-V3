@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-import "../table.css";
+
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import { DATA } from "../data";
-import "../table.css";
+
+import { DATA } from "../../data/data";
 import first_pic from "../../assets/first-pic.png";
 import second_pic from "../../assets/second-pic.png";
 import third_pic from "../../assets/third-pic.png";
@@ -13,7 +13,8 @@ import third_pic_hover from "../../assets/third-pic-hover.png";
 import MzTab from "../../assets/MzTab.png";
 import METADATA from "../../assets/METADATA.png";
 import RAW from "../../assets/RAW.png";
-import "../filter.css";
+import "../Filter.css";
+import "../Table.css";
 
 function LinkComponent(props) {
   const imageUrlArray = [first_pic, second_pic, third_pic];
