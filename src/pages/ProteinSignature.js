@@ -1,9 +1,8 @@
-import React from "react";
-import Signature from "../components/signature_table";
+import ProteinSignatureTable from "../components/ProteinSignatureTable";
 import "./style.css";
 import { Chart } from "react-google-charts";
-import { useState, useEffect, useCallback, useRef } from "react";
-import main_feature from "../components/hero.jpeg";
+import { useState, useEffect } from "react";
+import MainFeature from "../components/hero.jpeg";
 
 export const data = [
   [
@@ -45,7 +44,7 @@ const mystyle = {
   marginBottom: "20px",
 };
 
-const Protein_Signature = () => {
+const ProteinSignature = () => {
   const [message, setMessage] = useState([
     "Types of Protein Signatures Detected in Salivary Proteins",
     "Number of Proteins",
@@ -72,11 +71,14 @@ const Protein_Signature = () => {
     <>
       <div
         style={{
-          backgroundImage: `url(${main_feature})`,
+          backgroundImage: `url(${MainFeature})`,
         }}
         className="head_background"
       >
-        <h1 className="head_title" align="left">
+        <h1
+          className="head_title"
+          align="left"
+        >
           Protein Signature
         </h1>
         <p
@@ -118,9 +120,9 @@ const Protein_Signature = () => {
           paddingBottom: "5px",
         }}
       />
-      <Signature />
+      <ProteinSignatureTable />
     </>
   );
 };
 
-export default Protein_Signature;
+export default ProteinSignature;

@@ -1,13 +1,10 @@
-import "./filter.css";
-import "./table.css";
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import List from "@material-ui/core/List";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
-
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
@@ -15,9 +12,9 @@ import {
   TextField,
   Box,
   MenuItem,
-  Stack,
   Checkbox,
   InputAdornment,
+  Button,
   IconButton,
 } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -29,13 +26,37 @@ import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import { styled } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import { ReactComponent as Download_Logo } from "./table_icon/download.svg";
-import { ReactComponent as Left_Arrow } from "./table_icon/left_arrow.svg";
-import { ReactComponent as Right_Arrow } from "./table_icon/right_arrow.svg";
-import { ReactComponent as Search } from "./table_icon/search.svg";
+
+import { ReactComponent as DownloadLogo } from "./table_icon/download.svg";
+import "./filter.css";
+import "./table.css";
+
+const recordsPerPageList = [
+  {
+    value: 50,
+    label: 50,
+  },
+  {
+    value: 100,
+    label: 100,
+  },
+  {
+    value: 500,
+    label: 500,
+  },
+  {
+    value: 1000,
+    label: 1000,
+  },
+];
 
 const Accordion = styled((props) => (
-  <MuiAccordion disableGutters elevation={0} square {...props} />
+  <MuiAccordion
+    disableGutters
+    elevation={0}
+    square
+    {...props}
+  />
 ))(({ theme }) => ({
   marginBottom: "15px",
   "&:not(:last-child)": {
@@ -80,18 +101,98 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   fontFamily: "Montserrat",
 }));
 
-function App() {
-  const [message, setMessage] = useState("");
-  const [interpro_id, set_interpro_id] = useState("");
-  const [name, setName] = useState("");
-  const [idC, setidC] = useState(false);
-  const [nameC, setNameC] = useState(false);
-  const [typeC, settypeC] = useState(false);
-  const [pageSize, setPageSize] = useState(50);
-  const [pageNum, setPageNum] = useState(0);
-  const [count, setCount] = useState(1);
-  const [rowData, setRowData] = useState([]);
-  const [docCount, setDocCount] = useState(0);
+function LinkComponent(props) {
+  return (
+    <a
+      target="_blank"
+      rel="noopener noreferrer"
+      href={`/protein_signature/${props.value}`}
+    >
+      {props.value}
+    </a>
+  );
+}
+
+const HOST_ENDPOINT = "http://localhost:8000";
+
+const columns = [
+  {
+    headerName: "InterPro ID",
+    field: "InterPro ID",
+    cellRenderer: "LinkComponent",
+    maxWidth: 320,
+    headerClass: ["header-border"],
+    cellClass: ["table-border"],
+  },
+  {
+    headerName: "Type",
+    field: "Type",
+    wrapText: true,
+    maxWidth: 145,
+    headerClass: ["header-border"],
+    cellClass: ["table-border"],
+  },
+  {
+    headerName: "Name",
+    field: "Name",
+    wrapText: true,
+    autoHeight: true,
+    cellStyle: { wordBreak: "break-word" },
+    headerClass: ["header-border"],
+    cellClass: ["table-border"],
+  },
+  {
+    headerName: "# of Members",
+    field: "# of Members.length",
+    wrapText: true,
+    maxWidth: 205,
+    headerClass: ["header-border"],
+    cellClass: ["table-border"],
+  },
+];
+
+const defColumnDefs = {
+  flex: 1,
+  resizable: true,
+  wrapHeaderText: true,
+  wrapText: true,
+  autoHeaderHeight: true,
+  autoHeight: true,
+  headerStyle: { wordBreak: "break-word" },
+  initialWidth: 200,
+};
+
+/**
+ * Escape all special characters for input string
+ * Special Characters include: [-[\]{}()*+?.,\\^$|#\s
+ * @param {String} inputVal Non-escaped string value entered by user
+ * @returns String where special characters are escaped with slashes
+ */
+const escapeSpecialCharacters = (inputVal) => {
+  return inputVal.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
+
+const stringAttributes = [
+  "UniProt Accession",
+  "Gene Symbol",
+  "Protein Name",
+  "IHC",
+  "expert_opinion",
+];
+
+const numberAttributes = [
+  "saliva_abundance", // MS WS
+  "parotid_gland_abundance", // MS PAR
+  "sm/sl_abundance", // MS Sub
+  "plasma_abundance", // MS B
+  "mRNA", // mRNA
+];
+
+const ProteinSignatureTable = () => {
+  const gridRef = useRef();
+  const [gridApi, setGridApi] = useState();
+  const [columnApi, setColumnApi] = useState(null);
+
   const [pageNumArr, setPageNumArr] = useState([1]);
   const [typeCount, settypeCount] = useState([]);
   const [typeArr, settypeArr] = useState([false, false, false, false]);
@@ -99,13 +200,29 @@ function App() {
   const [queryArr, setQueryArr] = useState([]);
   const [scriptArr, setScriptArr] = useState([]);
   const [startMember, setStartMember] = useState("");
-  const [searchText, setSearchText] = useState("");
   const [memberC, setMemberC] = useState(false);
+  const [interpro_id, set_interpro_id] = useState("");
+  const [name, setName] = useState("");
+  const [idC, setidC] = useState(false);
+  const [nameC, setNameC] = useState(false);
+  const [typeC, settypeC] = useState(false);
+  const [count, setCount] = useState(1);
+
   const [globalSC, setGlobalSC] = useState(false);
+
+  const [pageSize, setPageSize] = useState(50);
+  const [pageNum, setPageNum] = useState(0);
+  const [rowData, setRowData] = useState(null);
+  const [docCount, setDocCount] = useState(0);
+  const [facetFilter, setFacetFilters] = useState({});
+  const [searchText, setSearchText] = useState("");
+  const [sortedColumn, setSortedColumn] = useState(null);
+
+  const fetchData = () => {};
 
   useEffect(() => {
     const fetchTypeCount = async () => {
-      const data = await fetch("http://localhost:8000/signature_type_counts");
+      const data = await fetch(`${HOST_ENDPOINT}/signature_type_counts`);
       const json = data.json();
       return json;
     };
@@ -118,30 +235,32 @@ function App() {
     });
   }, []);
 
+  // Export the current page data as CSV file
+  const onBtExport = useCallback(() => {
+    gridRef.current.api.exportDataAsCsv();
+  }, []);
+
   useEffect(() => {
-    console.log("123", JSON.stringify(queryArr));
     const fetchData = async () => {
       const data = await fetch(
-        "http://localhost:8000/protein_signature/" + pageSize + "/" + pageNum
+        `${HOST_ENDPOINT}/protein_signature/` + pageSize + "/" + pageNum
       );
       const json = data.json();
       return json;
     };
 
     const fetchTypeCount = async () => {
-      const data = await fetch("http://localhost:8000/signature_type_counts");
+      const data = await fetch(`${HOST_ENDPOINT}/signature_type_counts`);
       const json = data.json();
       return json;
     };
 
-    console.log(queryArr);
     const queryString = encodeURIComponent(JSON.stringify(queryArr));
     const scriptString = encodeURIComponent(JSON.stringify(scriptArr));
-    console.log("84" + JSON.stringify(queryArr));
-    const url = `http://localhost:8000/signature_search/${pageSize}/${pageNum}/${queryString}/${scriptString}`;
+
+    const url = `${HOST_ENDPOINT}/signature_search/${pageSize}/${pageNum}/${queryString}/${scriptString}`;
 
     const fetchQuery = async () => {
-      console.log(url);
       const data = await fetch(url);
       const json = data.json();
       return json;
@@ -156,7 +275,7 @@ function App() {
           for (let i = 0; i < value.hits.hits.length; i++) {
             data1.push(value.hits.hits[i]["_source"]);
           }
-          console.log(data1);
+
           setRowData(data1);
         }
         setDocCount(value.hits.total.value);
@@ -167,7 +286,10 @@ function App() {
           i++
         ) {
           newOptions.push(
-            <option key={i} value={i}>
+            <option
+              key={i}
+              value={i}
+            >
               {i + 1}
             </option>
           );
@@ -177,8 +299,8 @@ function App() {
         console.log(typeArr);
       });
     } else if (globalSC === true) {
-      console.log("180", globalSC);
       const result = globalSearch().catch(console.errror);
+
       result.then((value) => {
         if (value.hits.hits) {
           console.log(value);
@@ -197,7 +319,10 @@ function App() {
           i++
         ) {
           newOptions.push(
-            <option key={i} value={i}>
+            <option
+              key={i}
+              value={i}
+            >
               {i + 1}
             </option>
           );
@@ -222,7 +347,10 @@ function App() {
         const newOptions = [];
         for (let i = 1; i <= Math.round(value.total.value / pageSize); i++) {
           newOptions.push(
-            <option key={i} value={i}>
+            <option
+              key={i}
+              value={i}
+            >
               {i + 1}
             </option>
           );
@@ -240,19 +368,6 @@ function App() {
     }
   }, [pageSize, pageNum, queryArr, typeArr, name, startMember, globalSC]);
 
-  const [gridApi, setGridApi] = useState();
-  function LinkComponent(props) {
-    return (
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href={"http://localhost:3000/protein_signature/" + props.value}
-      >
-        {props.value}
-      </a>
-    );
-  }
-
   const globalSearch = async () => {
     const data = await fetch(
       `http://localhost:8000/multi_search/protein_signature/${searchText}`
@@ -261,95 +376,53 @@ function App() {
       `http://localhost:8000/multi_search/protein_signature/${searchText}`
     );
     const json = data.json();
+
     return json;
   };
 
-  const recordsPerPageList = [
-    {
-      value: 50,
-      label: 50,
-    },
-    {
-      value: 100,
-      label: 100,
-    },
-    {
-      value: 500,
-      label: 500,
-    },
-    {
-      value: 1000,
-      label: 1000,
-    },
-  ];
+  /**
+   * Create a proper sort query for whichever sort attribute is selected
+   */
+  const createSortQuery = () => {
+    const { attribute, order } = sortedColumn;
 
-  const columns = [
-    {
-      headerName: "InterPro ID",
-      field: "InterPro ID",
-      cellRenderer: "LinkComponent",
-      maxWidth: 320,
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-    },
-    {
-      headerName: "Type",
-      field: "Type",
-      wrapText: true,
-      maxWidth: 145,
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-    },
-    {
-      headerName: "Name",
-      field: "Name",
-      wrapText: true,
-      autoHeight: true,
-      cellStyle: { wordBreak: "break-word" },
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-    },
-    {
-      headerName: "# of Members",
-      field: "# of Members.length",
-      wrapText: true,
-      maxWidth: 205,
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-    },
-  ];
+    // Have to include .keyword when sorting string attributes
+    const sortAttrKey = `${sortedColumn.attribute}${
+      stringAttributes.includes(attribute) ? ".keyword" : ""
+    }`;
 
-  const defColumnDefs = {
-    flex: 1,
-    filter: true,
-    resizable: true,
-    wrapHeaderText: true,
-    wrapText: true,
-    autoHeaderHeight: true,
-    autoHeight: true,
-    headerStyle: { wordBreak: "break-word" },
-    initialWidth: 200,
-    headerComponentParams: {
-      template:
-        '<div class="ag-cell-label-container" role="presentation">' +
-        '  <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button"></span>' +
-        '  <div ref="eLabel" class="ag-header-cell-label" role="presentation">' +
-        '    <span ref="eSortOrder" class="ag-header-icon ag-sort-order"></span>' +
-        '    <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon"></span>' +
-        '    <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon"></span>' +
-        '    <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon"></span>' +
-        '    <span ref="eText" class="ag-header-cell-text" role="columnheader" style="white-space: normal;"></span>' +
-        '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
-        "  </div>" +
-        "</div>",
-    },
+    return {
+      sort: [
+        {
+          [sortAttrKey]: {
+            order,
+          },
+        },
+      ],
+    };
+  };
+
+  /**
+   * Create a proper search query for whichever search string is entered into the search bar
+   */
+  const createGlobalSearchQuery = () => {
+    const escapedInput = escapeSpecialCharacters(searchText);
+
+    return {
+      query_string: {
+        query: `*${escapedInput}*`,
+        default_operator: "AND",
+        analyze_wildcard: true,
+      },
+    };
   };
 
   const onGridReady = (params) => {
-    setGridApi(params);
+    params.api.showLoadingOverlay();
+    setGridApi(params.api);
+    setColumnApi(params.columnApi);
+    gridRef.current.api.sizeColumnsToFit();
   };
-
-  const gridRef = useRef();
 
   const onPageSizeChanged = (event) => {
     var value = document.getElementById("page-size").value;
@@ -363,10 +436,6 @@ function App() {
     setCount(value);
     console.log("count1:" + count);
   };
-
-  const onBtExport = useCallback(() => {
-    gridRef.current.api.exportDataAsExcel();
-  }, []);
 
   const onBtNext = (event) => {
     if (pageNum + 1 < docCount / pageSize) {
@@ -385,7 +454,6 @@ function App() {
       setCount(count - 1);
     }
   };
-  const rowHeight = 50;
 
   const escapeRegExp = (string) => {
     console.log(typeof string);
@@ -425,12 +493,6 @@ function App() {
   const clearSearch = () => {
     setSearchText("");
     setGlobalSC(false);
-  };
-
-  const onSubmit = (e) => {
-    e.preventDefault();
-    // Additional logic for form submission if needed
-    // You can use the searchText state here for searching/filtering data
   };
 
   const typeValues = [
@@ -717,9 +779,6 @@ function App() {
   };
 
   const findEmptyField = (queries, fieldName) => {
-    console.log("Queries:", queries);
-    console.log("Field Name:", fieldName);
-
     const findFieldInFilter = (filter) => {
       if (filter.wildcard) {
         return filter && filter.wildcard && filter.wildcard[fieldName];
@@ -765,8 +824,6 @@ function App() {
     return type1 === type2;
   };
 
-  const handleEndMember = (e) => {};
-
   return (
     <>
       <Container
@@ -775,15 +832,13 @@ function App() {
           width: "100%",
           display: "flex",
           paddingLeft: "0px !important",
-          // paddingRight: "0px !important",
         }}
       >
         <Box
           sx={{
             backgroundColor: "#f9f8f7",
             width: "270px",
-            height: "47rem",
-            overflow: "scroll",
+            maxHeight: "760px",
           }}
         >
           <h1
@@ -910,7 +965,10 @@ function App() {
             </Accordion>
           </div>
         </Box>
-        <Container maxWidth="xl" sx={{ marginTop: "30px", marginLeft: "20px" }}>
+        <Container
+          maxWidth="xl"
+          sx={{ marginTop: "30px", marginLeft: "20px" }}
+        >
           <Box sx={{ display: "flex" }}>
             <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
               <TextField
@@ -1004,7 +1062,10 @@ function App() {
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
               >
                 {recordsPerPageList.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
+                  <MenuItem
+                    key={option.value}
+                    value={option.value}
+                  >
                     {option.label}
                   </MenuItem>
                 ))}
@@ -1036,7 +1097,10 @@ function App() {
                 {Array.from(
                   { length: Math.ceil(docCount / pageSize) },
                   (_, index) => (
-                    <MenuItem key={index + 1} value={index + 1}>
+                    <MenuItem
+                      key={index + 1}
+                      value={index + 1}
+                    >
                       {index + 1}
                     </MenuItem>
                   )
@@ -1087,10 +1151,10 @@ function App() {
               </button>
               <button
                 onClick={onBtNext}
-                disabled={pageNum === Math.ceil(docCount / pageSize)}
+                disabled={pageNum === Math.ceil(docCount / pageSize - 1)}
                 style={{
                   color:
-                    pageNum === Math.ceil(docCount / pageSize)
+                    pageNum === Math.ceil(docCount / pageSize - 1)
                       ? "#D3D3D3"
                       : "#F6921E",
                   background: "white",
@@ -1148,45 +1212,41 @@ function App() {
                 defaultColDef={defColumnDefs}
                 onGridReady={onGridReady}
                 cacheQuickFilter={true}
-                frameworkComponents={{
+                components={{
                   LinkComponent,
                 }}
                 enableCellTextSelection={true}
-                overlayNoRowsTemplate={
-                  '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
-                }
                 paginationPageSize={50}
               />
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <Button
+                onClick={onBtExport}
+                sx={{
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  marginTop: "10px",
+                  textTransform: "unset",
+                  color: "#F6921E",
+                  fontSize: "20",
+                  "&:hover": {
+                    backgroundColor: "inherit",
+                  },
+                }}
+              >
+                <DownloadLogo
+                  style={{
+                    marginRight: "10px",
+                  }}
+                />
+                Download Spreadsheet
+              </Button>
             </div>
           </Box>
         </Container>
       </Container>
-
-      <button
-        onClick={onBtExport}
-        style={{
-          fontWeight: "bold",
-          textAlign: "center",
-          color: "#F6921E",
-          background: "white",
-          fontSize: "20",
-          border: "none",
-          cursor: "pointer",
-        }}
-      >
-        <Download_Logo
-          style={{
-            marginRight: "10px",
-            paddingTop: "5px",
-            display: "inline",
-            position: "relative",
-            top: "0.15em",
-          }}
-        />
-        Download Spreadsheet
-      </button>
     </>
   );
-}
+};
 
-export default App;
+export default ProteinSignatureTable;
