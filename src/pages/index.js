@@ -1,5 +1,7 @@
 import * as React from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
+import { Timeline } from "react-twitter-widgets";
+
 import BasicCard from "../components/BasicCard.js";
 import Carousel from "../components/Carousel.js";
 import salivary_protein from "../assets/icon-salivary-protein.png";
@@ -11,7 +13,6 @@ import gene from "../assets/icon-gene.png";
 import protein_cluster from "../assets/icon-clustering.png";
 import api from "../assets/icon-api.png";
 import help from "../assets/icon-help.png";
-import { Timeline } from "react-twitter-widgets";
 
 /*
   Note: I've tried to be non-destructive with the changes where I can.  Depending on what
