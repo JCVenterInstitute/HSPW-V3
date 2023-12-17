@@ -1,22 +1,19 @@
-import "../filter.css";
-
 import React, { useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "../table.css";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { DATA } from "../data";
-import { ICellRendererParams } from "ag-grid-community";
 import "../table.css";
-import first_pic from "../../download_icon/first_pic.png";
-import second_pic from "../../download_icon/second_pic.png";
-import third_pic from "../../download_icon/third_pic.png";
-import first_pic_hover from "../../download_icon/first_pic_hover.png";
-import second_pic_hover from "../../download_icon/second_pic_hover.png";
-import third_pic_hover from "../../download_icon/third_pic_hover.png";
-import MzTab from "../../download_icon/MzTab.png";
-import METADATA from "../../download_icon/METADATA.png";
-import RAW from "../../download_icon/RAW.png";
+import first_pic from "../../assets/first-pic.png";
+import second_pic from "../../assets/second-pic.png";
+import third_pic from "../../assets/third-pic.png";
+import second_pic_hover from "../../assets/second-pic-hover.png";
+import third_pic_hover from "../../assets/third-pic-hover.png";
+import MzTab from "../../assets/MzTab.png";
+import METADATA from "../../assets/METADATA.png";
+import RAW from "../../assets/RAW.png";
+import "../filter.css";
 
 function LinkComponent(props) {
   const imageUrlArray = [first_pic, second_pic, third_pic];
@@ -159,7 +156,10 @@ function DownloadTable() {
 
   return (
     <>
-      <div className="AppBox" style={{ width: "76%" }}>
+      <div
+        className="AppBox"
+        style={{ width: "76%" }}
+      >
         <div
           className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
           style={{ height: 600 }}

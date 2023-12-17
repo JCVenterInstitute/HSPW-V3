@@ -9,7 +9,7 @@ import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import main_feature from "../../components/hero.jpeg";
+import main_feature from "../../assets/hero.jpeg";
 import { Paper } from "@mui/material";
 import FontAwesome from "react-fontawesome";
 
@@ -37,7 +37,10 @@ const GoTable = () => {
         }}
         className="head_background"
       >
-        <h1 className="head_title" align="left">
+        <h1
+          className="head_title"
+          align="left"
+        >
           Annotation Report for Salivary Proteins
         </h1>
         <p

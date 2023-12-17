@@ -1,14 +1,11 @@
-import Grid from "@material-ui/core/Grid";
 import { withStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
-import classNames from "classnames";
 import React, { Component } from "react";
 import "./index.css";
-import jcvi from "./logo-jcvi.svg";
-import forsyth from "./logo-forsyth.png";
+import jcvi from "../assets/logo-jcvi.svg";
+import forsyth from "../assets/logo-forsyth.png";
 import uthsc from "./logo-uthsc.svg";
-import ub from "./logo-ub.png";
-import nih from "./logo-nih-nidcr.png";
+import ub from "../assets/logo-ub.png";
+import nih from "../assets/logo-nih-nidcr.png";
 
 class Footer extends Component {
   render() {
@@ -68,34 +65,52 @@ class Footer extends Component {
               </ul>
             </div>
             <div id="footer-text">
-              <ul id="last_sentence" style={{ marginBottom: "45px" }}>
+              <ul
+                id="last_sentence"
+                style={{ marginBottom: "45px" }}
+              >
                 <li className="last">
                   Project is funded by NIDCR under grant R01 DE016937-16
                 </li>
               </ul>
               <ul>
                 <li>
-                  <a href="About" className="first_li">
+                  <a
+                    href="About"
+                    className="first_li"
+                  >
                     About HSPW
                   </a>
                 </li>
                 <li>
-                  <a href="Accessibility" className="middle">
+                  <a
+                    href="Accessibility"
+                    className="middle"
+                  >
                     Accessibility
                   </a>
                 </li>
                 <li>
-                  <a href="Copyrights" className="middle">
+                  <a
+                    href="Copyrights"
+                    className="middle"
+                  >
                     Copyrights
                   </a>
                 </li>
                 <li>
-                  <a href="General_disclaimer" className="middle">
+                  <a
+                    href="General_disclaimer"
+                    className="middle"
+                  >
                     Disclaimers
                   </a>
                 </li>
                 <li className="last">
-                  <a href="Privacy_policy" className="last_li">
+                  <a
+                    href="Privacy_policy"
+                    className="last_li"
+                  >
                     Privacy Notice
                   </a>
                 </li>
@@ -109,7 +124,10 @@ class Footer extends Component {
                   By J. Craig Venter Institute, 4120 Capricorn Lane, La Jolla,
                   CA 92037
                 </li>
-                <li className="last" style={{ marginLeft: "37%" }}>
+                <li
+                  className="last"
+                  style={{ marginLeft: "37%" }}
+                >
                   <a href="mailto:help@salivaryproteome.org">Contact Us</a>
                 </li>
               </ul>

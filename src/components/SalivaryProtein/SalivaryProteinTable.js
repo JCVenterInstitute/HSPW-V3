@@ -33,7 +33,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 import CustomLoadingOverlay from "../customLoadingOverlay.jsx";
 import CustomHeaderGroup from "../customHeaderGroup.jsx";
-import { ReactComponent as DownloadLogo } from "../table_icon/download.svg";
+import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 import "../filter.css";
 import "../table.css";
 import Legend from "./Legend.js";

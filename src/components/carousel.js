@@ -3,8 +3,6 @@ import "./carousel.css";
 import { images } from "./CarouselData.js";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
-import chord from "./chord-white.png";
-import { Box } from "@mui/system";
 import Chord from "./chord.js";
 
 function Carousel() {
@@ -38,7 +36,10 @@ function Carousel() {
                     display: "inline-block",
                   }}
                 >
-                  <h1 sx="text-align:left" className="third_title">
+                  <h1
+                    sx="text-align:left"
+                    className="third_title"
+                  >
                     {images[currImg].title}
                   </h1>
                 </div>

@@ -1,22 +1,17 @@
 import * as React from "react";
-import ReactDOM from "react-dom/client";
 import { StyledEngineProvider } from "@mui/material/styles";
-import Demo from "../components/NavBar1.tsx";
 import BasicCard from "../components/basic-card.js";
 import Carousel from "../components/carousel";
-import Footer from "../components/footer.js";
-import salivary_protein from "../components/icon-salivary-protein.png";
-import analysis from "../components/icon-analyze.png";
-import download from "../components/icon-download.png";
-import upload from "../components/icon-upload.png";
-import pubmed from "../components/icon-pubmed.png";
-import gene from "../components/icon-gene.png";
-import protein_cluster from "../components/icon-clustering.png";
-import api from "../components/icon-api.png";
-import help from "../components/icon-help.png";
+import salivary_protein from "../assets/icon-salivary-protein.png";
+import analysis from "../assets/icon-analyze.png";
+import download from "../assets/icon-download.png";
+import upload from "../assets/icon-upload.png";
+import pubmed from "../assets/icon-pubmed.png";
+import gene from "../assets/icon-gene.png";
+import protein_cluster from "../assets/icon-clustering.png";
+import api from "../assets/icon-api.png";
+import help from "../assets/icon-help.png";
 import { Timeline } from "react-twitter-widgets";
-import Chord from "../components/chord.js";
-import { PopupService } from "ag-grid-community";
 
 /*
   Note: I've tried to be non-destructive with the changes where I can.  Depending on what

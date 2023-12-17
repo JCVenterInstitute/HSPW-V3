@@ -1,5 +1,5 @@
 import Protein from "../../components/SalivaryProtein/SalivaryProteinTable.js";
-import main_feature from "../../components/hero.jpeg";
+import main_feature from "../../assets/hero.jpeg";
 import "../style.css";
 
 const Salivary_Protein = () => {

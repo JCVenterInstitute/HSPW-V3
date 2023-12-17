@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import Navbar from "./components/Navbar.js";
+import NavBar from "./components/NavBar.js";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages";
 import Download from "./pages/Download/download";
@@ -39,7 +39,7 @@ import GoTable from "./pages/GoTerms/GoTable";
 function App() {
   return (
     <Router>
-      <Navbar />
+      <NavBar />
       <Routes>
         <Route
           exact

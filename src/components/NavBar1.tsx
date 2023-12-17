@@ -1,23 +1,16 @@
 import {
   AppBar,
   Toolbar,
-  IconButton,
-  Typography,
   Stack,
   Button,
   MenuItem,
   Menu,
   Box,
 } from "@mui/material";
-import logo from "../components/hspwLogo.png";
-import React, { useState } from "react";
-import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
+import logo from "../assets/hspw-logo.png";
+import React from "react";
+import PopupState, { bindTrigger } from "material-ui-popup-state";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import {
-  createTheme,
-  PaletteColorOptions,
-  ThemeProvider,
-} from "@mui/material/styles";
 
 export const MuiDrawer = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -83,7 +76,11 @@ export const MuiDrawer = () => {
           alt="The house from the offer."
           src={logo}
         />
-        <Stack direction="row" spacing={2} sx={{ ml: 8 }}>
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{ ml: 8 }}
+        >
           <Button
             color="primary"
             size="large"
@@ -93,7 +90,10 @@ export const MuiDrawer = () => {
           >
             Home
           </Button>
-          <PopupState variant="popover" popupId="demo-popup-menu">
+          <PopupState
+            variant="popover"
+            popupId="demo-popup-menu"
+          >
             {(popupState) => (
               <React.Fragment>
                 <Button
@@ -134,7 +134,11 @@ export const MuiDrawer = () => {
                   >
                     Protein signatures
                   </MenuItem>
-                  <MenuItem onClick={handleClose} component="a" href="/gene">
+                  <MenuItem
+                    onClick={handleClose}
+                    component="a"
+                    href="/gene"
+                  >
                     Genes
                   </MenuItem>
                   <MenuItem
@@ -148,7 +152,10 @@ export const MuiDrawer = () => {
               </React.Fragment>
             )}
           </PopupState>
-          <PopupState variant="popover" popupId="demo-popup-menu">
+          <PopupState
+            variant="popover"
+            popupId="demo-popup-menu"
+          >
             {(popupState) => (
               <React.Fragment>
                 <Button
@@ -185,7 +192,10 @@ export const MuiDrawer = () => {
               </React.Fragment>
             )}
           </PopupState>
-          <PopupState variant="popover" popupId="demo-popup-menu">
+          <PopupState
+            variant="popover"
+            popupId="demo-popup-menu"
+          >
             {(popupState) => (
               <React.Fragment>
                 <Button
@@ -242,7 +252,10 @@ export const MuiDrawer = () => {
               </React.Fragment>
             )}
           </PopupState>
-          <PopupState variant="popover" popupId="demo-popup-menu">
+          <PopupState
+            variant="popover"
+            popupId="demo-popup-menu"
+          >
             {(popupState) => (
               <React.Fragment>
                 <Button
@@ -263,7 +276,11 @@ export const MuiDrawer = () => {
                   onClose={handleClose3}
                   MenuListProps={{ onMouseLeave: handleClose3 }}
                 >
-                  <MenuItem onClick={handleClose3} component="a" href="/About">
+                  <MenuItem
+                    onClick={handleClose3}
+                    component="a"
+                    href="/About"
+                  >
                     About
                   </MenuItem>
                   <MenuItem
@@ -285,7 +302,10 @@ export const MuiDrawer = () => {
               </React.Fragment>
             )}
           </PopupState>
-          <PopupState variant="popover" popupId="demo-popup-menu">
+          <PopupState
+            variant="popover"
+            popupId="demo-popup-menu"
+          >
             {(popupState) => (
               <React.Fragment>
                 <Button

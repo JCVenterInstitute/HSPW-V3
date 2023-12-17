@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import main_feature from "../../components/hero.jpeg";
+import main_feature from "../../assets/hero.jpeg";
 import {
   Typography,
   Container,
@@ -213,17 +213,26 @@ const PsiBlastResults = () => {
         </p>
       </div>
       <Container>
-        <Typography variant="h5" sx={{ mt: 3, mb: 2, color: "black" }}>
+        <Typography
+          variant="h5"
+          sx={{ mt: 3, mb: 2, color: "black" }}
+        >
           Results for job {jobId}
         </Typography>
       </Container>
       {!isFinished ? (
         <Container sx={{ minHeight: "60vh" }}>
-          <Typography variant="h5" sx={{ mt: 3, color: "#1463B9" }}>
+          <Typography
+            variant="h5"
+            sx={{ mt: 3, color: "#1463B9" }}
+          >
             Your job is now queued and will be running shortly... please be
             patient!
           </Typography>
-          <Typography variant="h6" sx={{ mt: 3, color: "#1463B9" }}>
+          <Typography
+            variant="h6"
+            sx={{ mt: 3, color: "#1463B9" }}
+          >
             Your result of your job will appear in this browser window.
           </Typography>
         </Container>
@@ -349,7 +358,10 @@ const PsiBlastResults = () => {
                   >
                     <Paper elevation={4}>
                       <List>
-                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
+                        <ListItem
+                          sx={{ pl: 1, pt: 0, pb: 0 }}
+                          divider
+                        >
                           <ListItemText
                             primary={
                               <Typography
@@ -372,7 +384,10 @@ const PsiBlastResults = () => {
                     </Paper>
                     <Paper elevation={4}>
                       <List>
-                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
+                        <ListItem
+                          sx={{ pl: 1, pt: 0, pb: 0 }}
+                          divider
+                        >
                           <ListItemText
                             primary={
                               <Typography
@@ -390,7 +405,10 @@ const PsiBlastResults = () => {
                     </Paper>
                     <Paper elevation={4}>
                       <List>
-                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
+                        <ListItem
+                          sx={{ pl: 1, pt: 0, pb: 0 }}
+                          divider
+                        >
                           <ListItemText
                             primary={
                               <Typography
@@ -419,7 +437,10 @@ const PsiBlastResults = () => {
                   >
                     <Paper elevation={4}>
                       <List>
-                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
+                        <ListItem
+                          sx={{ pl: 1, pt: 0, pb: 0 }}
+                          divider
+                        >
                           <ListItemText
                             primary={
                               <Typography
@@ -444,7 +465,10 @@ const PsiBlastResults = () => {
                             }
                           />
                         </ListItem>
-                        <ListItem sx={{ mt: 2, pl: 1, pt: 0, pb: 0 }} divider>
+                        <ListItem
+                          sx={{ mt: 2, pl: 1, pt: 0, pb: 0 }}
+                          divider
+                        >
                           <ListItemText
                             primary={
                               <Typography
@@ -488,7 +512,10 @@ const PsiBlastResults = () => {
                       },
                     }}
                   >
-                    <Paper elevation={4} sx={{ overflow: "auto" }}>
+                    <Paper
+                      elevation={4}
+                      sx={{ overflow: "auto" }}
+                    >
                       <List>
                         <ListItem sx={{ pl: 1, pt: 0, pb: 0 }}>
                           <ListItemText
@@ -529,7 +556,10 @@ const PsiBlastResults = () => {
                           .slice(0, -6)
                           .map((parameter, index) => (
                             <React.Fragment key={index}>
-                              <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
+                              <ListItem
+                                sx={{ pl: 1, pt: 0, pb: 0 }}
+                                divider
+                              >
                                 <ListItemText
                                   primary={
                                     <Typography

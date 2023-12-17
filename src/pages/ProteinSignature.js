@@ -2,7 +2,7 @@ import ProteinSignatureTable from "../components/ProteinSignatureTable";
 import "./style.css";
 import { Chart } from "react-google-charts";
 import { useState, useEffect } from "react";
-import MainFeature from "../components/hero.jpeg";
+import MainFeature from "../assets/hero.jpeg";
 
 export const data = [
   [

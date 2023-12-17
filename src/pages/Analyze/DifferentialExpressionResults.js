@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import main_feature from "../../components/hero.jpeg";
+import main_feature from "../../assets/hero.jpeg";
 import {
   Container,
   Box,
@@ -334,7 +334,10 @@ const DifferentialExpressionResults = () => {
             ))}
           </Box>
         </Box>
-        <Container maxWidth="xl" sx={{ margin: "30px 0 30px 20px" }}>
+        <Container
+          maxWidth="xl"
+          sx={{ margin: "30px 0 30px 20px" }}
+        >
           <Box sx={{ display: "flex" }}>
             <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
               <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -418,7 +421,10 @@ const DifferentialExpressionResults = () => {
               }}
             >
               {selected !== "Download" && (
-                <Button variant="contained" onClick={handleDataDownload}>
+                <Button
+                  variant="contained"
+                  onClick={handleDataDownload}
+                >
                   Download
                 </Button>
               )}
@@ -464,8 +470,15 @@ const DifferentialExpressionResults = () => {
                     padding: "25px",
                   }}
                 >
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} key="downloadAll">
+                  <Grid
+                    container
+                    spacing={2}
+                  >
+                    <Grid
+                      item
+                      xs={12}
+                      key="downloadAll"
+                    >
                       <Box sx={{ ml: 3 }}>
                         <Button
                           onClick={() => handleDownload(jobId, "data_set.zip")}
@@ -490,7 +503,11 @@ const DifferentialExpressionResults = () => {
                     {Object.entries(fileDownloadOption).map(
                       ([key, fileName]) => {
                         return fileName !== "data_set.zip" ? (
-                          <Grid item xs={6} key={key}>
+                          <Grid
+                            item
+                            xs={6}
+                            key={key}
+                          >
                             <Box sx={{ ml: 3 }}>
                               <Button
                                 onClick={() => handleDownload(jobId, fileName)}

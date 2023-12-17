@@ -9,7 +9,7 @@ import Paper from "@mui/material/Paper";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router";
-import main_feature from "../components/hero.jpeg";
+import main_feature from "../assets/hero.jpeg";
 import parse from "html-react-parser";
 import "./style.css";
 import FontAwesome from "react-fontawesome";
@@ -103,7 +103,10 @@ const Signature_detail = (props) => {
         }}
         className="head_background"
       >
-        <h1 className="head_title" align="left">
+        <h1
+          className="head_title"
+          align="left"
+        >
           {data[0]["_source"]["Type"] + ": " + data[0]["_source"]["Name"]}
         </h1>
       </div>

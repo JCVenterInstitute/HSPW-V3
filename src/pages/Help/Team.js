@@ -1,10 +1,10 @@
 import React from "react";
-import main_feature from "../../components/hero.jpeg";
 import { Typography, Container } from "@mui/material";
-
 import Divider from "@mui/material/Divider";
-import Stefan from "../head_icon/200px-1._Stefan_Ruhl.jpg";
-import Kathryn from "../head_icon/200px-2-_Kathryn_Kauffman,_PhD_.jpg";
+
+import main_feature from "../../assets/hero.jpeg";
+import Stefan from "../../assets/team-members/Stefan-Ruhl.jpg";
+import Kathryn from "../../assets/team-members/Kathryn-Kauffman.jpg";
 
 const Team = () => {
   return (

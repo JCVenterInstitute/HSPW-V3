@@ -1,7 +1,7 @@
 import React from "react";
 
 import CitationTable from "../../components/CitationTable";
-import main_feature from "../../components/hero.jpeg";
+import main_feature from "../../assets/hero.jpeg";
 import "../style.css";
 
 const CitationPage = () => {

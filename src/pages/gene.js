@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Gene_table from "../components/gene_table";
-import gene_chart from "../components/gene_chart.png";
+
 import Chart from "react-google-charts";
-import main_feature from "../components/hero.jpeg";
-import { Element } from "react-faux-dom";
-import * as d3 from "d3";
+import main_feature from "../assets/hero.jpeg";
+
 export const data = [
   ["Chromosome", "count"],
   ["1", 973],

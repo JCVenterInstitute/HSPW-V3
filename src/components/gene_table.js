@@ -25,13 +25,18 @@ import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import { ReactComponent as Download_Logo } from "./table_icon/download.svg";
-import { ReactComponent as Left_Arrow } from "./table_icon/left_arrow.svg";
-import { ReactComponent as Right_Arrow } from "./table_icon/right_arrow.svg";
-import { ReactComponent as Search } from "./table_icon/search.svg";
+import { ReactComponent as Download_Logo } from "../assets/table-icon/download.svg";
+import { ReactComponent as Left_Arrow } from "../assets/table-icon/left_arrow.svg";
+import { ReactComponent as Right_Arrow } from "../assets/table-icon/right_arrow.svg";
+import { ReactComponent as Search } from "../assets/table-icon/search.svg";
 
 const Accordion = styled((props) => (
-  <MuiAccordion disableGutters elevation={0} square {...props} />
+  <MuiAccordion
+    disableGutters
+    elevation={0}
+    square
+    {...props}
+  />
 ))(({ theme }) => ({
   marginBottom: "15px",
   "&:not(:last-child)": {
@@ -164,7 +169,10 @@ function App() {
           i++
         ) {
           newOptions.push(
-            <option key={i} value={i}>
+            <option
+              key={i}
+              value={i}
+            >
               {i}
             </option>
           );
@@ -191,7 +199,10 @@ function App() {
           i++
         ) {
           newOptions.push(
-            <option key={i} value={i}>
+            <option
+              key={i}
+              value={i}
+            >
               {i + 1}
             </option>
           );
@@ -218,7 +229,10 @@ function App() {
         const newOptions = [];
         for (let i = 1; i <= Math.round(value.total.value / pageSize); i++) {
           newOptions.push(
-            <option key={i} value={i}>
+            <option
+              key={i}
+              value={i}
+            >
               {i}
             </option>
           );
@@ -252,7 +266,10 @@ function App() {
       const newOptions = [];
       for (let i = 1; i <= Math.round(value.total.value / pageSize); i++) {
         newOptions.push(
-          <option key={i} value={i}>
+          <option
+            key={i}
+            value={i}
+          >
             {i}
           </option>
         );
@@ -825,7 +842,10 @@ function App() {
             </Accordion>
           </div>
         </Box>
-        <Container maxWidth="xl" sx={{ marginTop: "30px" }}>
+        <Container
+          maxWidth="xl"
+          sx={{ marginTop: "30px" }}
+        >
           <Box sx={{ display: "flex" }}>
             <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
               <TextField
@@ -917,7 +937,10 @@ function App() {
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
               >
                 {recordsPerPageList.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
+                  <MenuItem
+                    key={option.value}
+                    value={option.value}
+                  >
                     {option.label}
                   </MenuItem>
                 ))}
@@ -949,7 +972,10 @@ function App() {
                 {Array.from(
                   { length: Math.ceil(docCount / pageSize) },
                   (_, index) => (
-                    <MenuItem key={index + 1} value={index + 1}>
+                    <MenuItem
+                      key={index + 1}
+                      value={index + 1}
+                    >
                       {index + 1}
                     </MenuItem>
                   )

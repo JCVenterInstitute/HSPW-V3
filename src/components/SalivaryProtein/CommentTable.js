@@ -15,7 +15,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import { ReactComponent as Download_Logo } from "../table_icon/download.svg";
+import { ReactComponent as Download_Logo } from "../../assets/table-icon/download.svg";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -243,7 +243,10 @@ function Comment_Table(props) {
         const ids = Array.isArray(params.value) ? params.value : "";
         const links = ids.map((id, index) => (
           <React.Fragment key={index}>
-            <a href={`${id}`} target="_blank">
+            <a
+              href={`${id}`}
+              target="_blank"
+            >
               {id}
             </a>
             {index < ids.length - 1 && <br />}{" "}
@@ -364,7 +367,10 @@ function Comment_Table(props) {
 
   return (
     <>
-      <Container maxWidth="xl" sx={{ margin: "30px 0 30px 20px" }}>
+      <Container
+        maxWidth="xl"
+        sx={{ margin: "30px 0 30px 20px" }}
+      >
         <Box sx={{ display: "flex" }}>
           <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
             <TextField
@@ -451,7 +457,10 @@ function Comment_Table(props) {
               sx={{ marginLeft: "10px", marginRight: "30px" }}
             >
               {recordsPerPageList.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
+                <MenuItem
+                  key={option.value}
+                  value={option.value}
+                >
                   {option.label}
                 </MenuItem>
               ))}
@@ -484,7 +493,10 @@ function Comment_Table(props) {
               {Array.from(
                 { length: Math.ceil(docCount / pageSize) },
                 (_, index) => (
-                  <MenuItem key={index + 1} value={index + 1}>
+                  <MenuItem
+                    key={index + 1}
+                    value={index + 1}
+                  >
                     {index + 1}
                   </MenuItem>
                 )

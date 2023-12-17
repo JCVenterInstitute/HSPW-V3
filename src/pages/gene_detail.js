@@ -7,7 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useEffect, useState } from "react";
-import main_feature from "../components/hero.jpeg";
+import main_feature from "../assets/hero.jpeg";
 import { useParams } from "react-router";
 
 const th = {

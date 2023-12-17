@@ -1,5 +1,5 @@
 import { AppBar, Toolbar, Stack, Button, MenuItem, Box } from "@mui/material";
-import logo from "../components/hspwLogo.png";
+import logo from "../assets/hspw-logo.png";
 import React from "react";
 import PopupState from "material-ui-popup-state";
 import { bindHover, bindMenu } from "material-ui-popup-state/hooks";
@@ -222,7 +222,7 @@ export const NavBar = () => {
                   </MenuItem>
                   <MenuItem
                     component="a"
-                    href="/download"
+                    href="/team"
                   >
                     Team
                   </MenuItem>

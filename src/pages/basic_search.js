@@ -1,6 +1,6 @@
 import React, { Component, useRef, useEffect, useState } from "react";
 import { render } from "react-dom";
-import main_feature from "../components/hero.jpeg";
+import main_feature from "../assets/hero.jpeg";
 import Select from "react-select";
 
 class BasicSearch extends Component {
@@ -170,10 +170,17 @@ class BasicSearch extends Component {
         ></input>
         <form onSubmit={this.handleSubmit}>
           <div className="button-section">
-            <button className="button add" type="button" onClick={this.add1}>
+            <button
+              className="button add"
+              type="button"
+              onClick={this.add1}
+            >
               Add
             </button>
-            <button className="button submit" type="submit">
+            <button
+              className="button submit"
+              type="submit"
+            >
               Submit
             </button>
           </div>
@@ -226,13 +233,25 @@ class BasicSearch extends Component {
             <thead style={{ marginBottom: "20px", marginTop: "20px" }}>
               <tr>
                 <th width="5%"></th>
-                <th scope="col" width="25%" style={{ textAlign: "left" }}>
+                <th
+                  scope="col"
+                  width="25%"
+                  style={{ textAlign: "left" }}
+                >
                   Property
                 </th>
-                <th scope="col" width="25%" style={{ textAlign: "left" }}>
+                <th
+                  scope="col"
+                  width="25%"
+                  style={{ textAlign: "left" }}
+                >
                   Operation
                 </th>
-                <th scope="col" width="25%" style={{ textAlign: "left" }}>
+                <th
+                  scope="col"
+                  width="25%"
+                  style={{ textAlign: "left" }}
+                >
                   Value
                 </th>
               </tr>
@@ -249,7 +268,10 @@ class BasicSearch extends Component {
                       whiteSpace: "nowrap",
                     }}
                   />
-                  <th scope="row" style={{ width: "64px" }} />
+                  <th
+                    scope="row"
+                    style={{ width: "64px" }}
+                  />
                 </div>
                 <div className="second-division"></div>
               </div>
@@ -263,7 +285,10 @@ class BasicSearch extends Component {
                   whiteSpace: "nowrap",
                 }}
               >
-                <th scope="row" style={{ width: "64px" }}>
+                <th
+                  scope="row"
+                  style={{ width: "64px" }}
+                >
                   <input
                     type="submit"
                     value="+"
@@ -284,14 +309,20 @@ class BasicSearch extends Component {
                     />
                   ) : null}
                   {this.state.categories === "protein_cluster" ? (
-                    <select name="displayAll" style={{ width: "100%" }}>
+                    <select
+                      name="displayAll"
+                      style={{ width: "100%" }}
+                    >
                       <option value=""></option>
                       <option value="all">Has member</option>
                       <option value="gene">Represented by</option>
                     </select>
                   ) : null}
                   {this.state.categories === "protein_signature" ? (
-                    <select name="displayAll" style={{ width: "100%" }}>
+                    <select
+                      name="displayAll"
+                      style={{ width: "100%" }}
+                    >
                       <option value=""></option>
                       <option value="all">Cites</option>
                       <option value="gene">Has accession number</option>
@@ -306,7 +337,10 @@ class BasicSearch extends Component {
                     </select>
                   ) : null}
                   {this.state.categories === "publication" ? (
-                    <select name="displayAll" style={{ width: "100%" }}>
+                    <select
+                      name="displayAll"
+                      style={{ width: "100%" }}
+                    >
                       <option value=""></option>
                       <option value="all">Authored by</option>
                       <option value="gene">Has MeSH heading</option>
@@ -319,7 +353,10 @@ class BasicSearch extends Component {
                     </select>
                   ) : null}
                   {this.state.categories === "sequence" ? (
-                    <select name="displayAll" style={{ width: "100%" }}>
+                    <select
+                      name="displayAll"
+                      style={{ width: "100%" }}
+                    >
                       <option value=""></option>
                       <option value="all">Has accession number</option>
                       <option value="gene">Has hit count</option>
@@ -340,7 +377,10 @@ class BasicSearch extends Component {
                     </select>
                   ) : null}
                 </td>
-                <td name="displayOp" value={this.stateoperation}>
+                <td
+                  name="displayOp"
+                  value={this.stateoperation}
+                >
                   <select
                     name="displayOp"
                     style={{ width: "100%", minHeight: "23px" }}
@@ -363,7 +403,11 @@ class BasicSearch extends Component {
                   <td class="value no-val">(No need to specify value)</td>
                 ) : (
                   <td class="value editable">
-                    <input id="2[0]" name="2[0]" placeholder="Text" />
+                    <input
+                      id="2[0]"
+                      name="2[0]"
+                      placeholder="Text"
+                    />
                   </td>
                 )}
               </tr>
@@ -387,7 +431,12 @@ class BasicSearch extends Component {
                   items,
                   <label>
                     starting at{" "}
-                    <input name="offset" type="text" value="0" size="4" />
+                    <input
+                      name="offset"
+                      type="text"
+                      value="0"
+                      size="4"
+                    />
                   </label>
                 </td>
                 <td style={{ textAlign: "right", display: "table-cell" }}>
@@ -434,7 +483,10 @@ class BasicSearch extends Component {
             value="Submit Query"
             style={{ margin: "10px" }}
           ></input>
-          <input type="reset" value="Reset"></input>
+          <input
+            type="reset"
+            value="Reset"
+          ></input>
         </form>
       </div>
     );

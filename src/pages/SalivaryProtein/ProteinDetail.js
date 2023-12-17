@@ -20,7 +20,7 @@ import "resize-observer-polyfill";
 import BChart from "../../components/SalivaryProtein/TwoSidedBarChart";
 import CommentTable from "../../components/SalivaryProtein/CommentTable";
 import GlycanTable from "../../components/SalivaryProtein/GlycanTable";
-import main_feature from "../../components/hero.jpeg";
+import main_feature from "../../assets/hero.jpeg";
 import "../style.css";
 
 window.customElements.define("protvista-uniprot", ProtvistaUniprot);

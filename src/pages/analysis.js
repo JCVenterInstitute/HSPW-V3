@@ -1,19 +1,13 @@
 import React from "react";
-import { StyledEngineProvider } from "@mui/material/styles";
-import AgGrid from "../components/Download/DownloadTable.js";
-import DonutChart from "../components/donutChart.js";
-import BarChart from "../components/barChart.js";
-import "./style.css";
-import { components } from "react-select";
-import { default as ReactSelect } from "react-select";
-import DonutChart_google from "../components/donutChart_google.tsx";
-import BarChart_google from "../components/barChart_google.tsx";
-import Analysis_Filter from "../components/analysis_filter.js";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import { components } from "react-select";
 import "react-tabs/style/react-tabs.css";
-import Table from "../components/csv_to_json_table.js";
-import heatmap from "./top100var_heatmap_626170.png";
 import { saveAs } from "file-saver";
+
+import Analysis_Filter from "../components/analysis_filter.js";
+import Table from "../components/csv_to_json_table.js";
+import heatmap from "../assets/top100var_heatmap_626170.png";
+import "./style.css";
 
 const Option = (props) => {
   return (
@@ -239,7 +233,10 @@ const Analysis = () => {
                 marginTop: "2rem",
               }}
             >
-              <button onClick={downloadImage} style={{ width: "10em" }}>
+              <button
+                onClick={downloadImage}
+                style={{ width: "10em" }}
+              >
                 Export
               </button>
             </div>

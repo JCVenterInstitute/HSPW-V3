@@ -9,7 +9,7 @@ import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import main_feature from "../../components/hero.jpeg";
+import main_feature from "../../assets/hero.jpeg";
 import { Paper } from "@mui/material";
 import FontAwesome from "react-fontawesome";
 
@@ -142,7 +142,10 @@ const GoNode = () => {
         }}
         className="head_background"
       >
-        <h1 className="head_title" align="left">
+        <h1
+          className="head_title"
+          align="left"
+        >
           Go Terms: {data[0]["_source"]["id"]}
         </h1>
         <p
@@ -169,15 +172,24 @@ const GoNode = () => {
       >
         <TableBody>
           <TableRow>
-            <TableCell variant="head" sx={th_first_row}>
+            <TableCell
+              variant="head"
+              sx={th_first_row}
+            >
               Term Name
             </TableCell>
-            <TableCell variant="head" sx={td_first_row}>
+            <TableCell
+              variant="head"
+              sx={td_first_row}
+            >
               {data[0]["_source"]["lbl"]}
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell variant="head" sx={th}>
+            <TableCell
+              variant="head"
+              sx={th}
+            >
               Description
             </TableCell>
             <TableCell sx={td}>
@@ -185,7 +197,10 @@ const GoNode = () => {
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell variant="head" sx={th}>
+            <TableCell
+              variant="head"
+              sx={th}
+            >
               Has Obo Namespace
             </TableCell>
             <TableCell sx={td}>
@@ -193,7 +208,10 @@ const GoNode = () => {
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell variant="head" sx={th}>
+            <TableCell
+              variant="head"
+              sx={th}
+            >
               Synonyms
             </TableCell>
             <TableCell sx={td}>
@@ -207,7 +225,10 @@ const GoNode = () => {
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell variant="head" sx={th}>
+            <TableCell
+              variant="head"
+              sx={th}
+            >
               Link
             </TableCell>
             <TableCell sx={td}>
@@ -229,7 +250,10 @@ const GoNode = () => {
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell variant="head" sx={th}>
+            <TableCell
+              variant="head"
+              sx={th}
+            >
               Usage
             </TableCell>
             <TableCell sx={td}>
@@ -262,17 +286,29 @@ const GoNode = () => {
         <TableBody>
           <TableRow>
             {parentData.length !== 0 ? (
-              <TableCell variant="head" sx={th_first_row} align="center">
+              <TableCell
+                variant="head"
+                sx={th_first_row}
+                align="center"
+              >
                 Parents ({parentData.length})
               </TableCell>
             ) : null}
             {siblingData.length !== 0 ? (
-              <TableCell variant="head" sx={th} align="center">
+              <TableCell
+                variant="head"
+                sx={th}
+                align="center"
+              >
                 Siblings ({siblingData.length})
               </TableCell>
             ) : null}
             {childrenData.length !== 0 ? (
-              <TableCell variant="head" sx={th} align="center">
+              <TableCell
+                variant="head"
+                sx={th}
+                align="center"
+              >
                 Children ({childrenData.length})
               </TableCell>
             ) : null}
@@ -282,7 +318,10 @@ const GoNode = () => {
               <TableCell sx={td}>
                 <ul style={{ marginLeft: "40px" }}>
                   {parentData.map((val, index) => (
-                    <li key={index} style={{ margin: "5px" }}>
+                    <li
+                      key={index}
+                      style={{ margin: "5px" }}
+                    >
                       <a href={"http://localhost:3000/GoNodes/" + val.obj}>
                         {val.obj}
                       </a>
@@ -295,7 +334,10 @@ const GoNode = () => {
               <TableCell sx={td}>
                 <ul style={{ marginLeft: "40px" }}>
                   {siblingData.map((val, index) => (
-                    <li key={index} style={{ margin: "5px" }}>
+                    <li
+                      key={index}
+                      style={{ margin: "5px" }}
+                    >
                       <a href={"http://localhost:3000/GoNodes/" + val.obj}>
                         {val.obj}
                       </a>
@@ -308,7 +350,10 @@ const GoNode = () => {
               <TableCell sx={td}>
                 <ul style={{ marginLeft: "40px" }}>
                   {childrenData.map((val, index) => (
-                    <li key={index} style={{ margin: "5px" }}>
+                    <li
+                      key={index}
+                      style={{ margin: "5px" }}
+                    >
                       <a href={"http://localhost:3000/GoNodes/" + val.sub}>
                         {val.sub}
                       </a>

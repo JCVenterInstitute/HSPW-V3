@@ -27,7 +27,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
-import { ReactComponent as DownloadLogo } from "./table_icon/download.svg";
+import { ReactComponent as DownloadLogo } from "../assets/table-icon/download.svg";
 import "./filter.css";
 
 // TODO: Move

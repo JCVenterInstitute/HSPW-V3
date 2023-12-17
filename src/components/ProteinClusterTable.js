@@ -27,7 +27,7 @@ import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AgGridReact } from "ag-grid-react";
 
-import { ReactComponent as DownloadLogo } from "./table_icon/download.svg";
+import { ReactComponent as DownloadLogo } from "../assets/table-icon/download.svg";
 import CustomLoadingOverlay from "./customLoadingOverlay.jsx";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";

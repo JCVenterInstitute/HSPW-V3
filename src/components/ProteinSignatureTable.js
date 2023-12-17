@@ -27,7 +27,7 @@ import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import { styled } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
-import { ReactComponent as DownloadLogo } from "./table_icon/download.svg";
+import { ReactComponent as DownloadLogo } from "../assets/table-icon/download.svg";
 import "./filter.css";
 import "./table.css";
 

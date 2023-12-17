@@ -8,7 +8,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useParams } from "react-router";
-import main_feature from "../../components/hero.jpeg";
+import main_feature from "../../assets/hero.jpeg";
 const th = {
   background: "#f2f2f2",
   textAlign: "center",
@@ -242,7 +242,10 @@ const Citation_detail = (props) => {
         }}
         className="head_background"
       >
-        <h1 className="head_title" align="left">
+        <h1
+          className="head_title"
+          align="left"
+        >
           Publication: PubMed: {params["citationid"]}
         </h1>
       </div>

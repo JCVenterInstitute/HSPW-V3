@@ -3,7 +3,7 @@ import DownloadTable from "../../components/Download/DownloadTable.js";
 import "../style.css";
 import { components } from "react-select";
 
-import main_feature from "../page_main.png";
+import main_feature from "../../assets/page-main.png";
 
 const Option = (props) => {
   return (

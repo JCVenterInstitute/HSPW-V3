@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect, useRef } from "react";
 import { useState } from "react";
-import main_feature from "../../components/hero.jpeg";
+import main_feature from "../../assets/hero.jpeg";
 import {
   Typography,
   Container,

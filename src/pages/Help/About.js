@@ -1,5 +1,5 @@
 import React from "react";
-import main_feature from "../../components/hero.jpeg";
+import main_feature from "../../assets/hero.jpeg";
 import { Typography, Container } from "@mui/material";
 
 const About = () => {

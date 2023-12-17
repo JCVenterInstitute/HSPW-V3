@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import main_feature from "../../components/hero.jpeg";
+import main_feature from "../../assets/hero.jpeg";
 import {
   Typography,
   Container,
@@ -182,17 +182,26 @@ const ClustalOmegaResults = () => {
         </p>
       </div>
       <Container>
-        <Typography variant="h5" sx={{ mt: 3, mb: 2, color: "black" }}>
+        <Typography
+          variant="h5"
+          sx={{ mt: 3, mb: 2, color: "black" }}
+        >
           Results for job {jobId}
         </Typography>
       </Container>
       {!isFinished ? (
         <Container>
-          <Typography variant="h5" sx={{ mt: 3, color: "#1463B9" }}>
+          <Typography
+            variant="h5"
+            sx={{ mt: 3, color: "#1463B9" }}
+          >
             Your job is now queued and will be running shortly... please be
             patient!
           </Typography>
-          <Typography variant="h6" sx={{ mt: 3, color: "#1463B9" }}>
+          <Typography
+            variant="h6"
+            sx={{ mt: 3, color: "#1463B9" }}
+          >
             Your result of your job will appear in this browser window.
           </Typography>
         </Container>
@@ -252,7 +261,10 @@ const ClustalOmegaResults = () => {
                   >
                     <Paper elevation={4}>
                       <List>
-                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
+                        <ListItem
+                          sx={{ pl: 1, pt: 0, pb: 0 }}
+                          divider
+                        >
                           <ListItemText
                             primary={
                               <Typography
@@ -275,7 +287,10 @@ const ClustalOmegaResults = () => {
                     </Paper>
                     <Paper elevation={4}>
                       <List>
-                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
+                        <ListItem
+                          sx={{ pl: 1, pt: 0, pb: 0 }}
+                          divider
+                        >
                           <ListItemText
                             primary={
                               <Typography
@@ -298,7 +313,10 @@ const ClustalOmegaResults = () => {
                     </Paper>
                     <Paper elevation={4}>
                       <List>
-                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
+                        <ListItem
+                          sx={{ pl: 1, pt: 0, pb: 0 }}
+                          divider
+                        >
                           <ListItemText
                             primary={
                               <Typography
@@ -327,7 +345,10 @@ const ClustalOmegaResults = () => {
                   >
                     <Paper elevation={4}>
                       <List>
-                        <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
+                        <ListItem
+                          sx={{ pl: 1, pt: 0, pb: 0 }}
+                          divider
+                        >
                           <ListItemText
                             primary={
                               <Typography
@@ -352,7 +373,10 @@ const ClustalOmegaResults = () => {
                             }
                           />
                         </ListItem>
-                        <ListItem sx={{ pl: 1, pt: 0, pb: 0, mt: 2 }} divider>
+                        <ListItem
+                          sx={{ pl: 1, pt: 0, pb: 0, mt: 2 }}
+                          divider
+                        >
                           <ListItemText
                             primary={
                               <Typography
@@ -437,7 +461,10 @@ const ClustalOmegaResults = () => {
                           .slice(0, -1)
                           .map((parameter, index) => (
                             <React.Fragment key={index}>
-                              <ListItem sx={{ pl: 1, pt: 0, pb: 0 }} divider>
+                              <ListItem
+                                sx={{ pl: 1, pt: 0, pb: 0 }}
+                                divider
+                              >
                                 <ListItemText
                                   primary={
                                     <Typography

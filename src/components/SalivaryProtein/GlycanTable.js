@@ -6,10 +6,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import { ReactComponent as Download_Logo } from "../table_icon/download.svg";
-import { ReactComponent as Left_Arrow } from "../table_icon/left_arrow.svg";
-import { ReactComponent as Right_Arrow } from "../table_icon/right_arrow.svg";
-import { ReactComponent as Search } from "../table_icon/search.svg";
+import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 import FontAwesome from "react-fontawesome";
 import {
   Container,
@@ -51,9 +48,18 @@ function Glycan_Table(props) {
     data1.push(message[i]["_source"]);
   }
 
-  const ImageRenderer = ({ value }) => <img src={value} alt="Glygen" />;
+  const ImageRenderer = ({ value }) => (
+    <img
+      src={value}
+      alt="Glygen"
+    />
+  );
   const LinkRenderer = ({ value }) => (
-    <a target="_blank" rel="noopener noreferrer" href={value}>
+    <a
+      target="_blank"
+      rel="noopener noreferrer"
+      href={value}
+    >
       {value}
     </a>
   );
@@ -257,7 +263,10 @@ function Glycan_Table(props) {
 
   return (
     <>
-      <Container maxWidth="xl" sx={{ margin: "30px 0 30px 20px" }}>
+      <Container
+        maxWidth="xl"
+        sx={{ margin: "30px 0 30px 20px" }}
+      >
         <Box sx={{ display: "flex" }}>
           <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
             <TextField
@@ -344,7 +353,10 @@ function Glycan_Table(props) {
               sx={{ marginLeft: "10px", marginRight: "30px" }}
             >
               {recordsPerPageList.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
+                <MenuItem
+                  key={option.value}
+                  value={option.value}
+                >
                   {option.label}
                 </MenuItem>
               ))}
@@ -377,7 +389,10 @@ function Glycan_Table(props) {
               {Array.from(
                 { length: Math.ceil(docCount / pageSize) },
                 (_, index) => (
-                  <MenuItem key={index + 1} value={index + 1}>
+                  <MenuItem
+                    key={index + 1}
+                    value={index + 1}
+                  >
                     {index + 1}
                   </MenuItem>
                 )
@@ -495,7 +510,7 @@ function Glycan_Table(props) {
           cursor: "pointer",
         }}
       >
-        <Download_Logo
+        <DownloadLogo
           style={{
             marginRight: "10px",
             paddingTop: "5px",

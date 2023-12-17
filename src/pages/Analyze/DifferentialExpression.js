@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
-import main_feature from "../../components/hero.jpeg";
+import main_feature from "../../assets/hero.jpeg";
 import {
   Container,
   TextField,
@@ -49,7 +49,12 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const Accordion = styled((props) => (
-  <MuiAccordion disableGutters elevation={0} square {...props} />
+  <MuiAccordion
+    disableGutters
+    elevation={0}
+    square
+    {...props}
+  />
 ))(({ theme }) => ({
   marginBottom: "15px",
   "&:not(:last-child)": {
@@ -886,7 +891,10 @@ const DifferentialExpression = () => {
             );
           })}
         </Box>
-        <Container maxWidth="xl" sx={{ margin: "30px 0 30px 20px" }}>
+        <Container
+          maxWidth="xl"
+          sx={{ margin: "30px 0 30px 20px" }}
+        >
           <Box sx={{ display: "flex" }}>
             <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
               <TextField
@@ -975,7 +983,10 @@ const DifferentialExpression = () => {
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
               >
                 {recordsPerPageList.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
+                  <MenuItem
+                    key={option.value}
+                    value={option.value}
+                  >
                     {option.label}
                   </MenuItem>
                 ))}
@@ -1006,7 +1017,10 @@ const DifferentialExpression = () => {
                 }}
               >
                 {Array.from({ length: totalPageNumber }, (_, index) => (
-                  <MenuItem key={index + 1} value={index + 1}>
+                  <MenuItem
+                    key={index + 1}
+                    value={index + 1}
+                  >
                     {index + 1}
                   </MenuItem>
                 ))}
@@ -1118,14 +1132,29 @@ const DifferentialExpression = () => {
               ></AgGridReact>
             </div>
           </Box>
-          <Grid container spacing={8}>
-            <Grid item xs={6}>
+          <Grid
+            container
+            spacing={8}
+          >
+            <Grid
+              item
+              xs={6}
+            >
               <Box sx={{ m: 4, justifyContent: "center", display: "center" }}>
-                <Stack direction="row" spacing={5}>
-                  <Button variant="contained" onClick={handleAddGroupA}>
+                <Stack
+                  direction="row"
+                  spacing={5}
+                >
+                  <Button
+                    variant="contained"
+                    onClick={handleAddGroupA}
+                  >
                     Add
                   </Button>
-                  <Button variant="outlined" onClick={handleDeleteGroupA}>
+                  <Button
+                    variant="outlined"
+                    onClick={handleDeleteGroupA}
+                  >
                     Delete
                   </Button>
                 </Stack>
@@ -1153,13 +1182,25 @@ const DifferentialExpression = () => {
                 ></AgGridReact>
               </div>
             </Grid>
-            <Grid item xs={6}>
+            <Grid
+              item
+              xs={6}
+            >
               <Box sx={{ m: 4, justifyContent: "center", display: "center" }}>
-                <Stack direction="row" spacing={5}>
-                  <Button variant="contained" onClick={handleAddGroupB}>
+                <Stack
+                  direction="row"
+                  spacing={5}
+                >
+                  <Button
+                    variant="contained"
+                    onClick={handleAddGroupB}
+                  >
                     Add
                   </Button>
-                  <Button variant="outlined" onClick={handleDeleteGroupB}>
+                  <Button
+                    variant="outlined"
+                    onClick={handleDeleteGroupB}
+                  >
                     Delete
                   </Button>
                 </Stack>
@@ -1329,7 +1370,10 @@ const DifferentialExpression = () => {
             }}
           ></div>
           <Box>
-            <Typography variant="h5" sx={{ fontFamily: "Lato" }}>
+            <Typography
+              variant="h5"
+              sx={{ fontFamily: "Lato" }}
+            >
               ANALYSIS OPTIONS
             </Typography>
             <Box>
@@ -1475,7 +1519,11 @@ const DifferentialExpression = () => {
                 Wilcoxon Signed-rank Test
               </Typography>
             </Box>
-            <Button variant="contained" sx={{ mt: 5 }} onClick={handleAnalyze}>
+            <Button
+              variant="contained"
+              sx={{ mt: 5 }}
+              onClick={handleAnalyze}
+            >
               ANALYZE
             </Button>
           </Box>
