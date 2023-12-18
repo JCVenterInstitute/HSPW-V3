@@ -19,7 +19,6 @@ import SelectAllTransferList from "../../components/Search/SelectAllTransferList
 import CircleCheckedFilled from "@mui/icons-material/CheckCircle";
 import CircleUnchecked from "@mui/icons-material/RadioButtonUnchecked";
 import SearchResultsTable from "../../components/Search/SearchResultsTable";
-import AnnotationsSearchResultsTable from "../../components/Search/AnnotationsSearchResultsTable";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { AgGridReact } from "ag-grid-react";
