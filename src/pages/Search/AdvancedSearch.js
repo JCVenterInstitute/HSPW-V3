@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import { useState } from "react";
 import main_feature from "../../assets/hero.jpeg";
 import {
@@ -302,14 +302,19 @@ const AdvancedSearch = () => {
 
       if (e.target.value === "Genes") {
         propertyList = propertyList.filter((item) => item !== "GeneID");
+        setSelectedProperties(["GeneID"]);
       } else if (e.target.value === "Protein Clusters") {
         propertyList = propertyList.filter((item) => item !== "uniprot_id");
+        setSelectedProperties(["uniprot_id"]);
       } else if (e.target.value === "Protein Signatures") {
         propertyList = propertyList.filter((item) => item !== "InterPro ID");
+        setSelectedProperties(["InterPro ID"]);
       } else if (e.target.value === "Proteins") {
         propertyList = propertyList.filter((item) => item !== "Uniprot_id");
+        setSelectedProperties(["Uniprot_id"]);
       } else if (e.target.value === "PubMed Citations") {
         propertyList = propertyList.filter((item) => item !== "CitationID");
+        setSelectedProperties(["CitationID"]);
       } else if (
         e.target.value === "Salivary Proteins" ||
         e.target.value === "Annotations"
@@ -317,6 +322,7 @@ const AdvancedSearch = () => {
         propertyList = propertyList.filter(
           (item) => item !== "uniprot_accession"
         );
+        setSelectedProperties(["uniprot_accession"]);
       }
       setProperties(propertyList);
 
@@ -793,6 +799,7 @@ const AdvancedSearch = () => {
           {properties.length !== 0 ? (
             <SelectAllTransferList
               properties={properties}
+              selectedProperties={selectedProperties}
               onSelectedPropertiesChange={handleSelectedPropertiesChange}
             />
           ) : (

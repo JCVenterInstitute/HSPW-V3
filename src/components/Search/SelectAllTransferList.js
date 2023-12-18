@@ -28,11 +28,12 @@ function union(a, b) {
 
 export default function SelectAllTransferList({
   properties,
+  selectedProperties,
   onSelectedPropertiesChange,
 }) {
   const [checked, setChecked] = useState([]);
   const [left, setLeft] = useState(properties);
-  const [right, setRight] = useState([]);
+  const [right, setRight] = useState(selectedProperties);
   const [leftSearch, setLeftSearch] = useState("");
   const [rightSearch, setRightSearch] = useState("");
 
@@ -57,7 +58,7 @@ export default function SelectAllTransferList({
 
   useEffect(() => {
     setLeft(properties);
-    setRight([]);
+    setRight(selectedProperties);
   }, [properties]);
 
   useEffect(() => {
@@ -66,6 +67,9 @@ export default function SelectAllTransferList({
   }, [right, onSelectedPropertiesChange]);
 
   const handleToggle = (value) => () => {
+    if (isCheckboxDisabled("right", value)) {
+      return;
+    }
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
 
@@ -80,11 +84,16 @@ export default function SelectAllTransferList({
 
   const numberOfChecked = (items) => intersection(checked, items).length;
 
-  const handleToggleAll = (items) => () => {
-    if (numberOfChecked(items) === items.length) {
-      setChecked(not(checked, items));
+  const handleToggleAll = (items, option) => () => {
+    const nonDisabledItems = items.filter(
+      (item) => !isCheckboxDisabled(option, item)
+    );
+    const nonDisabledChecked = intersection(checked, nonDisabledItems);
+
+    if (nonDisabledChecked.length === nonDisabledItems.length) {
+      setChecked(not(checked, nonDisabledItems));
     } else {
-      setChecked(union(checked, items));
+      setChecked(union(checked, nonDisabledItems));
     }
   };
 
@@ -114,13 +123,29 @@ export default function SelectAllTransferList({
     setChecked(not(checked, rightChecked));
   };
 
-  const customList = (title, items) => (
-    <Card elevation={4} sx={{ mb: 2 }}>
+  // Utility function to check if the checkbox should be disabled
+  const isCheckboxDisabled = (option, value) => {
+    const disabledValues = [
+      "GeneID",
+      "uniprot_id",
+      "InterPro ID",
+      "Uniprot_id",
+      "CitationID",
+      "uniprot_accession",
+    ];
+    return option === "right" && disabledValues.includes(value);
+  };
+
+  const customList = (title, items, option = "left") => (
+    <Card
+      elevation={4}
+      sx={{ mb: 2 }}
+    >
       <CardHeader
         sx={{ px: 2, py: 1 }}
         avatar={
           <Checkbox
-            onClick={handleToggleAll(items)}
+            onClick={handleToggleAll(items, option)}
             checked={
               numberOfChecked(items) === items.length && items.length !== 0
             }
@@ -152,6 +177,33 @@ export default function SelectAllTransferList({
         {items.map((value) => {
           const labelId = `transfer-list-all-item-${value}-label`;
 
+          if (isCheckboxDisabled(option, value)) {
+            return (
+              <ListItem
+                key={value}
+                role="listitem"
+                button
+                onClick={handleToggle(value)}
+              >
+                <ListItemIcon>
+                  <Checkbox
+                    tabIndex={-1}
+                    disableRipple
+                    inputProps={{
+                      "aria-labelledby": labelId,
+                    }}
+                    disabled
+                    checked
+                  />
+                </ListItemIcon>
+                <ListItemText
+                  id={labelId}
+                  primary={value}
+                  primaryTypographyProps={{ fontSize: "1rem" }}
+                />
+              </ListItem>
+            );
+          }
           return (
             <ListItem
               key={value}
@@ -190,7 +242,10 @@ export default function SelectAllTransferList({
         alignItems="center"
         sx={{ mb: 1 }}
       >
-        <Grid item xs={5.5}>
+        <Grid
+          item
+          xs={5.5}
+        >
           <Typography
             variant="h6"
             sx={{ fontFamily: "Lato", textAlign: "center" }}
@@ -198,8 +253,14 @@ export default function SelectAllTransferList({
             Available
           </Typography>
         </Grid>
-        <Grid item xs={1}></Grid>
-        <Grid item xs={5.5}>
+        <Grid
+          item
+          xs={1}
+        ></Grid>
+        <Grid
+          item
+          xs={5.5}
+        >
           <Typography
             variant="h6"
             sx={{ fontFamily: "Lato", textAlign: "center" }}
@@ -215,12 +276,18 @@ export default function SelectAllTransferList({
         alignItems="center"
         sx={{ mb: 1 }}
       >
-        <Grid item xs={5.5}>
+        <Grid
+          item
+          xs={5.5}
+        >
           <Autocomplete
             options={left}
             getOptionLabel={(option) => option}
             renderInput={(params) => (
-              <TextField {...params} label="Search..." />
+              <TextField
+                {...params}
+                label="Search..."
+              />
             )}
             onInputChange={(event, newInputValue) => {
               setLeftSearch(newInputValue);
@@ -230,13 +297,22 @@ export default function SelectAllTransferList({
             open={false}
           />
         </Grid>
-        <Grid item xs={1}></Grid>
-        <Grid item xs={5.5}>
+        <Grid
+          item
+          xs={1}
+        ></Grid>
+        <Grid
+          item
+          xs={5.5}
+        >
           <Autocomplete
             options={right}
             getOptionLabel={(option) => option}
             renderInput={(params) => (
-              <TextField {...params} label="Search..." />
+              <TextField
+                {...params}
+                label="Search..."
+              />
             )}
             onInputChange={(event, newInputValue) => {
               setRightSearch(newInputValue);
@@ -247,12 +323,27 @@ export default function SelectAllTransferList({
           />
         </Grid>
       </Grid>
-      <Grid container spacing={2} justifyContent="center" alignItems="center">
-        <Grid item xs={5.5}>
+      <Grid
+        container
+        spacing={2}
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Grid
+          item
+          xs={5.5}
+        >
           {customList("Select All", filteredLeft)}
         </Grid>
-        <Grid item xs={1}>
-          <Grid container direction="column" alignItems="center">
+        <Grid
+          item
+          xs={1}
+        >
+          <Grid
+            container
+            direction="column"
+            alignItems="center"
+          >
             <Button
               sx={{ my: 0.5 }}
               variant="outlined"
@@ -275,8 +366,11 @@ export default function SelectAllTransferList({
             </Button>
           </Grid>
         </Grid>
-        <Grid item xs={5.5}>
-          {customList("Select All", filteredRight)}
+        <Grid
+          item
+          xs={5.5}
+        >
+          {customList("Select All", filteredRight, "right")}
         </Grid>
       </Grid>
     </>
