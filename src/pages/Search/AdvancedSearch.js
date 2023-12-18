@@ -627,7 +627,8 @@ const AdvancedSearch = () => {
                     {row.selectedProperty === "number_of_members" ||
                     row.selectedProperty === "experiment_id_key" ||
                     row.selectedProperty === "mass" ||
-                    row.selectedProperty === "protein_sequence_length"
+                    row.selectedProperty === "protein_sequence_length" ||
+                    row.selectedProperty === "PubMed_ID"
                       ? numericOperations.map((operation) => (
                           <MenuItem
                             key={operation}
