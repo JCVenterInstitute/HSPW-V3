@@ -43,49 +43,75 @@ const generateColumnDefs = (entity, data) => {
   } else if (entity === "Protein Signatures") {
     fields = fields.filter((field) => field !== "InterPro ID");
     fields.unshift("InterPro ID");
+  } else if (entity === "Proteins") {
+    fields = fields.filter((field) => field !== "Uniprot_id");
+    fields.unshift("Uniprot_id");
   } else if (entity === "PubMed Citations") {
     fields = fields.filter((field) => field !== "CitationID");
     fields.unshift("CitationID");
-  } else if (entity === "Salivary Proteins") {
+  } else if (entity === "Salivary Proteins" || entity === "Annotations") {
     fields = fields.filter((field) => field !== "uniprot_accession");
     fields.unshift("uniprot_accession");
   }
 
   // Generate column definitions based on the keys
-  return fields.map((field) => ({
-    headerName: field.charAt(0).toUpperCase() + field.slice(1),
-    field: field,
-    wrapText: true,
-    minWidth: 200,
-    headerClass: ["header-border"],
-    cellClass: ["differential-cell"],
-    cellRenderer: (params) => {
-      const dataValue = params.value;
+  return fields.map((field, index) => {
+    // Common properties for all columns
+    const columnDef = {
+      headerName: field.charAt(0).toUpperCase() + field.slice(1),
+      field: field,
+      wrapText: true,
+      minWidth: 200,
+      headerClass: ["header-border"],
+      cellClass: ["differential-cell"],
+    };
 
-      // Special handling for 'keywords' field
-      if (field === "keywords" && Array.isArray(dataValue)) {
-        return dataValue.map((keywordObj) => keywordObj.keyword).join(", ");
-      }
+    // Conditional cellRenderer for the first column of 'Annotations'
+    if (entity === "Annotations" && index === 0) {
+      columnDef.cellRenderer = (params) => {
+        return (
+          <span
+            onClick={() => window.open(`/protein/${params.value}`, "_blank")}
+            style={{
+              cursor: "pointer",
+              color: "blue",
+              textDecoration: "underline",
+            }}
+          >
+            {params.value}
+          </span>
+        );
+      };
+    } else {
+      columnDef.cellRenderer = (params) => {
+        const dataValue = params.value;
 
-      // Check if dataValue is an array of objects
-      if (
-        Array.isArray(dataValue) &&
-        dataValue.length > 0 &&
-        typeof dataValue[0] === "object"
-      ) {
-        return JSON.stringify(dataValue);
-      }
+        // Special handling for 'keywords' field
+        if (field === "keywords" && Array.isArray(dataValue)) {
+          return dataValue.map((keywordObj) => keywordObj.keyword).join(", ");
+        }
 
-      // If it's an array of strings (or other non-object values), join them with a comma
-      if (Array.isArray(dataValue)) {
-        return dataValue.join(", ");
-      }
+        // Check if dataValue is an array of objects
+        if (
+          Array.isArray(dataValue) &&
+          dataValue.length > 0 &&
+          typeof dataValue[0] === "object"
+        ) {
+          return JSON.stringify(dataValue);
+        }
 
-      // For non-array values, just return the value
-      return dataValue;
-    },
-    // Add other common properties here if needed
-  }));
+        // If it's an array of strings (or other non-object values), join them with a comma
+        if (Array.isArray(dataValue)) {
+          return dataValue.join(", ");
+        }
+
+        // For non-array values, just return the value
+        return dataValue;
+      };
+    }
+
+    return columnDef;
+  });
 };
 
 const isRowInvalid = (row) => {
@@ -178,6 +204,7 @@ const AdvancedSearch = () => {
           )
           .then((res) => {
             const newResults = flattenData(res.data.hits);
+            console.log(newResults);
 
             // Append new results to the existing data
             if (startRow === 0) {
@@ -277,9 +304,14 @@ const AdvancedSearch = () => {
         propertyList = propertyList.filter((item) => item !== "uniprot_id");
       } else if (e.target.value === "Protein Signatures") {
         propertyList = propertyList.filter((item) => item !== "InterPro ID");
+      } else if (e.target.value === "Proteins") {
+        propertyList = propertyList.filter((item) => item !== "Uniprot_id");
       } else if (e.target.value === "PubMed Citations") {
         propertyList = propertyList.filter((item) => item !== "CitationID");
-      } else if (e.target.value === "Salivary Proteins") {
+      } else if (
+        e.target.value === "Salivary Proteins" ||
+        e.target.value === "Annotations"
+      ) {
         propertyList = propertyList.filter(
           (item) => item !== "uniprot_accession"
         );

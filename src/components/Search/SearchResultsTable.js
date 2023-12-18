@@ -74,11 +74,41 @@ const SearchResultsTable = ({
                 {params.value}
               </span>
             );
+          } else if (entity === "Proteins") {
+            return (
+              <span
+                onClick={() =>
+                  window.open(`/protein/${params.value}`, "_blank")
+                }
+                style={{
+                  cursor: "pointer",
+                  color: "blue",
+                  textDecoration: "underline",
+                }}
+              >
+                {params.value}
+              </span>
+            );
           } else if (entity === "PubMed Citations") {
             return (
               <span
                 onClick={() =>
                   window.open(`/citation/${params.value}`, "_blank")
+                }
+                style={{
+                  cursor: "pointer",
+                  color: "blue",
+                  textDecoration: "underline",
+                }}
+              >
+                {params.value}
+              </span>
+            );
+          } else if (entity === "Salivary Proteins") {
+            return (
+              <span
+                onClick={() =>
+                  window.open(`/protein/${params.value}`, "_blank")
                 }
                 style={{
                   cursor: "pointer",
