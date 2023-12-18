@@ -160,7 +160,9 @@ export default function SelectAllTransferList({
           />
         }
         title={title}
-        subheader={`${numberOfChecked(items)}/${items.length} selected`}
+        subheader={`${numberOfChecked(items)}/${
+          option === "right" ? items.length - 1 : items.length
+        } selected`}
       />
       <Divider />
       <List

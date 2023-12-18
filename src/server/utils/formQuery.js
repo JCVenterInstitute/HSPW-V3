@@ -208,30 +208,20 @@ exports.formQuery = async (
   }
 
   let combinedSelectedProperties = [];
-  if (entity === "Genes") {
-    combinedSelectedProperties = ["GeneID", ...selectedProperties];
-  } else if (entity === "Protein Clusters") {
-    combinedSelectedProperties = ["uniprot_id", ...selectedProperties];
-  } else if (entity === "Protein Signatures") {
-    combinedSelectedProperties = ["InterPro ID", ...selectedProperties];
-  } else if (entity === "PubMed Citations") {
-    combinedSelectedProperties = ["CitationID", ...selectedProperties];
-  } else if (entity === "Salivary Proteins") {
+  if (entity === "Salivary Proteins") {
     const modifiedSelectedProperties = selectedProperties.map(
       (item) => `salivary_proteins.${item}`
     );
-    combinedSelectedProperties = [
-      "salivary_proteins.uniprot_accession",
-      ...modifiedSelectedProperties,
-    ];
+    combinedSelectedProperties = [...modifiedSelectedProperties];
   } else if (entity === "Annotations") {
-    const modifiedSelectedProperties = selectedProperties.map(
-      (item) => `salivary_proteins.annotations.${item}`
+    const modifiedSelectedProperties = selectedProperties.map((item) =>
+      item === "uniprot_accession"
+        ? `salivary_proteins.${item}`
+        : `salivary_proteins.annotations.${item}`
     );
-    combinedSelectedProperties = [
-      "salivary_proteins.uniprot_accession",
-      ...modifiedSelectedProperties,
-    ];
+    combinedSelectedProperties = [...modifiedSelectedProperties];
+  } else {
+    combinedSelectedProperties = [...selectedProperties];
   }
 
   // Form the final query
