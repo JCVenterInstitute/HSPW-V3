@@ -4,7 +4,8 @@ exports.formQuery = async (
   booleanOperator,
   selectedProperties,
   size,
-  from
+  from,
+  paginationKey
 ) => {
   console.log("> Forming query...");
 
@@ -219,17 +220,45 @@ exports.formQuery = async (
   }
 
   // Form the final query
-  const finalQuery = {
-    track_total_hits: true,
-    size: size,
-    from: from,
-    _source: combinedSelectedProperties,
-    query: {
-      bool: {
-        [booleanOperator === "OR" ? "should" : "must"]: clauses,
+  let finalQuery;
+  if (entity === "Annotations" && paginationKey) {
+    finalQuery = {
+      track_total_hits: true,
+      size: size,
+      _source: combinedSelectedProperties,
+      query: {
+        bool: {
+          [booleanOperator === "OR" ? "should" : "must"]: clauses,
+        },
       },
-    },
-  };
+      search_after: paginationKey,
+      sort: [{ _id: "asc" }],
+    };
+  } else if (entity === "Annotations") {
+    finalQuery = {
+      track_total_hits: true,
+      size: size,
+      _source: combinedSelectedProperties,
+      query: {
+        bool: {
+          [booleanOperator === "OR" ? "should" : "must"]: clauses,
+        },
+      },
+      sort: [{ _id: "asc" }],
+    };
+  } else {
+    finalQuery = {
+      track_total_hits: true,
+      size: size,
+      from: from,
+      _source: combinedSelectedProperties,
+      query: {
+        bool: {
+          [booleanOperator === "OR" ? "should" : "must"]: clauses,
+        },
+      },
+    };
+  }
 
   console.log("> Generated query:", JSON.stringify(finalQuery, null, 2));
   return finalQuery;

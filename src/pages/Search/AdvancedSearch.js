@@ -96,7 +96,11 @@ const isRowInvalid = (row) => {
   );
 };
 
+let nextPaginationKey = [];
+let allData = []; // Global array to store all the data
+
 const AdvancedSearch = () => {
+  const gridRef = useRef(null);
   const [entity, setEntity] = useState("");
   const [booleanOperator, setBooleanOperator] = useState("AND");
   const [properties, setProperties] = useState([]);
@@ -112,15 +116,6 @@ const AdvancedSearch = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [gridApi, setGridApi] = useState();
-  const [gridOptions, setGridOptions] = useState({
-    rowModelType: "infinite",
-    cacheBlockSize: 100,
-    infiniteInitialRowCount: 1,
-  });
-  const [flattenedData, setFlattenedData] = useState([]);
-  const [nextFrom, setNextFrom] = useState(0);
-  const nextFromRef = useRef(nextFrom); // Ref to keep track of the current value of nextFrom
-  const flattenedDataRef = useRef(flattenedData); // Ref to keep track of the current value of nextFrom
 
   const defaultColDef = {
     flex: 1,
@@ -160,55 +155,65 @@ const AdvancedSearch = () => {
     });
   };
 
-  useEffect(() => {
-    nextFromRef.current = nextFrom; // Update the ref whenever nextFrom changes
-    flattenedData.current = flattenedData;
-  }, [nextFrom, flattenedData]);
-
   const dataSource = {
     async getRows(params) {
+      const { startRow, endRow } = params;
+      gridRef.current.api.showLoadingOverlay();
       try {
-        const response = await axios.post(
-          "http://localhost:8000/api/advanced-search/build-query",
-          {
-            entity,
-            rows,
-            booleanOperator,
-            selectedProperties,
-            size: 10, // Fetch more records than needed to account for flattening
-            from: nextFromRef.current,
-          }
-        );
+        const payload = {
+          entity,
+          rows,
+          booleanOperator,
+          selectedProperties,
+          size: 100,
+          paginationKey:
+            startRow && nextPaginationKey.length !== 0
+              ? nextPaginationKey[nextPaginationKey.length - 1]
+              : null,
+        };
+        await axios
+          .post(
+            "http://localhost:8000/api/advanced-search/build-query",
+            payload
+          )
+          .then((res) => {
+            const newResults = flattenData(res.data.hits);
 
-        const newFlattenedData = flattenData(response.data.hits);
-        const updatedFlattenedData =
-          flattenedDataRef.current.concat(newFlattenedData);
-        console.log(updatedFlattenedData);
+            // Append new results to the existing data
+            if (startRow === 0) {
+              allData = newResults;
+              setColumnDefs(generateColumnDefs("Annotations", allData));
+            }
+            if (endRow >= allData.length) {
+              allData = [...allData, ...newResults];
+            }
 
-        // Update state
-        setFlattenedData(updatedFlattenedData);
-        setColumnDefs(generateColumnDefs("Annotations", updatedFlattenedData));
+            if (endRow >= allData.length - 100) {
+              nextPaginationKey.push(
+                res.data.hits[res.data.hits.length - 1].sort
+              );
+            }
 
-        const rowsThisBlock = updatedFlattenedData.slice(
-          params.startRow,
-          params.endRow
-        );
-        const lastRow =
-          updatedFlattenedData.length >= response.data.total.value
-            ? updatedFlattenedData.length
-            : -1;
+            gridRef.current.api.hideOverlay();
 
-        if (params.endRow >= updatedFlattenedData.length - 50) {
-          // Use functional update to ensure we always get the latest value of nextFrom
-          setNextFrom((prevNextFrom) => prevNextFrom + 10);
-        }
+            const rowsThisBlock = allData.slice(startRow, endRow);
 
-        params.successCallback(rowsThisBlock, lastRow);
+            params.successCallback(rowsThisBlock, -1);
+          });
       } catch (error) {
         console.error("Error fetching data:", error);
         params.failCallback();
       }
     },
+  };
+
+  const onGridReady = (params) => {
+    const { api, columnApi } = params;
+    setGridApi(api);
+    gridRef.current.grid = api;
+    gridRef.current.column = columnApi;
+    params.api.setDatasource(dataSource);
+    nextPaginationKey = [];
   };
 
   const entities = [
@@ -886,13 +891,14 @@ const AdvancedSearch = () => {
               >
                 <AgGridReact
                   className="ag-cell-wrap-text"
-                  gridOptions={gridOptions}
+                  ref={gridRef}
                   columnDefs={columnDefs}
                   defaultColDef={defaultColDef}
-                  onGridReady={(params) => {
-                    params.api.showLoadingOverlay();
-                    params.api.setDatasource(dataSource);
-                  }}
+                  onGridReady={onGridReady}
+                  rowModelType="infinite"
+                  paginationPageSize={1}
+                  maxConcurrentDatasourceRequests={1}
+                  infiniteInitialRowCount={100}
                   loadingOverlayComponent={loadingOverlayComponent}
                 />
               </div>

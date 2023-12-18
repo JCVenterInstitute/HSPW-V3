@@ -2478,7 +2478,8 @@ const advancedSearch = async (
   booleanOperator,
   selectedProperties,
   size,
-  from
+  from,
+  paginationKey
 ) => {
   // Initialize the client.
   let client;
@@ -2505,7 +2506,8 @@ const advancedSearch = async (
     booleanOperator,
     selectedProperties,
     size,
-    from
+    from,
+    paginationKey
   );
 
   const response = await client.search({
@@ -2518,8 +2520,15 @@ const advancedSearch = async (
 
 app.post("/api/advanced-search/build-query", async (req, res) => {
   try {
-    const { entity, rows, booleanOperator, selectedProperties, size, from } =
-      req.body;
+    const {
+      entity,
+      rows,
+      booleanOperator,
+      selectedProperties,
+      size,
+      from,
+      paginationKey,
+    } = req.body;
 
     const result = await advancedSearch(
       entity,
@@ -2527,7 +2536,8 @@ app.post("/api/advanced-search/build-query", async (req, res) => {
       booleanOperator,
       selectedProperties,
       size,
-      from
+      from,
+      paginationKey
     );
     res.json(result);
   } catch (error) {
