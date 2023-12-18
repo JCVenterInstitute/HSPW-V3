@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
 import List from "@material-ui/core/List";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -30,6 +30,7 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { ReactComponent as DownloadLogo } from "../assets/table-icon/download.svg";
 import "./Filter.css";
 import "./Table.css";
+import CustomLoadingOverlay from "./CustomLoadingOverlay";
 
 const recordsPerPageList = [
   {
@@ -103,13 +104,15 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 function LinkComponent(props) {
   return (
-    <a
-      target="_blank"
-      rel="noopener noreferrer"
-      href={`/protein-signature/${props.value}`}
-    >
-      {props.value}
-    </a>
+    <div style={{ paddingLeft: "20px" }}>
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href={`/protein-signature/${props.value}`}
+      >
+        {props.value}
+      </a>
+    </div>
   );
 }
 
@@ -143,6 +146,7 @@ const columns = [
   },
   {
     headerName: "# of Members",
+    colId: "# of Members",
     field: "# of Members.length",
     wrapText: true,
     maxWidth: 205,
@@ -153,6 +157,7 @@ const columns = [
 
 const defColumnDefs = {
   flex: 1,
+  sortable: true,
   resizable: true,
   wrapHeaderText: true,
   wrapText: true,
@@ -172,212 +177,127 @@ const escapeSpecialCharacters = (inputVal) => {
   return inputVal.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
 
-const stringAttributes = [
-  "UniProt Accession",
-  "Gene Symbol",
-  "Protein Name",
-  "IHC",
-  "expert_opinion",
-];
+const stringAttributes = ["InterPro ID", "Type", "Name", "# of Members"];
 
-const numberAttributes = [
-  "saliva_abundance", // MS WS
-  "parotid_gland_abundance", // MS PAR
-  "sm/sl_abundance", // MS Sub
-  "plasma_abundance", // MS B
-  "mRNA", // mRNA
+const customHeaders = {
+  "Content-Type": "application/json",
+};
+
+const typeValues = [
+  "Protein Families",
+  "Protein Domains",
+  "Protein Repeats",
+  "Protein Sites",
 ];
 
 const ProteinSignatureTable = () => {
   const gridRef = useRef();
   const [gridApi, setGridApi] = useState();
   const [columnApi, setColumnApi] = useState(null);
-
-  const [pageNumArr, setPageNumArr] = useState([1]);
-  const [typeCount, settypeCount] = useState([]);
-  const [typeArr, settypeArr] = useState([false, false, false, false]);
-  const [typeVal, settypeVal] = useState("");
-  const [queryArr, setQueryArr] = useState([]);
-  const [scriptArr, setScriptArr] = useState([]);
-  const [startMember, setStartMember] = useState("");
-  const [memberC, setMemberC] = useState(false);
-  const [interpro_id, set_interpro_id] = useState("");
-  const [name, setName] = useState("");
-  const [idC, setidC] = useState(false);
-  const [nameC, setNameC] = useState(false);
-  const [typeC, settypeC] = useState(false);
-  const [count, setCount] = useState(1);
-
-  const [globalSC, setGlobalSC] = useState(false);
-
+  const [typeCount, setTypeCount] = useState([]);
+  const [typeArr, setTypeArr] = useState([false, false, false, false]);
   const [pageSize, setPageSize] = useState(50);
   const [pageNum, setPageNum] = useState(0);
-  const [rowData, setRowData] = useState(null);
+  const [rowData, setRowData] = useState([]);
   const [docCount, setDocCount] = useState(0);
-  const [facetFilter, setFacetFilters] = useState({});
+  const [facetFilters, setFacetFilters] = useState({});
   const [searchText, setSearchText] = useState("");
   const [sortedColumn, setSortedColumn] = useState(null);
 
-  const fetchData = () => {};
-
-  useEffect(() => {
-    const fetchTypeCount = async () => {
-      const data = await fetch(`${HOST_ENDPOINT}/signature_type_counts`);
-      const json = data.json();
-      return json;
-    };
-    const countTypeResult = fetchTypeCount().catch(console.errror);
-
-    countTypeResult.then((value) => {
-      if (value) {
-        settypeCount(value);
-      }
-    });
+  const loadingOverlayComponent = useMemo(() => {
+    return CustomLoadingOverlay;
   }, []);
+
+  /**
+   * Creates a query for a string field for OpenSearch
+   * @param {{attrName, value}} input necessary fields for string query
+   * @returns
+   */
+  const createStringQuery = ({ attrName, value }) => {
+    const escapedInput = escapeSpecialCharacters(value);
+
+    return {
+      bool: {
+        filter: [
+          {
+            regexp: {
+              [attrName !== "Name" ? `${attrName}.keyword` : `${attrName}`]: {
+                value: `${escapedInput}.*`,
+                flags: "ALL",
+                case_insensitive: true,
+              },
+            },
+          },
+        ],
+      },
+    };
+  };
+
+  /**
+   * Build OpenSearch Query based on user facet filters
+   * @param {Object} filters Object containing all key & values for all user selected facet filters
+   * @returns Returns an array of queries for each non empty filter applied by user
+   */
+  const queryBuilder = (filters) => {
+    const queries = [];
+
+    for (const attr of Object.keys(filters)) {
+      if (stringAttributes.includes(attr)) {
+        queries.push(
+          createStringQuery({ attrName: attr, value: filters[attr] })
+        );
+      }
+    }
+
+    return queries;
+  };
+
+  const fetchData = async () => {
+    const apiPayload = {
+      filters: queryBuilder(facetFilters),
+      // Pass sort query if any sort is applied
+      ...(sortedColumn && createSortQuery()),
+      ...(searchText && { keyword: createGlobalSearchQuery() }),
+    };
+
+    const data = await fetch(
+      `${HOST_ENDPOINT}/api/protein-signature/${pageSize}/${
+        pageNum * pageSize
+      }`,
+      {
+        method: "POST",
+        headers: customHeaders,
+        body: JSON.stringify(apiPayload),
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        const { hits, aggregations } = data;
+
+        for (const aggr of Object.keys(aggregations)) {
+          const displayedAggs = aggregations[aggr].buckets;
+
+          if (aggr === "Type") {
+            setTypeCount(displayedAggs);
+          }
+        }
+
+        // Set number of total records returned
+        setDocCount(hits.total.value);
+
+        return hits.hits.map((rec) => rec._source);
+      });
+
+    setRowData(data);
+  };
 
   // Export the current page data as CSV file
   const onBtExport = useCallback(() => {
     gridRef.current.api.exportDataAsCsv();
   }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetch(
-        `${HOST_ENDPOINT}/protein-signature/` + pageSize + "/" + pageNum
-      );
-      const json = data.json();
-      return json;
-    };
-
-    const fetchTypeCount = async () => {
-      const data = await fetch(`${HOST_ENDPOINT}/signature_type_counts`);
-      const json = data.json();
-      return json;
-    };
-
-    const queryString = encodeURIComponent(JSON.stringify(queryArr));
-    const scriptString = encodeURIComponent(JSON.stringify(scriptArr));
-
-    const url = `${HOST_ENDPOINT}/signature_search/${pageSize}/${pageNum}/${queryString}/${scriptString}`;
-
-    const fetchQuery = async () => {
-      const data = await fetch(url);
-      const json = data.json();
-      return json;
-    };
-
-    const queryResult = fetchQuery().catch(console.errror);
-
-    if (typeC === true || nameC === true || memberC === true || idC === true) {
-      queryResult.then((value) => {
-        if (value) {
-          let data1 = [];
-          for (let i = 0; i < value.hits.hits.length; i++) {
-            data1.push(value.hits.hits[i]["_source"]);
-          }
-
-          setRowData(data1);
-        }
-        setDocCount(value.hits.total.value);
-        const newOptions = [];
-        for (
-          let i = 1;
-          i <= Math.round(value.hits.total.value / pageSize);
-          i++
-        ) {
-          newOptions.push(
-            <option
-              key={i}
-              value={i}
-            >
-              {i + 1}
-            </option>
-          );
-        }
-        setPageNumArr(newOptions);
-        settypeCount(value.aggregations.Type.buckets);
-        console.log(typeArr);
-      });
-    } else if (globalSC === true) {
-      const result = globalSearch().catch(console.errror);
-
-      result.then((value) => {
-        if (value.hits.hits) {
-          console.log(value);
-          let data1 = [];
-          for (let i = 0; i < value.hits.hits.length; i++) {
-            data1.push(value.hits.hits[i]["_source"]);
-          }
-          console.log(data1);
-          setRowData(data1);
-        }
-        setDocCount(value.hits.total.value);
-        const newOptions = [];
-        for (
-          let i = 1;
-          i <= Math.round(value.hits.total.value / pageSize);
-          i++
-        ) {
-          newOptions.push(
-            <option
-              key={i}
-              value={i}
-            >
-              {i + 1}
-            </option>
-          );
-        }
-
-        setPageNumArr(newOptions);
-        setCount(2);
-      });
-    } else {
-      const result = fetchData().catch(console.errror);
-      result.then((value) => {
-        if (value.hits) {
-          console.log(value);
-          let data1 = [];
-          for (let i = 0; i < value.hits.length; i++) {
-            data1.push(value.hits[i]["_source"]);
-          }
-          console.log(data1);
-          setRowData(data1);
-        }
-        setDocCount(value.total.value);
-        const newOptions = [];
-        for (let i = 1; i <= Math.round(value.total.value / pageSize); i++) {
-          newOptions.push(
-            <option
-              key={i}
-              value={i}
-            >
-              {i + 1}
-            </option>
-          );
-        }
-        setPageNumArr(newOptions);
-      });
-
-      const countTypeResult = fetchTypeCount().catch(console.errror);
-
-      countTypeResult.then((value) => {
-        if (value) {
-          settypeCount(value);
-        }
-      });
-    }
-  }, [pageSize, pageNum, queryArr, typeArr, name, startMember, globalSC]);
-
-  const globalSearch = async () => {
-    const data = await fetch(
-      `http://localhost:8000/multi_search/protein-signature/${searchText}`
-    );
-    console.log(
-      `http://localhost:8000/multi_search/protein-signature/${searchText}`
-    );
-    const json = data.json();
-
-    return json;
+  const handleGlobalSearch = (input) => {
+    setSearchText(input);
   };
 
   /**
@@ -388,7 +308,11 @@ const ProteinSignatureTable = () => {
 
     // Have to include .keyword when sorting string attributes
     const sortAttrKey = `${sortedColumn.attribute}${
-      stringAttributes.includes(attribute) ? ".keyword" : ""
+      stringAttributes.includes(attribute)
+        ? attribute !== "Name" // Name attribute is of type Keyword in OpenSearch
+          ? ".keyword"
+          : ""
+        : ""
     }`;
 
     return {
@@ -411,6 +335,7 @@ const ProteinSignatureTable = () => {
     return {
       query_string: {
         query: `*${escapedInput}*`,
+        fields: ["Type", "InterPro ID", "Name"],
         default_operator: "AND",
         analyze_wildcard: true,
       },
@@ -424,404 +349,95 @@ const ProteinSignatureTable = () => {
     gridRef.current.api.sizeColumnsToFit();
   };
 
-  const onPageSizeChanged = (event) => {
-    var value = document.getElementById("page-size").value;
-    gridRef.current.api.paginationSetPageSize(Number(value));
-    setPageSize(value);
-  };
-
-  const onPageNumChanged = (event) => {
-    var value = document.getElementById("page-num").value;
-    setPageNum(value);
-    setCount(value);
-    console.log("count1:" + count);
-  };
-
-  const onBtNext = (event) => {
-    if (pageNum + 1 < docCount / pageSize) {
-      setPageNum((prevPageNum) => {
-        console.log("Updated pageNum:", prevPageNum + 1);
-        return prevPageNum + 1;
-      });
-      setCount((prevCount) => prevCount + 1);
+  const onBtNext = () => {
+    if (pageNum < docCount / pageSize - 1) {
+      setPageNum(pageNum + 1);
     }
   };
 
-  const onBtPrevious = (event) => {
-    if (pageNum + 1 !== 1) {
-      var x = pageNum;
-      setPageNum(x - 1);
-      setCount(count - 1);
-    }
+  const resetFilters = () => {
+    setFacetFilters({});
+    setSearchText("");
+    setSortedColumn(null);
+    setTypeArr([false, false, false, false]);
   };
 
-  const escapeRegExp = (string) => {
-    console.log(typeof string);
-    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  };
-
-  const onFilterTextBoxChanged = (e) => {
-    // Check if the event is a delete key press or a synthetic event
-    const isDeleteKey =
-      e.nativeEvent && e.nativeEvent.inputType === "deleteContentBackward";
-
-    let inputValue = e;
-
-    if (isDeleteKey) {
-      // Handle delete key press by removing the last character
-      inputValue = inputValue.slice(0, -1);
-    }
-
-    // Ensure that inputValue is defined
-    inputValue = inputValue || "";
-
-    // Escape special characters
-    const escapedInputValue = escapeRegExp(inputValue);
-
-    console.log("Input Value: " + escapedInputValue);
-
-    if (escapedInputValue !== "") {
-      console.log("415", escapedInputValue);
-      setSearchText(escapedInputValue);
-      setGlobalSC(true);
-    } else {
-      setGlobalSC(false);
-      setSearchText("");
+  const onBtPrevious = () => {
+    if (pageNum !== 0) {
+      setPageNum(pageNum - 1);
     }
   };
 
   const clearSearch = () => {
     setSearchText("");
-    setGlobalSC(false);
   };
 
-  const typeValues = [
-    "Protein Families",
-    "Protein Domains",
-    "Protein Repeats",
-    "Protein Sites",
-  ];
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  const filterType = (event) => {
-    let { value } = event.target;
+  // Update data when filters are updated
+  useEffect(() => {
+    // Needed to delay search so users can type before triggering search
+    const delayDebounceFn = setTimeout(() => {
+      setPageNum(0);
+      fetchData();
+    }, 600);
 
-    const inputValue = value;
-    settypeArr((prevtypeArr) => {
-      let updatedtypeArr;
-      let typeQuery;
-      updatedtypeArr = prevtypeArr.map((isChecked, index) =>
-        index === typeValues.indexOf(value) ? !isChecked : isChecked
-      );
+    return () => clearTimeout(delayDebounceFn);
+  }, [facetFilters, searchText, pageSize]);
 
-      // Check if any checkbox is checked
-      const anyChecked = updatedtypeArr.some((isChecked) => isChecked);
-
-      // Update ihcC and IHCVal based on checked status
-      if (anyChecked) {
-        settypeC(true);
-        settypeVal(`${value}*`);
-        typeQuery =
-          prevtypeArr[typeValues.indexOf(value)] === false
-            ? {
-                bool: {
-                  must: [],
-                  must_not: [],
-                  filter: [
-                    {
-                      wildcard: {
-                        "Type.keyword": {
-                          value: `*${value}*`,
-                          case_insensitive: true,
-                        },
-                      },
-                    },
-                  ],
-                },
-              }
-            : null;
-      } else {
-        settypeC(false);
-        settypeVal("");
-        typeQuery =
-          prevtypeArr[typeValues.indexOf(value)] === false
-            ? {
-                bool: {
-                  must: [],
-                  must_not: [],
-                  filter: [
-                    {
-                      wildcard: {
-                        "Type.keyword": {
-                          value: `*${value}*`,
-                          case_insensitive: true,
-                        },
-                      },
-                    },
-                  ],
-                },
-              }
-            : null;
-      }
-      updateQuery(typeQuery, "Type");
-      return updatedtypeArr;
-    });
-  };
-
-  const handleIDChange = (e) => {
-    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
-
-    let inputValue = e.target.value;
-    set_interpro_id(inputValue);
-    if (isDeleteKey) {
-      // Handle delete key press by removing the last character
-      inputValue = inputValue.slice(0, -1);
+  // Update records when new sort is applied & go back to first page
+  useEffect(() => {
+    if (gridApi) {
+      gridApi.showLoadingOverlay();
+      setPageNum(0);
+      fetchData();
     }
+  }, [sortedColumn]);
 
-    // Remove double backslashes
-    inputValue = inputValue.replace(/\\\\/g, "");
+  // Fetch data for new page selected
+  // No delay needed when switching pages no filter updates
+  useEffect(() => {
+    if (gridApi) gridApi.showLoadingOverlay();
+    fetchData();
+  }, [pageNum, gridApi]);
 
-    // Escape special characters
-    inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  /**
+   * Handle Input changes for all the text boxes
+   */
+  const handleInputChange = (e) => {
+    const { value, name } = e.target;
+    const currentFilters = facetFilters;
 
-    if (inputValue === "") {
-      setidC(false);
-    } else {
-      setidC(true);
-    }
-
-    // Add new element for InterPro ID with updated input value
-    const newIDQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [
-                {
-                  wildcard: {
-                    "InterPro ID": {
-                      value: `${inputValue}*`,
-                      case_insensitive: true,
-                    },
-                  },
-                },
-              ],
-            },
-          }
-        : null;
-
-    updateQuery(newIDQuery, "InterPro ID");
-  };
-
-  const handleNameChange = (e) => {
-    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
-
-    let inputValue = e.target.value;
-    setName(inputValue);
-    if (isDeleteKey) {
-      // Handle delete key press by removing the last character
-      inputValue = inputValue.slice(0, -1);
-    }
-
-    // Remove double backslashes
-    inputValue = inputValue.replace(/\\\\/g, "");
-
-    // Escape special characters
-    inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-
-    if (inputValue === "") {
-      setNameC(false);
-    } else {
-      setNameC(true);
-    }
-
-    // Add new element for Name with updated input value
-    const newNameQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [
-                {
-                  wildcard: {
-                    Name: {
-                      value: `${inputValue}*`,
-                      case_insensitive: true,
-                    },
-                  },
-                },
-              ],
-            },
-          }
-        : null;
-
-    setName(inputValue);
-    updateQuery(newNameQuery, "Name");
-  };
-
-  const updateQuery = (newQuery, fieldName) => {
-    setQueryArr((prevArray) => {
-      // If newQuery is null, remove only the corresponding type of query from the array
-      if (newQuery === null) {
-        const targetTypePrev = findEmptyField(prevArray, fieldName);
-        console.log("TargetType (null case):", targetTypePrev);
-
-        const updatedArray = prevArray.filter((p) => {
-          const hasWildcard =
-            p &&
-            p.bool &&
-            p.bool.filter &&
-            p.bool.filter[0] &&
-            p.bool.filter[0].wildcard;
-
-          const wildcardProperty =
-            hasWildcard && Object.keys(p.bool.filter[0].wildcard)[0];
-
-          const hasQueryString =
-            p.bool &&
-            p.bool.filter &&
-            p.bool.filter[0] &&
-            p.bool.filter[0].query_string;
-
-          const isNameQuery =
-            hasWildcard &&
-            wildcardProperty === "Name" &&
-            p.bool.filter[0].wildcard["Name"].value === "";
-
-          const isIHCQuery =
-            hasWildcard &&
-            wildcardProperty === "IHC" &&
-            p.bool.filter[0].wildcard["IHC"].value === "";
-          // Adjust the condition based on the targetTypePrev boolean value
-          return hasWildcard || hasQueryString
-            ? targetTypePrev
-              ? wildcardProperty !== fieldName &&
-                !(
-                  isNameQuery &&
-                  isIHCQuery &&
-                  p.bool.filter[0].query_string[fieldName] !== undefined
-                )
-              : isNameQuery ||
-                isIHCQuery ||
-                wildcardProperty === fieldName ||
-                (hasQueryString &&
-                  p.bool.filter[0].query_string[fieldName] !== undefined)
-            : true;
-        });
-
-        console.log("Updated Array (null case):", updatedArray);
-
-        return updatedArray;
-      }
-
-      const nonEmptyQueries = prevArray.filter((query) => {
-        const wildcardProperty =
-          query.bool &&
-          query.bool.filter &&
-          query.bool.filter[0].wildcard &&
-          Object.keys(query.bool.filter[0].wildcard)[0];
-
-        // Check if the field is not empty in the new query
-        return !(
-          wildcardProperty &&
-          newQuery.bool.filter &&
-          newQuery.bool.filter[0].wildcard &&
-          Object.keys(newQuery.bool.filter[0].wildcard)[0] ===
-            wildcardProperty &&
-          newQuery.bool.filter[0].wildcard[wildcardProperty] === ""
-        );
+    if (currentFilters[name] !== undefined && value === "") {
+      // Remove empty filter
+      delete currentFilters[name];
+      setFacetFilters({
+        ...currentFilters,
       });
-
-      console.log("Non-empty Queries:", nonEmptyQueries);
-
-      const updatedArray = nonEmptyQueries.map((p) => {
-        const isSame = isSameType(p, newQuery);
-        console.log(
-          `Comparing: ${JSON.stringify(p)} and ${JSON.stringify(
-            newQuery
-          )} => ${isSame}`
-        );
-        return isSame ? newQuery : p;
+    } else {
+      // Add new filter
+      setFacetFilters({
+        ...currentFilters,
+        [name]: value,
       });
-
-      // If the new query does not exist or has an empty value, remove it from the array
-      if (
-        newQuery.bool.filter !== undefined &&
-        !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
-        !(newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value === "")
-      ) {
-        // Check if there's an existing query for the same field and remove it
-        const updatedArrayWithoutExisting = updatedArray.filter((p) => {
-          if (
-            p.bool &&
-            p.bool.filter &&
-            p.bool.filter[0].wildcard &&
-            Object.keys(p.bool.filter[0].wildcard)[0] === fieldName
-          ) {
-            // Remove the existing query if the new query is not empty
-            return newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value !== "";
-          }
-          return true;
-        });
-
-        // Add the new query only if it's not an empty wildcard
-        if (newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value !== "") {
-          updatedArrayWithoutExisting.push(newQuery);
-          console.log("New Query Added:", updatedArrayWithoutExisting);
-        }
-
-        return updatedArrayWithoutExisting;
-      }
-
-      return updatedArray;
-    });
-  };
-
-  const findEmptyField = (queries, fieldName) => {
-    const findFieldInFilter = (filter) => {
-      if (filter.wildcard) {
-        return filter && filter.wildcard && filter.wildcard[fieldName];
-      } else if (filter.range) {
-        return filter && filter.range && filter.range[fieldName];
-      } else if (filter.query_string) {
-        console.log("1272", filter.query_string);
-        return filter.query_string; // Directly return the found filter
-      }
-    };
-
-    const searchQuery = (query) => {
-      if (query && query.bool && query.bool.filter) {
-        return query.bool.filter.some(findFieldInFilter);
-      }
-
-      return false;
-    };
-
-    const result = queries.some(searchQuery); // Use some instead of find
-
-    console.log(result ? "Field Found:" : "Field Not Found");
-
-    return result;
-  };
-
-  // Helper function to check if two queries have the same wildcard type
-  const isSameType = (query1, query2) => {
-    const type1 = query1.bool?.filter?.[0]?.wildcard
-      ? Object.keys(query1.bool.filter[0].wildcard)[0]
-      : null;
-    const type2 = query2.bool?.filter?.[0]?.wildcard
-      ? Object.keys(query2.bool.filter[0].wildcard)[0]
-      : null;
-
-    // Check both type and value for wildcard queries
-    if (type1 === type2 && type1 === "wildcard") {
-      const value1 = query1.bool.filter[0].wildcard[type1].value;
-      const value2 = query2.bool.filter[0].wildcard[type2].value;
-      return value1 === value2;
     }
+  };
 
-    return type1 === type2;
+  /**
+   * Track which column is selected for sort by user
+   */
+  const onSortChanged = () => {
+    const columnState = columnApi.getColumnState();
+    const sortedColumn = columnState.filter((col) => col.sort !== null);
+
+    if (sortedColumn.length !== 0) {
+      const { sort, colId } = sortedColumn[0];
+      setSortedColumn({ attribute: colId, order: sort });
+    } else {
+      setSortedColumn(null);
+    }
   };
 
   return (
@@ -848,11 +464,23 @@ const ProteinSignatureTable = () => {
               textAlign: "center",
               paddingTop: "30px",
               fontSize: "25px",
-              paddingBottom: "40px",
             }}
           >
             Filters
           </h1>
+          <Button
+            variant="text"
+            size="small"
+            sx={{
+              display: "block",
+              marginBottom: "20px",
+              marginX: "auto",
+              textAlign: "center",
+            }}
+            onClick={resetFilters}
+          >
+            Reset Filters
+          </Button>
           <div>
             <Accordion>
               <AccordionSummary
@@ -881,8 +509,13 @@ const ProteinSignatureTable = () => {
                       borderRadius: "16px",
                     },
                   }}
-                  onChange={handleIDChange}
-                  value={interpro_id}
+                  name="InterPro ID"
+                  onChange={handleInputChange}
+                  value={
+                    facetFilters["InterPro ID"]
+                      ? facetFilters["InterPro ID"]
+                      : ""
+                  }
                 />
               </AccordionDetails>
             </Accordion>
@@ -912,18 +545,39 @@ const ProteinSignatureTable = () => {
                 >
                   {typeCount.map((child, i) =>
                     child.key !== "?" ? (
-                      <FormGroup sx={{ ml: "8px", mt: "10px" }}>
+                      <FormGroup
+                        key={`type-${i}`}
+                        sx={{ ml: "8px", mt: "10px" }}
+                      >
                         <FormControlLabel
                           control={
                             <Checkbox
                               checked={
                                 typeArr[typeValues.indexOf(child.key.trim())]
                               }
-                              onChange={filterType}
-                              value={child.key}
+                              name={child.key}
+                              onClick={(e) => {
+                                const { checked, name } = e.target;
+
+                                if (!checked) {
+                                  delete facetFilters["Type"];
+                                }
+
+                                const updatedType = [...typeArr];
+                                updatedType[typeValues.indexOf(name)] = checked;
+
+                                setTypeArr(updatedType);
+
+                                setFacetFilters({
+                                  ...facetFilters,
+                                  ...(checked && {
+                                    ["Type"]: name,
+                                  }), // Only pass when checked
+                                });
+                              }}
                             />
                           }
-                          label={child.key + " (" + (child.doc_count - 1) + ")"}
+                          label={child.key + " (" + child.doc_count + ")"}
                         />
                       </FormGroup>
                     ) : null
@@ -958,8 +612,9 @@ const ProteinSignatureTable = () => {
                       borderRadius: "16px",
                     },
                   }}
-                  onChange={handleNameChange}
-                  value={name}
+                  onChange={handleInputChange}
+                  name="Name"
+                  value={facetFilters["Name"] ? facetFilters["Name"] : ""}
                 />
               </AccordionDetails>
             </Accordion>
@@ -970,7 +625,13 @@ const ProteinSignatureTable = () => {
           sx={{ marginTop: "30px", marginLeft: "20px" }}
         >
           <Box sx={{ display: "flex" }}>
-            <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
+            <Box
+              style={{
+                display: "flex",
+                width: "100%",
+                maxWidth: "550px",
+              }}
+            >
               <TextField
                 variant="outlined"
                 size="small"
@@ -978,13 +639,6 @@ const ProteinSignatureTable = () => {
                 value={searchText}
                 onChange={(e) => {
                   setSearchText(e.target.value);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    console.log("key wodn", e.key);
-                    console.log(e.target.value);
-                    onFilterTextBoxChanged(e.target.value);
-                  }
                 }}
                 InputProps={{
                   style: {
@@ -1020,11 +674,7 @@ const ProteinSignatureTable = () => {
                   borderRadius: "0 16px 16px 0",
                 }}
                 onClick={() => {
-                  const syntheticEvent = {
-                    target: { value: searchText },
-                    nativeEvent: { inputType: "insertText" }, // Mimic an input event
-                  };
-                  onFilterTextBoxChanged(syntheticEvent);
+                  handleGlobalSearch(searchText);
                 }}
               >
                 <SearchIcon sx={{ color: "white" }} />
@@ -1080,32 +730,34 @@ const ProteinSignatureTable = () => {
               >
                 Page
               </Typography>
-              <TextField
-                select
-                size="small"
-                InputProps={{
-                  style: {
-                    borderRadius: "10px",
-                  },
-                }}
-                value={pageNum ? pageNum + 1 : 1}
-                sx={{ marginLeft: "10px", marginRight: "10px" }}
-                onChange={(event) => {
-                  setPageNum(event.target.value);
-                }}
-              >
-                {Array.from(
-                  { length: Math.ceil(docCount / pageSize) },
-                  (_, index) => (
-                    <MenuItem
-                      key={index + 1}
-                      value={index + 1}
-                    >
-                      {index + 1}
-                    </MenuItem>
-                  )
-                )}
-              </TextField>
+              {rowData.length !== 0 && (
+                <TextField
+                  select
+                  size="small"
+                  InputProps={{
+                    style: {
+                      borderRadius: "10px",
+                    },
+                  }}
+                  value={pageNum === 0 ? 1 : pageNum + 1}
+                  sx={{ marginLeft: "10px", marginRight: "10px" }}
+                  onChange={(event) => {
+                    setPageNum(event.target.value - 1);
+                  }}
+                >
+                  {Array.from(
+                    { length: Math.ceil(docCount / pageSize) },
+                    (_, index) => (
+                      <MenuItem
+                        key={index + 1}
+                        value={index + 1}
+                      >
+                        {index + 1}
+                      </MenuItem>
+                    )
+                  )}
+                </TextField>
+              )}
               <Typography
                 display="inline"
                 sx={{
@@ -1211,7 +863,9 @@ const ProteinSignatureTable = () => {
                 columnDefs={columns}
                 defaultColDef={defColumnDefs}
                 onGridReady={onGridReady}
-                cacheQuickFilter={true}
+                suppressMovable
+                loadingOverlayComponent={loadingOverlayComponent}
+                onSortChanged={onSortChanged}
                 components={{
                   LinkComponent,
                 }}
@@ -1219,7 +873,12 @@ const ProteinSignatureTable = () => {
                 paginationPageSize={50}
               />
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
               <Button
                 onClick={onBtExport}
                 sx={{

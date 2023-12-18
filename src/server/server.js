@@ -2715,8 +2715,6 @@ async function queryCitationData(
     },
   };
 
-  console.log("> Citation Query", JSON.stringify(payload.body));
-
   const response = await client.search(payload);
 
   return response.body;
@@ -2768,6 +2766,54 @@ app.post("/api/protein-cluster/:size/:from/", (req, res) => {
   const { size, from } = req.params;
 
   const results = queryProteinCluster(size, from, filters, sort, keyword);
+
+  results.then((result) => {
+    res.json(result);
+  });
+});
+
+async function queryProteinSignature(
+  size,
+  from,
+  filter,
+  sort = null,
+  keyword = null
+) {
+  const client = await getClient();
+
+  const payload = {
+    index: "protein_signature",
+    body: {
+      track_total_hits: true,
+      size: size,
+      from: from,
+      query: {
+        bool: {
+          ...(filter && { filter }),
+          ...(keyword && { must: [keyword] }), // Apply global search if present
+        },
+      },
+      ...(sort && { sort }), // Apply sort if present
+      aggs: {
+        Type: {
+          terms: {
+            field: "Type.keyword",
+          },
+        },
+      },
+    },
+  };
+
+  const response = await client.search(payload);
+
+  return response.body;
+}
+
+app.post("/api/protein-signature/:size/:from/", (req, res) => {
+  const { filters, sort, keyword } = req.body;
+  const { size, from } = req.params;
+
+  const results = queryProteinSignature(size, from, filters, sort, keyword);
 
   results.then((result) => {
     res.json(result);

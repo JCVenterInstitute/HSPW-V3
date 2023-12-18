@@ -35,21 +35,9 @@ export const options = {
   },
 };
 
-const data1 = [{ label: "1" }, { label: "2" }];
-const mystyle = {
-  color: "black",
-  marginTop: "20px",
-  marginLeft: "20px",
-  textAlign: "left",
-  fontSize: "18px",
-  marginBottom: "20px",
-};
-
 const ProteinSignature = () => {
-  const [message, setMessage] = useState([
-    "Types of Protein Signatures Detected in Salivary Proteins",
-    "Number of Proteins",
-  ]);
+  const [message, setMessage] = useState([]);
+
   useEffect(() => {
     fetch("http://localhost:8000/signature_type_counts")
       .then((res) => res.json())
@@ -60,6 +48,7 @@ const ProteinSignature = () => {
             "Number of Proteins",
           ],
         ];
+
         for (let i = 0; i < 4; i++) {
           data1.push([data[i].key, data[i].doc_count]);
         }
@@ -108,19 +97,21 @@ const ProteinSignature = () => {
       <h2 style={{ textAlign: "center", marginTop: "20px" }}>
         Types of Protein Signatures Detected in Salivary Proteins
       </h2>
-      <Chart
-        chartType="PieChart"
-        width="600px"
-        height="300px"
-        data={message}
-        options={options}
-        style={{
-          display: "block",
-          marginLeft: "auto",
-          marginRight: "auto",
-          paddingBottom: "5px",
-        }}
-      />
+      {message.length !== 0 ? (
+        <Chart
+          chartType="PieChart"
+          width="600px"
+          height="300px"
+          data={message}
+          options={options}
+          style={{
+            display: "block",
+            marginLeft: "auto",
+            marginRight: "auto",
+            paddingBottom: "5px",
+          }}
+        />
+      ) : null}
       <ProteinSignatureTable />
     </>
   );
