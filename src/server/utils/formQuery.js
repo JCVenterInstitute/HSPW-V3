@@ -131,7 +131,9 @@ exports.formQuery = async (
   const mapOperationToClauseAnnotations = (item) => {
     // Append '.keyword' to each field name
     const field =
-      "salivary_proteins.annotations." + item.selectedProperty + ".keyword";
+      item.selectedProperty === "uniprot_accession"
+        ? "salivary_proteins." + item.selectedProperty + ".keyword"
+        : "salivary_proteins.annotations." + item.selectedProperty + ".keyword";
     const value = item.value;
 
     switch (item.selectedOperation) {

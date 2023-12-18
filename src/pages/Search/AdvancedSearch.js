@@ -204,7 +204,6 @@ const AdvancedSearch = () => {
           )
           .then((res) => {
             const newResults = flattenData(res.data.hits);
-            console.log(newResults);
 
             // Append new results to the existing data
             if (startRow === 0) {
@@ -391,7 +390,6 @@ const AdvancedSearch = () => {
           from,
         })
         .then((res) => {
-          console.log(res.data.hits);
           setTotalPages(Math.ceil(res.data.total.value / pageSize));
           if (entity === "Salivary Proteins") {
             return res.data.hits.map((item) => item._source.salivary_proteins);
