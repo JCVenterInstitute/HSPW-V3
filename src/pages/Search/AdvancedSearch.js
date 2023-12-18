@@ -421,6 +421,9 @@ const AdvancedSearch = () => {
   ) => {
     console.log("> Searching...");
     console.log("> Search Query:", rows);
+    if (gridApi) {
+      gridApi.showLoadingOverlay();
+    }
     const from = (page - 1) * pageSize;
 
     setSearchStarted(true);
