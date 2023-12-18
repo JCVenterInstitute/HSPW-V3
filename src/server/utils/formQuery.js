@@ -214,8 +214,10 @@ exports.formQuery = async (
     );
     combinedSelectedProperties = [...modifiedSelectedProperties];
   } else if (entity === "Annotations") {
-    const modifiedSelectedProperties = selectedProperties.map(
-      (item) => `salivary_proteins.annotations.${item}`
+    const modifiedSelectedProperties = selectedProperties.map((item) =>
+      item === "uniprot_accession"
+        ? `salivary_proteins.${item}`
+        : `salivary_proteins.annotations.${item}`
     );
     combinedSelectedProperties = [...modifiedSelectedProperties];
   } else {
