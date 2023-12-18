@@ -25,6 +25,10 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import CustomLoadingOverlay from "../../components/Search/CustomLoadingOverlay";
+import dayjs from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 const generateColumnDefs = (entity, data) => {
   if (!data || data.length === 0) return [];
@@ -331,11 +335,36 @@ const AdvancedSearch = () => {
   };
 
   const handlePropertyChange = (rowId, newValue) => {
-    setRows(
-      rows.map((row) =>
-        row.id === rowId ? { ...row, selectedProperty: newValue } : row
-      )
-    );
+    if (newValue === "Date of Publication" || newValue === "PubDate") {
+      setRows(
+        rows.map((row) =>
+          row.id === rowId
+            ? {
+                ...row,
+                selectedProperty: newValue,
+                selectedOperation: "between",
+                value: {
+                  startDate: dayjs("1957-08-17").format("YYYY/MM/DD"),
+                  endDate: dayjs(new Date()).format("YYYY/MM/DD"),
+                },
+              }
+            : row
+        )
+      );
+    } else {
+      setRows(
+        rows.map((row) =>
+          row.id === rowId
+            ? {
+                ...row,
+                selectedProperty: newValue,
+                selectedOperation: "",
+                value: "",
+              }
+            : row
+        )
+      );
+    }
   };
 
   const handleOperationChange = (rowId, newValue) => {
@@ -355,6 +384,24 @@ const AdvancedSearch = () => {
   const handleValueChange = (rowId, newValue) => {
     setRows(
       rows.map((row) => (row.id === rowId ? { ...row, value: newValue } : row))
+    );
+  };
+
+  const handleDateChange = (rowId, newValue, dateTimeType) => {
+    const dateValue = dayjs(newValue).format("YYYY/MM/DD");
+    setRows(
+      rows.map((row) => {
+        if (row.id === rowId) {
+          return {
+            ...row,
+            value: {
+              ...row.value,
+              [dateTimeType]: dateValue, // Update startDate or endDate based on dateTimeType
+            },
+          };
+        }
+        return row;
+      })
     );
   };
 
@@ -379,15 +426,16 @@ const AdvancedSearch = () => {
     setSearchStarted(true);
 
     if (entity !== "Annotations") {
+      const payload = {
+        entity,
+        rows,
+        booleanOperator,
+        selectedProperties,
+        size: pageSize,
+        from,
+      };
       const result = await axios
-        .post("http://localhost:8000/api/advanced-search/build-query", {
-          entity,
-          rows,
-          booleanOperator,
-          selectedProperties,
-          size: pageSize,
-          from,
-        })
+        .post("http://localhost:8000/api/advanced-search/build-query", payload)
         .then((res) => {
           setTotalPages(Math.ceil(res.data.total.value / pageSize));
           if (entity === "Salivary Proteins") {
@@ -628,39 +676,97 @@ const AdvancedSearch = () => {
                     row.selectedProperty === "experiment_id_key" ||
                     row.selectedProperty === "mass" ||
                     row.selectedProperty === "protein_sequence_length" ||
-                    row.selectedProperty === "PubMed_ID"
-                      ? numericOperations.map((operation) => (
-                          <MenuItem
-                            key={operation}
-                            value={operation}
-                          >
-                            {operation}
-                          </MenuItem>
-                        ))
-                      : operations.map((operation) => (
-                          <MenuItem
-                            key={operation}
-                            value={operation}
-                          >
-                            {operation}
-                          </MenuItem>
-                        ))}
+                    row.selectedProperty === "PubMed_ID" ? (
+                      numericOperations.map((operation) => (
+                        <MenuItem
+                          key={operation}
+                          value={operation}
+                        >
+                          {operation}
+                        </MenuItem>
+                      ))
+                    ) : row.selectedProperty === "Date of Publication" ||
+                      row.selectedProperty === "PubDate" ? (
+                      <MenuItem
+                        key="between"
+                        value="between"
+                      >
+                        between
+                      </MenuItem>
+                    ) : (
+                      operations.map((operation) => (
+                        <MenuItem
+                          key={operation}
+                          value={operation}
+                        >
+                          {operation}
+                        </MenuItem>
+                      ))
+                    )}
                   </TextField>
                 </Grid>
-                <Grid
-                  item
-                  xs={5}
-                >
-                  <TextField
-                    fullWidth
-                    label="Value"
-                    size="small"
-                    variant="outlined"
-                    value={row.value}
-                    onChange={(e) => handleValueChange(row.id, e.target.value)}
-                    disabled={row.selectedOperation === "exists"}
-                  />
-                </Grid>
+                {row.selectedProperty === "Date of Publication" ||
+                row.selectedProperty === "PubDate" ? (
+                  <>
+                    <Grid
+                      item
+                      xs={2.5}
+                    >
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <Container components={["DatePicker", "DatePicker"]}>
+                          <DatePicker
+                            label="Start Date"
+                            format="YYYY/MM/DD"
+                            minDate={dayjs("1957-08-17")}
+                            maxDate={dayjs(new Date())}
+                            slotProps={{ textField: { size: "small" } }}
+                            value={dayjs(row.value.startDate)}
+                            onChange={(newValue) =>
+                              handleDateChange(row.id, newValue, "startDate")
+                            }
+                          />
+                        </Container>
+                      </LocalizationProvider>
+                    </Grid>
+                    <Grid
+                      item
+                      xs={2.5}
+                    >
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <Container components={["DatePicker", "DatePicker"]}>
+                          <DatePicker
+                            label="End Date"
+                            format="YYYY/MM/DD"
+                            minDate={dayjs("1957-08-17")}
+                            maxDate={dayjs(new Date())}
+                            slotProps={{ textField: { size: "small" } }}
+                            value={dayjs(row.value.endDate)}
+                            onChange={(newValue) =>
+                              handleDateChange(row.id, newValue, "endDate")
+                            }
+                          />
+                        </Container>
+                      </LocalizationProvider>
+                    </Grid>
+                  </>
+                ) : (
+                  <Grid
+                    item
+                    xs={5}
+                  >
+                    <TextField
+                      fullWidth
+                      label="Value"
+                      size="small"
+                      variant="outlined"
+                      value={row.value}
+                      onChange={(e) =>
+                        handleValueChange(row.id, e.target.value)
+                      }
+                      disabled={row.selectedOperation === "exists"}
+                    />
+                  </Grid>
+                )}
               </React.Fragment>
             ))}
           </Grid>

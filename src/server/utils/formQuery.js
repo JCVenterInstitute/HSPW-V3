@@ -17,7 +17,9 @@ exports.formQuery = async (
       item.selectedProperty === "experiment_id_key" ||
       item.selectedProperty === "Name" ||
       item.selectedProperty === "Gene Name" ||
-      item.selectedProperty === "PubMed_ID"
+      item.selectedProperty === "PubMed_ID" ||
+      item.selectedProperty === "Date of Publication" ||
+      item.selectedProperty === "PubDate"
         ? item.selectedProperty
         : item.selectedProperty + ".keyword";
     const value = item.value;
@@ -65,6 +67,16 @@ exports.formQuery = async (
         };
       case "doesn't contain":
         return { bool: { must_not: { wildcard: { [field]: `*${value}*` } } } };
+      case "between":
+        return {
+          range: {
+            [field]: {
+              gte: value.startDate,
+              lte: value.endDate,
+              format: "yyyy/MM/dd",
+            },
+          },
+        };
       default:
         throw new Error(`Unsupported operation: ${item.selectedOperation}`);
     }
