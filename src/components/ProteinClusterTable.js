@@ -129,7 +129,7 @@ const ProteinClusterTable = () => {
   const [sortedColumn, setSortedColumn] = useState(null);
   const [rowData, setRowData] = useState([]);
 
-  const stringAttributes = ["uniprot_id", "cluster_members", "protein_name"];
+  const stringAttributes = ["uniprot_id", "protein_name"];
   const numberAttributes = ["number_of_members"];
 
   const defColumnDefs = {
@@ -139,15 +139,6 @@ const ProteinClusterTable = () => {
   };
 
   const columns = [
-    {
-      headerName: "Cluster",
-      field: "cluster_members",
-      maxWidth: 205,
-      wrapText: true,
-      suppressSizeToFit: true,
-      sortable: true,
-      cellStyle: { paddingLeft: "15px", textAlign: "center !important" },
-    },
     {
       headerName: "Representative Protein",
       field: "uniprot_id",
@@ -468,43 +459,6 @@ const ProteinClusterTable = () => {
             Reset Filters
           </Button>
           <div>
-            <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
-                <Typography
-                  sx={{
-                    color: "#454545",
-                    fontFamily: "Montserrat",
-                    fontSize: "16px",
-                    fontStyle: "normal",
-                    lineHeight: "normal",
-                  }}
-                >
-                  Cluster
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <TextField
-                  variant="outlined"
-                  size="small"
-                  label="Search..."
-                  onChange={handleInputChange}
-                  name="cluster_members"
-                  value={
-                    facetFilters["cluster_members"]
-                      ? facetFilters["cluster_members"]
-                      : ""
-                  }
-                  InputProps={{
-                    style: {
-                      borderRadius: "16px",
-                    },
-                  }}
-                />
-              </AccordionDetails>
-            </Accordion>
             <Accordion>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
