@@ -35,9 +35,6 @@ const CitationPage = () => {
           links to full text articles and other related resources.
         </p>
       </div>
-      <h2 style={{ textAlign: "center", marginTop: "10px" }}>
-        PubMed Citations
-      </h2>
       <CitationTable />
     </>
   );

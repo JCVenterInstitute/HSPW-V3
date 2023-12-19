@@ -1,5 +1,7 @@
 import { Chart } from "react-google-charts";
 import { useState, useEffect } from "react";
+import LinearProgress from "@mui/material/LinearProgress";
+import Box from "@mui/material/Box";
 
 import MainFeature from "../../../assets/hero.jpeg";
 import ProteinSignatureTable from "../../../components/ProteinSignatureTable";
@@ -37,6 +39,7 @@ export const options = {
 
 const ProteinSignature = () => {
   const [message, setMessage] = useState([]);
+  const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("http://localhost:8000/signature_type_counts")
@@ -54,8 +57,17 @@ const ProteinSignature = () => {
         }
 
         setMessage(data1);
+        setLoading(false);
       });
   }, []);
+
+  if (isLoading) {
+    return (
+      <Box sx={{ width: "100%" }}>
+        <LinearProgress sx={{ mb: "500px", margin: "20px" }} />
+      </Box>
+    );
+  }
 
   return (
     <>
