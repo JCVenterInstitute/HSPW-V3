@@ -85,6 +85,17 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   fontFamily: "Montserrat",
 }));
 
+function LinkComponent(props) {
+  return (
+    <a
+      rel="noopener noreferrer"
+      href={`protein-cluster/${props.value}`}
+    >
+      {props.value}
+    </a>
+  );
+}
+
 const recordsPerPageList = [
   {
     value: 50,
@@ -145,6 +156,7 @@ const ProteinClusterTable = () => {
       suppressSizeToFit: true,
       sortable: true,
       cellStyle: { paddingLeft: "15px !important" },
+      cellRenderer: "LinkComponent",
     },
     {
       headerName: "Representative Protein Name",
@@ -261,7 +273,7 @@ const ProteinClusterTable = () => {
   };
 
   const onBtExport = useCallback(() => {
-    gridRef.current.api.exportDataAsExcel();
+    gridRef.current.api.exportDataAsCsv();
   }, []);
 
   const handleGlobalSearch = (input) => {
@@ -850,6 +862,9 @@ const ProteinClusterTable = () => {
                 suppressDragLeaveHidesColumns
                 suppressMovable
                 loadingOverlayComponent={loadingOverlayComponent}
+                components={{
+                  LinkComponent,
+                }}
               />
             </div>
             <div>

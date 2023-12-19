@@ -415,8 +415,7 @@ const SignatureDetail = (props) => {
                       margin: "10px",
                     }}
                   >
-                    {data[0]["_source"]["GO Annotations"].split(",").length !==
-                    0 ? (
+                    {data[0]["_source"]["GO Annotations"] !== "" ? (
                       <TableHead>
                         <TableRow style={{ borderTopRightRadius: "10px" }}>
                           <TableCell
@@ -426,7 +425,7 @@ const SignatureDetail = (props) => {
                               fontFamily: "Montserrat",
                               fontSize: "17px",
                               fontWeight: "bold",
-
+                              padding: "10px",
                               borderTopLeftRadius: "10px",
                             }}
                           >
@@ -440,6 +439,7 @@ const SignatureDetail = (props) => {
                               borderTopRightRadius: "10px",
                               fontFamily: "Lato",
                               fontSize: "14px",
+                              padding: "10px",
                             }}
                           >
                             {data[0]["_source"]["GO Annotations"].split(",")[0]}
@@ -454,6 +454,7 @@ const SignatureDetail = (props) => {
                               fontFamily: "Montserrat",
                               fontSize: "17px",
                               fontWeight: "bold",
+                              padding: "10px",
                             }}
                           >
                             Processes
@@ -461,9 +462,11 @@ const SignatureDetail = (props) => {
                           <TableCell
                             sx={td}
                             style={{
+                              maxWidth: "100%",
                               fontFamily: "Lato",
                               fontSize: "14px",
                               border: "1px solid #CACACA",
+                              padding: "10px",
                             }}
                           >
                             {data[0]["_source"]["GO Annotations"].split(",")[1]}

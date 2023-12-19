@@ -357,7 +357,7 @@ function Comment_Table(props) {
   const gridRef = useRef();
 
   const onBtExport = useCallback(() => {
-    gridRef.current.api.exportDataAsExcel();
+    gridRef.current.api.exportDataAsCsv();
   }, []);
 
   const onFilterTextBoxChanged = useCallback(() => {

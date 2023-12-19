@@ -222,7 +222,7 @@ async function search_clusterID(id) {
   return response.body.hits.hits;
 }
 
-app.get("/protein-cluster/:id", (req, res) => {
+app.get("/api/protein-cluster/:id", (req, res) => {
   console.log(req.params.id);
   let a = search_clusterID(req.params.id);
   a.then(function (result) {
@@ -2259,14 +2259,17 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
   }
 });
 
-const searchStudy = async () => {
+const searchStudy = async (id) => {
   // Initialize the client.
   const client = await getClient();
 
   const query = {
     size: 10000,
     query: {
-      match_all: {},
+      query_string: {
+        default_field: "experiment_id_key",
+        query: id,
+      },
     },
     aggs: {
       sample_type: {
@@ -2292,11 +2295,11 @@ const searchStudy = async () => {
     body: query,
   });
 
-  return response.body;
+  return response.body.hits.hits;
 };
 
-app.get("/api/study", async (req, res) => {
-  searchStudy().then((response) => {
+app.get("/api/study/:id", async (req, res) => {
+  searchStudy(req.params.id).then((response) => {
     res.json(response);
   });
 });
@@ -2325,6 +2328,34 @@ const searchStudyProtein = async (experiment_id_key) => {
 
 app.get("/api/study_protein/:id", async (req, res) => {
   searchStudyProtein(req.params.id).then((response) => {
+    res.json(response);
+  });
+});
+
+const searchStudyProteinUniprot = async (uniprot_id) => {
+  // Initialize the client.
+  const client = await getClient();
+
+  const query = {
+    size: 10000,
+    query: {
+      query_string: {
+        default_field: "Uniprot_id",
+        query: uniprot_id,
+      },
+    },
+  };
+  console.log(query);
+  const response = await client.search({
+    index: "study_protein",
+    body: query,
+  });
+
+  return response.body.hits.hits;
+};
+
+app.get("/api/study_protein_uniprot/:id", async (req, res) => {
+  searchStudyProteinUniprot(req.params.id).then((response) => {
     res.json(response);
   });
 });

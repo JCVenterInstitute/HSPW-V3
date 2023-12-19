@@ -254,7 +254,7 @@ function Glycan_Table(props) {
   };
 
   const onBtExport = useCallback(() => {
-    gridRef.current.api.exportDataAsExcel();
+    gridRef.current.api.exportDataAsCsv();
   }, []);
 
   const onFilterTextBoxChanged = useCallback(() => {

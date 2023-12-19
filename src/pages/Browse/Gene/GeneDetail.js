@@ -7,6 +7,9 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import FontAwesome from "react-fontawesome";
+import LinearProgress from "@mui/material/LinearProgress";
+import Box from "@mui/material/Box";
 
 import MainFeature from "../../../assets/hero.jpeg";
 
@@ -97,7 +100,11 @@ const Gene_detail = (props) => {
   }, [message]);
 
   if (isLoading === true) {
-    return <h2>Loading</h2>;
+    return (
+      <Box sx={{ width: "100%" }}>
+        <LinearProgress sx={{ mb: "500px", margin: "20px" }} />
+      </Box>
+    );
   }
 
   return (
@@ -207,7 +214,14 @@ const Gene_detail = (props) => {
                     style={{ color: "/*#116988*/#0b5989" }}
                     href="https://www.uniprot.org/taxonomy/9606 "
                   >
-                    Homo sapiens
+                    Homo sapiens{" "}
+                    <FontAwesome
+                      className="super-crazy-colors"
+                      name="external-link"
+                      style={{
+                        textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                      }}
+                    />
                   </a>
                 </TableCell>
               </TableRow>
@@ -330,12 +344,7 @@ const Gene_detail = (props) => {
                             borderTopLeftRadius: "10px",
                           }}
                         >
-                          <a
-                            style={{ color: "white" }}
-                            href="https://salivaryproteome.org/public/index.php/Property:Has_accession_number"
-                          >
-                            Accession Number
-                          </a>
+                          Accession Number
                         </TableCell>
                         <TableCell
                           style={{
@@ -347,12 +356,7 @@ const Gene_detail = (props) => {
                             border: "1px solid white",
                           }}
                         >
-                          <a
-                            style={{ color: "white" }}
-                            href="https://salivaryproteome.org/public/index.php/Property:Known_officially_as"
-                          >
-                            Protein Name
-                          </a>
+                          Protein Name
                         </TableCell>
                         <TableCell
                           style={{
@@ -372,7 +376,10 @@ const Gene_detail = (props) => {
                       {data[0]["_source"]["Gene Products"].map(
                         (value, i, arr) => {
                           return (
-                            <TableRow style={{ border: "1px solid white" }}>
+                            <TableRow
+                              style={{ border: "1px solid white" }}
+                              key={`gene-product-${i}`}
+                            >
                               <TableCell
                                 style={{
                                   borderRight: "1px solid grey",
@@ -400,7 +407,14 @@ const Gene_detail = (props) => {
                                 <a
                                   href={`https://www.uniprot.org/uniprotkb/${value}/entry`}
                                 >
-                                  UniProt
+                                  UniProt{" "}
+                                  <FontAwesome
+                                    className="super-crazy-colors"
+                                    name="external-link"
+                                    style={{
+                                      textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                                    }}
+                                  />
                                 </a>
                               </TableCell>
                             </TableRow>
@@ -427,7 +441,14 @@ const Gene_detail = (props) => {
                 </TableCell>
                 <TableCell style={{ fontFamily: "Lato", fontSize: "14px" }}>
                   <a href={gene_link + data[0]["_source"]["GeneID"]}>
-                    Entrez Gene
+                    Entrez Gene{" "}
+                    <FontAwesome
+                      className="super-crazy-colors"
+                      name="external-link"
+                      style={{
+                        textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                      }}
+                    />
                   </a>
                 </TableCell>
               </TableRow>

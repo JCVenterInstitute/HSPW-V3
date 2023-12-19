@@ -12,8 +12,8 @@ import Footer from "./components/Footer.js";
 import ProteinSignature from "./pages/Browse/ProteinSignature/ProteinSignature.js";
 import ProteinCluster from "./pages/Browse/ProteinCluster/ProteinCluster.js";
 import GeneDetail from "./pages/Browse/Gene/GeneDetail.js";
-import Salivary_Protein from "./pages/Browse/SalivaryProtein/SalivaryProtein";
-import Protein_Detail from "./pages/Browse/SalivaryProtein/ProteinDetail";
+import SalivaryProtein from "./pages/Browse/SalivaryProtein/SalivaryProtein";
+import ProteinDetail from "./pages/Browse/SalivaryProtein/ProteinDetail";
 import Analysis from "./pages/Analysis.js";
 import Citation from "./pages/Browse/Citation/Citation";
 import CitationDetail from "./pages/Browse/Citation/CitationDetail";
@@ -84,11 +84,11 @@ function App() {
         />
         <Route
           path="/salivary-protein"
-          element={<Salivary_Protein />}
+          element={<SalivaryProtein />}
         />
         <Route
           path="/protein/:proteinid"
-          element={<Protein_Detail />}
+          element={<ProteinDetail />}
         />
         <Route
           path="/analysis"
