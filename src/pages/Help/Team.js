@@ -42,6 +42,7 @@ const Team = () => {
         <List component="nav">
           {memberInfo.map((institution) => (
             <ListItem
+              key={institution.id}
               button
               component="a"
               href={`#${institution.id}`}
@@ -54,7 +55,7 @@ const Team = () => {
           ))}
         </List>
         {memberInfo.map((institution) => (
-          <>
+          <React.Fragment key={institution.id}>
             <Typography
               variant="h5"
               sx={{
@@ -75,8 +76,9 @@ const Team = () => {
                 marginBottom: "30px",
               }}
             ></div>
-            {institution.members.map((member) => (
+            {institution.members.map((member, memberIndex) => (
               <div
+                key={`${institution.id}-${memberIndex}`}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -96,7 +98,7 @@ const Team = () => {
                 </Typography>
               </div>
             ))}
-          </>
+          </React.Fragment>
         ))}
       </Container>
     </>
