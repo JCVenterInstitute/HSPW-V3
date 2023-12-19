@@ -115,7 +115,7 @@ function Comment_Table(props) {
             .map((evidence) => evidence.evidenceCode)
             .join(", "),
           featuresList,
-          rowHeight: featuresList.length === 0 ? 50 : 10 * featuresList.length,
+          rowHeight: featuresList.length === 0 ? 50 : 40 * featuresList.length,
         };
       });
     });
@@ -131,7 +131,14 @@ function Comment_Table(props) {
   const FeaturesRenderer = ({ value }) => (
     <>
       {value.length !== 0 ? (
-        <div style={{ overflow: "scroll", height: "250px", fontSize: "12px" }}>
+        <div
+          style={{
+            padding: "15px",
+            overflowY: "scroll",
+            height: "inherit",
+            fontSize: "12px",
+          }}
+        >
           <TableHead>
             <TableRow>
               <TableCell
@@ -219,6 +226,7 @@ function Comment_Table(props) {
       wrapText: true,
       headerClass: ["header-border"],
       sortable: true,
+      resizable: true,
     },
     {
       headerName: "Description",
@@ -261,6 +269,7 @@ function Comment_Table(props) {
       wrapText: true,
       maxWidth: 155,
       sortable: true,
+      resizable: true,
       headerClass: ["header-border"],
     },
     {
@@ -269,6 +278,8 @@ function Comment_Table(props) {
       cellRenderer: FeaturesRenderer,
       wrapText: true,
       headerClass: ["header-border"],
+      rowHeight: 400,
+      resizable: true,
     },
   ];
 
