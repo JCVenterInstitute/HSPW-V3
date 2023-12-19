@@ -416,7 +416,10 @@ const columns = [
     headerName: "Protein Name",
     field: "Protein Name",
     cellClass: ["table-border"],
-    cellStyle: { wordBreak: "break-word", overflow: "scroll" },
+    cellStyle: {
+      wordBreak: "break-word",
+      textWrap: "wrap",
+    },
   },
   {
     headerName: "Expert Opinion",

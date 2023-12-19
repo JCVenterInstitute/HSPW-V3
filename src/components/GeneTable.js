@@ -281,8 +281,6 @@ const GeneTable = () => {
   }, []);
 
   useEffect(() => {
-    console.log("> Page Size");
-    console.log("> Doc Count", docCount);
     if (gridApi) gridApi.showLoadingOverlay();
 
     // Needed to delay search so users can type before triggering search
