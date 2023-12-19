@@ -64,9 +64,6 @@ async function getMapping() {
   return Object.keys(
     response.body["protein_cluster"]["mappings"]["properties"]
   );
-  console.log(
-    Object.keys(response.body["protein_cluster"]["mappings"]["properties"])
-  );
 }
 
 app.get("/a123", (req, res) => {
@@ -251,7 +248,7 @@ async function search_gene(size, from) {
   return response.body.hits;
 }
 
-app.get("/genes/:size/:from", (req, res) => {
+app.get("/api/genes/:size/:from", (req, res) => {
   let a = search_gene(req.params.size, req.params.from);
   a.then(function (result) {
     console.log(result);
@@ -2845,6 +2842,41 @@ app.post("/api/protein-signature/:size/:from/", (req, res) => {
   const { size, from } = req.params;
 
   const results = queryProteinSignature(size, from, filters, sort, keyword);
+
+  results.then((result) => {
+    res.json(result);
+  });
+});
+
+async function queryGenes(size, from, filter, sort = null, keyword = null) {
+  const client = await getClient();
+
+  const payload = {
+    index: "genes",
+    body: {
+      track_total_hits: true,
+      size: size,
+      from: from,
+      query: {
+        bool: {
+          ...(filter && { filter }),
+          ...(keyword && { must: [keyword] }), // Apply global search if present
+        },
+      },
+      ...(sort && { sort }), // Apply sort if present
+    },
+  };
+
+  const response = await client.search(payload);
+
+  return response.body;
+}
+
+app.post("/api/genes/:size/:from/", (req, res) => {
+  const { filters, sort, keyword } = req.body;
+  const { size, from } = req.params;
+
+  const results = queryGenes(size, from, filters, sort, keyword);
 
   results.then((result) => {
     res.json(result);
