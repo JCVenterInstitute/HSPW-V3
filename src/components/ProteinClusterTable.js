@@ -87,12 +87,14 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 function LinkComponent(props) {
   return (
-    <a
-      rel="noopener noreferrer"
-      href={`protein-cluster/${props.value}`}
-    >
-      {props.value}
-    </a>
+    <div style={{ paddingLeft: "20px" }}>
+      <a
+        rel="noopener noreferrer"
+        href={`protein-cluster/${props.value}`}
+      >
+        {props.value}
+      </a>
+    </div>
   );
 }
 
@@ -140,9 +142,9 @@ const ProteinClusterTable = () => {
 
   const columns = [
     {
-      headerName: "Representative Protein",
+      headerName: "Cluster Representative Protein",
       field: "uniprot_id",
-      maxWidth: 205,
+      maxWidth: 305,
       wrapText: true,
       suppressSizeToFit: true,
       sortable: true,
