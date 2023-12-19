@@ -159,11 +159,11 @@ function DownloadTable() {
     <>
       <div
         className="AppBox"
-        style={{ width: "76%" }}
+        style={{ width: "76%", marginTop: "30px" }}
       >
         <div
           className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
-          style={{ height: 600 }}
+          style={{ height: 900 }}
         >
           <AgGridReact
             rowData={rowData}
