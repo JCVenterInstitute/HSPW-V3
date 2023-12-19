@@ -1,0 +1,108 @@
+import Stefan from "../../../assets/team-members/Stefan-Ruhl.jpg";
+import Kathryn from "../../../assets/team-members/Kathryn-Kauffman.jpg";
+import Marcelo from "../../../assets/team-members/Marcelo-Freire.jpg";
+import Indresh from "../../../assets/team-members/Indresh-Singh.jpeg";
+import Harinder from "../../../assets/team-members/Harinder-Singh.jpeg";
+import Mickey from "../../../assets/team-members/Mickey-Zheng.jpg";
+import Link from "../../../assets/team-members/Link-Wu.jpg";
+import Floyd from "../../../assets/team-members/Floyd-Dewhirst.jpg";
+import Tsute from "../../../assets/team-members/Tsute-Chen.jpg";
+import Jessica from "../../../assets/team-members/Jessica-Welch.jpg";
+import Markus from "../../../assets/team-members/Markus-Hardt.jpeg";
+import Yanhui from "../../../assets/team-members/Yanhui-Zhang.jpg";
+
+const memberInfo = [
+  {
+    title: "University at Buffalo",
+    id: "university-at-buffalo",
+    members: [
+      {
+        imageName: "Stefan-Ruhl.jpg",
+        image: Stefan,
+        description: `<b>Stefan Ruhl, DDS, PhD</b> Stefan is professor of Oral Biology in the School of Dental Medicine at the University at Buffalo, New York, USA. He is a past President of the Salivary Research Group within the International Association for Dental Research (IADR), in 2015 was named IADR Salivary Researcher of the Year, and in 2020 received the IADR Distinguished Scientist Award in Salivary Research and was elected as fellow of the American Association for the Advancement of Science (AAAS). He has been studying the saliva proteome for over 30 years and served as curator of the HSP Wiki database since 2013. In his laboratory, he currently studies the molecular mechanisms of glycan-mediated microbial adhesion to salivary glycoproteins from an evolutionary perspective. <a href="https://www.ruhl-lab.org/" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">Lab Website &#x2197;</a>`,
+      },
+      {
+        imageName: "Kathryn-Kauffman.jpg",
+        image: Kathryn,
+        description:
+          "<b>Kathryn Kauffman, PhD</b> Kathryn is an Assistant Professor in the Department of Oral Biology in the School of Dental Medicine at the University at Buffalo in Buffalo, NY, USA. Her research is centered on understanding how viruses shape the ecology and evolution of microbial communities and their ecosystems. The current focus of her group is on determining how bacterial viruses (phages) shape the structure and function of the oral microbiome, and how this in turn impacts oral and systemic health.",
+      },
+    ],
+  },
+  {
+    title: "J. Craig Venter Institute (JCVI)",
+    id: "jcvi",
+    members: [
+      {
+        imageName: "Marcelo-Freire.jpg",
+        image: Marcelo,
+        description:
+          "<b>Marcelo Freire, DDS, PhD, DMSc</b> Marcelo is an Associate Professor in the Genomic Medicine and Infectious Disease Department at the J. Craig Venter Institute (JCVI). His laboratory is focused on investigating oral host-microbial interactions impacting health and disease.",
+      },
+      {
+        imageName: "Indresh-Singh.jpeg",
+        image: Indresh,
+        description:
+          "<b>Indresh Singh, MSc</b> Indresh is a Sr. Software Engineer, leading Informatics Core Services (ICS) at the J. Craig Venter Institute (JCVI). His expertise is; high-thoughput computing, genomic data analysis, data visualization, software development, and scalable infrastructure development and deployment in local and cloud environment.",
+      },
+      {
+        imageName: "Harinder-Singh.jpeg",
+        image: Harinder,
+        description:
+          "<b>Harinder Singh, PhD</b> Harinder is a Staff Scientist in the Infectious Disease Department at the J. Craig Venter Institute (JCVI). Dr. Singh's area of research is mostly focused on various data analysis, data mining, development of prediction algorithms and databases and bioinformatics pipelines for the scientific community.",
+      },
+      {
+        imageName: "Mickey-Zheng.jpg",
+        image: Mickey,
+        description: "<b>Mickey Zheng, Bs</b> Mickey is a super hero.",
+      },
+      {
+        imageName: "Link-Wu.jpg",
+        image: Link,
+        description: "<b>I-Lin (Link) Wu, Bs</b> Link is a super hero.",
+      },
+    ],
+  },
+  {
+    title: "Forsyth",
+    id: "forsyth",
+    members: [
+      {
+        imageName: "Floyd-Dewhirst.jpg",
+        image: Floyd,
+        description: `<b>Floyd E. Dewhirst, DDS, PhD</b> Floyd has been a research scientist at The Forsyth Institute where he has been continuously funded by NIDCR for the past 43 years. He is known for his work on organisms comprising the human oral microbiome and the creation of the <a href="https://www.homd.org/" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">Human Oral Microbiome Database</a>  Exit Disclaimer. His current research focuses on culturing as-yet-uncultured bacteria, determining their genome sequences and understanding their role in human health and disease.`,
+      },
+      {
+        imageName: "Tsute-Chen.jpg",
+        image: Tsute,
+        description: `<b>Tsute (George) Chen, PhD</b> As Forsyth's leading bioinformatics expert, George is responsible for analyzing huge amounts of data and transforming it into biologically meaningful information that other scientists can understand and interpret to gain new biological insights. George has also created and is maintaining the <a href="https://www.homd.org/" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">Human Oral Microbiome Database</a> Exit Disclaimer and <a href="https://www.momd.org/" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">Mouse Oral Microbiome Database</a> Exit Disclaimer together with Floyd on the Amazon cloud AWS platform.`,
+      },
+      {
+        imageName: "Jessica-Welch.jpg",
+        image: Jessica,
+        description:
+          "<b>Jessica Mark Welch, PhD</b> Jessica studies the spatial organization and community composition of the oral microbiota. She is a contributor to the Human Oral Microbiome Database (HOMD) and is interested in integration of the Human Salivary Proteome Wiki with the HOMD. She is an Associate Scientist at the Marine Biological Laboratory in Woods Hole, Massachusetts.",
+      },
+      {
+        imageName: "Markus-Hardt.jpeg",
+        image: Markus,
+        description:
+          "<b>Markus Hardt, PhD</b> Markus studies the molecular mechanisms underlying physiological and pathological processes through the lens of mass spectrometry. Through global analyses of proteomes, peptidomes and metabolomes in conjunction with functional studies, his laboratory is investigating the modulation of the immune response by post-translational modifications and proteolytic processing. The highly interdisciplinary and collaborative research includes projects on the oral microbiome, salivary proteome, cancer pain, Sjögren’s syndrome, periodontitis, obesity and COVID19 with the overall goal to foster the translation of biochemical understanding into improved diagnostics and therapeutics.",
+      },
+    ],
+  },
+  {
+    title: "The University of Tennessee Health Science Center",
+    id: "the-university-of-tennessee-health-science-center",
+    members: [
+      {
+        imageName: "Yanhui-Zhang.jpg",
+        image: Yanhui,
+        description:
+          "<b>Yanhui Zhang, B.S., M.S., Ph.D.</b> Yanhui is an Associate professor at the Department of Bioscience Research, College of Dentistry, The University of Tennessee Health Science Center. Her research spans three areas: Tetraspanins in oral biology and cancer; Clinical and translational research of biocompatibility and efficacy of oral care devices and therapeutics; Saliva, sputum, dental plaque, and oral cells/tissues metabolomics, proteomics, and microbiome in oral and systemic diseases; She will continue to work with the HSP Wiki and HOMD team to maintain, develop and upgrade the HSP Wiki database to serve scientific communities.",
+      },
+    ],
+  },
+];
+
+export default memberInfo;
