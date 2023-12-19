@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import {
   Container,
@@ -7,6 +7,7 @@ import {
   MenuItem,
   InputAdornment,
   IconButton,
+  Button,
 } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -22,7 +23,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 
-import { ReactComponent as Download_Logo } from "../assets/table-icon/download.svg";
+import { ReactComponent as DownloadLogo } from "../assets/table-icon/download.svg";
 import "./Filter.css";
 import "./Table.css";
 
@@ -79,634 +80,328 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 function LinkComponent(props) {
   return (
-    <a
-      target="_blank"
-      rel="noopener noreferrer"
-      href={"http://localhost:3000/gene/" + props.value}
-    >
-      {props.value}
-    </a>
+    <div style={{ paddingLeft: "20px" }}>
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href={`/gene/${props.value}`}
+      >
+        {props.value}
+      </a>
+    </div>
   );
 }
-const rowHeight = 60;
-function App() {
-  const [pageSize, setPageSize] = useState(50);
-  const [pageNum, setPageNum] = useState(0);
-  const [count, setCount] = useState(1);
-  const [docCount, setDocCount] = useState(0);
-  const [queryArr, setQueryArr] = useState([]);
-  const [geneIDC, setGeneIDC] = useState(false);
-  const [pageNumArr, setPageNumArr] = useState([1]);
-  const [rowData, setRowData] = useState([]);
-  const [geneNameC, setGeneNameC] = useState(false);
-  const [gridApi, setGridApi] = useState();
-  const [geneID, setGeneID] = useState("");
-  const [geneName, setGeneName] = useState("");
-  const [locationC, setLocationC] = useState(false);
-  const [geneLocation, setGeneLocation] = useState("");
-  const [searchText, setSearchText] = useState("");
-  const [globalSC, setGlobalSC] = useState(false);
 
-  const globalSearch = async () => {
-    const data = await fetch(
-      `http://localhost:8000/multi_search/genes/${searchText}`
-    );
-    console.log(`http://localhost:8000/multi_search/genes/${searchText}`);
-    const json = data.json();
-    return json;
-  };
+const HOST_NAME = "http://localhost:8000";
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetch(
-        `http://localhost:8000/genes/${pageSize}/${pageNum}`
-      );
-      const json = data.json();
-      return json;
-    };
-    let test = [];
+const recordsPerPageList = [
+  {
+    value: 50,
+    label: 50,
+  },
+  {
+    value: 100,
+    label: 100,
+  },
+  {
+    value: 500,
+    label: 500,
+  },
+  {
+    value: 1000,
+    label: 1000,
+  },
+];
 
-    const queryString = encodeURIComponent(JSON.stringify(queryArr));
-    const url = `http://localhost:8000/genes_search/${pageSize}/${pageNum}/`;
+const stringAttributes = ["GeneID", "Gene Name", "Location"];
+const numberAttributes = [];
 
-    const customHeaders = {
-      "Content-Type": "application/json",
-    };
-    const fetchQuery = async () => {
-      console.log(JSON.stringify(queryArr));
-      const data = await fetch(url, {
-        method: "POST",
-        headers: customHeaders,
-        body: JSON.stringify(queryArr),
-      });
-      const json = data.json();
-      console.log("73" + JSON.stringify(json));
-      return json;
-    };
-    console.log(url);
+const columns = [
+  {
+    headerName: "Gene",
+    field: "GeneID",
+    maxWidth: "120",
+    checkboxSelection: false,
+    headerCheckboxSelection: false,
+    cellRenderer: "LinkComponent",
+    headerClass: ["header-border"],
+    cellClass: ["table-border"],
+  },
+  {
+    headerName: "Gene Name",
+    field: "Gene Name",
+    wrapText: true,
+    autoHeight: true,
+    cellStyle: { wordBreak: "break-word" },
+    headerClass: ["header-border"],
+    cellClass: ["table-border"],
+  },
+  {
+    headerName: "Location",
+    field: "Location",
+    maxWidth: "150",
+    headerClass: ["header-border"],
+    cellClass: ["table-border"],
+  },
+];
 
-    if (geneIDC === true || geneNameC === true || locationC === true) {
-      const queryResult = fetchQuery().catch(console.errror);
-      queryResult.then((value) => {
-        if (value.hits.hits) {
-          console.log(value);
-          let data1 = [];
-          for (let i = 0; i < value.hits.hits.length; i++) {
-            data1.push(value.hits.hits[i]["_source"]);
-          }
-          console.log(data1);
-          setRowData(data1);
-        }
-        setDocCount(value.hits.total.value);
-        const newOptions = [];
-        for (
-          let i = 1;
-          i <= Math.round(value.hits.total.value / pageSize);
-          i++
-        ) {
-          newOptions.push(
-            <option
-              key={i}
-              value={i}
-            >
-              {i}
-            </option>
-          );
-        }
-        setPageNumArr(newOptions);
-      });
-    } else if (globalSC === true) {
-      const result = globalSearch().catch(console.errror);
-      result.then((value) => {
-        if (value.hits.hits) {
-          console.log(value);
-          let data1 = [];
-          for (let i = 0; i < value.hits.hits.length; i++) {
-            data1.push(value.hits.hits[i]["_source"]);
-          }
-          console.log(data1);
-          setRowData(data1);
-        }
-        setDocCount(value.hits.total.value);
-        const newOptions = [];
-        for (
-          let i = 1;
-          i <= Math.round(value.hits.total.value / pageSize);
-          i++
-        ) {
-          newOptions.push(
-            <option
-              key={i}
-              value={i}
-            >
-              {i + 1}
-            </option>
-          );
-        }
+const customHeaders = {
+  "Content-Type": "application/json",
+};
 
-        setPageNumArr(newOptions);
-        setCount(2);
-      });
-    } else {
-      const result = fetchData().catch(console.errror);
-      console.log(`http://localhost:8000/genes_search/${pageSize}/${pageNum}`);
-      console.log(result);
-      result.then((value) => {
-        if (value.hits) {
-          console.log(value);
-          let data1 = [];
-          for (let i = 0; i < value.hits.length; i++) {
-            data1.push(value.hits[i]["_source"]);
-          }
-          console.log(data1);
-          setRowData(data1);
-        }
-        setDocCount(value.total.value);
-        const newOptions = [];
-        for (let i = 1; i <= Math.round(value.total.value / pageSize); i++) {
-          newOptions.push(
-            <option
-              key={i}
-              value={i}
-            >
-              {i}
-            </option>
-          );
-        }
-        setPageNumArr(newOptions);
-      });
-    }
-  }, [geneID, pageSize, pageNum, geneName, queryArr, globalSC]);
+const defColumnDefs = { flex: 1, sortable: true };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetch(
-        `http://localhost:8000/genes/${pageSize}/${pageNum}`
-      );
-      const json = data.json();
-      return json;
-    };
-    const result = fetchData().catch(console.errror);
-    console.log(result);
-    result.then((value) => {
-      if (value.hits) {
-        console.log(value);
-        let data1 = [];
-        for (let i = 0; i < value.hits.length; i++) {
-          data1.push(value.hits[i]["_source"]);
-        }
-        console.log(data1);
-        setRowData(data1);
-      }
-      setDocCount(value.total.value);
-      const newOptions = [];
-      for (let i = 1; i <= Math.round(value.total.value / pageSize); i++) {
-        newOptions.push(
-          <option
-            key={i}
-            value={i}
-          >
-            {i}
-          </option>
-        );
-      }
-      setPageNumArr(newOptions);
-    });
-  }, []);
-
-  const columns = [
-    {
-      headerName: "Gene",
-      field: "GeneID",
-      maxWidth: "120",
-      checkboxSelection: false,
-      headerCheckboxSelection: false,
-      cellRenderer: "LinkComponent",
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-    },
-    {
-      headerName: "Gene Name",
-      field: "Gene Name",
-      wrapText: true,
-      autoHeight: true,
-      cellStyle: { wordBreak: "break-word" },
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-    },
-    {
-      headerName: "Location",
-      field: "Location",
-      maxWidth: "150",
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
-    },
-  ];
-
-  const defColumnDefs = { flex: 1, filter: true };
-
-  const onGridReady = (params) => {
-    setGridApi(params);
-  };
-
+const GeneTable = () => {
   const gridRef = useRef();
 
-  const handleIDChange = (e) => {
-    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
+  const [gridApi, setGridApi] = useState();
+  const [columnApi, setColumnApi] = useState(null);
+  const [pageSize, setPageSize] = useState(50);
+  const [pageNum, setPageNum] = useState(0);
+  const [facetFilters, setFacetFilters] = useState({});
+  const [sortedColumn, setSortedColumn] = useState(null);
+  const [docCount, setDocCount] = useState(0);
+  const [rowData, setRowData] = useState([]);
+  const [searchText, setSearchText] = useState("");
 
-    let inputValue = e.target.value;
-    setGeneID(inputValue);
-    if (isDeleteKey) {
-      // Handle delete key press by removing the last character
-      inputValue = inputValue.slice(0, -1);
-    }
-
-    // Remove double backslashes
-    inputValue = inputValue.replace(/\\\\/g, "");
-
-    // Escape special characters
-    inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-
-    if (inputValue === "") {
-      setGeneIDC(false);
-    } else {
-      setGeneIDC(true);
-    }
-
-    // Add new element for InterPro ID with updated input value
-    const newIDQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [
-                {
-                  wildcard: {
-                    GeneID: {
-                      value: `${inputValue}*`,
-                      case_insensitive: true,
-                    },
-                  },
-                },
-              ],
-            },
-          }
-        : null;
-
-    updateQuery(newIDQuery, "GeneID");
+  const globalSearch = (input) => {
+    setSearchText(input);
   };
 
-  const handleNameChange = (e) => {
-    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
-
-    let inputValue = e.target.value;
-    setGeneName(inputValue);
-    if (isDeleteKey) {
-      // Handle delete key press by removing the last character
-      inputValue = inputValue.slice(0, -1);
-    }
-
-    // Remove double backslashes
-    inputValue = inputValue.replace(/\\\\/g, "");
-
-    // Escape special characters
-    inputValue = inputValue.replace(/[[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-
-    if (inputValue === "") {
-      setGeneNameC(false);
-    } else {
-      setGeneNameC(true);
-    }
-
-    if (inputValue.includes("-")) {
-      inputValue = inputValue.replace("-", "\\-");
-      console.log(inputValue);
-    }
-    // Add new element for Name with updated input value
-    const newNameQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [
-                {
-                  wildcard: {
-                    "Gene Name": {
-                      value: `${inputValue}*`,
-                      case_insensitive: true,
-                    },
-                  },
-                },
-              ],
-            },
-          }
-        : null;
-
-    updateQuery(newNameQuery, "Gene Name");
+  const escapeSpecialCharacters = (inputVal) => {
+    return inputVal.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
   };
 
-  const handleLocationChange = (e) => {
-    const isDeleteKey = e.nativeEvent.inputType === "deleteContentBackward";
-
-    let inputValue = e.target.value;
-    setGeneLocation(inputValue);
-    if (isDeleteKey) {
-      // Handle delete key press by removing the last character
-      inputValue = inputValue.slice(0, -1);
-    }
-
-    // Remove double backslashes
-    inputValue = inputValue.replace(/\\\\/g, "");
-
-    // Escape special characters
-    inputValue = inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-
-    if (inputValue === "") {
-      setLocationC(false);
-    } else {
-      setLocationC(true);
-    }
-
-    // Add new element for Name with updated input value
-    const newNameQuery =
-      inputValue !== ""
-        ? {
-            bool: {
-              must: [],
-              must_not: [],
-              filter: [
-                {
-                  wildcard: {
-                    Location: {
-                      value: `${inputValue}*`,
-                      case_insensitive: true,
-                    },
-                  },
-                },
-              ],
-            },
-          }
-        : null;
-
-    updateQuery(newNameQuery, "Location");
-  };
-
-  const updateQuery = (newQuery, fieldName) => {
-    setQueryArr((prevArray) => {
-      // If newQuery is null, remove only the corresponding type of query from the array
-      if (newQuery === null) {
-        const targetTypePrev = findEmptyField(prevArray, fieldName);
-        console.log("TargetType (null case):", targetTypePrev);
-
-        const updatedArray = prevArray.filter((p) => {
-          const hasWildcard =
-            p &&
-            p.bool &&
-            p.bool.filter &&
-            p.bool.filter[0] &&
-            p.bool.filter[0].wildcard;
-
-          const wildcardProperty =
-            hasWildcard && Object.keys(p.bool.filter[0].wildcard)[0];
-
-          const hasQueryString =
-            p.bool &&
-            p.bool.filter &&
-            p.bool.filter[0] &&
-            p.bool.filter[0].query_string;
-
-          const isNameQuery =
-            hasWildcard &&
-            wildcardProperty === "Gene Name" &&
-            p.bool.filter[0].wildcard["Gene Name"].value === "";
-
-          const isLocationQuery =
-            hasWildcard &&
-            wildcardProperty === "Location" &&
-            p.bool.filter[0].wildcard["Location"].value === "";
-          // Adjust the condition based on the targetTypePrev boolean value
-          return hasWildcard || hasQueryString
-            ? targetTypePrev
-              ? wildcardProperty !== fieldName &&
-                !(
-                  isNameQuery &&
-                  isLocationQuery &&
-                  p.bool.filter[0].query_string[fieldName] !== undefined
-                )
-              : isNameQuery ||
-                isLocationQuery ||
-                wildcardProperty === fieldName ||
-                (hasQueryString &&
-                  p.bool.filter[0].query_string[fieldName] !== undefined)
-            : true;
-        });
-
-        console.log("Updated Array (null case):", updatedArray);
-
-        return updatedArray;
-      }
-
-      const nonEmptyQueries = prevArray.filter((query) => {
-        const wildcardProperty =
-          query.bool &&
-          query.bool.filter &&
-          query.bool.filter[0].wildcard &&
-          Object.keys(query.bool.filter[0].wildcard)[0];
-
-        // Check if the field is not empty in the new query
-        return !(
-          wildcardProperty &&
-          newQuery.bool.filter &&
-          newQuery.bool.filter[0].wildcard &&
-          Object.keys(newQuery.bool.filter[0].wildcard)[0] ===
-            wildcardProperty &&
-          newQuery.bool.filter[0].wildcard[wildcardProperty] === ""
-        );
-      });
-
-      console.log("Non-empty Queries:", nonEmptyQueries);
-
-      const updatedArray = nonEmptyQueries.map((p) => {
-        const isSame = isSameType(p, newQuery);
-        console.log(
-          `Comparing: ${JSON.stringify(p)} and ${JSON.stringify(
-            newQuery
-          )} => ${isSame}`
-        );
-        return isSame ? newQuery : p;
-      });
-
-      // If the new query does not exist or has an empty value, remove it from the array
-      if (
-        newQuery.bool.filter !== undefined &&
-        !nonEmptyQueries.some((p) => isSameType(p, newQuery)) &&
-        !(newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value === "")
-      ) {
-        // Check if there's an existing query for the same field and remove it
-        const updatedArrayWithoutExisting = updatedArray.filter((p) => {
-          if (
-            p.bool &&
-            p.bool.filter &&
-            p.bool.filter[0].wildcard &&
-            Object.keys(p.bool.filter[0].wildcard)[0] === fieldName
-          ) {
-            // Remove the existing query if the new query is not empty
-            return newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value !== "";
-          }
-          return true;
-        });
-
-        // Add the new query only if it's not an empty wildcard
-        if (newQuery.bool.filter[0]?.wildcard?.[fieldName]?.value !== "") {
-          updatedArrayWithoutExisting.push(newQuery);
-          console.log("New Query Added:", updatedArrayWithoutExisting);
-        }
-
-        return updatedArrayWithoutExisting;
-      }
-
-      return updatedArray;
-    });
-  };
-
-  const findEmptyField = (queries, fieldName) => {
-    console.log("Queries:", queries);
-    console.log("Field Name:", fieldName);
-
-    const findFieldInFilter = (filter) => {
-      if (filter.wildcard) {
-        return filter && filter.wildcard && filter.wildcard[fieldName];
-      } else if (filter.range) {
-        return filter && filter.range && filter.range[fieldName];
-      } else if (filter.query_string) {
-        console.log("1272", filter.query_string);
-        return filter.query_string; // Directly return the found filter
-      }
+  /**
+   * Creates a range query for a number field for OpenSearch
+   * @param {{ attrName, start, end }} input Necessary fields for range query
+   * @returns OpenSearch range query based on inputs
+   */
+  const createRangeQuery = ({ attrName, start, end }) => {
+    let rangeQuery = {
+      range: {
+        [attrName]: {
+          ...(start && { gte: start }),
+          ...(end && { lte: end }),
+        },
+      },
     };
 
-    const searchQuery = (query) => {
-      if (query && query.bool && query.bool.filter) {
-        return query.bool.filter.some(findFieldInFilter);
-      }
-
-      return false;
+    return {
+      bool: {
+        filter: [rangeQuery],
+      },
     };
-
-    const result = queries.some(searchQuery); // Use some instead of find
-
-    console.log(result ? "Field Found:" : "Field Not Found");
-
-    return result;
   };
 
-  // Helper function to check if two queries have the same wildcard type
-  const isSameType = (query1, query2) => {
-    const type1 = query1.bool?.filter?.[0]?.wildcard
-      ? Object.keys(query1.bool.filter[0].wildcard)[0]
-      : null;
-    const type2 = query2.bool?.filter?.[0]?.wildcard
-      ? Object.keys(query2.bool.filter[0].wildcard)[0]
-      : null;
+  /**
+   * Create a proper search query for whichever search string is entered into the search bar
+   */
+  const createGlobalSearchQuery = () => {
+    const escapedInput = escapeSpecialCharacters(searchText);
 
-    // Check both type and value for wildcard queries
-    if (type1 === type2 && type1 === "wildcard") {
-      const value1 = query1.bool.filter[0].wildcard[type1].value;
-      const value2 = query2.bool.filter[0].wildcard[type2].value;
-      return value1 === value2;
+    return {
+      query_string: {
+        query: `*${escapedInput}*`,
+        fields: [...stringAttributes],
+        default_operator: "AND",
+        analyze_wildcard: true,
+      },
+    };
+  };
+
+  /**
+   * Create a proper sort query for whichever sort attribute is selected
+   */
+  const createSortQuery = () => {
+    const { attribute, order } = sortedColumn;
+
+    // Have to include .keyword when sorting string attributes
+    const sortAttrKey = `${sortedColumn.attribute}${
+      stringAttributes.includes(attribute) && attribute !== "Gene Name"
+        ? ".keyword"
+        : ""
+    }`;
+
+    return {
+      sort: [
+        {
+          [sortAttrKey]: {
+            order,
+          },
+        },
+      ],
+    };
+  };
+
+  /**
+   * Build OpenSearch Query based on user facet filters
+   * @param {Object} filters Object containing all key & values for all user selected facet filters
+   * @returns Returns an array of queries for each non empty filter applied by user
+   */
+  const queryBuilder = (filters) => {
+    const queries = [];
+
+    for (const attr of Object.keys(filters)) {
+      if (stringAttributes.includes(attr)) {
+        queries.push(
+          createStringQuery({ attrName: attr, value: filters[attr] })
+        );
+      } else if (numberAttributes.includes(attr)) {
+        queries.push(createRangeQuery({ attrName: attr, ...filters[attr] }));
+      }
     }
 
-    return type1 === type2;
+    return queries;
+  };
+
+  const fetchData = async () => {
+    const filterQueries = queryBuilder(facetFilters);
+
+    await fetch(`${HOST_NAME}/api/genes/${pageSize}/${pageSize * pageNum}`, {
+      method: "POST",
+      headers: customHeaders,
+      body: JSON.stringify({
+        filters: filterQueries,
+        ...(searchText && { keyword: createGlobalSearchQuery() }),
+        ...(sortedColumn && createSortQuery()),
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const { hits, total } = data.hits;
+        setRowData(hits.map((rec) => rec._source));
+
+        setDocCount(total.value > 10000 ? 10000 : total.value); // pagination breaks for results after 10k so limit results
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (gridApi) gridApi.showLoadingOverlay();
+
+    // Needed to delay search so users can type before triggering search
+    const delayDebounceFn = setTimeout(() => {
+      setPageNum(0);
+      fetchData();
+    }, 600);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [facetFilters, searchText, pageSize, gridApi]);
+
+  useEffect(() => {
+    if (gridApi) gridApi.showLoadingOverlay();
+    fetchData();
+  }, [pageNum, gridApi]);
+
+  useEffect(() => {
+    if (gridApi) {
+      gridApi.showLoadingOverlay();
+      setPageNum(0);
+      fetchData();
+    }
+  }, [sortedColumn]);
+
+  /**
+   * Creates a query for a string field for OpenSearch
+   * @param {{attrName, value}} input necessary fields for string query
+   * @returns
+   */
+  const createStringQuery = ({ attrName, value }) => {
+    const escapedInput = escapeSpecialCharacters(value);
+
+    return {
+      bool: {
+        filter: [
+          {
+            regexp: {
+              [attrName !== "Gene Name" ? `${attrName}.keyword` : attrName]: {
+                value: `${escapedInput}.*`,
+                flags: "ALL",
+                case_insensitive: true,
+              },
+            },
+          },
+        ],
+      },
+    };
+  };
+
+  const onGridReady = (params) => {
+    params.api.showLoadingOverlay();
+    setGridApi(params.api);
+    setColumnApi(params.columnApi);
+  };
+
+  /**
+   * Handle Input changes for all the text boxes
+   */
+  const handleInputChange = (e) => {
+    const { value, name } = e.target;
+    const currentFilters = facetFilters;
+
+    if (currentFilters[name] !== undefined && value === "") {
+      // Remove empty filter
+      delete currentFilters[name];
+      setFacetFilters({
+        ...currentFilters,
+      });
+    } else {
+      // Add new filter
+      setFacetFilters({
+        ...currentFilters,
+        [name]: value,
+      });
+    }
+  };
+
+  const resetFilters = () => {
+    setFacetFilters({});
+    setSearchText("");
+    setSortedColumn(null);
+  };
+
+  /**
+   * Track which column is selected for sort by user
+   */
+  const onSortChanged = () => {
+    const columnState = columnApi.getColumnState();
+    const sortedColumn = columnState.filter((col) => col.sort !== null);
+
+    if (sortedColumn.length !== 0) {
+      const { sort, colId } = sortedColumn[0];
+      setSortedColumn({ attribute: colId, order: sort });
+    } else {
+      setSortedColumn(null);
+    }
   };
 
   const onBtExport = useCallback(() => {
     gridRef.current.api.exportDataAsCsv();
   }, []);
 
-  const onBtNext = (event) => {
-    if (count < docCount / pageSize) {
-      var x = gridRef.current.api.paginationGetCurrentPage();
-
+  const onBtNext = () => {
+    if (pageNum < docCount / pageSize - 1) {
       setPageNum(pageNum + 1);
-
-      setCount(count + 1);
     }
   };
 
-  const onPageNumChanged = (event) => {
-    var value = document.getElementById("page-num").value;
-    setPageNum(value);
-    setCount(value);
-  };
-
-  const onBtPrevious = (event) => {
-    if (pageNum !== 1) {
-      var x = pageNum;
-      setPageNum(x - 1);
-      setCount(count - 1);
-    }
-  };
-
-  const escapeRegExp = (string) => {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  };
-
-  const onFilterTextBoxChanged = (e) => {
-    if (e.key === "Enter") {
-      console.log("key entered", e.key);
-
-      // Check if the event is a delete key press or a synthetic event
-      const isDeleteKey =
-        e.nativeEvent && e.nativeEvent.inputType === "deleteContentBackward";
-
-      let inputValue = e.target.value;
-
-      if (isDeleteKey) {
-        // Handle delete key press by removing the last character
-        inputValue = inputValue.slice(0, -1);
-      }
-
-      // Ensure that inputValue is defined
-      inputValue = inputValue || "";
-
-      // Escape special characters
-      const escapedInputValue = escapeRegExp(inputValue);
-
-      console.log("Input Value: " + escapedInputValue);
-
-      if (escapedInputValue !== "") {
-        setSearchText(escapedInputValue);
-        setGlobalSC(true);
-      } else {
-        setGlobalSC(false);
-        setSearchText("");
-      }
+  const onBtPrevious = () => {
+    if (pageNum !== 0) {
+      setPageNum(pageNum - 1);
     }
   };
 
   const clearSearch = () => {
     setSearchText("");
-    setGlobalSC(false);
   };
-  const recordsPerPageList = [
-    {
-      value: 50,
-      label: 50,
-    },
-    {
-      value: 100,
-      label: 100,
-    },
-    {
-      value: 500,
-      label: 500,
-    },
-    {
-      value: 1000,
-      label: 1000,
-    },
-  ];
+
+  const handleGlobalSearch = (input) => {
+    setSearchText(input);
+  };
 
   return (
     <>
@@ -716,15 +411,14 @@ function App() {
           width: "100%",
           display: "flex",
           paddingLeft: "0px !important",
-          // paddingRight: "0px !important",
         }}
       >
         <Box
           sx={{
             backgroundColor: "#f9f8f7",
-            width: "270px",
-            height: "47rem",
+            width: "285px",
             overflow: "scroll",
+            maxHeight: "760px",
           }}
         >
           <h1
@@ -734,11 +428,23 @@ function App() {
               textAlign: "center",
               paddingTop: "30px",
               fontSize: "25px",
-              paddingBottom: "40px",
             }}
           >
             Filters
           </h1>
+          <Button
+            variant="text"
+            size="small"
+            sx={{
+              display: "block",
+              marginBottom: "20px",
+              marginX: "auto",
+              textAlign: "center",
+            }}
+            onClick={resetFilters}
+          >
+            Reset Filters
+          </Button>
           <div>
             <Accordion>
               <AccordionSummary
@@ -767,8 +473,9 @@ function App() {
                       borderRadius: "16px",
                     },
                   }}
-                  onChange={handleIDChange}
-                  value={geneID}
+                  onChange={handleInputChange}
+                  name="GeneID"
+                  value={facetFilters["GeneID"] ? facetFilters["GeneID"] : ""}
                 />
               </AccordionDetails>
             </Accordion>
@@ -799,8 +506,11 @@ function App() {
                       borderRadius: "16px",
                     },
                   }}
-                  onChange={handleNameChange}
-                  value={geneName}
+                  onChange={handleInputChange}
+                  name="Gene Name"
+                  value={
+                    facetFilters["Gene Name"] ? facetFilters["Gene Name"] : ""
+                  }
                 />
               </AccordionDetails>
             </Accordion>
@@ -831,8 +541,11 @@ function App() {
                       borderRadius: "16px",
                     },
                   }}
-                  onChange={handleLocationChange}
-                  value={geneLocation}
+                  onChange={handleInputChange}
+                  name="Location"
+                  value={
+                    facetFilters["Location"] ? facetFilters["Location"] : ""
+                  }
                 />
               </AccordionDetails>
             </Accordion>
@@ -851,11 +564,6 @@ function App() {
                 value={searchText}
                 onChange={(e) => {
                   setSearchText(e.target.value);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    onFilterTextBoxChanged(e.target.value);
-                  }
                 }}
                 InputProps={{
                   style: {
@@ -891,11 +599,7 @@ function App() {
                   borderRadius: "0 16px 16px 0",
                 }}
                 onClick={() => {
-                  const syntheticEvent = {
-                    target: { value: searchText },
-                    nativeEvent: { inputType: "insertText" }, // Mimic an input event
-                  };
-                  onFilterTextBoxChanged(syntheticEvent);
+                  handleGlobalSearch(searchText);
                 }}
               >
                 <SearchIcon sx={{ color: "white" }} />
@@ -928,6 +632,7 @@ function App() {
                 }}
                 value={pageSize}
                 onChange={(event) => {
+                  setPageNum(0);
                   setPageSize(event.target.value);
                 }}
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
@@ -951,32 +656,34 @@ function App() {
               >
                 Page
               </Typography>
-              <TextField
-                select
-                size="small"
-                InputProps={{
-                  style: {
-                    borderRadius: "10px",
-                  },
-                }}
-                value={pageNum ? pageNum + 1 : 1}
-                sx={{ marginLeft: "10px", marginRight: "10px" }}
-                onChange={(event) => {
-                  setPageNum(event.target.value);
-                }}
-              >
-                {Array.from(
-                  { length: Math.ceil(docCount / pageSize) },
-                  (_, index) => (
-                    <MenuItem
-                      key={index + 1}
-                      value={index + 1}
-                    >
-                      {index + 1}
-                    </MenuItem>
-                  )
-                )}
-              </TextField>
+              {rowData.length !== 0 && (
+                <TextField
+                  select
+                  size="small"
+                  InputProps={{
+                    style: {
+                      borderRadius: "10px",
+                    },
+                  }}
+                  value={pageNum === 0 ? 1 : pageNum + 1}
+                  sx={{ marginLeft: "10px", marginRight: "10px" }}
+                  onChange={(event) => {
+                    setPageNum(event.target.value - 1);
+                  }}
+                >
+                  {Array.from(
+                    { length: Math.ceil(docCount / pageSize) },
+                    (_, index) => (
+                      <MenuItem
+                        key={index + 1}
+                        value={index + 1}
+                      >
+                        {index + 1}
+                      </MenuItem>
+                    )
+                  )}
+                </TextField>
+              )}
               <Typography
                 display="inline"
                 sx={{
@@ -986,21 +693,21 @@ function App() {
                   marginRight: "30px",
                 }}
               >
-                out of {Math.ceil(docCount / pageSize)}
+                out of {docCount === 0 ? 0 : Math.ceil(docCount / pageSize)}
               </Typography>
               <button
                 onClick={onBtPrevious}
-                disabled={pageNum + 1 === 1}
+                disabled={pageNum === 0}
                 style={{
-                  color: pageNum + 1 === 1 ? "#D3D3D3" : "#F6921E",
+                  color: pageNum === 0 ? "#D3D3D3" : "#F6921E",
                   background: "white",
                   fontSize: "20px",
                   border: "none",
-                  cursor: pageNum + 1 === 1 ? "default" : "pointer",
-                  transition: pageNum + 1 === 1 ? "none" : "background 0.3s",
+                  cursor: pageNum === 0 ? "default" : "pointer",
+                  transition: pageNum === 0 ? "none" : "background 0.3s",
                   borderRadius: "5px",
                   marginRight: "15px",
-                  pointerEvents: pageNum + 1 === 1 ? "none" : "auto",
+                  pointerEvents: pageNum === 0 ? "none" : "auto",
                   paddingBottom: "5px",
                 }}
                 onMouseEnter={(e) =>
@@ -1022,10 +729,10 @@ function App() {
               </button>
               <button
                 onClick={onBtNext}
-                disabled={pageNum === Math.ceil(docCount / pageSize)}
+                disabled={pageNum === Math.ceil(docCount / pageSize - 1)}
                 style={{
                   color:
-                    pageNum === Math.ceil(docCount / pageSize)
+                    pageNum === Math.ceil(docCount / pageSize - 1)
                       ? "#D3D3D3"
                       : "#F6921E",
                   background: "white",
@@ -1065,7 +772,6 @@ function App() {
               </button>
             </Box>
           </Box>
-
           <Box
             sx={{
               marginTop: "20px",
@@ -1082,46 +788,43 @@ function App() {
                 columnDefs={columns}
                 defaultColDef={defColumnDefs}
                 onGridReady={onGridReady}
-                cacheQuickFilter={true}
-                frameworkComponents={{
+                components={{
                   LinkComponent,
                 }}
+                onSortChanged={onSortChanged}
                 enableCellTextSelection={true}
-                overlayNoRowsTemplate={
-                  '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
-                }
-                paginationPageSize={50}
               />
+            </div>
+            <div>
+              <button
+                onClick={onBtExport}
+                style={{
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  color: "#F6921E",
+                  background: "white",
+                  fontSize: "20",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                <DownloadLogo
+                  style={{
+                    marginRight: "10px",
+                    paddingTop: "5px",
+                    display: "inline",
+                    position: "relative",
+                    top: "0.15em",
+                  }}
+                />
+                Download Spreadsheet
+              </button>
             </div>
           </Box>
         </Container>
       </Container>
-
-      <button
-        onClick={onBtExport}
-        style={{
-          fontWeight: "bold",
-          textAlign: "center",
-          color: "#F6921E",
-          background: "white",
-          fontSize: "20",
-          border: "none",
-          cursor: "pointer",
-        }}
-      >
-        <Download_Logo
-          style={{
-            marginRight: "10px",
-            paddingTop: "5px",
-            display: "inline",
-            position: "relative",
-            top: "0.15em",
-          }}
-        />
-        Download Spreadsheet
-      </button>
     </>
   );
-}
+};
 
-export default App;
+export default GeneTable;

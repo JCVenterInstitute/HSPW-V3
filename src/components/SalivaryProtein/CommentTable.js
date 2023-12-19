@@ -51,11 +51,8 @@ function Comment_Table(props) {
   const [gridApi, setGridApi] = useState();
   const [pageSize, setPageSize] = useState(10);
   const [pageNum, setPageNum] = useState(1);
-  const [count, setCount] = useState(1);
   const [totalPageNumber, setTotalPageNumber] = useState(1);
   const [docCount, setDocCount] = useState(0);
-
-  const [pageNumArr, setPageNumArr] = useState([1]);
 
   useEffect(() => {
     const jsonData = props.data;
@@ -107,6 +104,9 @@ function Comment_Table(props) {
           description: feature.description || "",
         }));
 
+        featuresList.rowHeight =
+          featuresList.length !== 0 ? 30 : 90 * featuresList.length;
+
         return {
           annotation_type,
           annotation_description: annotation_description_text || "",
@@ -115,6 +115,7 @@ function Comment_Table(props) {
             .map((evidence) => evidence.evidenceCode)
             .join(", "),
           featuresList,
+          rowHeight: featuresList.length === 0 ? 50 : 10 * featuresList.length,
         };
       });
     });
@@ -130,78 +131,80 @@ function Comment_Table(props) {
   const FeaturesRenderer = ({ value }) => (
     <>
       {value.length !== 0 ? (
-        <TableHead>
-          <TableRow>
-            <TableCell
-              sx={th}
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "17px",
-                fontWeight: "bold",
-                border: "1px solid #3592E4",
-                borderTopLeftRadius: "10px",
-              }}
-            >
-              Type
-            </TableCell>
-            <TableCell
-              sx={th}
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "17px",
-                fontWeight: "bold",
-                border: "1px solid #3592E4",
-              }}
-            >
-              Description
-            </TableCell>
-            <TableCell
-              sx={th}
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "17px",
-                fontWeight: "bold",
-                border: "1px solid #3592E4",
-                borderTopRightRadius: "10px",
-              }}
-            >
-              Position
-            </TableCell>
-          </TableRow>
-          {value.map((feature, index) => (
-            <React.Fragment key={index}>
-              <TableRow>
-                <TableCell
-                  style={{
-                    border: "1px solid #CACACA",
-                  }}
-                >
-                  {feature.type}
-                </TableCell>
-                <TableCell
-                  style={{
-                    border: "1px solid #CACACA",
-                  }}
-                >
-                  {feature.description}
-                </TableCell>
-                <TableCell
-                  style={{
-                    border: "1px solid #CACACA",
-                  }}
-                >
-                  {feature.position}
-                </TableCell>
-              </TableRow>
-            </React.Fragment>
-          ))}
-        </TableHead>
+        <div style={{ overflow: "scroll", height: "250px", fontSize: "12px" }}>
+          <TableHead>
+            <TableRow>
+              <TableCell
+                sx={th}
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  // fontSize: "17px",
+                  fontWeight: "bold",
+                  border: "1px solid #3592E4",
+                  borderTopLeftRadius: "10px",
+                }}
+              >
+                Type
+              </TableCell>
+              <TableCell
+                sx={th}
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  // fontSize: "17px",
+                  fontWeight: "bold",
+                  border: "1px solid #3592E4",
+                }}
+              >
+                Description
+              </TableCell>
+              <TableCell
+                sx={th}
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  // fontSize: "17px",
+                  fontWeight: "bold",
+                  border: "1px solid #3592E4",
+                  borderTopRightRadius: "10px",
+                }}
+              >
+                Position
+              </TableCell>
+            </TableRow>
+            {value.map((feature, index) => (
+              <React.Fragment key={index}>
+                <TableRow>
+                  <TableCell
+                    style={{
+                      border: "1px solid #CACACA",
+                    }}
+                  >
+                    {feature.type}
+                  </TableCell>
+                  <TableCell
+                    style={{
+                      border: "1px solid #CACACA",
+                    }}
+                  >
+                    {feature.description}
+                  </TableCell>
+                  <TableCell
+                    style={{
+                      border: "1px solid #CACACA",
+                    }}
+                  >
+                    {feature.position}
+                  </TableCell>
+                </TableRow>
+              </React.Fragment>
+            ))}
+          </TableHead>
+        </div>
       ) : null}
     </>
   );
@@ -215,18 +218,15 @@ function Comment_Table(props) {
       maxWidth: 195,
       wrapText: true,
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
       sortable: true,
     },
     {
       headerName: "Description",
       field: "annotation_description",
-      minWidth: 355,
       wrapText: true,
       headerClass: ["header-border"],
       cellClass: ["table-border", "comment_table_description"],
       resizable: true,
-      autoHeight: true,
       sortable: true,
     },
     {
@@ -237,7 +237,6 @@ function Comment_Table(props) {
       cellStyle: { wordBreak: "break-word" },
       sortable: true,
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
       resizable: true,
       sortable: true,
       cellRenderer: (params) => {
@@ -251,7 +250,6 @@ function Comment_Table(props) {
               {id}
             </a>
             {index < ids.length - 1 && <br />}{" "}
-            {/* Add line break if it's not the last element */}
           </React.Fragment>
         ));
         return <>{links}</>;
@@ -264,17 +262,13 @@ function Comment_Table(props) {
       maxWidth: 155,
       sortable: true,
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
     },
     {
       headerName: "Features",
       field: "featuresList",
       cellRenderer: FeaturesRenderer,
       wrapText: true,
-      maxWidth: 500,
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
-      autoHeight: true,
     },
   ];
 
@@ -282,14 +276,7 @@ function Comment_Table(props) {
     return "[" + params.value.toLocaleString() + "]";
   }, []);
 
-  const defColumnDefs = {
-    flex: 1,
-    filter: true,
-    wrapHeaderText: true,
-    autoHeaderHeight: true,
-  };
-
-  const onBtNext = (event) => {
+  const onBtNext = () => {
     if (pageNum < totalPageNumber) {
       const newPageNumber = pageNum + 1;
       setPageNum(newPageNumber);
@@ -299,13 +286,7 @@ function Comment_Table(props) {
     }
   };
 
-  const onPageNumChanged = (event) => {
-    var value = document.getElementById("page-num").value;
-    setPageNum(value);
-    setCount(value);
-  };
-
-  const onBtPrevious = (event) => {
+  const onBtPrevious = () => {
     if (pageNum > 1) {
       const newPageNumber = pageNum - 1;
       setPageNum(newPageNumber);
@@ -338,6 +319,7 @@ function Comment_Table(props) {
       label: 100,
     },
   ];
+
   // In your gridOptions
   const gridOptions = {
     onGridReady: handleGridReady,
@@ -364,6 +346,10 @@ function Comment_Table(props) {
     gridRef.current.api.setQuickFilter(
       document.getElementById("filter-text-box").value
     );
+  }, []);
+
+  const getRowHeight = useCallback((params) => {
+    return params.data.rowHeight;
   }, []);
 
   return (
@@ -582,20 +568,18 @@ function Comment_Table(props) {
         style={{ height: "500px" }}
       >
         <AgGridReact
-          className="ag-cell-wrap-text"
           rowData={rowData}
           columnDefs={columns}
           ref={gridRef}
+          autoHeight
           enableCellTextSelection={true}
-          overlayNoRowsTemplate={
-            '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
-          }
+          getRowHeight={getRowHeight}
           onGridReady={onGridReady}
           pagination={true}
           paginationPageSize={10}
           paginationNumberFormatter={paginationNumberFormatter}
           suppressPaginationPanel={true}
-          frameworkComponents={{
+          components={{
             LinkComponent,
           }}
         />

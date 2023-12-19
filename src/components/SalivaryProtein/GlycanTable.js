@@ -43,7 +43,6 @@ function Glycan_Table(props) {
   const [count, setCount] = useState(1);
   const [docCount, setDocCount] = useState(0);
   const [filterKeyword, setFilterKeyword] = useState("");
-  const [pageNumArr, setPageNumArr] = useState([1]);
   const gridRef = useRef();
   let data1 = [];
   for (let i = 0; i < message.length; i++) {
@@ -56,84 +55,77 @@ function Glycan_Table(props) {
       alt="Glygen"
     />
   );
-  const LinkRenderer = ({ value }) => (
-    <a
-      target="_blank"
-      rel="noopener noreferrer"
-      href={value}
-    >
-      {value}
-    </a>
-  );
 
   const SourceRenderer = ({ value }) => (
-    <TableHead>
-      <TableRow>
-        <TableCell
-          sx={th}
-          style={{
-            backgroundColor: "#1463B9",
-            color: "white",
-            fontFamily: "Montserrat",
-            fontSize: "17px",
-            fontWeight: "bold",
-            border: "1px solid #3592E4",
-            borderTopLeftRadius: "10px",
-          }}
-        >
-          ID
-        </TableCell>
-        <TableCell
-          sx={th}
-          style={{
-            backgroundColor: "#1463B9",
-            color: "white",
-            fontFamily: "Montserrat",
-            fontSize: "17px",
-            fontWeight: "bold",
-            border: "1px solid #3592E4",
-            borderTopRightRadius: "10px",
-          }}
-        >
-          Database
-        </TableCell>
-      </TableRow>
-      {value.map((val, index) => (
-        <React.Fragment key={index}>
-          <TableRow>
-            <TableCell
-              style={{
-                border: "1px solid #CACACA",
-              }}
-            >
-              {val.url ? (
-                <>
-                  <a href={val.url}>{val.id}</a>{" "}
-                  <a href={val.url}>
-                    <FontAwesome
-                      className="super-crazy-colors"
-                      name="external-link"
-                      style={{
-                        textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
-                      }}
-                    />
-                  </a>
-                </>
-              ) : (
-                val.id
-              )}
-            </TableCell>
-            <TableCell
-              style={{
-                border: "1px solid #CACACA",
-              }}
-            >
-              {val.database}
-            </TableCell>
-          </TableRow>
-        </React.Fragment>
-      ))}
-    </TableHead>
+    <div style={{ overflow: "scroll", height: "200px", padding: "10px" }}>
+      <TableHead>
+        <TableRow>
+          <TableCell
+            sx={th}
+            style={{
+              backgroundColor: "#1463B9",
+              color: "white",
+              fontFamily: "Montserrat",
+              fontSize: "17px",
+              fontWeight: "bold",
+              border: "1px solid #3592E4",
+              borderTopLeftRadius: "10px",
+            }}
+          >
+            ID
+          </TableCell>
+          <TableCell
+            sx={th}
+            style={{
+              backgroundColor: "#1463B9",
+              color: "white",
+              fontFamily: "Montserrat",
+              fontSize: "17px",
+              fontWeight: "bold",
+              border: "1px solid #3592E4",
+              borderTopRightRadius: "10px",
+            }}
+          >
+            Database
+          </TableCell>
+        </TableRow>
+        {value.map((val, index) => (
+          <React.Fragment key={index}>
+            <TableRow>
+              <TableCell
+                style={{
+                  border: "1px solid #CACACA",
+                }}
+              >
+                {val.url ? (
+                  <>
+                    <a href={val.url}>{val.id}</a>{" "}
+                    <a href={val.url}>
+                      <FontAwesome
+                        className="super-crazy-colors"
+                        name="external-link"
+                        style={{
+                          textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                        }}
+                      />
+                    </a>
+                  </>
+                ) : (
+                  val.id
+                )}
+              </TableCell>
+              <TableCell
+                style={{
+                  border: "1px solid #CACACA",
+                }}
+              >
+                {val.database}
+              </TableCell>
+            </TableRow>
+          </React.Fragment>
+        ))}
+      </TableHead>
+    </div>
   );
 
   function LinkComponent(props) {
@@ -141,7 +133,7 @@ function Glycan_Table(props) {
       <a
         target="_blank"
         rel="noopener noreferrer"
-        href={"http://localhost:3000/citation/" + props.value}
+        href={`/citation/${props.value}`}
       >
         {props.value}
       </a>
@@ -228,11 +220,6 @@ function Glycan_Table(props) {
     gridRef.current.api.setQuickFilter(searchKeyword);
     setDocCount(gridApi.paginationGetTotalPages());
   };
-  const onPageNumChanged = (event) => {
-    var value = document.getElementById("page-num").value;
-    setPageNum(value);
-    setCount(value);
-  };
 
   const onBtPrevious = (event) => {
     if (pageNum > 1) {
@@ -244,23 +231,12 @@ function Glycan_Table(props) {
     }
   };
 
-  const onPageSizeChanged = useCallback(() => {
-    var value = document.getElementById("page-size").value;
-    gridRef.current.api.paginationSetPageSize(Number(value));
-  }, []);
-
   const onGridReady = (params) => {
     setGridApi(params);
   };
 
   const onBtExport = useCallback(() => {
     gridRef.current.api.exportDataAsCsv();
-  }, []);
-
-  const onFilterTextBoxChanged = useCallback(() => {
-    gridRef.current.api.setQuickFilter(
-      document.getElementById("filter-text-box").value
-    );
   }, []);
 
   return (
@@ -485,10 +461,8 @@ function Glycan_Table(props) {
           )}
           columnDefs={columns}
           ref={gridRef}
+          rowHeight={220}
           enableCellTextSelection={true}
-          overlayNoRowsTemplate={
-            '<span style="padding: 10px; border: 2px solid #444; background: lightgoldenrodyellow">Loading</span>'
-          }
           onGridReady={onGridReady}
           pagination={true}
           paginationPageSize={10}

@@ -215,7 +215,8 @@ const CitationTable = () => {
     const totalResultsCount = total.value;
     const tableData = hits.map((rec) => rec._source);
 
-    setDocCount(totalResultsCount);
+    setDocCount(totalResultsCount > 10000 ? 10000 : totalResultsCount); // pagination breaks for results after 10k so limit results
+
     setRowData(tableData);
   };
 
@@ -764,6 +765,7 @@ const CitationTable = () => {
                 }}
                 value={pageSize}
                 onChange={(event) => {
+                  setPageNum(0);
                   setPageSize(event.target.value);
                 }}
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
