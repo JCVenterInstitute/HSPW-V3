@@ -3,6 +3,7 @@ import Kathryn from "../../../assets/team-members/Kathryn-Kauffman.jpg";
 import Marcelo from "../../../assets/team-members/Marcelo-Freire.jpg";
 import Indresh from "../../../assets/team-members/Indresh-Singh.jpeg";
 import Harinder from "../../../assets/team-members/Harinder-Singh.jpeg";
+import Max from "../../../assets/team-members/Max-Qian.jpg";
 import Mickey from "../../../assets/team-members/Mickey-Zheng.jpg";
 import Link from "../../../assets/team-members/Link-Wu.jpg";
 import Floyd from "../../../assets/team-members/Floyd-Dewhirst.jpg";
@@ -50,6 +51,11 @@ const memberInfo = [
         image: Harinder,
         description:
           "<b>Harinder Singh, PhD</b> Harinder is a Staff Scientist in the Infectious Disease Department at the J. Craig Venter Institute (JCVI). Dr. Singh's area of research is mostly focused on various data analysis, data mining, development of prediction algorithms and databases and bioinformatics pipelines for the scientific community.",
+      },
+      {
+        imageName: "Max-Qian.jpg",
+        image: Max,
+        description: `<b>Yu "Max" Qian, PhD</b>	Max is an Associate Professor in the Informatics Department at the J. Craig Venter Institute (JCVI). He specializes in immunology bioinformatics and computational cytometry. Trained in computer science, he developed novel algorithms for computational analysis of transcriptomics, proteomics, and clinical data using machine learning and integrative/deconvolutional analysis.`,
       },
       {
         imageName: "Mickey-Zheng.jpg",
