@@ -2596,6 +2596,28 @@ app.post("/api/contact/generate-presigned-urls", async (req, res) => {
   }
 });
 
+const verifyCaptcha = async (captchaResponse) => {
+  const secretKey = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"; // Replace with your actual secret key
+  const verificationUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captchaResponse}`;
+
+  try {
+    const response = await axios.post(verificationUrl);
+    const data = response.data;
+
+    // Google reCAPTCHA response contains a success boolean
+    if (data.success) {
+      console.log("CAPTCHA verification successful");
+      return true;
+    } else {
+      console.log("CAPTCHA verification failed", data["error-codes"]);
+      return false;
+    }
+  } catch (error) {
+    console.error("Error during CAPTCHA verification", error);
+    return false;
+  }
+};
+
 app.post("/api/contact/send-form", async (req, res) => {
   try {
     const {
@@ -2607,7 +2629,17 @@ app.post("/api/contact/send-form", async (req, res) => {
       s3Locations,
       ratings,
       timestamp,
+      captchaResponse,
     } = req.body;
+
+    // Verify the CAPTCHA response
+    const isCaptchaValid = await verifyCaptcha(captchaResponse);
+
+    if (!isCaptchaValid) {
+      return res
+        .status(400)
+        .send({ message: "Invalid CAPTCHA. Please try again." });
+    }
 
     const newContact = await createContact({
       name,
