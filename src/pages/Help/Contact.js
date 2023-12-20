@@ -29,6 +29,8 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 const Contact = () => {
   const [name, setName] = useState("");
@@ -101,14 +103,84 @@ const Contact = () => {
     setRatings((prevRatings) => ({ ...prevRatings, [name]: value }));
   };
 
-  const handleSend = () => {
-    if (validateForm()) {
-      // Submit the form data
-      console.log("Form is valid, submitting data...");
-      // Reset the form after submission or handle it as needed
-    } else {
-      console.log("Form is invalid, not submitting data...");
+  const handleSend = async () => {
+    if (!validateForm()) {
+      return;
     }
+
+    Swal.fire({
+      title: "Submitting the form, please wait...",
+    });
+    Swal.showLoading();
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+
+    const timestamp = {
+      year,
+      month,
+      day,
+      hours,
+      minutes,
+      seconds,
+    };
+
+    const fileNames = attachments.map((attachment) => attachment.name);
+    // Request presigned URLs
+    const response = await axios.post(
+      "http://localhost:8000/api/contact/generate-presigned-urls",
+      {
+        fileNames,
+        topic,
+        timestamp,
+      }
+    );
+    const urls = response.data.urls;
+
+    // Array to store the S3 locations
+    let s3Locations = [];
+    const bucketName = "contact-attachments-dev";
+
+    // Upload files directly to S3
+    for (let i = 0; i < attachments.length; i++) {
+      await axios.put(urls[i], attachments[i]);
+
+      // Construct the S3 key using the same pattern as in the backend
+      const s3Key = `s3://${bucketName}/${topic}/${timestamp.year}-${timestamp.month}-${timestamp.day}/${timestamp.hours}${timestamp.minutes}${timestamp.seconds}/${fileNames[i]}`;
+      s3Locations.push(s3Key);
+    }
+
+    // Submit the rest of the form data
+    const payload = {
+      name,
+      email,
+      pageUrl,
+      topic,
+      message,
+      s3Locations,
+      ratings,
+      timestamp: {
+        year,
+        month,
+        day,
+        hours,
+        minutes,
+        seconds,
+      },
+    };
+    await axios
+      .post("http://localhost:8000/api/contact/send-form", payload)
+      .then(() =>
+        Swal.fire({
+          icon: "success",
+          title: "Successfully submitted the feedback. Thank you.",
+        })
+      );
   };
 
   const handleReset = () => {
