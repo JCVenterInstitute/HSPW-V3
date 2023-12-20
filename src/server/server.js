@@ -22,6 +22,10 @@ const { createContact } = require("./utils/createContact");
 app.use(cors());
 app.use(express.json());
 
+app.use(express.static("build"));
+
+app.use("/static", express.static(path.join(__dirname, "./build//static")));
+
 var host =
   "https://search-hspw-dev2-dmdd32xae4fmxh7t4g6skv67aa.us-east-2.es.amazonaws.com";
 
@@ -2933,6 +2937,12 @@ app.post("/api/genes/:size/:from/", (req, res) => {
 
   results.then((result) => {
     res.json(result);
+  });
+});
+
+app.get("*", function (req, res) {
+  res.sendFile("index.html", {
+    root: path.join(__dirname, "./build/"),
   });
 });
 
