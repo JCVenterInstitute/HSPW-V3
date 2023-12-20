@@ -9,9 +9,6 @@ import {
   Typography,
   MenuItem,
 } from "@mui/material";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import SearchIcon from "@mui/icons-material/Search";
@@ -22,22 +19,12 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 import "../Filter.css";
 
-const th = {
-  background: "#f2f2f2",
-  textAlign: "center",
-  border: "1px solid #aaa",
-  fontWeight: "bold",
-  fontSize: "20px",
-  padding: "0.2em",
-  maxWidth: "1000px",
-};
-
 function LinkComponent(props) {
   return (
     <a
       target="_blank"
       rel="noopener noreferrer"
-      href={"http://localhost:3000/citation/" + props.value}
+      href={`/citation/${props.value}`}
     >
       {props.value}
     </a>
@@ -45,7 +32,7 @@ function LinkComponent(props) {
 }
 
 function Comment_Table(props) {
-  const [message, setMessage] = useState("");
+  const gridRef = useRef();
   const [rowData, setRowData] = useState([]);
   const [filterKeyword, setFilterKeyword] = useState("");
   const [gridApi, setGridApi] = useState();
@@ -54,263 +41,46 @@ function Comment_Table(props) {
   const [totalPageNumber, setTotalPageNumber] = useState(1);
   const [docCount, setDocCount] = useState(0);
 
-  useEffect(() => {
-    const jsonData = props.data;
-
-    // Transform JSON data into Ag-Grid compatible format
-    const transformedData = jsonData.flatMap((annotation) => {
-      const { annotation_type, annotation_description, features } = annotation;
-
-      return annotation_description.map((description) => {
-        const { description: annotation_description_text, evidences = [] } =
-          description;
-
-        const uniqueEvidenceCodes = Array.from(
-          new Set(evidences.map((evidence) => evidence.evidenceCode))
-        );
-        const annotationDescription_evidences1 = uniqueEvidenceCodes.map(
-          (evidenceCode) => ({
-            source:
-              evidences.find(
-                (evidence) => evidence.evidenceCode === evidenceCode
-              )?.source || "",
-            id: evidences
-              .filter((evidence) => evidence.evidenceCode === evidenceCode)
-              .map((evidence) => evidence.id)
-              .join(", "),
-            evidenceCode: evidenceCode || "",
-          })
-        );
-        const annotationDescription_evidences = evidences.map((evidence) => ({
-          source: evidence.source || "",
-          id: evidence.id || "",
-          evidenceCode: evidence.evidenceCode || "",
-        }));
-
-        const annotationDescription_source_id =
-          annotationDescription_evidences.map((evidence) => {
-            // Check if evidence.source and evidence.id are empty, if yes, return an empty string
-            if (!evidence.source && !evidence.id) {
-              return "";
-            }
-
-            // Concatenate source and id with a colon
-            return `${evidence.source}:${evidence.id}`;
-          });
-
-        const featuresList = features.map((feature) => ({
-          type: feature.type || "",
-          position: feature.position ? feature.position.join(", ") : "",
-          description: feature.description || "",
-        }));
-
-        featuresList.rowHeight =
-          featuresList.length !== 0 ? 30 : 90 * featuresList.length;
-
-        return {
-          annotation_type,
-          annotation_description: annotation_description_text || "",
-          annotationDescription_source_id,
-          annotationDescription_evidenceCode: annotationDescription_evidences1
-            .map((evidence) => evidence.evidenceCode)
-            .join(", "),
-          featuresList,
-          rowHeight: featuresList.length === 0 ? 50 : 40 * featuresList.length,
-        };
-      });
-    });
-
-    setRowData(transformedData);
-  }, [props.data]);
-
-  let data1 = [];
-  for (let i = 0; i < message.length; i++) {
-    data1.push(message[i]["_source"]);
-  }
-
-  const FeaturesRenderer = ({ value }) => (
-    <>
-      {value.length !== 0 ? (
-        <div
-          style={{
-            padding: "15px",
-            overflowY: "scroll",
-            height: "inherit",
-            fontSize: "12px",
-          }}
-        >
-          <TableHead>
-            <TableRow>
-              <TableCell
-                sx={th}
-                style={{
-                  backgroundColor: "#1463B9",
-                  color: "white",
-                  fontFamily: "Montserrat",
-                  // fontSize: "17px",
-                  fontWeight: "bold",
-                  border: "1px solid #3592E4",
-                  borderTopLeftRadius: "10px",
-                }}
-              >
-                Type
-              </TableCell>
-              <TableCell
-                sx={th}
-                style={{
-                  backgroundColor: "#1463B9",
-                  color: "white",
-                  fontFamily: "Montserrat",
-                  // fontSize: "17px",
-                  fontWeight: "bold",
-                  border: "1px solid #3592E4",
-                }}
-              >
-                Description
-              </TableCell>
-              <TableCell
-                sx={th}
-                style={{
-                  backgroundColor: "#1463B9",
-                  color: "white",
-                  fontFamily: "Montserrat",
-                  // fontSize: "17px",
-                  fontWeight: "bold",
-                  border: "1px solid #3592E4",
-                  borderTopRightRadius: "10px",
-                }}
-              >
-                Position
-              </TableCell>
-            </TableRow>
-            {value.map((feature, index) => (
-              <React.Fragment key={index}>
-                <TableRow>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                    }}
-                  >
-                    {feature.type}
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                    }}
-                  >
-                    {feature.description}
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                    }}
-                  >
-                    {feature.position}
-                  </TableCell>
-                </TableRow>
-              </React.Fragment>
-            ))}
-          </TableHead>
-        </div>
-      ) : null}
-    </>
-  );
+  const defaultColDef = {
+    sortable: true,
+    resizable: true,
+    wrapText: true,
+  };
 
   const columns = [
     {
       headerName: "Annotation Type",
       field: "annotation_type",
-      checkboxSelection: false,
-      headerCheckboxSelection: false,
-      maxWidth: 195,
-      wrapText: true,
       headerClass: ["header-border"],
-      sortable: true,
-      resizable: true,
+    },
+    {
+      headerName: "Type",
+      field: "type",
+      headerClass: ["header-border"],
     },
     {
       headerName: "Description",
-      field: "annotation_description",
-      wrapText: true,
+      field: "description",
       headerClass: ["header-border"],
       cellClass: ["table-border", "comment_table_description"],
-      resizable: true,
-      sortable: true,
     },
     {
-      headerName: "Evidences ID",
-      field: "annotationDescription_source_id",
-      wrapText: true,
-      maxWidth: 195,
-      cellStyle: { wordBreak: "break-word" },
-      sortable: true,
+      headerName: "Position",
+      field: "position",
       headerClass: ["header-border"],
-      resizable: true,
-      sortable: true,
-      cellRenderer: (params) => {
-        const ids = Array.isArray(params.value) ? params.value : "";
-        const links = ids.map((id, index) => (
-          <React.Fragment key={index}>
-            <a
-              href={`${id}`}
-              target="_blank"
-            >
-              {id}
-            </a>
-            {index < ids.length - 1 && <br />}{" "}
-          </React.Fragment>
-        ));
-        return <>{links}</>;
-      },
+    },
+    {
+      headerName: "Evidence ID",
+      field: "evidenceIds",
+      cellStyle: { wordBreak: "break-word" },
+      headerClass: ["header-border"],
     },
     {
       headerName: "Evidences Code",
-      field: "annotationDescription_evidenceCode",
-      wrapText: true,
-      maxWidth: 155,
-      sortable: true,
-      resizable: true,
+      field: "evidenceCode",
       headerClass: ["header-border"],
-    },
-    {
-      headerName: "Features",
-      field: "featuresList",
-      cellRenderer: FeaturesRenderer,
-      wrapText: true,
-      headerClass: ["header-border"],
-      rowHeight: 400,
-      resizable: true,
     },
   ];
-
-  const paginationNumberFormatter = useCallback((params) => {
-    return "[" + params.value.toLocaleString() + "]";
-  }, []);
-
-  const onBtNext = () => {
-    if (pageNum < totalPageNumber) {
-      const newPageNumber = pageNum + 1;
-      setPageNum(newPageNumber);
-      if (gridApi) {
-        gridRef.current.api.paginationGoToPage(newPageNumber - 1);
-      }
-    }
-  };
-
-  const onBtPrevious = () => {
-    if (pageNum > 1) {
-      const newPageNumber = pageNum - 1;
-      setPageNum(newPageNumber);
-      if (gridApi) {
-        gridRef.current.api.paginationGoToPage(newPageNumber - 1);
-      }
-    }
-  };
-
-  const handleGridReady = (params) => {
-    // Save gridApi to a variable accessible in the component
-    setGridApi(params.api);
-  };
 
   const recordsPerPageList = [
     {
@@ -331,10 +101,68 @@ function Comment_Table(props) {
     },
   ];
 
-  // In your gridOptions
-  const gridOptions = {
-    onGridReady: handleGridReady,
-    // other options...
+  useEffect(() => {
+    const relevantAnnotationTypes = ["FUNCTION", "PTM", "DOMAIN"];
+    const jsonData = props.data;
+    const rowData = [];
+
+    for (const rec of jsonData) {
+      const { annotation_type, annotation_description, features } = rec;
+
+      // Use first description as tooltip text if available
+      const popoverText =
+        annotation_description.length !== 0
+          ? annotation_description[0].description
+          : "";
+
+      // Skip any annotation type that's now FUNCTION, PTM, or DOMAIN
+      if (!relevantAnnotationTypes.includes(annotation_type)) continue;
+
+      if (features.length === 0) {
+        rowData.push({
+          popoverText,
+          annotation_type,
+        });
+      } else {
+        for (const feature of features) {
+          const { description, type, evidences, position } = feature;
+
+          rowData.push({
+            popoverText,
+            annotation_type,
+            description,
+            type,
+            evidenceCode: evidences.map((evidence) => evidence.evidenceCode),
+            evidenceIds: evidences.map((evidence) => evidence.id),
+            position,
+          });
+        }
+      }
+    }
+
+    setTotalPageNumber(Math.ceil(rowData.length / pageSize));
+    setDocCount(rowData.length);
+    setRowData(rowData);
+  }, [props.data, pageSize]);
+
+  const onBtNext = () => {
+    if (pageNum < totalPageNumber) {
+      const newPageNumber = pageNum + 1;
+      setPageNum(newPageNumber);
+      if (gridApi) {
+        gridApi.paginationGoToPage(newPageNumber - 1);
+      }
+    }
+  };
+
+  const onBtPrevious = () => {
+    if (pageNum > 1) {
+      const newPageNumber = pageNum - 1;
+      setPageNum(newPageNumber);
+      if (gridApi) {
+        gridApi.paginationGoToPage(newPageNumber - 1);
+      }
+    }
   };
 
   const handleFilter = (searchKeyword) => {
@@ -343,20 +171,12 @@ function Comment_Table(props) {
   };
 
   const onGridReady = (params) => {
-    setGridApi(params);
+    setGridApi(params.api);
     gridRef.current.api.sizeColumnsToFit();
   };
 
-  const gridRef = useRef();
-
   const onBtExport = useCallback(() => {
     gridRef.current.api.exportDataAsCsv();
-  }, []);
-
-  const onFilterTextBoxChanged = useCallback(() => {
-    gridRef.current.api.setQuickFilter(
-      document.getElementById("filter-text-box").value
-    );
   }, []);
 
   const getRowHeight = useCallback((params) => {
@@ -370,14 +190,20 @@ function Comment_Table(props) {
         sx={{ margin: "30px 0 30px 20px" }}
       >
         <Box sx={{ display: "flex" }}>
-          <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
+          <Box
+            style={{
+              display: "flex",
+              width: "100%",
+              maxWidth: "550px",
+            }}
+          >
             <TextField
               variant="outlined"
               size="small"
               label="Search..."
               value={filterKeyword}
               onChange={(e) => setFilterKeyword(e.target.value)}
-              onKeyPress={(e) => {
+              onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   handleFilter(e.target.value);
                 }
@@ -473,33 +299,35 @@ function Comment_Table(props) {
             >
               Page
             </Typography>
-            <TextField
-              select
-              size="small"
-              InputProps={{
-                style: {
-                  borderRadius: "10px",
-                },
-              }}
-              value={pageNum}
-              sx={{ marginLeft: "10px", marginRight: "10px" }}
-              onChange={(event) => {
-                setPageNum(event.target.value);
-                gridApi.paginationGoToPage(event.target.value - 1);
-              }}
-            >
-              {Array.from(
-                { length: Math.ceil(docCount / pageSize) },
-                (_, index) => (
-                  <MenuItem
-                    key={index + 1}
-                    value={index + 1}
-                  >
-                    {index + 1}
-                  </MenuItem>
-                )
-              )}
-            </TextField>
+            {rowData.length !== 0 && (
+              <TextField
+                select
+                size="small"
+                InputProps={{
+                  style: {
+                    borderRadius: "10px",
+                  },
+                }}
+                value={pageNum}
+                sx={{ marginLeft: "10px", marginRight: "10px" }}
+                onChange={(event) => {
+                  setPageNum(event.target.value);
+                  gridApi.paginationGoToPage(event.target.value - 1);
+                }}
+              >
+                {Array.from(
+                  { length: Math.ceil(docCount / pageSize) },
+                  (_, index) => (
+                    <MenuItem
+                      key={index + 1}
+                      value={index + 1}
+                    >
+                      {index + 1}
+                    </MenuItem>
+                  )
+                )}
+              </TextField>
+            )}
             <Typography
               display="inline"
               sx={{
@@ -579,17 +407,16 @@ function Comment_Table(props) {
         style={{ height: "500px" }}
       >
         <AgGridReact
+          ref={gridRef}
           rowData={rowData}
           columnDefs={columns}
-          ref={gridRef}
-          autoHeight
+          pagination={true}
+          suppressPaginationPanel={true}
+          defaultColDef={defaultColDef}
           enableCellTextSelection={true}
           getRowHeight={getRowHeight}
           onGridReady={onGridReady}
-          pagination={true}
           paginationPageSize={10}
-          paginationNumberFormatter={paginationNumberFormatter}
-          suppressPaginationPanel={true}
           components={{
             LinkComponent,
           }}

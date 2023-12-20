@@ -14,6 +14,7 @@ import {
   IconButton,
   Typography,
   MenuItem,
+  Table,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -56,75 +57,87 @@ function Glycan_Table(props) {
     />
   );
 
+  useEffect(() => {
+    const data = props.data[0]._source.salivary_proteins.glycans.filter(
+      (glycan) => glycan.glytoucan_accession !== ""
+    );
+
+    console.log("> Glycan Data", data);
+
+    setRowData(data);
+  }, []);
+
   const SourceRenderer = ({ value }) => (
     <div style={{ overflow: "scroll", height: "200px", padding: "10px" }}>
-      <TableHead>
-        <TableRow>
-          <TableCell
-            sx={th}
-            style={{
-              backgroundColor: "#1463B9",
-              color: "white",
-              fontFamily: "Montserrat",
-              fontSize: "17px",
-              fontWeight: "bold",
-              border: "1px solid #3592E4",
-              borderTopLeftRadius: "10px",
-            }}
-          >
-            ID
-          </TableCell>
-          <TableCell
-            sx={th}
-            style={{
-              backgroundColor: "#1463B9",
-              color: "white",
-              fontFamily: "Montserrat",
-              fontSize: "17px",
-              fontWeight: "bold",
-              border: "1px solid #3592E4",
-              borderTopRightRadius: "10px",
-            }}
-          >
-            Database
-          </TableCell>
-        </TableRow>
-        {value.map((val, index) => (
-          <React.Fragment key={index}>
-            <TableRow>
-              <TableCell
-                style={{
-                  border: "1px solid #CACACA",
-                }}
-              >
-                {val.url ? (
-                  <>
-                    <a href={val.url}>{val.id}</a>{" "}
-                    <a href={val.url}>
-                      <FontAwesome
-                        className="super-crazy-colors"
-                        name="external-link"
-                        style={{
-                          textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
-                        }}
-                      />
-                    </a>
-                  </>
-                ) : (
-                  val.id
-                )}
-              </TableCell>
-              <TableCell
-                style={{
-                  border: "1px solid #CACACA",
-                }}
-              >
-                {val.database}
-              </TableCell>
-            </TableRow>
-          </React.Fragment>
-        ))}
-      </TableHead>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell
+              sx={th}
+              style={{
+                backgroundColor: "#1463B9",
+                color: "white",
+                fontFamily: "Montserrat",
+                fontSize: "17px",
+                fontWeight: "bold",
+                border: "1px solid #3592E4",
+                borderTopLeftRadius: "10px",
+              }}
+            >
+              ID
+            </TableCell>
+            <TableCell
+              sx={th}
+              style={{
+                backgroundColor: "#1463B9",
+                color: "white",
+                fontFamily: "Montserrat",
+                fontSize: "17px",
+                fontWeight: "bold",
+                border: "1px solid #3592E4",
+                borderTopRightRadius: "10px",
+              }}
+            >
+              Database
+            </TableCell>
+          </TableRow>
+          {value.map((val, index) => (
+            <React.Fragment key={index}>
+              <TableRow>
+                <TableCell
+                  style={{
+                    border: "1px solid #CACACA",
+                  }}
+                >
+                  {val.url ? (
+                    <>
+                      <a href={val.url}>{val.id}</a>{" "}
+                      <a href={val.url}>
+                        <FontAwesome
+                          className="super-crazy-colors"
+                          name="external-link"
+                          style={{
+                            textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                          }}
+                        />
+                      </a>
+                    </>
+                  ) : (
+                    val.id
+                  )}
+                </TableCell>
+                <TableCell
+                  style={{
+                    border: "1px solid #CACACA",
+                  }}
+                >
+                  {val.database}
+                </TableCell>
+              </TableRow>
+            </React.Fragment>
+          ))}
+        </TableHead>
+      </Table>
     </div>
   );
 
@@ -139,6 +152,7 @@ function Glycan_Table(props) {
       </a>
     );
   }
+
   const columns = [
     { headerName: "Accession", field: "glytoucan_accession" },
     {
@@ -239,8 +253,20 @@ function Glycan_Table(props) {
     gridRef.current.api.exportDataAsCsv();
   }, []);
 
-  return (
+  return rowData.length !== 0 ? (
     <>
+      <h2
+        style={{
+          color: "black",
+          marginBottom: "24px",
+          fontWeight: "bold",
+          fontFamily: "Lato",
+          marginTop: "10px",
+        }}
+        id="glycan"
+      >
+        Glycans
+      </h2>
       <Container
         maxWidth="xl"
         sx={{ margin: "30px 0 30px 20px" }}
@@ -498,7 +524,7 @@ function Glycan_Table(props) {
         Download Spreadsheet
       </button>
     </>
-  );
+  ) : null;
 }
 
 export default Glycan_Table;

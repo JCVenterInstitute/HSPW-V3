@@ -54,10 +54,7 @@ const ProteinDetail = (props) => {
   const [checkData, setCheckData] = useState(false);
 
   const fetchProtein = async () => {
-    console.log(url);
     const response = await axios.get(url);
-    console.log(response);
-
     const json = response.data;
     return json;
   };
@@ -68,7 +65,6 @@ const ProteinDetail = (props) => {
     if (proteinResult) {
       setData(proteinResult);
 
-      console.log(proteinResult);
       if (proteinResult[0]._source.salivary_proteins) {
         const cites = proteinResult[0]._source.salivary_proteins.cites;
         const promises = [];
@@ -114,8 +110,6 @@ const ProteinDetail = (props) => {
   };
 
   useEffect(() => {
-    console.log("Effect is running");
-    console.log("Component rendering...");
     processData();
   }, []);
 
@@ -140,7 +134,6 @@ const ProteinDetail = (props) => {
           <Tab>Protein</Tab>
           <Tab>Curation</Tab>
         </TabList>
-
         <TabPanel>
           <div
             style={{
@@ -597,20 +590,7 @@ const ProteinDetail = (props) => {
                 marginTop: "10px",
               }}
             />
-            <h2
-              style={{
-                color: "black",
-                marginBottom: "24px",
-                fontWeight: "bold",
-                fontFamily: "Lato",
-                marginTop: "10px",
-              }}
-              id="glycan"
-            >
-              Glycans
-            </h2>
             <GlycanTable data={data} />
-
             <Divider sx={{ marginBottom: "10px", borderColor: "#1463B9" }} />
             <h2
               style={{
@@ -1025,8 +1005,6 @@ const ProteinDetail = (props) => {
                     >
                       {data[0]["_source"]["salivary_proteins"]["ensembl"].map(
                         (value, i, arr) => {
-                          console.log("> Value", value);
-
                           return (
                             <React.Fragment key={i}>
                               <a
@@ -1241,110 +1219,111 @@ const ProteinDetail = (props) => {
             >
               Entry Information
             </h2>
-
-            <TableHead>
-              <TableRow sx={{ border: "1px solid black" }}>
-                <TableCell
-                  sx={th}
-                  style={{
-                    backgroundColor: "#1463B9",
-                    color: "white",
-                    fontFamily: "Montserrat",
-                    fontSize: "16px",
-                    border: "1px solid #3592E4",
-                    borderTopLeftRadius: "10px",
-                  }}
-                >
-                  Created On
-                </TableCell>
-                <TableCell
-                  sx={{ fontSize: "0.875rem" }}
-                  style={{
-                    maxWidth: "100%",
-                    border: "1px solid #CACACA",
-                    borderTopRightRadius: "10px",
-                  }}
-                >
-                  {
-                    data[0]["_source"]["salivary_proteins"]["created_on"].split(
-                      "-"
-                    )[0]
-                  }
-                  {"/"}
-                  {
-                    data[0]["_source"]["salivary_proteins"]["created_on"].split(
-                      "-"
-                    )[1]
-                  }
-                  {"/"}
-                  {
-                    data[0]["_source"]["salivary_proteins"]["created_on"].split(
-                      "-"
-                    )[2]
-                  }
-                </TableCell>
-              </TableRow>
-              <TableRow
-                sx={{
-                  border: "1px solid #3592E4",
-                }}
-              >
-                <TableCell
-                  sx={th}
-                  style={{
-                    backgroundColor: "#1463B9",
-                    color: "white",
-                    fontFamily: "Montserrat",
-                    fontSize: "16px",
+            <Table>
+              <TableHead>
+                <TableRow sx={{ border: "1px solid black" }}>
+                  <TableCell
+                    sx={th}
+                    style={{
+                      backgroundColor: "#1463B9",
+                      color: "white",
+                      fontFamily: "Montserrat",
+                      fontSize: "16px",
+                      border: "1px solid #3592E4",
+                      borderTopLeftRadius: "10px",
+                    }}
+                  >
+                    Created On
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontSize: "0.875rem" }}
+                    style={{
+                      maxWidth: "100%",
+                      border: "1px solid #CACACA",
+                      borderTopRightRadius: "10px",
+                    }}
+                  >
+                    {
+                      data[0]["_source"]["salivary_proteins"][
+                        "created_on"
+                      ].split("-")[0]
+                    }
+                    {"/"}
+                    {
+                      data[0]["_source"]["salivary_proteins"][
+                        "created_on"
+                      ].split("-")[1]
+                    }
+                    {"/"}
+                    {
+                      data[0]["_source"]["salivary_proteins"][
+                        "created_on"
+                      ].split("-")[2]
+                    }
+                  </TableCell>
+                </TableRow>
+                <TableRow
+                  sx={{
                     border: "1px solid #3592E4",
                   }}
                 >
-                  Last Modified On
-                </TableCell>
-                <TableCell
-                  sx={{ fontSize: "0.875rem" }}
-                  style={{ maxWidth: "100%", border: "1px solid #CACACA" }}
-                >
-                  {
-                    data[0]["_source"]["salivary_proteins"][
-                      "last_modified"
-                    ].split("-")[0]
-                  }
-                  {"/"}
-                  {
-                    data[0]["_source"]["salivary_proteins"][
-                      "last_modified"
-                    ].split("-")[1]
-                  }
-                  {"/"}
-                  {
-                    data[0]["_source"]["salivary_proteins"][
-                      "last_modified"
-                    ].split("-")[2]
-                  }
-                </TableCell>
-              </TableRow>
-              <TableRow sx={{ border: "1px solid black" }}>
-                <TableCell
-                  sx={th}
-                  style={{
-                    backgroundColor: "#1463B9",
-                    color: "white",
-                    fontFamily: "Montserrat",
-                    fontSize: "16px",
-                    border: "1px solid #3592E4",
-                  }}
-                >
-                  Status
-                </TableCell>
-                <TableCell
-                  sx={{ fontSize: "0.875rem" }}
-                  style={{ maxWidth: "100%", border: "1px solid #CACACA" }}
-                >
-                  {data[0]["_source"]["salivary_proteins"]["status"]}
-                </TableCell>
-              </TableRow>
-            </TableHead>
+                  <TableCell
+                    sx={th}
+                    style={{
+                      backgroundColor: "#1463B9",
+                      color: "white",
+                      fontFamily: "Montserrat",
+                      fontSize: "16px",
+                      border: "1px solid #3592E4",
+                    }}
+                  >
+                    Last Modified On
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontSize: "0.875rem" }}
+                    style={{ maxWidth: "100%", border: "1px solid #CACACA" }}
+                  >
+                    {
+                      data[0]["_source"]["salivary_proteins"][
+                        "last_modified"
+                      ].split("-")[0]
+                    }
+                    {"/"}
+                    {
+                      data[0]["_source"]["salivary_proteins"][
+                        "last_modified"
+                      ].split("-")[1]
+                    }
+                    {"/"}
+                    {
+                      data[0]["_source"]["salivary_proteins"][
+                        "last_modified"
+                      ].split("-")[2]
+                    }
+                  </TableCell>
+                </TableRow>
+                <TableRow sx={{ border: "1px solid black" }}>
+                  <TableCell
+                    sx={th}
+                    style={{
+                      backgroundColor: "#1463B9",
+                      color: "white",
+                      fontFamily: "Montserrat",
+                      fontSize: "16px",
+                      border: "1px solid #3592E4",
+                    }}
+                  >
+                    Status
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontSize: "0.875rem" }}
+                    style={{ maxWidth: "100%", border: "1px solid #CACACA" }}
+                  >
+                    {data[0]["_source"]["salivary_proteins"]["status"]}
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+            </Table>
           </div>
         </TabPanel>
         <TabPanel>
