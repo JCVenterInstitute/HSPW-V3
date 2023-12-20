@@ -60,12 +60,13 @@ const memberInfo = [
       {
         imageName: "Mickey-Zheng.jpg",
         image: Mickey,
-        description: "<b>Mickey Zheng, Bs</b> Mickey is a super hero.",
+        description:
+          "<b>Mickey Zheng, Bs</b> Mickey is a Software Engineer in the Informatics Department at the J. Craig Venter Institute (JCVI). He works on full-stack development and data management on the HSPW and iDPCC projects. He is knowledgeable in an array of programming languages like JavaScript, and adept in utilizing cloud technologies such as AWS.",
       },
       {
         imageName: "Link-Wu.jpg",
         image: Link,
-        description: "<b>I-Lin (Link) Wu, Bs</b> Link is a super hero.",
+        description: `<b>I-Lin (Link) Wu, Bs</b>	Link is a Software Engineer in the Informatics Department at the J. Craig Venter Institute (JCVI). He has a strong background in full-stack development and data management, and he has played a pivotal role in HSPW project and iDPCC project. With expertise in a variety of programming languages and tools, including JavaScript, Java, Python, C++, and cloud services like AWS and Azure, Link excels in creating efficient, scalable solutions.`,
       },
     ],
   },
