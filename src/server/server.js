@@ -2303,6 +2303,48 @@ app.get("/api/study/:id", async (req, res) => {
   });
 });
 
+const searchAllStudy = async () => {
+  // Initialize the client.
+  const client = await getClient();
+
+  const query = {
+    size: 10000,
+    query: {
+      match_all: {},
+    },
+    aggs: {
+      sample_type: {
+        terms: {
+          field: "sample_type.keyword",
+        },
+      },
+      institution: {
+        terms: {
+          field: "institution.keyword",
+        },
+      },
+      condition_type: {
+        terms: {
+          field: "condition_type.keyword",
+        },
+      },
+    },
+  };
+
+  const response = await client.search({
+    index: "study",
+    body: query,
+  });
+
+  return response.body;
+};
+
+app.get("/api/study/", async (req, res) => {
+  searchAllStudy().then((response) => {
+    res.json(response);
+  });
+});
+
 const searchStudyProtein = async (experiment_id_key) => {
   // Initialize the client.
   const client = await getClient();

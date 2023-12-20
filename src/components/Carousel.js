@@ -69,7 +69,7 @@ function Carousel() {
         )}
         <div>
           {images[currImg].index === 0 && (
-            <div class="first_title">
+            <div className="first_title">
               <h1 style={{ color: "white", textAlign: "left" }}>
                 {images[currImg].title}
               </h1>
@@ -83,7 +83,7 @@ function Carousel() {
           )}
           {images[currImg].index === 1 && (
             <>
-              <div class="second_title">
+              <div className="second_title">
                 <h1 style={{ color: "white", textAlign: "left" }}>
                   {images[currImg].title}
                 </h1>

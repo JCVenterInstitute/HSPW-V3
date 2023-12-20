@@ -2042,6 +2042,7 @@ function SalivaryProteinTable() {
                 loadingOverlayComponent={loadingOverlayComponent}
                 pagination={true}
                 enableCellTextSelection={true}
+                suppressPaginationPanel={true}
                 paginationPageSize={pageSize}
                 rowHeight={rowHeight}
                 suppressDragLeaveHidesColumns
