@@ -24,34 +24,107 @@ import {
   ListItemIcon,
   ListItemText,
   Chip,
+  FormHelperText,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 const Contact = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [pageUrl, setPageUrl] = useState(
+    "https://www.salivaryproteome.org/public/index.php/Main_Page"
+  );
+  const [topic, setTopic] = useState("");
+  const [message, setMessage] = useState("");
   const [attachments, setAttachments] = useState([]);
   const [ratings, setRatings] = useState({
-    information: "",
-    layout: "",
-    easeOfUse: "",
-    accessibility: "",
-    overall: "",
+    Information: "",
+    Layout: "",
+    "Ease of Use": "",
+    Accessibility: "",
+    Overall: "",
+  });
+  const [formErrors, setFormErrors] = useState({
+    topic: false,
+    message: false,
   });
 
+  // Function to validate the form
+  const validateForm = () => {
+    const newErrors = { topic: false, message: false };
+
+    if (topic === "") {
+      newErrors.topic = true; // Set the error state for topic
+    }
+    if (message === "") {
+      newErrors.message = true; // Set the error state for message
+    }
+
+    setFormErrors(newErrors);
+
+    // Check if there are any errors
+    return !Object.values(newErrors).some(Boolean);
+  };
+
+  const handleNameChange = (event) => {
+    setName(event.target.value);
+  };
+
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
+
+  const handlePageUrlChange = (event) => {
+    setPageUrl(event.target.value);
+  };
+
+  const handleTopicChange = (event) => {
+    setTopic(event.target.value);
+  };
+
+  const handleMessageChange = (event) => {
+    setMessage(event.target.value);
+  };
+
   const handleAttachmentChange = (event) => {
-    // Add the selected files to the attachments array
     setAttachments([...attachments, ...event.target.files]);
   };
 
   const handleFileRemove = (fileIndex) => {
-    // Remove the file from the attachments array
     setAttachments(attachments.filter((_, index) => index !== fileIndex));
   };
 
   const handleRatingChange = (event) => {
     const { name, value } = event.target;
     setRatings((prevRatings) => ({ ...prevRatings, [name]: value }));
+  };
+
+  const handleSend = () => {
+    if (validateForm()) {
+      // Submit the form data
+      console.log("Form is valid, submitting data...");
+      // Reset the form after submission or handle it as needed
+    } else {
+      console.log("Form is invalid, not submitting data...");
+    }
+  };
+
+  const handleReset = () => {
+    setName("");
+    setEmail("");
+    setPageUrl("https://www.salivaryproteome.org/public/index.php/Main_Page");
+    setTopic("");
+    setMessage("");
+    setAttachments([]);
+    setRatings({
+      Information: "",
+      Layout: "",
+      "Ease of Use": "",
+      Accessibility: "",
+      Overall: "",
+    });
   };
 
   return (
@@ -103,15 +176,6 @@ const Contact = () => {
           >
             Fill in the form below
           </legend>
-          <Typography sx={{ color: "black", mb: 2, fontFamily: "Lato" }}>
-            Required fields are indicated by an asterisk{" "}
-            <Typography
-              display="inline"
-              sx={{ color: "red" }}
-            >
-              *
-            </Typography>
-          </Typography>
           <Box
             component="form"
             noValidate
@@ -131,6 +195,8 @@ const Contact = () => {
                   fullWidth
                   label="Your name"
                   variant="outlined"
+                  value={name}
+                  onChange={handleNameChange}
                 />
               </Grid>
               <Grid
@@ -142,6 +208,8 @@ const Contact = () => {
                   fullWidth
                   label="Your e-mail"
                   variant="outlined"
+                  value={email}
+                  onChange={handleEmailChange}
                 />
               </Grid>
 
@@ -154,7 +222,8 @@ const Contact = () => {
                   fullWidth
                   label="Page you were on"
                   variant="outlined"
-                  defaultValue="https://www.salivaryproteome.org/public/index.php/Main_Page"
+                  value={pageUrl}
+                  onChange={handlePageUrlChange}
                 />
               </Grid>
 
@@ -166,15 +235,32 @@ const Contact = () => {
                 <FormControl
                   fullWidth
                   required
+                  error={formErrors.topic} // Use the error state here
                 >
                   <InputLabel>Topic</InputLabel>
                   <Select
-                    defaultValue=""
+                    value={topic}
                     label="Topic"
+                    onChange={handleTopicChange}
+                    displayEmpty
                   >
-                    <MenuItem value="">Please Select</MenuItem>
-                    {/* Add more MenuItems for other topics */}
+                    {[
+                      "Biological Issue",
+                      "Technical Issue",
+                      "Suggestions",
+                      "Others",
+                    ].map((option) => (
+                      <MenuItem
+                        key={option}
+                        value={option}
+                      >
+                        {option}
+                      </MenuItem>
+                    ))}
                   </Select>
+                  {formErrors.topic && (
+                    <FormHelperText>Please select a topic.</FormHelperText>
+                  )}
                 </FormControl>
               </Grid>
 
@@ -189,7 +275,11 @@ const Contact = () => {
                   multiline
                   rows={4}
                   variant="outlined"
+                  value={message}
+                  onChange={handleMessageChange}
                   required
+                  error={formErrors.message} // Use the error state here
+                  helperText={formErrors.message && "Message is required."}
                 />
               </Grid>
 
@@ -298,31 +388,20 @@ const Contact = () => {
                             value={ratings[category]}
                             onChange={handleRatingChange}
                           >
-                            <FormControlLabel
-                              value="Very Satisfied"
-                              control={<Radio />}
-                              label="Very Satisfied"
-                            />
-                            <FormControlLabel
-                              value="Satisfied"
-                              control={<Radio />}
-                              label="Satisfied"
-                            />
-                            <FormControlLabel
-                              value="Neutral"
-                              control={<Radio />}
-                              label="Neutral"
-                            />
-                            <FormControlLabel
-                              value="Dissatisfied"
-                              control={<Radio />}
-                              label="Dissatisfied"
-                            />
-                            <FormControlLabel
-                              value="Very Dissatisfied"
-                              control={<Radio />}
-                              label="Very Dissatisfied"
-                            />
+                            {[
+                              "Very Satisified",
+                              "Satisfied",
+                              "Neutral",
+                              "Dissatisfied",
+                              "Very Dissatisfied",
+                            ].map((option) => (
+                              <FormControlLabel
+                                key={option}
+                                value={option}
+                                control={<Radio />}
+                                label={option}
+                              />
+                            ))}
                           </RadioGroup>
                         </FormControl>
                       </Grid>
@@ -330,18 +409,47 @@ const Contact = () => {
                   </AccordionDetails>
                 </Accordion>
               </Grid>
-
+              <Grid
+                item
+                xs={12}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{ mt: 2, mb: 1, textAlign: "center", fontFamily: "Lato" }}
+                >
+                  Leave your contact information blank to submit this form
+                  anonymously. However, we will not be able to reply back
+                  regarding your comments.
+                </Typography>
+              </Grid>
               {/* Submit Button */}
               <Grid
                 item
                 xs={12}
               >
-                <Button
-                  variant="contained"
-                  color="primary"
+                <Box
+                  sx={{
+                    mt: 4,
+                    display: "flex",
+                    justifyContent: "center", // Centers the buttons horizontally
+                    gap: 2,
+                    mb: 3,
+                  }}
                 >
-                  Send
-                </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSend}
+                  >
+                    Send
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={handleReset}
+                  >
+                    Reset
+                  </Button>
+                </Box>
               </Grid>
             </Grid>
           </Box>
