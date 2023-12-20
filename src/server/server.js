@@ -9,13 +9,15 @@ const fs = require("fs");
 const { exec } = require("child_process");
 const util = require("util");
 const execPromise = util.promisify(exec);
-const { s3Upload } = require("./utils/s3Upload");
 const fse = require("fs-extra");
 const path = require("path");
 const { processGroupData } = require("./utils/processGroupData");
 const { processFile } = require("./utils/processFile");
+const { s3Upload } = require("./utils/s3Upload");
 const { s3Download } = require("./utils/s3Download");
 const { formQuery } = require("./utils/formQuery");
+const { generatePresignedUrls } = require("./utils/generatePresignedUrls");
+const { createContact } = require("./utils/createContact");
 
 app.use(cors());
 app.use(express.json());
@@ -2573,6 +2575,57 @@ app.post("/api/advanced-search/build-query", async (req, res) => {
   }
 });
 
+app.post("/api/contact/generate-presigned-urls", async (req, res) => {
+  const { fileNames, topic, timestamp } = req.body;
+  const bucketName = "contact-attachments-dev";
+
+  try {
+    const urls = await generatePresignedUrls(
+      bucketName,
+      fileNames,
+      topic,
+      timestamp
+    );
+    res.json({ urls });
+  } catch (error) {
+    console.error("Error in endpoint: ", error);
+    res.status(500).send("Error generating URLs");
+  }
+});
+
+app.post("/api/contact/send-form", async (req, res) => {
+  try {
+    const {
+      name,
+      email,
+      pageUrl,
+      topic,
+      message,
+      s3Locations,
+      ratings,
+      timestamp,
+    } = req.body;
+
+    const newContact = await createContact({
+      name,
+      email,
+      pageUrl,
+      topic,
+      message,
+      s3Locations,
+      ratings,
+      timestamp,
+    });
+
+    res
+      .status(201)
+      .json({ message: "Contact created successfully", newContact });
+  } catch (error) {
+    console.error("Error in API endpoint: ", error);
+    res.status(500).send("Error creating contact");
+  }
+});
+
 /**
  * Query data used for Salivary Protein page table
  * @param {Number} size Number of records to return
@@ -2886,10 +2939,3 @@ app.post("/api/genes/:size/:from/", (req, res) => {
 app.listen(8000, () => {
   console.log(`Server is running on port 8000.`);
 });
-
-search_cluster().catch(console.log);
-search_gene().catch(console.log);
-search_signature().catch(console.log);
-search_citation().catch(console.log);
-search_geneID("EntrezGene:1").catch(console.log);
-search_proteinID("P04908").catch(console.log);
