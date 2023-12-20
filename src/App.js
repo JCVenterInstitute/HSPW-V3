@@ -36,6 +36,10 @@ import ProteinSequence from "./pages/Browse/SalivaryProtein/ProteinDetailSequenc
 import GoNodes from "./pages/GoTerms/GoNode";
 import GoTable from "./pages/GoTerms/GoTable";
 
+// Google Analytics
+import ReactGA from "react-ga4";
+ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
+
 function App() {
   return (
     <Router>
