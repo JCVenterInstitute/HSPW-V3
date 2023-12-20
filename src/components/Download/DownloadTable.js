@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-
 import { DATA } from "../../data/data";
 import first_pic from "../../assets/first-pic.png";
 import second_pic from "../../assets/second-pic.png";
@@ -15,6 +13,7 @@ import METADATA from "../../assets/METADATA.png";
 import RAW from "../../assets/RAW.png";
 import "../Filter.css";
 import "../Table.css";
+import { Container } from "@mui/material";
 
 function LinkComponent(props) {
   const imageUrlArray = [first_pic, second_pic, third_pic];
@@ -65,7 +64,7 @@ function LinkComponent(props) {
               <div className="download-hover-content">
                 <img
                   src={downloadIcons[index]}
-                  alt={`${downloadIcons[index]} Image`}
+                  alt={`${downloadIcons[index]}`}
                   className="download-hover-image"
                 />
               </div>
@@ -78,7 +77,6 @@ function LinkComponent(props) {
 }
 
 function DownloadTable() {
-  const [gridApi, setGridApi] = useState();
   const rowData = DATA;
 
   const rowHeight = 120;
@@ -140,7 +138,6 @@ function DownloadTable() {
       autoHeight: true,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
-      autoHeight: true,
     },
   ];
 
@@ -151,16 +148,9 @@ function DownloadTable() {
     sortable: true,
   };
 
-  const onGridReady = (params) => {
-    setGridApi(params);
-  };
-
   return (
     <>
-      <div
-        className="AppBox"
-        style={{ width: "76%", marginTop: "30px" }}
-      >
+      <Container sx={{ mt: 3 }}>
         <div
           className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
           style={{ height: 900 }}
@@ -174,10 +164,9 @@ function DownloadTable() {
             className="ag-cell-wrap-text"
             columnDefs={columns}
             defaultColDef={defColumnDefs}
-            onGridReady={onGridReady}
           />
         </div>
-      </div>
+      </Container>
     </>
   );
 }
