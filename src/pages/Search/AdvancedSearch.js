@@ -812,7 +812,10 @@ const AdvancedSearch = () => {
         >
           <Button
             variant="contained"
-            onClick={() => handleSearch(currentPage)}
+            onClick={() => {
+              setCurrentPage(1);
+              handleSearch(1);
+            }}
             disabled={rows.some(isRowInvalid)}
           >
             Search
