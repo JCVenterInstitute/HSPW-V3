@@ -2303,6 +2303,12 @@ app.get("/api/study/:id", async (req, res) => {
   });
 });
 
+app.get("/api/study", async (req, res) => {
+  searchStudy().then((response) => {
+    res.json(response);
+  });
+});
+
 const searchStudyProtein = async (experiment_id_key) => {
   // Initialize the client.
   const client = await getClient();
