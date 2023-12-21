@@ -59,7 +59,7 @@ class Home extends React.Component {
               title: "Salivary Protein",
               blurb:
                 "Search for specific salivary proteins found in our database.",
-              location: "/salivary_protein",
+              location: "/salivary-protein",
             },
             {
               imageSrc: analysis,
@@ -100,7 +100,7 @@ class Home extends React.Component {
               title: "Protein Cluster",
               blurb:
                 "Search clusters that share one or more common proteins are merged further.",
-              location: "/protein_cluster",
+              location: "/protein-cluster",
             },
             {
               imageSrc: api,

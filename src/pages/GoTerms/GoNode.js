@@ -261,9 +261,7 @@ const GoNode = () => {
                 <ul style={{ marginLeft: "2%" }}>
                   {usageData.map((obj, index) => (
                     <li key={index}>
-                      <a href={"http://localhost:3000/protein/" + obj["_id"]}>
-                        {obj["_id"]}
-                      </a>
+                      <a href={`/protein/${obj["_id"]}`}>{obj["_id"]}</a>
                     </li>
                   ))}
                 </ul>
@@ -322,9 +320,7 @@ const GoNode = () => {
                       key={index}
                       style={{ margin: "5px" }}
                     >
-                      <a href={"http://localhost:3000/GoNodes/" + val.obj}>
-                        {val.obj}
-                      </a>
+                      <a href={`/GoNodes/${val.obj}`}>{val.obj}</a>
                     </li>
                   ))}
                 </ul>
@@ -338,9 +334,7 @@ const GoNode = () => {
                       key={index}
                       style={{ margin: "5px" }}
                     >
-                      <a href={"http://localhost:3000/GoNodes/" + val.obj}>
-                        {val.obj}
-                      </a>
+                      <a href={`/GoNodes/${val.obj}`}>{val.obj}</a>
                     </li>
                   ))}
                 </ul>
@@ -354,9 +348,7 @@ const GoNode = () => {
                       key={index}
                       style={{ margin: "5px" }}
                     >
-                      <a href={"http://localhost:3000/GoNodes/" + val.sub}>
-                        {val.sub}
-                      </a>
+                      <a href={`/GoNodes/${val.sub}`}>{val.sub}</a>
                     </li>
                   ))}
                 </ul>

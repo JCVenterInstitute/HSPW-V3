@@ -337,7 +337,7 @@ function proteinLinkComponent(props) {
       <a
         target="_blank"
         rel="noopener noreferrer"
-        href={`${window.location.origin}/protein/${props.value}`}
+        href={`/protein/${props.value}`}
       >
         {props.value}
       </a>

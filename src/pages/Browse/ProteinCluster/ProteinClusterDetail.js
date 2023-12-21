@@ -259,9 +259,7 @@ const Cluster_Detail = (props) => {
                 <TableCell>
                   {protein.protein_name !== "Unknown" &&
                   protein.protein_name !== "Error Fetching" ? (
-                    <a
-                      href={`http://localhost:3000/protein/${protein.uniprot_id}`}
-                    >
+                    <a href={`/protein/${protein.uniprot_id}`}>
                       {protein.uniprot_id}
                     </a>
                   ) : (

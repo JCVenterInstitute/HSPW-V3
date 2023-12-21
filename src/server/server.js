@@ -24,7 +24,7 @@ app.use(express.json());
 
 app.use(express.static("build"));
 
-app.use("/static", express.static(path.join(__dirname, "./build//static")));
+app.use("/static", express.static(path.join(__dirname, "./build/static")));
 
 var host =
   "https://search-hspw-dev2-dmdd32xae4fmxh7t4g6skv67aa.us-east-2.es.amazonaws.com";
@@ -194,7 +194,7 @@ async function search_cluster() {
   return response.body.hits.hits;
 }
 
-app.get("/protein_cluster", (req, res) => {
+app.get("/api/protein-cluster", (req, res) => {
   let a = search_cluster();
   a.then(function (result) {
     console.log(result);
@@ -337,7 +337,7 @@ async function search_signature(size, from) {
   return response.body.hits;
 }
 
-app.get("/protein-signature/:size/:from", (req, res) => {
+app.get("/api/protein-signature/:size/:from", (req, res) => {
   let a = search_signature(req.params.size, req.params.from);
   a.then(function (result) {
     console.log(result);
@@ -562,7 +562,7 @@ async function search_signatureID(id) {
   return response.body.hits.hits;
 }
 
-app.get("/protein-signature/:id", (req, res) => {
+app.get("/api/protein-signature/:id", (req, res) => {
   console.log(req.params.id);
   let a = search_signatureID(req.params.id);
   a.then(function (result) {
@@ -591,7 +591,7 @@ async function search_withID(index, id) {
   return response.body.hits.hits;
 }
 
-app.get("/citation/:id", (req, res) => {
+app.get("/api/citation/:id", (req, res) => {
   console.log(req.params.id);
   let a = search_withID("citation", req.params.id);
   a.then(function (result) {
@@ -611,7 +611,7 @@ async function search_citation_field() {
   return response.body.hits.hits;
 }
 
-app.get("/citation/field", (req, res) => {
+app.get("/api/citation/field", (req, res) => {
   let a = search_citation_field();
   a.then(function (result) {
     console.log("321:" + result);
@@ -639,7 +639,7 @@ async function search_citation(size, from) {
   return response.body.hits;
 }
 
-app.get("/citation/:size/:from", (req, res) => {
+app.get("/api/citation/:size/:from", (req, res) => {
   let a = search_citation(req.params.size, req.params.from);
   a.then(function (result) {
     console.log(result);
@@ -2132,7 +2132,7 @@ app.get("/protein", (req, res) => {
   });
 });
 
-app.get("/protein/:id", (req, res) => {
+app.get("/api/protein/:id", (req, res) => {
   let a = search_proteinID(req.params.id);
   a.then(function (result) {
     console.log(result);

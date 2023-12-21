@@ -48,7 +48,7 @@ const SearchResultsTable = ({
             return (
               <span
                 onClick={() =>
-                  window.open(`/protein_clusters/${params.value}`, "_blank")
+                  window.open(`/protein-clusters/${params.value}`, "_blank")
                 }
                 style={{
                   cursor: "pointer",
@@ -63,7 +63,7 @@ const SearchResultsTable = ({
             return (
               <span
                 onClick={() =>
-                  window.open(`/protein_signature/${params.value}`, "_blank")
+                  window.open(`/protein-signature/${params.value}`, "_blank")
                 }
                 style={{
                   cursor: "pointer",

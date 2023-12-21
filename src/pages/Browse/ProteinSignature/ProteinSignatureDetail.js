@@ -37,7 +37,8 @@ const td = {
 const SignatureDetail = (props) => {
   const [message, setMessage] = useState("");
   const params = useParams();
-  let url = "http://localhost:8000/protein-signature/" + params["interproid"];
+  let url =
+    "http://localhost:8000/api/protein-signature/" + params["interproid"];
 
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");

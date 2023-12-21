@@ -190,7 +190,7 @@ const Citation_detail = (props) => {
 
   const [message, setMessage] = useState("");
   const params = useParams();
-  let url = "http://localhost:8000/citation/" + params["citationid"];
+  let url = "http://localhost:8000/api/citation/" + params["citationid"];
 
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");

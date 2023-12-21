@@ -40,10 +40,8 @@ const ProteinCluster = () => {
   const [number, setNumber] = useState({});
   const [isLoading, setLoading] = useState(true);
 
-  const fetchData = () => {};
-
   useEffect(() => {
-    fetch(`${HOST_NAME}/protein_cluster`)
+    fetch(`${HOST_NAME}/api/protein-cluster`)
       .then((res) => res.json())
       .then((data) => setMessage(data["Cluster ID"]))
       .catch((error) =>
