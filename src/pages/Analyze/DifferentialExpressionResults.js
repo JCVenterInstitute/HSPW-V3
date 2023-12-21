@@ -26,11 +26,12 @@ const DifferentialExpressionResults = () => {
   const option = [
     "Volcano Plot",
     "Heatmap",
-    "T-Tests",
+    "Statistical Parametric Test",
     "Fold Change Analysis",
     "Principal Component Analysis",
     "Venn-Diagram",
     "Normalization",
+    "Input Data",
     "Result Data",
     "Download",
   ];
@@ -40,8 +41,8 @@ const DifferentialExpressionResults = () => {
     "Volcano-Data": "volcano.csv",
     Heatmap: "heatmap_1_dpi72.png",
     HeatmapAll: "heatmap_0_dpi72.png",
-    "T-Tests": "tt_0_dpi72.png",
-    "T-Tests-Data": "t_test.csv",
+    "Statistical Parametric Test": "tt_0_dpi72.png",
+    "Statistical-Parametric-Test-Data": "t_test.csv",
     "Fold Change Analysis": "fc_0_dpi72.png",
     "FC-Data": "fold_change.csv",
     "Principal Component Analysis": "pca_score2d_0_dpi72.png",
@@ -50,6 +51,7 @@ const DifferentialExpressionResults = () => {
     "Venn-Diagram-Data": "venn_out_data.txt",
     Normalization: "norm_0_dpi72.png",
     "Normalization-Data": "data_normalized.csv",
+    "Input Data": "data_original.csv",
     "Result Data": "all_data.tsv",
   };
 
@@ -58,8 +60,8 @@ const DifferentialExpressionResults = () => {
     "Volcano Data": "volcano.csv",
     "Top 25 Samples Heatmap": "heatmap_1_dpi72.png",
     "All Samples Heatmap": "heatmap_0_dpi72.png",
-    "T-Tests Plot": "tt_0_dpi72.png",
-    "T-Tests Data": "t_test.csv",
+    "Statistical Parametric Test Plot": "tt_0_dpi72.png",
+    "Statistical Parametric Test Data": "t_test.csv",
     "Fold Change Analysis Plot": "fc_0_dpi72.png",
     "Fold Change Analysis Data": "fold_change.csv",
     "Principal Component Analysis Plot": "pca_score2d_0_dpi72.png",
@@ -68,6 +70,7 @@ const DifferentialExpressionResults = () => {
     "Venn-Diagram Data": "venn_out_data.txt",
     "Normalization Plot": "norm_0_dpi72.png",
     "Normalization Data": "data_normalized.csv",
+    "Input Data": "data_original.csv",
     "Result Data": "all_data.tsv",
     "All Data Set": "data_set.zip",
   };
@@ -88,11 +91,11 @@ const DifferentialExpressionResults = () => {
             ? optionFile["Volcano Plot"]
             : optionFile["Volcano-Data"];
         fetchImage(jobId, fileName);
-      } else if (selected === "T-Tests") {
+      } else if (selected === "Statistical Parametric Test") {
         fileName =
           newAlignment === "left"
-            ? optionFile["T-Tests"]
-            : optionFile["T-Tests-Data"];
+            ? optionFile["Statistical Parametric Test"]
+            : optionFile["Statistical-Parametric-Test-Data"];
         fetchImage(jobId, fileName);
       } else if (selected === "Fold Change Analysis") {
         fileName =
@@ -376,6 +379,7 @@ const DifferentialExpressionResults = () => {
                   </ToggleButtonGroup>
                 ) : (
                   selected !== "Result Data" &&
+                  selected !== "Input Data" &&
                   selected !== "Download" && (
                     <ToggleButtonGroup
                       value={alignment}
@@ -537,7 +541,7 @@ const DifferentialExpressionResults = () => {
                   </Grid>
                 </Box>
               </Box>
-            ) : selected === "Result Data" ? (
+            ) : selected === "Result Data" || selected === "Input Data" ? (
               <Box
                 sx={{
                   overflowX: "auto", // Enable horizontal scrolling
@@ -556,7 +560,7 @@ const DifferentialExpressionResults = () => {
               )
             ) : (
               (selected === "Volcano Plot" ||
-                selected === "T-Tests" ||
+                selected === "Statistical Parametric Test" ||
                 selected === "Fold Change Analysis" ||
                 selected === "Principal Component Analysis" ||
                 selected === "Venn-Diagram" ||

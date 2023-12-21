@@ -1489,7 +1489,7 @@ const DifferentialExpression = () => {
                   mt: 3,
                 }}
               >
-                Parametric Test:
+                Statistical Parametric Test:
               </Typography>
               <Checkbox
                 icon={<CircleUnchecked />}
