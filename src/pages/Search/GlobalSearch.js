@@ -10,7 +10,8 @@ import PubMedCitations from "../../components/Search/GlobalSearch/PubMedCitation
 import SalivaryProteins from "../../components/Search/GlobalSearch/SalivaryProteins";
 
 const GlobalSearch = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchText, setSearchText] = useState("");
+  const [submittedQuery, setSubmittedQuery] = useState("");
   const [searchStarted, setSearchStarted] = useState(false);
 
   const entityList = [
@@ -32,17 +33,17 @@ const GlobalSearch = () => {
   };
 
   const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+    setSearchText(event.target.value);
   };
 
   const handleSearch = (event) => {
     event.preventDefault();
-    setSearchStarted(false);
-    if (searchQuery !== "") {
+    if (searchText !== "") {
+      setSubmittedQuery(searchText);
       setSearchStarted(true);
     }
 
-    console.log("Searching for:", searchQuery);
+    console.log("Searching for:", searchText);
   };
 
   return (
@@ -86,7 +87,7 @@ const GlobalSearch = () => {
               fullWidth
               variant="outlined"
               placeholder="Enter search keywords"
-              value={searchQuery}
+              value={searchText}
               onChange={handleSearchChange}
               InputProps={{
                 endAdornment: (
@@ -124,7 +125,12 @@ const GlobalSearch = () => {
             </Box>
             {entityList.map((entity) => {
               const EntityComponent = entities[entity];
-              return <EntityComponent searchQuery={searchQuery} />;
+              return (
+                <EntityComponent
+                  key={entity}
+                  searchText={submittedQuery}
+                />
+              );
             })}
           </>
         )}

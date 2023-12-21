@@ -2668,6 +2668,64 @@ app.post("/api/contact/send-form", async (req, res) => {
   }
 });
 
+const globalSearch = async ({ entity, size, from, searchText }) => {
+  // Initialize the client.
+  let client;
+  if (entity === "Salivary Proteins") {
+    client = await getClient1();
+  } else {
+    client = await getClient();
+  }
+
+  const entityIndexMapping = {
+    Genes: "genes",
+    "Protein Clusters": "protein_cluster",
+    "Protein Signatures": "protein_signature",
+    Proteins: "study_protein",
+    "PubMed Citations": "citation",
+    // "Salivary Proteins": "protein",
+    "Salivary Proteins": "salivary-proteins-112023",
+    Annotations: "salivary-proteins-112023",
+  };
+
+  const escapeSpecialCharacters = (inputVal) => {
+    return inputVal.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  };
+
+  const escapedInput = escapeSpecialCharacters(searchText);
+
+  const query = {
+    track_total_hits: true,
+    size,
+    from,
+    query: {
+      query_string: {
+        query: `*${escapedInput}*`, // Search for the keyword in all fields
+        analyze_wildcard: true, // Enable wildcard search
+      },
+    },
+  };
+  console.log("Search Query:", query);
+
+  const response = await client.search({
+    index: entityIndexMapping[entity],
+    body: query,
+  });
+
+  return response.body.hits;
+};
+
+app.post("/api/global-search", async (req, res) => {
+  try {
+    const payload = req.body;
+
+    const result = await globalSearch(payload);
+    res.json(result);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 /**
  * Query data used for Salivary Protein page table
  * @param {Number} size Number of records to return
