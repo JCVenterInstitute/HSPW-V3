@@ -542,14 +542,16 @@ const DifferentialExpressionResults = () => {
                 </Box>
               </Box>
             ) : selected === "Result Data" || selected === "Input Data" ? (
-              <Box
-                sx={{
-                  overflowX: "auto", // Enable horizontal scrolling
-                  width: "100%",
-                }}
-              >
-                <CSVDataTable data={csvData} />
-              </Box>
+              <Container sx={{ margin: "0px" }}>
+                <Box
+                  sx={{
+                    overflowX: "auto", // Enable horizontal scrolling
+                    width: "100%",
+                  }}
+                >
+                  <CSVDataTable data={csvData} />
+                </Box>
+              </Container>
             ) : selected === "Heatmap" || alignment === "left" ? (
               imageUrl && (
                 <img
@@ -566,14 +568,16 @@ const DifferentialExpressionResults = () => {
                 selected === "Venn-Diagram" ||
                 selected === "Normalization") &&
               alignment === "right" && (
-                <Box
-                  sx={{
-                    overflowX: "auto", // Enable horizontal scrolling
-                    width: "100%",
-                  }}
-                >
-                  <CSVDataTable data={csvData} />
-                </Box>
+                <Container sx={{ margin: "0px" }}>
+                  <Box
+                    sx={{
+                      overflowX: "auto", // Enable horizontal scrolling
+                      width: "100%",
+                    }}
+                  >
+                    <CSVDataTable data={csvData} />
+                  </Box>
+                </Container>
               )
             )}
           </Box>
