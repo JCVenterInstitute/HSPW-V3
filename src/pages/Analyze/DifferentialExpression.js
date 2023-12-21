@@ -116,7 +116,7 @@ const DifferentialExpression = () => {
   const [foldChangeThreshold, setFoldChangeThreshold] = useState("2.0");
   const [pValueThreshold, setPValueThreshold] = useState("0.05");
   const [pValueType, setPValueType] = useState("Raw");
-  const [parametricTest, setParametricTest] = useState("T");
+  const [parametricTest, setParametricTest] = useState("F");
   const [filterKeyword, setFilterKeyword] = useState("");
   const [sampleIdFilter, setSampleIdFilter] = useState("");
   const [sampleTitleFilter, setSampleTitleFilter] = useState("");
@@ -1494,8 +1494,8 @@ const DifferentialExpression = () => {
               <Checkbox
                 icon={<CircleUnchecked />}
                 checkedIcon={<CircleCheckedFilled />}
-                checked={parametricTest === "T"}
-                onChange={() => setParametricTest("T")}
+                checked={parametricTest === "F"}
+                onChange={() => setParametricTest("F")}
                 sx={{ paddingLeft: 0 }}
               />
               <Typography
@@ -1508,8 +1508,8 @@ const DifferentialExpression = () => {
               <Checkbox
                 icon={<CircleUnchecked />}
                 checkedIcon={<CircleCheckedFilled />}
-                checked={parametricTest === "F"}
-                onChange={() => setParametricTest("F")}
+                checked={parametricTest === "T"}
+                onChange={() => setParametricTest("T")}
               />
               <Typography
                 display="inline"

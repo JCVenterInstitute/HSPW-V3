@@ -2189,6 +2189,14 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
     const compressCommand =
       "zip -r data_set.zip volcano_0_dpi72.png volcano.csv heatmap_1_dpi72.png heatmap_0_dpi72.png tt_0_dpi72.png t_test.csv fc_0_dpi72.png fold_change.csv pca_score2d_0_dpi72.png pca_score.csv venn-dimensions.png venn_out_data.txt norm_0_dpi72.png data_normalized.csv data_original.csv all_data.tsv";
     await execPromise(compressCommand, { cwd: workingDirectory });
+    if (parametricTest === "F") {
+      const renameCommand = "mv t_test.csv statistical_parametric_test.csv";
+      await execPromise(renameCommand, { cwd: workingDirectory });
+    } else {
+      const renameCommand =
+        "mv wilcox_rank.csv statistical_parametric_test.csv";
+      await execPromise(renameCommand, { cwd: workingDirectory });
+    }
 
     // S3 upload parameters
     const params = {
