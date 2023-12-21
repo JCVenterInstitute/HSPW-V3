@@ -1120,7 +1120,6 @@ const ProteinDetail = (props) => {
             >
               Keywords
             </h2>
-
             {data[0]["_source"]["salivary_proteins"]["keywords"].map(
               (value, i, arr) => {
                 return (
@@ -1149,7 +1148,6 @@ const ProteinDetail = (props) => {
                 );
               }
             )}
-
             <Divider
               sx={{
                 marginBottom: "10px",
@@ -1169,20 +1167,20 @@ const ProteinDetail = (props) => {
             >
               References
             </h2>
-
             {data[0]["_source"]["salivary_proteins"]["cites"].map(
               (value, i) => {
                 return (
                   <React.Fragment key={i}>
                     <div>
                       <h4 style={{ display: "inline" }}>{i + 1}. </h4>
-
                       <b style={{ color: "#1463B9" }}>{authorName[i]}</b>
                       <span>{year[i]}</span>
                       <i>{journal[i]}</i>
-
                       <a
-                        href={"https://pubmed.ncbi.nlm.nih.gov/" + value}
+                        href={`https://pubmed.ncbi.nlm.nih.gov/${value.replace(
+                          "PubMed:",
+                          ""
+                        )}`}
                         style={{ color: "#777777" }}
                       >
                         {` ${value} `}
@@ -1199,7 +1197,6 @@ const ProteinDetail = (props) => {
                 );
               }
             )}
-
             <Divider
               sx={{
                 marginBottom: "10px",
