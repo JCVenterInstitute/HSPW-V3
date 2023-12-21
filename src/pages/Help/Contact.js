@@ -515,7 +515,7 @@ const Contact = () => {
               >
                 <Typography
                   variant="body2"
-                  sx={{ mt: 2, mb: 1, textAlign: "center", fontFamily: "Lato" }}
+                  sx={{ textAlign: "center", fontFamily: "Lato" }}
                 >
                   Leave your contact information blank to submit this form
                   anonymously. However, we will not be able to reply back
@@ -529,11 +529,9 @@ const Contact = () => {
               >
                 <Box
                   sx={{
-                    mt: 4,
+                    mt: 2,
                     display: "flex",
                     justifyContent: "center", // Centers the buttons horizontally
-                    gap: 2,
-                    mb: 3,
                   }}
                 >
                   <ReCAPTCHA

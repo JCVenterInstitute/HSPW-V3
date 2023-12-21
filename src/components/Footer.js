@@ -76,7 +76,7 @@ class Footer extends Component {
               <ul>
                 <li>
                   <a
-                    href="About"
+                    href="about"
                     className="first_li"
                   >
                     About HSPW
@@ -128,7 +128,7 @@ class Footer extends Component {
                   className="last"
                   style={{ marginLeft: "37%" }}
                 >
-                  <a href="mailto:help@salivaryproteome.org">Contact Us</a>
+                  <a href="contact">Contact Us</a>
                 </li>
               </ul>
             </div>
