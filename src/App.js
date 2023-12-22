@@ -31,6 +31,7 @@ import About from "./pages/Help/About";
 import Team from "./pages/Help/Team";
 import DifferentialExpression from "./pages/Analyze/DifferentialExpression.js";
 import DifferentialExpressionResults from "./pages/Analyze/DifferentialExpressionResults.js";
+import GlobalSearch from "./pages/Search/GlobalSearch";
 import AdvancedSearch from "./pages/Search/AdvancedSearch.js";
 import ProteinSequence from "./pages/Browse/SalivaryProtein/ProteinDetailSequence.js";
 import GoNodes from "./pages/GoTerms/GoNode";
@@ -51,20 +52,20 @@ function App() {
           element={<Home />}
         />
         <Route
-          path="/download"
-          element={<Download />}
+          path="/salivary-protein"
+          element={<SalivaryProtein />}
         />
         <Route
-          path="/contact"
-          element={<Contact />}
+          path="/protein/:proteinid"
+          element={<ProteinDetail />}
         />
         <Route
-          path="/analysis-home"
-          element={<AnalysisHome />}
+          path="/protein-cluster"
+          element={<ProteinCluster />}
         />
         <Route
-          path="/gene"
-          element={<Gene />}
+          path="/protein-cluster/:clusterid"
+          element={<ProteinClusterDetail />}
         />
         <Route
           path="/protein-signature"
@@ -75,28 +76,28 @@ function App() {
           element={<ProteinSignatureDetail />}
         />
         <Route
-          path="/protein-cluster"
-          element={<ProteinCluster />}
+          path="/gene"
+          element={<Gene />}
         />
         <Route
           path="/gene/:geneid"
           element={<GeneDetail />}
         />
         <Route
-          path="/protein-cluster/:clusterid"
-          element={<ProteinClusterDetail />}
+          path="/global-search"
+          element={<GlobalSearch />}
+        ></Route>
+        <Route
+          path="/advanced-search"
+          element={<AdvancedSearch />}
+        ></Route>
+        <Route
+          path="/experiment-search"
+          element={<ExperimentSearch />}
         />
         <Route
-          path="/salivary-protein"
-          element={<SalivaryProtein />}
-        />
-        <Route
-          path="/protein/:proteinid"
-          element={<ProteinDetail />}
-        />
-        <Route
-          path="/analysis"
-          element={<Analysis />}
+          path="/Protein-Set-Search"
+          element={<ProteinSetSearch />}
         />
         <Route
           path="/clustalo/results/:jobId"
@@ -105,6 +106,14 @@ function App() {
         <Route
           path="/clustalo"
           element={<ClustalOmega />}
+        />
+        <Route
+          path="/differential-expression/results/:jobId"
+          element={<DifferentialExpressionResults />}
+        />
+        <Route
+          path="/differential-expression"
+          element={<DifferentialExpression />}
         />
         <Route
           path="/iprscan5/results/:jobId"
@@ -123,14 +132,6 @@ function App() {
           element={<PSIBlast />}
         />
         <Route
-          path="/differential-expression/results/:jobId"
-          element={<DifferentialExpressionResults />}
-        />
-        <Route
-          path="/differential-expression"
-          element={<DifferentialExpression />}
-        />
-        <Route
           path="/citation"
           element={<Citation />}
         />
@@ -139,24 +140,20 @@ function App() {
           element={<CitationDetail />}
         />
         <Route
-          path="/advanced-search"
-          element={<AdvancedSearch />}
-        ></Route>
-        <Route
-          path="/experiment-search"
-          element={<ExperimentSearch />}
-        />
-        <Route
-          path="/Protein-Set-Search"
-          element={<ProteinSetSearch />}
-        />
-        <Route
-          path="/About"
+          path="/about"
           element={<About />}
         />
         <Route
-          path="/Team"
+          path="/download"
+          element={<Download />}
+        />
+        <Route
+          path="/team"
           element={<Team />}
+        />
+        <Route
+          path="/contact"
+          element={<Contact />}
         />
         <Route
           path="protein-sequence/:proteinid"
@@ -169,6 +166,14 @@ function App() {
         <Route
           path="GoTable"
           element={<GoTable />}
+        />
+        <Route
+          path="/analysis-home"
+          element={<AnalysisHome />}
+        />
+        <Route
+          path="/analysis"
+          element={<Analysis />}
         />
       </Routes>
       <Footer />

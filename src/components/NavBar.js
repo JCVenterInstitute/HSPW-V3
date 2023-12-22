@@ -118,6 +118,12 @@ export const NavBar = () => {
                 >
                   <MenuItem
                     component="a"
+                    href="/global-search"
+                  >
+                    Global Search
+                  </MenuItem>
+                  <MenuItem
+                    component="a"
                     href="/advanced-search"
                   >
                     Advanced Search
