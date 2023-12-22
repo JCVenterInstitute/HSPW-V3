@@ -106,7 +106,7 @@ const PubMedCitations = ({ searchText }) => {
   }, []);
 
   const fetchData = async (page = currentPage, pageSize = recordsPerPage) => {
-    const entity = " PubMed Citations";
+    const entity = "PubMed Citations";
     const from = (page - 1) * pageSize;
     const response = await axios
       .post("http://localhost:8000/api/global-search", {
