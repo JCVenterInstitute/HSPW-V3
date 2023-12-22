@@ -1,11 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
-import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import FontAwesome from "react-fontawesome";
 import {
   Container,
   Box,
@@ -14,7 +10,6 @@ import {
   IconButton,
   Typography,
   MenuItem,
-  Table,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -24,24 +19,13 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 import "../Filter.css";
 
-const th = {
-  background: "#f2f2f2",
-  textAlign: "center",
-  border: "1px solid #aaa",
-  fontWeight: "bold",
-  fontSize: "20px",
-  padding: "0.2em",
-  maxWidth: "1000px",
-};
-
 function Glycan_Table(props) {
   const [rowData, setRowData] = useState([]);
   const [message, setMessage] = useState("");
   const [totalPageNumber, setTotalPageNumber] = useState(1);
   const [gridApi, setGridApi] = useState();
-  const [pageSize, setPageSize] = useState(50);
-  const [pageNum, setPageNum] = useState(0);
-  const [count, setCount] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [pageNum, setPageNum] = useState(1);
   const [docCount, setDocCount] = useState(0);
   const [filterKeyword, setFilterKeyword] = useState("");
   const gridRef = useRef();
@@ -51,10 +35,27 @@ function Glycan_Table(props) {
   }
 
   const ImageRenderer = ({ value }) => (
-    <img
-      src={value}
-      alt="Glygen"
-    />
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+      }}
+    >
+      <img
+        src={value}
+        alt="Glygen"
+        style={{
+          maxWidth: "100%",
+          maxHeight: "100%",
+          width: "auto",
+          height: "auto",
+        }}
+      />
+    </div>
   );
 
   useEffect(() => {
@@ -62,84 +63,35 @@ function Glycan_Table(props) {
       (glycan) => glycan.glytoucan_accession !== ""
     );
 
-    console.log("> Glycan Data", data);
-
+    setDocCount(data.length);
     setRowData(data);
   }, []);
 
-  const SourceRenderer = ({ value }) => (
-    <div style={{ overflow: "scroll", height: "200px", padding: "10px" }}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell
-              sx={th}
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "17px",
-                fontWeight: "bold",
-                border: "1px solid #3592E4",
-                borderTopLeftRadius: "10px",
-              }}
-            >
-              ID
-            </TableCell>
-            <TableCell
-              sx={th}
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "17px",
-                fontWeight: "bold",
-                border: "1px solid #3592E4",
-                borderTopRightRadius: "10px",
-              }}
-            >
-              Database
-            </TableCell>
-          </TableRow>
-          {value.map((val, index) => (
-            <React.Fragment key={index}>
-              <TableRow>
-                <TableCell
-                  style={{
-                    border: "1px solid #CACACA",
-                  }}
+  const SourceRenderer = ({ value }) => {
+    return (
+      <div>
+        {value.map((src, i) => {
+          const { database, url, id } = src;
+
+          return (
+            <React.Fragment key={`glycan-img-${i}`}>
+              <span>
+                {`${database}: `}
+                <a
+                  target="_blank"
+                  href={url}
                 >
-                  {val.url ? (
-                    <>
-                      <a href={val.url}>{val.id}</a>{" "}
-                      <a href={val.url}>
-                        <FontAwesome
-                          className="super-crazy-colors"
-                          name="external-link"
-                          style={{
-                            textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
-                          }}
-                        />
-                      </a>
-                    </>
-                  ) : (
-                    val.id
-                  )}
-                </TableCell>
-                <TableCell
-                  style={{
-                    border: "1px solid #CACACA",
-                  }}
-                >
-                  {val.database}
-                </TableCell>
-              </TableRow>
+                  {id}
+                </a>
+              </span>
+              {i !== value.length ? ",   " : ""}
+              {i !== 0 && i % 3 === 0 ? <br /> : ""}
             </React.Fragment>
-          ))}
-        </TableHead>
-      </Table>
-    </div>
-  );
+          );
+        })}
+      </div>
+    );
+  };
 
   function LinkComponent(props) {
     return (
@@ -160,10 +112,9 @@ function Glycan_Table(props) {
       field: "image",
       minWidth: 425,
       wrapText: true,
-      cellRendererFramework: ImageRenderer,
+      cellRenderer: ImageRenderer,
       headerClass: ["header-border"],
       cellClass: ["table-border"],
-      autoHeight: true,
     },
     {
       headerName: "Type",
@@ -187,7 +138,6 @@ function Glycan_Table(props) {
       cellClass: ["table-border"],
       minWidth: 800,
       wrapText: true,
-      autoHeight: true,
       cellRendererFramework: SourceRenderer,
     },
   ];
@@ -487,14 +437,15 @@ function Glycan_Table(props) {
           )}
           columnDefs={columns}
           ref={gridRef}
-          rowHeight={220}
+          autoHeight
+          rowHeight={140}
           enableCellTextSelection={true}
           onGridReady={onGridReady}
           pagination={true}
           paginationPageSize={10}
           paginationNumberFormatter={paginationNumberFormatter}
           suppressPaginationPanel={true}
-          frameworkComponents={{
+          components={{
             LinkComponent,
           }}
           defaultColDef={defaultColDef}

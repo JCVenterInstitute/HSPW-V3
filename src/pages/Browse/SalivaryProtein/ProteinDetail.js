@@ -274,24 +274,19 @@ const ProteinDetail = (props) => {
                         backgroundColor: "#1463B9",
                         color: "white",
                         fontFamily: "Montserrat",
-                        fontSize: "14px",
                         border: "1px solid #3592E4",
                         borderTopLeftRadius: "10px",
-                        border: "none",
                         width: "10%",
+                        fontSize: "14px",
                       }}
                     >
                       Primary Accession
                     </TableCell>
                     <TableCell
                       variant="header"
-                      style={{
-                        fontWeight: "bold",
+                      sx={{
                         border: "1px solid, #3592E4",
                         borderTopRightRadius: "10px",
-                      }}
-                      sx={{
-                        fontSize: "0.875rem",
                         border: "1px solid #CACACA",
                         fontFamily: "Lato",
                       }}
@@ -321,10 +316,10 @@ const ProteinDetail = (props) => {
                     </TableCell>
                     <TableCell
                       sx={{
-                        fontSize: "0.875rem",
+                        border: "1px solid, #3592E4",
+                        borderTopRightRadius: "10px",
                         border: "1px solid #CACACA",
                         fontFamily: "Lato",
-                        fontSize: "14px",
                       }}
                     >
                       {data[0]["_source"]["salivary_proteins"][
@@ -354,10 +349,10 @@ const ProteinDetail = (props) => {
                     </TableCell>
                     <TableCell
                       sx={{
-                        fontSize: "0.875rem",
+                        border: "1px solid, #3592E4",
+                        borderTopRightRadius: "10px",
                         border: "1px solid #CACACA",
                         fontFamily: "Lato",
-                        fontSize: "14px",
                       }}
                     >
                       <a
@@ -501,24 +496,45 @@ const ProteinDetail = (props) => {
                     <TableCell
                       style={{
                         border: "1px solid #CACACA",
+                        fontFamily: "Lato",
                       }}
                     >
                       {data[0]["_id"]}
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       Canonical sequence
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       {
                         data[0]["_source"]["salivary_proteins"][
                           "protein_sequence_length"
                         ]
                       }
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       {data[0]["_source"]["salivary_proteins"]["mass"]}
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       <a
                         style={{ color: "#116988" }}
                         href={
@@ -759,101 +775,228 @@ const ProteinDetail = (props) => {
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       <a href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001202">
                         BTO:0001202
                       </a>
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       Saliva
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       Disease free<br></br>Sjogren's Syndrome<br></br>COVID-19
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       50<br></br>2<br></br>8
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       133<br></br>2870<br></br>24
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       430.74<br></br>1008.23<br></br>0
                     </TableCell>
                     <TableCell
-                      style={{ border: "1px solid #CACACA" }}
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
                     ></TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       <a href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001316">
                         BTO:0001316
                       </a>
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       Submandibular gland
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       Disease free
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       49
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       2442
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       13513.97
                     </TableCell>
                     <TableCell
-                      style={{ border: "1px solid #CACACA" }}
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
                     ></TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       <a href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001315">
                         BTO:0001315
                       </a>
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       Sublingual gland
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       Disease free
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       49
                     </TableCell>
                     <TableCell v>2442</TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       14,385.84
                     </TableCell>
                     <TableCell
-                      style={{ border: "1px solid #CACACA" }}
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
                     ></TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       <a href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001004">
                         BTO:0001004
                       </a>
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       Parotid gland
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       Disease free
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       56
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       1208
                     </TableCell>
-                    <TableCell style={{ border: "1px solid #CACACA" }}>
+                    <TableCell
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
+                    >
                       3,127.74
                     </TableCell>
                     <TableCell
-                      style={{ border: "1px solid #CACACA" }}
+                      style={{
+                        border: "1px solid #CACACA",
+                        fontFamily: "Lato",
+                      }}
                     ></TableCell>
                   </TableRow>
                 </TableBody>
@@ -1171,7 +1314,7 @@ const ProteinDetail = (props) => {
               (value, i) => {
                 return (
                   <React.Fragment key={i}>
-                    <div>
+                    <div style={{ fontFamily: "Lato" }}>
                       <h4 style={{ display: "inline" }}>{i + 1}. </h4>
                       <b style={{ color: "#1463B9" }}>{authorName[i]}</b>
                       <span>{year[i]}</span>
@@ -1238,6 +1381,7 @@ const ProteinDetail = (props) => {
                       maxWidth: "100%",
                       border: "1px solid #CACACA",
                       borderTopRightRadius: "10px",
+                      fontFamily: "Lato",
                     }}
                   >
                     {
@@ -1278,7 +1422,11 @@ const ProteinDetail = (props) => {
                   </TableCell>
                   <TableCell
                     sx={{ fontSize: "0.875rem" }}
-                    style={{ maxWidth: "100%", border: "1px solid #CACACA" }}
+                    style={{
+                      maxWidth: "100%",
+                      border: "1px solid #CACACA",
+                      fontFamily: "Lato",
+                    }}
                   >
                     {
                       data[0]["_source"]["salivary_proteins"][
@@ -1314,7 +1462,11 @@ const ProteinDetail = (props) => {
                   </TableCell>
                   <TableCell
                     sx={{ fontSize: "0.875rem" }}
-                    style={{ maxWidth: "100%", border: "1px solid #CACACA" }}
+                    style={{
+                      maxWidth: "100%",
+                      border: "1px solid #CACACA",
+                      fontFamily: "Lato",
+                    }}
                   >
                     {data[0]["_source"]["salivary_proteins"]["status"]}
                   </TableCell>
