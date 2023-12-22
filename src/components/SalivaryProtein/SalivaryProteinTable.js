@@ -1,4 +1,4 @@
-import List from "@material-ui/core/List";
+import List from "@mui/material/List";
 import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";

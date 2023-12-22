@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Collapse from "@material-ui/core/Collapse";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import Collapse from "@mui/material/Collapse";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
@@ -15,7 +15,12 @@ import Checkbox from "@mui/material/Checkbox";
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
 export default function Filter() {
-  return menu.map((item, key) => <MenuItem key={key} item={item} />);
+  return menu.map((item, key) => (
+    <MenuItem
+      key={key}
+      item={item}
+    />
+  ));
 }
 
 const MenuItem = ({ item }) => {
@@ -42,16 +47,31 @@ const MultiLevel = ({ item }) => {
 
   return (
     <React.Fragment>
-      <ListItem button onClick={handleClick} divider="true">
+      <ListItem
+        button
+        onClick={handleClick}
+        divider="true"
+      >
         {open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
         <ListItemText primary={item.title} />
       </ListItem>
       <div>
-        <Collapse in={open} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding sx={{ border: "1px groove" }}>
+        <Collapse
+          in={open}
+          timeout="auto"
+          unmountOnExit
+        >
+          <List
+            component="div"
+            disablePadding
+            sx={{ border: "1px groove" }}
+          >
             {children.map((child, key) => (
               <FormGroup sx={{ ml: "10px" }}>
-                <FormControlLabel control={<Checkbox />} label={child.title} />
+                <FormControlLabel
+                  control={<Checkbox />}
+                  label={child.title}
+                />
               </FormGroup>
             ))}
           </List>

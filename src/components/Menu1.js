@@ -1,81 +1,75 @@
-import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
-import LocalLibraryOutlinedIcon from "@material-ui/icons/LocalLibraryOutlined";
-import TrendingUpOutlinedIcon from "@material-ui/icons/TrendingUpOutlined";
-import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
+import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import LocalLibraryOutlinedIcon from "@mui/icons-material/LocalLibraryOutlined";
+import TrendingUpOutlinedIcon from "@mui/icons-material/TrendingUpOutlined";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import React from "react";
 
 export const menu = [
   {
     title: "Normalization",
     items: [
-        {
-            title:"Z-Score",
-            items:[]
-        },
-        {
-            title:"Rank",
-            items:[]
-        },
-        {
-            title:"Quantile",
-            item:[]
-        },
-        {
-            title:"Median",
-            items:[]
-        }
-    ]
+      {
+        title: "Z-Score",
+        items: [],
+      },
+      {
+        title: "Rank",
+        items: [],
+      },
+      {
+        title: "Quantile",
+        item: [],
+      },
+      {
+        title: "Median",
+        items: [],
+      },
+    ],
   },
   {
     title: "Filtering",
     items: [
       {
         title: "Interquantile Range",
-        items: [
-        ]
+        items: [],
       },
       {
         title: "Standard deviation",
-        items: [
-        ]
+        items: [],
       },
       {
         title: "Median absolute deviation",
-        items: [
-        ]
+        items: [],
       },
       {
         title: "Non-parametric relative standard deviation",
-        items: [
-        ]
+        items: [],
       },
       {
         title: "Mean intensity value",
-        items: [
-        ]
+        items: [],
       },
       {
         title: "Median intensity value",
-        items: [
-        ]
+        items: [],
       },
-    ]
+    ],
   },
   {
     title: "Export",
-    items:[
-        {
-            title:"Heatmap",
-            items:[]
-        },
-        {
-            title:"Volcano Plot",
-            items:[]
-        },
-        {
-            title:"Histogram",
-            item:[]
-        }
-    ]
-  }
+    items: [
+      {
+        title: "Heatmap",
+        items: [],
+      },
+      {
+        title: "Volcano Plot",
+        items: [],
+      },
+      {
+        title: "Histogram",
+        item: [],
+      },
+    ],
+  },
 ];
