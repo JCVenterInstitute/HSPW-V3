@@ -55,20 +55,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "BUILD_PATH='./src/server/build' react-scripts build",
-    "test": "react-scripts test",
-    "test1": "webpack serve --mode development --open",
-    "eject": "react-scripts eject",
-    "webpack": "webpack",
-    "webpack-dev-server": "webpack-dev-server",
-    "dev": "nodemon server.js",
-    "dev1": "npm run webpack-dev-server -- --env mode=development"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "build": "BUILD_PATH='./src/server/build' react-scripts build"
   },
   "browserslist": {
     "production": [
@@ -82,12 +69,5 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {
-    "babel-loader": "^9.1.3",
-    "css-loader": "^6.8.1",
-    "nodemon": "^2.0.22",
-    "react-svg-loader": "^3.0.3",
-    "style-loader": "^3.3.3",
-    "svgo-loader": "^4.0.0"
-  }
+  "devDependencies": {}
 }
