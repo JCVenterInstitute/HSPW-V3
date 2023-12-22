@@ -31,6 +31,7 @@ import AttachmentIcon from "@mui/icons-material/Attachment";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import axios from "axios";
 import Swal from "sweetalert2";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const Contact = () => {
   const [name, setName] = useState("");
@@ -52,6 +53,11 @@ const Contact = () => {
     topic: false,
     message: false,
   });
+  const [captchaValue, setCaptchaValue] = useState(null);
+
+  const handleCaptchaChange = (value) => {
+    setCaptchaValue(value);
+  };
 
   // Function to validate the form
   const validateForm = () => {
@@ -105,6 +111,17 @@ const Contact = () => {
 
   const handleSend = async () => {
     if (!validateForm()) {
+      Swal.fire({
+        icon: "error",
+        title: "Topic and Message are required.",
+      });
+      return;
+    }
+    if (!captchaValue) {
+      Swal.fire({
+        icon: "error",
+        title: "Please complete the CAPTCHA",
+      });
       return;
     }
 
@@ -172,15 +189,26 @@ const Contact = () => {
         minutes,
         seconds,
       },
+      captchaResponse: captchaValue,
     };
-    await axios
-      .post("http://localhost:8000/api/contact/send-form", payload)
-      .then(() =>
-        Swal.fire({
-          icon: "success",
-          title: "Successfully submitted the feedback. Thank you.",
-        })
-      );
+    try {
+      await axios
+        .post("http://localhost:8000/api/contact/send-form", payload)
+        .then((res) => {
+          console.log(res);
+          if (res.status === 201) {
+            Swal.fire({
+              icon: "success",
+              title: "Successfully submitted the feedback. Thank you.",
+            });
+          }
+        });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid CAPTCHA. Please try again.",
+      });
+    }
   };
 
   const handleReset = () => {
@@ -487,7 +515,7 @@ const Contact = () => {
               >
                 <Typography
                   variant="body2"
-                  sx={{ mt: 2, mb: 1, textAlign: "center", fontFamily: "Lato" }}
+                  sx={{ textAlign: "center", fontFamily: "Lato" }}
                 >
                   Leave your contact information blank to submit this form
                   anonymously. However, we will not be able to reply back
@@ -499,6 +527,18 @@ const Contact = () => {
                 item
                 xs={12}
               >
+                <Box
+                  sx={{
+                    mt: 2,
+                    display: "flex",
+                    justifyContent: "center", // Centers the buttons horizontally
+                  }}
+                >
+                  <ReCAPTCHA
+                    sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                    onChange={handleCaptchaChange}
+                  />
+                </Box>
                 <Box
                   sx={{
                     mt: 4,
