@@ -574,7 +574,7 @@ const numberAttributes = [
   "mRNA", // mRNA
 ];
 
-function SalivaryProteinTable() {
+const SalivaryProteinTable = () => {
   const gridRef = useRef();
 
   const [pageSize, setPageSize] = useState(50); // Default page data to 50 records per page
@@ -2121,6 +2121,6 @@ function SalivaryProteinTable() {
       </Container>
     </>
   );
-}
+};
 
 export default SalivaryProteinTable;

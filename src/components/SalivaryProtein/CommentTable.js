@@ -52,11 +52,13 @@ function Comment_Table(props) {
       headerName: "Annotation Type",
       field: "annotation_type",
       headerClass: ["header-border"],
+      maxWidth: 200,
     },
     {
       headerName: "Type",
       field: "type",
       headerClass: ["header-border"],
+      maxWidth: 100,
     },
     {
       headerName: "Description",
@@ -68,17 +70,32 @@ function Comment_Table(props) {
       headerName: "Position",
       field: "position",
       headerClass: ["header-border"],
+      maxWidth: 150,
     },
     {
       headerName: "Evidence ID",
       field: "evidenceIds",
-      cellStyle: { wordBreak: "break-word" },
+      cellStyle: {
+        wordBreak: "break-word",
+        textWrap: "wrap",
+        height: "100%",
+      },
       headerClass: ["header-border"],
     },
     {
       headerName: "Evidences Code",
       field: "evidenceCode",
       headerClass: ["header-border"],
+      cellStyle: {
+        wordBreak: "break-word",
+        textWrap: "wrap",
+        width: "100%",
+        height: "100%",
+        maxWidth: "100%",
+        maxHeight: "100%",
+        width: "auto",
+        height: "auto",
+      },
     },
   ];
 
