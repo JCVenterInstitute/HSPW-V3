@@ -76,7 +76,7 @@ const generateColumnDefs = (entity, data) => {
 
 const Genes = ({ searchText }) => {
   const [gridApi, setGridApi] = useState();
-  const [recordsPerPage, setRecordsPerPage] = useState(50);
+  const [recordsPerPage, setRecordsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchResults, setSearchResults] = useState();
@@ -111,7 +111,7 @@ const Genes = ({ searchText }) => {
     const response = await axios
       .post("http://localhost:8000/api/global-search", {
         entity,
-        size: 100,
+        size: pageSize,
         from,
         searchText,
       })
@@ -119,7 +119,7 @@ const Genes = ({ searchText }) => {
         setTotalPages(Math.ceil(res.data.total.value / pageSize));
         return res.data.hits.map((item) => item._source);
       });
-    console.log(response);
+
     const columns = generateColumnDefs(entity, response);
 
     setColumnDefs(columns);
@@ -135,7 +135,7 @@ const Genes = ({ searchText }) => {
     <>
       <Box
         component="fieldset"
-        sx={{ p: 2, mb: 2, mt: 3 }}
+        sx={{ p: 2, mb: "90px", mt: 3 }}
       >
         <legend
           style={{
@@ -184,7 +184,7 @@ const Genes = ({ searchText }) => {
               }}
               sx={{ marginLeft: "10px", marginRight: "30px" }}
             >
-              {[50, 100, 500, 1000].map((option) => (
+              {[10, 50, 100].map((option) => (
                 <MenuItem
                   key={option}
                   value={option}
@@ -307,7 +307,7 @@ const Genes = ({ searchText }) => {
           <div
             id="differential"
             className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
-            style={{ height: 800 }}
+            style={{ height: 550 }}
           >
             <AgGridReact
               className="ag-cell-wrap-text"

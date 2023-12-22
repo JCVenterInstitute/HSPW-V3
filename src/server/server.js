@@ -2683,9 +2683,7 @@ const globalSearch = async ({ entity, size, from, searchText }) => {
     "Protein Signatures": "protein_signature",
     Proteins: "study_protein",
     "PubMed Citations": "citation",
-    // "Salivary Proteins": "protein",
     "Salivary Proteins": "salivary-proteins-112023",
-    Annotations: "salivary-proteins-112023",
   };
 
   const escapeSpecialCharacters = (inputVal) => {
@@ -2705,7 +2703,6 @@ const globalSearch = async ({ entity, size, from, searchText }) => {
       },
     },
   };
-  console.log("Search Query:", query);
 
   const response = await client.search({
     index: entityIndexMapping[entity],
