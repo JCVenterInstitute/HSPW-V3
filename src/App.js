@@ -19,7 +19,6 @@ import Citation from "./pages/Browse/Citation/Citation";
 import CitationDetail from "./pages/Browse/Citation/CitationDetail";
 import ProteinSignatureDetail from "./pages/Browse/ProteinSignature/ProteinSignatureDetail.js";
 import ExperimentSearch from "./pages/Search/ExperimentSearch/ExperimentSearch.js";
-import ExperimentSearch from "./pages/Search/ExperimentSearch.js";
 import ProteinSetSearch from "./pages/Search/ProteinSetSearch.js";
 import ProteinClusterDetail from "./pages/Browse/ProteinCluster/ProteinClusterDetail.js";
 import ClustalOmegaResults from "./pages/Analyze/ClustalOmegaResults";

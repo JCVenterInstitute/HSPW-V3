@@ -8,7 +8,7 @@ import { useParams } from "react-router";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 
-import main_feature from "../../../assets/hero.jpeg";
+import MainFeature from "../../../assets/hero.jpeg";
 
 const API_ENDPOINT = "http://localhost:8000";
 
@@ -35,8 +35,6 @@ const Cluster_Detail = (props) => {
   };
 
   const fetchStudyDetails = async (experimentIds) => {
-    console.log("> Ids", Array.from(experimentIds));
-
     try {
       const response = await fetch(`${API_ENDPOINT}/api/study`, {
         method: "POST",
@@ -164,7 +162,7 @@ const Cluster_Detail = (props) => {
     <>
       <div
         style={{
-          backgroundImage: `url(${main_feature})`,
+          backgroundImage: `url(${MainFeature})`,
         }}
         className="head_background"
       >
