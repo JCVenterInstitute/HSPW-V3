@@ -10,26 +10,23 @@ import Box from "@mui/material/Box";
 
 import main_feature from "../../../assets/hero.jpeg";
 
+const API_ENDPOINT = "http://localhost:8000";
+
 const Cluster_Detail = (props) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");
-  const [proteinName, setProteinName] = useState("");
-  const [peptideCount, setPeptideCount] = useState("");
-  const [abundance, setAbundance] = useState("");
-  const [tissue, setTissue] = useState("");
-  const [disease, setDisease] = useState("");
-  const [institute, setInstitute] = useState("");
   const params = useParams();
-  const [studyDetails, setStudyDetails] = useState({});
 
   const fetchProteinData = async (memberId) => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/study_protein_uniprot/${memberId}`
+        `${API_ENDPOINT}/api/study_protein_uniprot/${memberId}`
       );
+
       if (!response.ok) {
         throw new Error(`An error has occurred: ${response.status}`);
       }
+
       return await response.json();
     } catch (error) {
       console.error("Failed to fetch protein data:", error);
@@ -37,14 +34,24 @@ const Cluster_Detail = (props) => {
     }
   };
 
-  const fetchStudyDetails = async (experiment_id) => {
+  const fetchStudyDetails = async (experimentIds) => {
+    console.log("> Ids", Array.from(experimentIds));
+
     try {
-      const response = await fetch(
-        `http://localhost:8000/api/study/${experiment_id}`
-      );
+      const response = await fetch(`${API_ENDPOINT}/api/study`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ids: Array.from(experimentIds),
+        }),
+      });
+
       if (!response.ok) {
         throw new Error(`An error has occurred: ${response.status}`);
       }
+
       return await response.json();
     } catch (error) {
       console.error("Failed to fetch study details:", error);
@@ -55,12 +62,15 @@ const Cluster_Detail = (props) => {
   const fetchCluster = async () => {
     try {
       const clusterResponse = await fetch(
-        `http://localhost:8000/api/protein-cluster/${params.clusterid}`
+        `${API_ENDPOINT}/api/protein-cluster/${params.clusterid}`
       );
+
       if (!clusterResponse.ok) {
         throw new Error(`An error has occurred: ${clusterResponse.status}`);
       }
+
       const cluster = await clusterResponse.json();
+
       setData(cluster); // Set cluster data
 
       if (cluster && cluster.length > 0 && cluster[0]._source) {
@@ -68,7 +78,21 @@ const Cluster_Detail = (props) => {
 
         for (let memberId of cluster[0]._source.cluster_members) {
           const proteinData = await fetchProteinData(memberId);
+
           if (proteinData && proteinData.length > 0) {
+            // Get list of unique Experiment Ids
+            const experimentIds = new Set(
+              proteinData.map((protein) => protein["_source"].experiment_id_key)
+            );
+
+            const studyMap = {};
+
+            const studyData = await fetchStudyDetails(experimentIds);
+
+            for (const study of studyData) {
+              studyMap[study._id] = study;
+            }
+
             for (let protein of proteinData) {
               let detail = {
                 uniprot_id: memberId,
@@ -77,21 +101,24 @@ const Cluster_Detail = (props) => {
                 abundance_cleavages: "N/A",
                 study_details: {},
               };
+
               if (protein["_source"]) {
                 detail.protein_name =
                   protein["_source"].protein_name || "Unknown";
+
                 // Assuming peptide count is part of protein data
                 detail.peptide_count =
                   protein["_source"].peptide_count || "N/A";
+
                 detail.abundance_cleavages =
                   protein["_source"].abundance_cleavages || "N/A";
-                const studyData = await fetchStudyDetails(
-                  protein["_source"].experiment_id_key
-                );
-                if (studyData) {
-                  detail.study_details = studyData; // Add study details
+
+                if (studyMap[protein["_source"].experiment_id_key]) {
+                  detail.study_details =
+                    studyMap[protein["_source"].experiment_id_key]; // Add study details
                 }
               }
+
               proteinDetails.push(detail);
             }
           } else {
@@ -104,7 +131,7 @@ const Cluster_Detail = (props) => {
             });
           }
         }
-        console.log(proteinDetails);
+
         setProteinDetails(proteinDetails); // Update state with all protein details
       } else {
         // Handle the scenario where the cluster data is not in the expected format.
@@ -275,17 +302,16 @@ const Cluster_Detail = (props) => {
                 </TableCell>
                 <TableCell>{protein.peptide_count}</TableCell>
                 <TableCell>{protein.abundance_cleavages}</TableCell>
-                {protein.study_details[0] !== undefined ? (
+                {protein.study_details !== undefined ? (
                   <>
                     <TableCell>
-                      {protein.study_details[0]["_source"].sample_type || "N/A"}
+                      {protein.study_details["_source"].sample_type || "N/A"}
                     </TableCell>
                     <TableCell>
-                      {protein.study_details[0]["_source"].condition_type ||
-                        "N/A"}
+                      {protein.study_details["_source"].condition_type || "N/A"}
                     </TableCell>
                     <TableCell>
-                      {protein.study_details[0]["_source"].institution || "N/A"}
+                      {protein.study_details["_source"].institution || "N/A"}
                     </TableCell>
                   </>
                 ) : (

@@ -234,34 +234,6 @@ app.get("/api/protein-cluster/:id", (req, res) => {
   });
 });
 
-async function search_gene(size, from) {
-  // Initialize the client.
-  var client = await getClient();
-
-  var query = {
-    size: size,
-    from: from,
-    query: {
-      match_all: {},
-    },
-  };
-
-  var response = await client.search({
-    index: "genes",
-    body: query,
-    _source: ["GeneID", "Gene Name", "Location"],
-  });
-  return response.body.hits;
-}
-
-app.get("/api/genes/:size/:from", (req, res) => {
-  let a = search_gene(req.params.size, req.params.from);
-  a.then(function (result) {
-    console.log(result);
-    res.json(result);
-  });
-});
-
 async function search_proteinID(id) {
   var client = await getClient1();
 
@@ -1534,13 +1506,6 @@ app.get(
   }
 );
 
-app.get("/and_search/:size/:from/:wildCardArr", (req, res) => {
-  let a = or_search(req.params.size, req.params.from, req.params.wildCardArr);
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
 async function signature_type_counts() {
   var client = await getClient();
 
@@ -1984,33 +1949,6 @@ app.get("/filter_search/:indexName/:field/:prefix/:size/:from", (req, res) => {
   });
 });
 
-async function search_protein() {
-  // Initialize the client.
-  var client = await getClient1();
-
-  var query = {
-    size: 10000,
-    query: {
-      match_all: {},
-    },
-  };
-
-  var response = await client.search({
-    index: "salivary-proteins",
-    body: query,
-    _source: [
-      "salivary_proteins.uniprot_accession",
-      "salivary_proteins.gene_symbol",
-      "salivary_proteins.protein_name",
-      "salivary_proteins.expert_opinion",
-      "salivary_proteins.ihc",
-      "salivary_proteins.atlas",
-      "salivary_proteins.expert_opinion",
-    ],
-  });
-  return response.body.hits.hits;
-}
-
 const search_go_nodes_type = async (type) => {
   // Initialize the client.
   var client = await getClient();
@@ -2120,13 +2058,6 @@ const search_go_nodes_usage = async (id) => {
 app.get("/api/go_nodes_usage/:id", (req, res) => {
   console.log(req.params.id);
   let a = search_go_nodes_usage(req.params.id);
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-app.get("/protein", (req, res) => {
-  let a = search_protein();
   a.then(function (result) {
     res.json(result);
   });
@@ -3082,6 +3013,73 @@ app.post("/api/genes/:size/:from/", (req, res) => {
 
   results.then((result) => {
     res.json(result);
+  });
+});
+
+async function queryProteins(size, from, filter, sort = null, keyword = null) {
+  const client = await getClient1();
+
+  const payload = {
+    index: "salivary-proteins-112023",
+    body: {
+      track_total_hits: true,
+      size: size,
+      from: from,
+      query: {
+        bool: {
+          should: [...filter],
+        },
+      },
+      ...(sort && { sort }), // Apply sort if present
+      // _source: [""]
+    },
+  };
+
+  console.log("> Query", JSON.stringify(payload.body));
+
+  const response = await client.search(payload);
+
+  return response.body;
+}
+
+app.post("/api/proteins/:size/:from/", (req, res) => {
+  const { filters, sort, keyword } = req.body;
+  const { size, from } = req.params;
+
+  console.log("> Filters", filters);
+
+  const results = queryProteins(size, from, filters, sort, keyword);
+
+  results.then((result) => {
+    res.json(result);
+  });
+});
+
+// Used for Cluster Details page
+const bulkStudySearch = async (ids) => {
+  // Initialize the client.
+  const client = await getClient();
+
+  const query = {
+    size: 10000,
+    query: {
+      terms: {
+        experiment_id_key: ids,
+      },
+    },
+  };
+
+  const response = await client.search({
+    index: "study",
+    body: query,
+  });
+
+  return response.body.hits.hits;
+};
+
+app.post("/api/study/", async (req, res) => {
+  bulkStudySearch(req.body.ids).then((response) => {
+    res.json(response);
   });
 });
 
