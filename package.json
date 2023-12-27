@@ -57,6 +57,12 @@
     "start": "react-scripts start",
     "build": "BUILD_PATH='./src/server/build' react-scripts build"
   },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
   "browserslist": {
     "production": [
       ">0.2%",
