@@ -14,6 +14,10 @@ const generateColumnDefs = (entity, data) => {
   // Get the keys from the first object in the data array
   let fields = Object.keys(data[0]);
 
+  // Exclude specific fields
+  const excludedFields = ["atlas", "annotations", "glycans"];
+  fields = fields.filter((field) => !excludedFields.includes(field));
+
   // Generate column definitions based on the keys
   return fields.map((field, index) => {
     // Common properties for all columns
