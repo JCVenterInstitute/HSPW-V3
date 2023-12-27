@@ -135,7 +135,12 @@ export const NavBar = () => {
                   >
                     Experiment Search
                   </MenuItem>
-                  <MenuItem>Protein Search By Identifiers</MenuItem>
+                  <MenuItem
+                    component="a"
+                    href="protein-set-search"
+                  >
+                    Protein Search By Identifiers
+                  </MenuItem>
                 </HoverMenu>
               </React.Fragment>
             )}
