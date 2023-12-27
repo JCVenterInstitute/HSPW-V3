@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import main_feature from "../../assets/hero.jpeg";
 import {
   Button,
@@ -11,6 +11,8 @@ import {
   Box,
 } from "@mui/material";
 import { AgGridReact } from "ag-grid-react";
+
+import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 
 const API_ENDPOINT = "http://localhost:8000";
 
@@ -46,6 +48,11 @@ const ProteinSetSearch = () => {
     setRowData([]);
     setSearchInput("");
   };
+
+  // Export current page as CSV file
+  const onBtExport = useCallback(() => {
+    gridRef.current.api.exportDataAsCsv();
+  }, []);
 
   /**
    * Creates a query for a string field for OpenSearch
@@ -263,6 +270,29 @@ const ProteinSetSearch = () => {
                 enableCellTextSelection={true}
                 suppressPaginationPanel={true}
               />
+            </div>
+            <div style={{ display: "flex" }}>
+              <Button
+                onClick={onBtExport}
+                sx={{
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  marginTop: "10px",
+                  textTransform: "unset",
+                  color: "#F6921E",
+                  fontSize: "20",
+                  "&:hover": {
+                    backgroundColor: "inherit",
+                  },
+                }}
+              >
+                <DownloadLogo
+                  style={{
+                    marginRight: "10px",
+                  }}
+                />
+                Download Spreadsheet
+              </Button>
             </div>
           </Box>
         </>

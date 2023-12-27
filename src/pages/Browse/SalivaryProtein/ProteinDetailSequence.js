@@ -138,7 +138,6 @@ const Protein_Detail_Sequence = (props) => {
             </TableCell>
             <TableCell
               sx={{
-                fontSize: "0.875rem",
                 border: "1px solid #CACACA",
                 fontFamily: "Lato",
                 fontSize: "14px",
@@ -162,7 +161,6 @@ const Protein_Detail_Sequence = (props) => {
             </TableCell>
             <TableCell
               sx={{
-                fontSize: "0.875rem",
                 border: "1px solid #CACACA",
                 fontFamily: "Lato",
                 fontSize: "14px",
@@ -186,7 +184,6 @@ const Protein_Detail_Sequence = (props) => {
             </TableCell>
             <TableCell
               sx={{
-                fontSize: "0.875rem",
                 border: "1px solid #CACACA",
                 fontFamily: "Lato",
                 fontSize: "14px",
@@ -216,7 +213,6 @@ const Protein_Detail_Sequence = (props) => {
             </TableCell>
             <TableCell
               sx={{
-                fontSize: "0.875rem",
                 border: "1px solid #CACACA",
                 fontFamily: "Lato",
                 fontSize: "14px",
@@ -244,7 +240,6 @@ const Protein_Detail_Sequence = (props) => {
             </TableCell>
             <TableCell
               sx={{
-                fontSize: "0.875rem",
                 border: "1px solid #CACACA",
                 fontFamily: "Lato",
                 fontSize: "14px",
