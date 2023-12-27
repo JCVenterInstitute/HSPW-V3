@@ -5,6 +5,7 @@ import TableRow from "@mui/material/TableRow";
 import { useParams } from "react-router";
 
 import main_feature from "../../../assets/hero.jpeg";
+import { Box, LinearProgress } from "@mui/material";
 
 const th = {
   background: "#f2f2f2",
@@ -216,8 +217,13 @@ const Citation_detail = (props) => {
   }, []);
 
   if (isLoading === true) {
-    return <h2>Loading</h2>;
+    return (
+      <Box sx={{ width: "100%" }}>
+        <LinearProgress sx={{ mb: "500px", margin: "20px" }} />
+      </Box>
+    );
   }
+
   const ArrayDisplay = ({ elements }) => {
     return (
       <div>
