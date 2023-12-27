@@ -786,7 +786,7 @@ const DifferentialExpression = () => {
                               }}
                             />
                           }
-                          label={`${option.key}`}
+                          label={`${option.key} (${option.doc_count})`}
                           sx={{
                             "& .MuiFormControlLabel-label": {
                               fontSize: "16px", // Set your desired font size here
@@ -814,7 +814,7 @@ const DifferentialExpression = () => {
                               }}
                             />
                           }
-                          label={`${option.key}`}
+                          label={`${option.key} (${option.doc_count})`}
                           sx={{
                             "& .MuiFormControlLabel-label": {
                               fontSize: "16px", // Set your desired font size here
@@ -842,7 +842,7 @@ const DifferentialExpression = () => {
                               }}
                             />
                           }
-                          label={`${option.key}`}
+                          label={`${option.key} (${option.doc_count})`}
                           sx={{
                             "& .MuiFormControlLabel-label": {
                               fontSize: "16px", // Set your desired font size here

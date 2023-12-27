@@ -142,6 +142,7 @@ const ExperimentSearchTable = () => {
       .get("http://localhost:8000/api/study")
       .then((res) => res.data)
       .then((data) => {
+        console.log(data.aggregations);
         setTissueTypeFilterList([...data.aggregations.sample_type.buckets]);
         setInstitutionFilterList([...data.aggregations.institution.buckets]);
         setDiseaseFilterList([...data.aggregations.condition_type.buckets]);
@@ -189,11 +190,11 @@ const ExperimentSearchTable = () => {
   };
 
   const filterList = [
-    "Sample ID",
-    "Sample Title",
+    "Experiment ID",
+    "Experiment Title",
     "Tissue Type",
     "Institution",
-    "Disease",
+    "Condition Type",
     "Protein Count",
   ];
 
@@ -294,13 +295,13 @@ const ExperimentSearchTable = () => {
   const handleSideFilter = (searchKeyword, columnName) => {
     let filterModel = gridApi.getFilterModel();
 
-    if (columnName === "Sample ID") {
+    if (columnName === "Experiment ID") {
       setSampleIdFilter(searchKeyword);
       filterModel.experiment_id_key = {
         type: "contains",
         filter: searchKeyword,
       };
-    } else if (columnName === "Sample Title") {
+    } else if (columnName === "Experiment Title") {
       setSampleTitleFilter(searchKeyword);
       filterModel.experiment_title = {
         type: "contains",
@@ -316,7 +317,7 @@ const ExperimentSearchTable = () => {
         type: "contains",
         filter: searchKeyword,
       };
-    } else if (columnName === "Disease") {
+    } else if (columnName === "Condition Type") {
       filterModel.condition_type = {
         type: "contains",
         filter: searchKeyword,
@@ -409,7 +410,8 @@ const ExperimentSearchTable = () => {
                   </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  {filter === "Sample ID" || filter === "Sample Title" ? (
+                  {filter === "Experiment ID" ||
+                  filter === "Experiment Title" ? (
                     <TextField
                       variant="outlined"
                       size="small"
@@ -420,7 +422,7 @@ const ExperimentSearchTable = () => {
                         },
                       }}
                       value={
-                        filter === "Sample ID"
+                        filter === "Experiment ID"
                           ? sampleIdFilter
                           : sampleTitleFilter
                       }
@@ -445,7 +447,7 @@ const ExperimentSearchTable = () => {
                               }}
                             />
                           }
-                          label={`${option.key}`}
+                          label={`${option.key} (${option.doc_count})`}
                           sx={{
                             "& .MuiFormControlLabel-label": {
                               fontSize: "16px", // Set your desired font size here
@@ -473,7 +475,7 @@ const ExperimentSearchTable = () => {
                               }}
                             />
                           }
-                          label={`${option.key}`}
+                          label={`${option.key} (${option.doc_count})`}
                           sx={{
                             "& .MuiFormControlLabel-label": {
                               fontSize: "16px", // Set your desired font size here
@@ -482,7 +484,7 @@ const ExperimentSearchTable = () => {
                         />
                       ))}
                     </FormGroup>
-                  ) : filter === "Disease" ? (
+                  ) : filter === "Condition Type" ? (
                     <FormGroup>
                       {diseaseFilterList.map((option, subIndex) => (
                         <FormControlLabel
@@ -501,7 +503,7 @@ const ExperimentSearchTable = () => {
                               }}
                             />
                           }
-                          label={`${option.key}`}
+                          label={`${option.key} (${option.doc_count})`}
                           sx={{
                             "& .MuiFormControlLabel-label": {
                               fontSize: "16px", // Set your desired font size here
