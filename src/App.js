@@ -18,6 +18,7 @@ import Analysis from "./pages/Analysis.js";
 import Citation from "./pages/Browse/Citation/Citation";
 import CitationDetail from "./pages/Browse/Citation/CitationDetail";
 import ProteinSignatureDetail from "./pages/Browse/ProteinSignature/ProteinSignatureDetail.js";
+import ExperimentProteinDetail from "./pages/Search/ExperimentSearch/ExperimentProteinDetail.js";
 import ExperimentSearchDetail from "./pages/Search/ExperimentSearch/ExperimentSearchDetail.js";
 import ExperimentSearch from "./pages/Search/ExperimentSearch/ExperimentSearch.js";
 import ProteinSetSearch from "./pages/Search/ProteinSetSearch.js";
@@ -92,6 +93,10 @@ function App() {
           path="/advanced-search"
           element={<AdvancedSearch />}
         ></Route>
+        <Route
+          path="/experiment-protein/:uniprotid"
+          element={<ExperimentProteinDetail />}
+        />
         <Route
           path="/experiment-search/:id"
           element={<ExperimentSearchDetail />}
