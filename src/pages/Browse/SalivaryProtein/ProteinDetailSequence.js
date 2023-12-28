@@ -11,9 +11,12 @@ import Box from "@mui/material/Box";
 
 import "../../style.css";
 
+const API_HOST = "http://localhost:8000";
+
 const Protein_Detail_Sequence = (props) => {
   const params = useParams();
-  let url = "http://localhost:8000/protein/" + params["proteinid"];
+  let url = `/api/protein/${params["proteinid"]}`;
+
   const th = {
     background: "#f2f2f2",
     textAlign: "center",
@@ -138,7 +141,6 @@ const Protein_Detail_Sequence = (props) => {
             </TableCell>
             <TableCell
               sx={{
-                fontSize: "0.875rem",
                 border: "1px solid #CACACA",
                 fontFamily: "Lato",
                 fontSize: "14px",
@@ -162,7 +164,6 @@ const Protein_Detail_Sequence = (props) => {
             </TableCell>
             <TableCell
               sx={{
-                fontSize: "0.875rem",
                 border: "1px solid #CACACA",
                 fontFamily: "Lato",
                 fontSize: "14px",
@@ -186,7 +187,6 @@ const Protein_Detail_Sequence = (props) => {
             </TableCell>
             <TableCell
               sx={{
-                fontSize: "0.875rem",
                 border: "1px solid #CACACA",
                 fontFamily: "Lato",
                 fontSize: "14px",
@@ -216,7 +216,6 @@ const Protein_Detail_Sequence = (props) => {
             </TableCell>
             <TableCell
               sx={{
-                fontSize: "0.875rem",
                 border: "1px solid #CACACA",
                 fontFamily: "Lato",
                 fontSize: "14px",
@@ -244,7 +243,6 @@ const Protein_Detail_Sequence = (props) => {
             </TableCell>
             <TableCell
               sx={{
-                fontSize: "0.875rem",
                 border: "1px solid #CACACA",
                 fontFamily: "Lato",
                 fontSize: "14px",

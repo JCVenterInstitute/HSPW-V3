@@ -34,6 +34,26 @@ const Cluster_Detail = (props) => {
     }
   };
 
+  // Fetch all cluster member data
+  const fetchClusterMembersData = async (memberIds) => {
+    try {
+      const response = await fetch(`${API_ENDPOINT}/api/study-protein/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ids: Array.from(memberIds),
+        }),
+      });
+
+      return await response.json();
+    } catch (error) {
+      console.error("Failed to fetch study details:", error);
+      return null; // Return null or some error indicator
+    }
+  };
+
   const fetchStudyDetails = async (experimentIds) => {
     try {
       const response = await fetch(`${API_ENDPOINT}/api/study`, {
@@ -59,38 +79,44 @@ const Cluster_Detail = (props) => {
 
   const fetchCluster = async () => {
     try {
-      const clusterResponse = await fetch(
+      // Fetch Cluster Data
+      const cluster = await fetch(
         `${API_ENDPOINT}/api/protein-cluster/${params.clusterid}`
-      );
-
-      if (!clusterResponse.ok) {
-        throw new Error(`An error has occurred: ${clusterResponse.status}`);
-      }
-
-      const cluster = await clusterResponse.json();
+      ).then((res) => res.json());
 
       setData(cluster); // Set cluster data
 
       if (cluster && cluster.length > 0 && cluster[0]._source) {
-        let proteinDetails = []; // Array to hold details for each protein
+        const { cluster_members } = cluster[0]._source;
+        const proteinDetails = []; // Array to hold details for each protein
+        const allMemberIds = new Set();
+        const studyMap = {};
 
-        for (let memberId of cluster[0]._source.cluster_members) {
-          const proteinData = await fetchProteinData(memberId);
+        // Fetch all cluster member data
+        const clusterMembersData = await fetchClusterMembersData(
+          cluster_members
+        ).then((res) => {
+          return res.map((rec) => rec._source);
+        });
+
+        // Get the list of unique experiment ids from all of the cluster members
+        for (let clusterMember of clusterMembersData) {
+          allMemberIds.add(clusterMember.experiment_id_key);
+        }
+
+        // Fetch all experiment data
+        const studyData = await fetchStudyDetails(allMemberIds);
+
+        for (const study of studyData) {
+          studyMap[study._id] = study;
+        }
+
+        for (let memberId of cluster_members) {
+          const proteinData = clusterMembersData.filter(
+            (d) => d.Uniprot_id === memberId
+          );
 
           if (proteinData && proteinData.length > 0) {
-            // Get list of unique Experiment Ids
-            const experimentIds = new Set(
-              proteinData.map((protein) => protein["_source"].experiment_id_key)
-            );
-
-            const studyMap = {};
-
-            const studyData = await fetchStudyDetails(experimentIds);
-
-            for (const study of studyData) {
-              studyMap[study._id] = study;
-            }
-
             for (let protein of proteinData) {
               let detail = {
                 uniprot_id: memberId,
@@ -100,20 +126,17 @@ const Cluster_Detail = (props) => {
                 study_details: {},
               };
 
-              if (protein["_source"]) {
-                detail.protein_name =
-                  protein["_source"].protein_name || "Unknown";
+              if (protein) {
+                detail.protein_name = protein.protein_name || "Unknown";
 
                 // Assuming peptide count is part of protein data
-                detail.peptide_count =
-                  protein["_source"].peptide_count || "N/A";
+                detail.peptide_count = protein.peptide_count || "N/A";
 
                 detail.abundance_cleavages =
-                  protein["_source"].abundance_cleavages || "N/A";
+                  protein.abundance_cleavages || "N/A";
 
-                if (studyMap[protein["_source"].experiment_id_key]) {
-                  detail.study_details =
-                    studyMap[protein["_source"].experiment_id_key]; // Add study details
+                if (studyMap[protein.experiment_id_key]) {
+                  detail.study_details = studyMap[protein.experiment_id_key]; // Add study details
                 }
               }
 
@@ -300,7 +323,7 @@ const Cluster_Detail = (props) => {
                 </TableCell>
                 <TableCell>{protein.peptide_count}</TableCell>
                 <TableCell>{protein.abundance_cleavages}</TableCell>
-                {protein.study_details !== undefined ? (
+                {protein.study_details["_source"] !== undefined ? (
                   <>
                     <TableCell>
                       {protein.study_details["_source"].sample_type || "N/A"}
