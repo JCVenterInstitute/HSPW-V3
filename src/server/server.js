@@ -2742,7 +2742,6 @@ app.post("/api/experiment-protein/:uniprotid", async (req, res) => {
     const payload = req.body;
 
     const result = await experimentPeptide(payload, uniprotid);
-    console.log(result);
     res.json(result);
   } catch (error) {
     console.log(error);
