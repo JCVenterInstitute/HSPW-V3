@@ -3,9 +3,10 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { useParams } from "react-router";
-
-import main_feature from "../../../assets/hero.jpeg";
+import FontAwesome from "react-fontawesome";
 import { Box, LinearProgress } from "@mui/material";
+
+import MainFeature from "../../../assets/hero.jpeg";
 
 const th = {
   background: "#f2f2f2",
@@ -20,7 +21,6 @@ const td = {
   border: "1px solid #aaa",
   fontSize: "14px",
   padding: "0.2em",
-  fontSize: "14px",
 };
 
 const Citation_detail = (props) => {
@@ -36,16 +36,19 @@ const Citation_detail = (props) => {
   const [pgn, setPGN] = useState();
   const [journal, setJournal] = useState();
   const [isLoadingT, setLoadingT] = useState(true);
+
   const fetchAbstract = async () => {
     const response = await fetch(
       "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=" +
         params["citationid"] +
         "&retmode=xml&rettype=abstract&api_key=d5eafed1678a515f8279d979e1da12c76308"
     );
+
     if (!response.ok) {
       const message = `An error has occured: ${response.status}`;
       throw new Error(message);
     }
+
     const data = await response.text();
     const parser = new DOMParser();
     const xml1 = parser.parseFromString(data, "text/xml");
@@ -196,7 +199,7 @@ const Citation_detail = (props) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");
   let interpro_link = "https://pubmed.ncbi.nlm.nih.gov/";
-  console.log(url);
+
   const fetchSignature = async () => {
     const response = await fetch(url);
     if (!response.ok) {
@@ -241,7 +244,7 @@ const Citation_detail = (props) => {
     <>
       <div
         style={{
-          backgroundImage: `url(${main_feature})`,
+          backgroundImage: `url(${MainFeature})`,
         }}
         className="head_background"
       >
@@ -465,8 +468,16 @@ const Citation_detail = (props) => {
                 border: "1px solid #CACACA",
               }}
             >
-              <a href={interpro_link + data[0]["_source"]["PubMed_ID"]}>
-                PubMed
+              <a
+                target="_blank"
+                href={interpro_link + data[0]["_source"]["PubMed_ID"]}
+              >
+                {"PubMed "}
+                <FontAwesome
+                  className="super-crazy-colors"
+                  name="external-link"
+                  style={{ textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)" }}
+                />
               </a>
             </TableCell>
           </TableRow>

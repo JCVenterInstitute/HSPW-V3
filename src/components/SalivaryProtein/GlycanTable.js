@@ -15,6 +15,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ClearIcon from "@mui/icons-material/Clear";
+import FontAwesome from "react-fontawesome";
 
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 import "../Filter.css";
@@ -65,7 +66,7 @@ function Glycan_Table(props) {
 
     setDocCount(data.length);
     setRowData(data);
-  }, []);
+  }, [props.data]);
 
   const SourceRenderer = ({ value }) => {
     return (
@@ -78,10 +79,20 @@ function Glycan_Table(props) {
               <span>
                 {`${database}: `}
                 <a
+                  rel="noreferrer"
                   target="_blank"
                   href={url}
                 >
-                  {id}
+                  {`${id} `}
+                  {url ? (
+                    <FontAwesome
+                      className="super-crazy-colors"
+                      name="external-link"
+                      style={{ textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)" }}
+                    />
+                  ) : (
+                    ""
+                  )}
                 </a>
               </span>
               {i !== value.length ? ",   " : ""}

@@ -35,13 +35,6 @@ const th = {
   maxWidth: "1000px",
 };
 
-const td = {
-  border: "1px solid #aaa",
-  fontSize: "18px",
-  padding: "0.2em",
-  fontSize: "18px",
-};
-
 const ProteinDetail = (props) => {
   const params = useParams();
   let url = "http://localhost:8000/api/protein/" + params["proteinid"];
@@ -51,7 +44,6 @@ const ProteinDetail = (props) => {
   const [authorName, setauthorName] = useState("");
   const [year, setYear] = useState("");
   const [journal, setJournal] = useState("");
-  const [checkData, setCheckData] = useState(false);
 
   const fetchProtein = async () => {
     const response = await axios.get(url);
@@ -78,7 +70,6 @@ const ProteinDetail = (props) => {
       }
 
       setLoading(false);
-      setCheckData(true);
     }
   };
 
@@ -285,7 +276,6 @@ const ProteinDetail = (props) => {
                     <TableCell
                       variant="header"
                       sx={{
-                        border: "1px solid, #3592E4",
                         borderTopRightRadius: "10px",
                         border: "1px solid #CACACA",
                         fontFamily: "Lato",
@@ -316,7 +306,6 @@ const ProteinDetail = (props) => {
                     </TableCell>
                     <TableCell
                       sx={{
-                        border: "1px solid, #3592E4",
                         borderTopRightRadius: "10px",
                         border: "1px solid #CACACA",
                         fontFamily: "Lato",
@@ -349,17 +338,23 @@ const ProteinDetail = (props) => {
                     </TableCell>
                     <TableCell
                       sx={{
-                        border: "1px solid, #3592E4",
                         borderTopRightRadius: "10px",
                         border: "1px solid #CACACA",
                         fontFamily: "Lato",
                       }}
                     >
                       <a
+                        target="_blank"
+                        rel="noreferrer"
                         style={{ color: "/*#116988*/#0b5989" }}
                         href="https://www.uniprot.org/taxonomy/9606 "
                       >
-                        Homo sapiens
+                        {"Homo sapiens "}
+                        <FontAwesome
+                          className="super-crazy-colors"
+                          name="external-link"
+                          style={{ textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)" }}
+                        />
                       </a>
                     </TableCell>
                   </TableRow>
@@ -633,12 +628,14 @@ const ProteinDetail = (props) => {
               Abundance and localization of gene products based on both RNA and
               immunohistochemistry data from the{" "}
               <a
+                target="_blank"
+                rel="noreferrer"
                 href={
                   "http://www.proteinatlas.org/" +
                   data[0]["_source"]["salivary_proteins"]["ensembl_g"]
                 }
               >
-                Human Protein Atlas{" "}
+                {"Human Protein Atlas "}
                 <FontAwesome
                   className="super-crazy-colors"
                   name="external-link"
@@ -672,7 +669,6 @@ const ProteinDetail = (props) => {
             >
               Proteomics
             </h2>
-
             <TableContainer>
               <Table>
                 <TableBody
@@ -781,7 +777,11 @@ const ProteinDetail = (props) => {
                         fontFamily: "Lato",
                       }}
                     >
-                      <a href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001202">
+                      <a
+                        target="_blank"
+                        rel="noreferrer"
+                        href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001202"
+                      >
                         BTO:0001202
                       </a>
                     </TableCell>
@@ -839,7 +839,11 @@ const ProteinDetail = (props) => {
                         fontFamily: "Lato",
                       }}
                     >
-                      <a href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001316">
+                      <a
+                        target="_blank"
+                        rel="noreferrer"
+                        href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001316"
+                      >
                         BTO:0001316
                       </a>
                     </TableCell>
@@ -897,7 +901,11 @@ const ProteinDetail = (props) => {
                         fontFamily: "Lato",
                       }}
                     >
-                      <a href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001315">
+                      <a
+                        target="_blank"
+                        rel="noreferrer"
+                        href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001315"
+                      >
                         BTO:0001315
                       </a>
                     </TableCell>
@@ -948,7 +956,11 @@ const ProteinDetail = (props) => {
                         fontFamily: "Lato",
                       }}
                     >
-                      <a href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001004">
+                      <a
+                        target="_blank"
+                        rel="noreferrer"
+                        href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001004"
+                      >
                         BTO:0001004
                       </a>
                     </TableCell>
@@ -1055,6 +1067,8 @@ const ProteinDetail = (props) => {
                         return (
                           <React.Fragment key={i}>
                             <a
+                              target="_blank"
+                              rel="noreferrer"
                               href={
                                 "https://www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=protein&id=" +
                                 value
@@ -1103,6 +1117,8 @@ const ProteinDetail = (props) => {
                         return (
                           <React.Fragment key={i}>
                             <a
+                              target="_blank"
+                              rel="noreferrer"
                               href={
                                 "https://db.systemsbiology.net/sbeams/cgi/PeptideAtlas/Search?action=GO&search_key=" +
                                 value
@@ -1122,7 +1138,7 @@ const ProteinDetail = (props) => {
                                 }}
                               />
                             </a>
-                            <span>{i == arr.length - 1 ? ", " : ""}</span>
+                            <span>{i === arr.length - 1 ? ", " : ""}</span>
                           </React.Fragment>
                         );
                       })}
@@ -1151,6 +1167,8 @@ const ProteinDetail = (props) => {
                           return (
                             <React.Fragment key={i}>
                               <a
+                                target="_blank"
+                                rel="noreferrer"
                                 href={"http://www.ensembl.org/id/" + value}
                                 style={{
                                   color: "#464646",
@@ -1173,6 +1191,8 @@ const ProteinDetail = (props) => {
                         }
                       )}
                       <a
+                        target="_blank"
+                        rel="noreferrer"
                         href={
                           "http://www.ensembl.org/id/" +
                           data[0]["_source"]["salivary_proteins"]["ensembl_g"]
@@ -1215,6 +1235,8 @@ const ProteinDetail = (props) => {
                         return (
                           <React.Fragment key={i}>
                             <a
+                              target="_blank"
+                              rel="noreferrer"
                               href={
                                 "https://www.genecards.org/cgi-bin/carddisp.pl?gene=" +
                                 value
@@ -1268,6 +1290,8 @@ const ProteinDetail = (props) => {
                 return (
                   <React.Fragment key={i}>
                     <a
+                      target="_blank"
+                      rel="noreferrer"
                       href={`https://www.uniprot.org/keywords/${
                         value.id.split(":")[1]
                       }`}
@@ -1320,6 +1344,8 @@ const ProteinDetail = (props) => {
                       <span>{year[i]}</span>
                       <i>{journal[i]}</i>
                       <a
+                        target="_blank"
+                        rel="noreferrer"
                         href={`https://pubmed.ncbi.nlm.nih.gov/${value.replace(
                           "PubMed:",
                           ""

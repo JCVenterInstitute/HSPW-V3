@@ -31,7 +31,6 @@ const td = {
   fontSize: "18px",
   padding: "0.2em",
   borderTopRightRadius: "10px",
-  fontSize: "18px",
 };
 
 const SignatureDetail = (props) => {
@@ -74,7 +73,7 @@ const SignatureDetail = (props) => {
             setSMART(elements[i]);
           }
         }
-        if (signature[0]["_source"]["ReferencesID"] != "") {
+        if (signature[0]["_source"]["ReferencesID"] !== "") {
           setReference(signature[0]["_source"]["ReferencesID"].split(","));
         }
         setAbstract(signature[0]["_source"]["Abstract"]);
@@ -266,6 +265,8 @@ const SignatureDetail = (props) => {
                                 }}
                               >
                                 <a
+                                  rel="noreferrer"
+                                  target="_blank"
                                   href={
                                     "https://www.ebi.ac.uk/interpro/entry/pfam/" +
                                     pfam.split(":")[1]
@@ -516,6 +517,7 @@ const SignatureDetail = (props) => {
                             <h4 style={{ display: "inline" }}>{i + 1}. </h4>
 
                             <a
+                              rel="noreferrer"
                               target="_blank"
                               href={`https://pubmed.ncbi.nlm.nih.gov/${value.replace(
                                 "PubMed:",
@@ -584,7 +586,11 @@ const SignatureDetail = (props) => {
                     paddingLeft: "1%",
                   }}
                 >
-                  <a href={interpro_link + data[0]["_source"]["InterPro ID"]}>
+                  <a
+                    rel="noreferrer"
+                    target="_blank"
+                    href={interpro_link + data[0]["_source"]["InterPro ID"]}
+                  >
                     InterPro{" "}
                     <FontAwesome
                       className="super-crazy-colors"

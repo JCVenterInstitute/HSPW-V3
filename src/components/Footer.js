@@ -8,8 +8,6 @@ import nih from "../assets/logo-nih-nidcr.png";
 
 class Footer extends Component {
   render() {
-    const { classes } = this.props;
-    const currentYear = new Date().getFullYear();
     return (
       <div id="footer">
         <div className="footer-top">
@@ -22,7 +20,10 @@ class Footer extends Component {
                     title="JCVI Homepage"
                     alt="JCVI Homepage"
                   >
-                    <img src={jcvi} />
+                    <img
+                      src={jcvi}
+                      alt="JCVI Logo"
+                    />
                   </a>
                 </li>
                 <li>
@@ -31,25 +32,34 @@ class Footer extends Component {
                     title="The Forsyth Institute Homepage"
                     alt="The Forsyth Institute Homepage"
                   >
-                    <img src={forsyth} />
+                    <img
+                      src={forsyth}
+                      alt="Forsyth Logo"
+                    />
                   </a>
                 </li>
                 <li>
                   <a
                     href="http://www.uthsc.edu"
-                    title="The Univerisity of Tennessee Health Science Center Homepage"
+                    title="The University of Tennessee Health Science Center Homepage"
                     alt="The University of Tennessee Health Science Center Homepage"
                   >
-                    <img src={uthsc} />
+                    <img
+                      src={uthsc}
+                      alt="University of Tennessee Health Center Logo"
+                    />
                   </a>
                 </li>
                 <li>
                   <a
                     href="http://www.buffalo.edu"
-                    title="Univerisy of Buffalo Homepage"
-                    alt="Univerisy of Buffalo Homepage"
+                    title="University of Buffalo Homepage"
+                    alt="University of Buffalo Homepage"
                   >
-                    <img src={ub} />
+                    <img
+                      src={ub}
+                      alt="University of Buffalo Logo"
+                    />
                   </a>
                 </li>
                 <li>
@@ -58,7 +68,10 @@ class Footer extends Component {
                     title="NIH Homepage"
                     alt="NIH Homepage"
                   >
-                    <img src={nih} />
+                    <img
+                      src={nih}
+                      alt="NIH Logo"
+                    />
                   </a>
                 </li>
               </ul>
@@ -127,7 +140,7 @@ class Footer extends Component {
                   className="last"
                   style={{ marginLeft: "37%" }}
                 >
-                  <a href="contact">Contact Us</a>
+                  <a href="/contact">Contact Us</a>
                 </li>
               </ul>
             </div>

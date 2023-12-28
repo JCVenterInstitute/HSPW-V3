@@ -13,7 +13,7 @@ import "../../style.css";
 
 const API_HOST = "http://localhost:8000";
 
-const Protein_Detail_Sequence = (props) => {
+const ProteinDetailSequence = (props) => {
   const params = useParams();
   let url = `${API_HOST}/api/protein/${params["proteinid"]}`;
 
@@ -28,23 +28,10 @@ const Protein_Detail_Sequence = (props) => {
   };
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");
-  const [data1, setData1] = useState("");
-  const [p, setP] = useState("");
-  const [o, setO] = useState("");
-  const [fS, setFS] = useState("");
-  const [authorName, setauthorName] = useState("");
-  const [year, setYear] = useState("");
-  const [journal, setJournal] = useState("");
-  const [v, setV] = useState("");
-  const [j, setJ] = useState("");
-  const [sS, setSS] = useState("");
   const [checkData, setCheckData] = useState(false);
-  const [annotation, setAnnotation] = useState("");
 
   const fetchProtein = async () => {
-    console.log(url);
     const response = await axios.get(url);
-    console.log(response);
 
     const json = response.data;
     return json;
@@ -55,7 +42,6 @@ const Protein_Detail_Sequence = (props) => {
     if (proteinResult) {
       setData(proteinResult);
 
-      console.log(proteinResult);
       if (proteinResult[0]._source.salivary_proteins) {
         const cites = proteinResult[0]._source.salivary_proteins.cites;
         const promises = [];
@@ -68,10 +54,9 @@ const Protein_Detail_Sequence = (props) => {
     }
   };
   useEffect(() => {
-    console.log("Effect is running");
-    console.log("Component rendering...");
     processData();
   }, []);
+
   if (isLoading === true) {
     return (
       <Box sx={{ width: "100%" }}>
@@ -79,6 +64,7 @@ const Protein_Detail_Sequence = (props) => {
       </Box>
     );
   }
+
   return (
     <>
       <div style={{ padding: "20px" }}>
@@ -99,10 +85,9 @@ const Protein_Detail_Sequence = (props) => {
                 backgroundColor: "#1463B9",
                 color: "white",
                 fontFamily: "Montserrat",
-                fontSize: "14px",
+                fontSize: "17px",
                 border: "1px solid #3592E4",
                 borderTopLeftRadius: "10px",
-                border: "none",
                 width: "10%",
               }}
             >
@@ -115,7 +100,7 @@ const Protein_Detail_Sequence = (props) => {
                 borderTopRightRadius: "10px",
               }}
               sx={{
-                fontSize: "0.875rem",
+                fontSize: "14px",
                 border: "1px solid #CACACA",
                 fontFamily: "Lato",
               }}
@@ -132,7 +117,7 @@ const Protein_Detail_Sequence = (props) => {
                 backgroundColor: "#1463B9",
                 color: "white",
                 fontFamily: "Montserrat",
-                fontSize: "14px",
+                fontSize: "17px",
                 border: "1px solid #3592E4",
                 borderLeft: "none",
                 borderRight: "none",
@@ -158,7 +143,7 @@ const Protein_Detail_Sequence = (props) => {
                 backgroundColor: "#1463B9",
                 color: "white",
                 fontFamily: "Montserrat",
-                fontSize: "14px",
+                fontSize: "17px",
               }}
             >
               Accession number
@@ -181,7 +166,7 @@ const Protein_Detail_Sequence = (props) => {
                 backgroundColor: "#1463B9",
                 color: "white",
                 fontFamily: "Montserrat",
-                fontSize: "14px",
+                fontSize: "17px",
               }}
             >
               Sequence
@@ -194,6 +179,7 @@ const Protein_Detail_Sequence = (props) => {
               }}
             >
               <textarea
+                style={{ fontSize: "14px" }}
                 maxLength="100"
                 cols="50"
                 rows="5"
@@ -210,7 +196,7 @@ const Protein_Detail_Sequence = (props) => {
                 backgroundColor: "#1463B9",
                 color: "white",
                 fontFamily: "Montserrat",
-                fontSize: "14px",
+                fontSize: "17px",
               }}
             >
               Length (AA)
@@ -237,7 +223,7 @@ const Protein_Detail_Sequence = (props) => {
                 backgroundColor: "#1463B9",
                 color: "white",
                 fontFamily: "Montserrat",
-                fontSize: "14px",
+                fontSize: "17px",
               }}
             >
               Molecular Mass (Da)
@@ -257,4 +243,4 @@ const Protein_Detail_Sequence = (props) => {
     </>
   );
 };
-export default Protein_Detail_Sequence;
+export default ProteinDetailSequence;
