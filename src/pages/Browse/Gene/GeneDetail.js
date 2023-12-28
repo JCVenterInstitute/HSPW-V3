@@ -26,65 +26,65 @@ const td = {
   border: "1px solid #aaa",
   fontSize: "14px",
   padding: "0.2em",
-  fontSize: "14px",
 };
 
+const API_HOST = "http://localhost:8000";
+
 const Gene_detail = (props) => {
-  const [message, setMessage] = useState(true);
   const params = useParams();
 
-  let url = "http://localhost:8000/genes/" + params["geneid"];
-
+  const [message, setMessage] = useState(true);
+  const [proteinNameMap, setProteinNameMap] = useState({});
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");
-  let gene_id = 0;
-  let gene_link = "https://www.ncbi.nlm.nih.gov/gene/";
+
+  const gene_link = "https://www.ncbi.nlm.nih.gov/gene/";
 
   const fetchGenes = async () => {
-    console.log("hi");
+    const url = `${API_HOST}/genes/${params["geneid"]}`;
+
     const response = await fetch(url);
+
     if (!response.ok) {
       const message = `An error has occured: ${response.status}`;
       throw new Error(message);
     }
+
     const genes = await response.json();
+
     setData(genes);
     setMessage(false);
   };
 
-  const [proteinName, setProteinName] = useState("");
   const fetchProtein = async () => {
-    let p = [];
+    const proteinNameMapping = {};
+
     data[0]["_source"]["Gene Products"].map(async (item, i) => {
       try {
         const response = await fetch(
           `https://rest.uniprot.org/uniprotkb/${item}.json`
         );
+
         if (!response.ok) {
           throw new Error(`An error occurred: ${response.status}`);
         }
 
         const proteinName = await response.json();
 
-        if (
-          proteinName &&
-          proteinName.proteinDescription &&
-          proteinName.proteinDescription.recommendedName
-        ) {
-          p.push(proteinName.proteinDescription.recommendedName.fullName.value);
-        } else if (
-          proteinName &&
-          proteinName["proteinDescription"] &&
-          proteinName["proteinDescription"].submissionNames &&
-          proteinName["proteinDescription"].submissionNames[0]
-        ) {
-          p.push(
-            proteinName["proteinDescription"].submissionNames[0].fullName.value
-          );
+        if (proteinName && proteinName.proteinDescription) {
+          const { recommendedName, submissionNames } =
+            proteinName.proteinDescription;
+
+          if (recommendedName) {
+            proteinNameMapping[item] = recommendedName.fullName.value;
+          } else if (submissionNames) {
+            proteinNameMapping[item] = submissionNames[0].fullName.value;
+          }
         }
 
         if (i === data[0]["_source"]["Gene Products"].length - 1) {
           setLoading(false);
+          setProteinNameMap(proteinNameMapping);
         }
       } catch (error) {
         console.log(error);
@@ -212,6 +212,8 @@ const Gene_detail = (props) => {
                 >
                   <a
                     style={{ color: "/*#116988*/#0b5989" }}
+                    target="_blank"
+                    rel="noreferrer"
                     href="https://www.uniprot.org/taxonomy/9606 "
                   >
                     Homo sapiens{" "}
@@ -311,7 +313,10 @@ const Gene_detail = (props) => {
               </TableRow>
               <TableRow
                 size="small"
-                sx={{ border: "1px solid white", height: "10%" }}
+                sx={{
+                  border: "1px solid white",
+                  height: "10%",
+                }}
               >
                 <TableCell
                   style={{
@@ -328,11 +333,18 @@ const Gene_detail = (props) => {
                 </TableCell>
                 <TableCell
                   sx={td}
-                  style={{ fontFamily: "Lato", fontSize: "14px" }}
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "14px",
+                  }}
                 >
                   <Table>
                     <TableHead>
-                      <TableRow style={{ border: "1px solid white" }}>
+                      <TableRow
+                        style={{
+                          border: "1px solid white",
+                        }}
+                      >
                         <TableCell
                           style={{
                             backgroundColor: "#1463B9",
@@ -377,7 +389,9 @@ const Gene_detail = (props) => {
                         (value, i, arr) => {
                           return (
                             <TableRow
-                              style={{ border: "1px solid white" }}
+                              style={{
+                                border: "1px solid white",
+                              }}
                               key={`gene-product-${i}`}
                             >
                               <TableCell
@@ -395,7 +409,7 @@ const Gene_detail = (props) => {
                                   width: "20%",
                                 }}
                               >
-                                {proteinName[i]}
+                                {proteinNameMap[value]}
                               </TableCell>
                               <TableCell
                                 style={{
@@ -405,6 +419,8 @@ const Gene_detail = (props) => {
                                 }}
                               >
                                 <a
+                                  target="_blank"
+                                  rel="noreferrer"
                                   href={`https://www.uniprot.org/uniprotkb/${value}/entry`}
                                 >
                                   UniProt{" "}
@@ -439,8 +455,17 @@ const Gene_detail = (props) => {
                 >
                   Link
                 </TableCell>
-                <TableCell style={{ fontFamily: "Lato", fontSize: "14px" }}>
-                  <a href={gene_link + data[0]["_source"]["GeneID"]}>
+                <TableCell
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "14px",
+                  }}
+                >
+                  <a
+                    rel="noreferrer"
+                    target="_blank"
+                    href={gene_link + data[0]["_source"]["GeneID"]}
+                  >
                     Entrez Gene{" "}
                     <FontAwesome
                       className="super-crazy-colors"
