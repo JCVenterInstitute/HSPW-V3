@@ -156,7 +156,7 @@ function App() {
           element={<Contact />}
         />
         <Route
-          path="protein-sequence/:proteinid"
+          path="/protein-sequence/:proteinid"
           element={<ProteinSequence />}
         />
         <Route
