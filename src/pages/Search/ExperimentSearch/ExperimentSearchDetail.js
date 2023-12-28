@@ -261,7 +261,9 @@ const ExperimentSearchDetail = (props) => {
                               sx={td}
                               style={{ fontFamily: "Lato", fontSize: "14px" }}
                             >
-                              {data.contact_information}
+                              {data.contact_information === "NULL"
+                                ? "NA"
+                                : data.contact_information}
                             </TableCell>
                           </TableRow>
                         </TableHead>
