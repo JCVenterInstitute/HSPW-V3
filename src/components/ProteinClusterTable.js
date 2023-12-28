@@ -118,8 +118,6 @@ const recordsPerPageList = [
   },
 ];
 
-const HOST_NAME = "http://localhost:8000";
-
 const ProteinClusterTable = () => {
   const gridRef = useRef();
   const [gridApi, setGridApi] = useState(null);
@@ -225,7 +223,9 @@ const ProteinClusterTable = () => {
     const filterQueries = queryBuilder(facetFilters);
 
     fetch(
-      `${HOST_NAME}/api/protein-cluster/${pageSize}/${pageSize * pageNum}`,
+      `${process.env.REACT_APP_API_ENDPOINT}/api/protein-cluster/${pageSize}/${
+        pageSize * pageNum
+      }`,
       {
         method: "POST",
         headers: customHeaders,

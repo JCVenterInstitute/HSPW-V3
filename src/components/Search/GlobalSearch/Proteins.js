@@ -113,7 +113,7 @@ const Proteins = ({ searchText }) => {
     const entity = "Proteins";
     const from = (page - 1) * pageSize;
     const response = await axios
-      .post("http://localhost:8000/api/global-search", {
+      .post(`${process.env.REACT_APP_API_ENDPOINT}/api/global-search`, {
         entity,
         size: pageSize,
         from,

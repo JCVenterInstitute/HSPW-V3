@@ -38,9 +38,6 @@ import "../Filter.css";
 import "../Table.css";
 import Legend from "./Legend.js";
 
-// TODO: Move to some sort of env file
-const HOST_ENDPOINT = `http://localhost:8000`;
-
 const styles = {
   transform: "translate(0, 0)",
 };
@@ -654,9 +651,9 @@ const SalivaryProteinTable = () => {
     };
 
     const data = await fetch(
-      `${HOST_ENDPOINT}/api/salivary-proteins/${pageSize}/${
-        pageNum * pageSize
-      }`,
+      `${
+        process.env.REACT_APP_API_ENDPOINT
+      }/api/salivary-proteins/${pageSize}/${pageNum * pageSize}`,
       {
         method: "POST",
         headers: customHeaders,

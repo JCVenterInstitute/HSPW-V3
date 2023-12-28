@@ -21,7 +21,7 @@ const GoTable = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/go_nodes/${params.id}`
+          `${process.env.REACT_APP_API_ENDPOINT}/api/go_nodes/${params.id}`
         );
         setData(response.data);
       } catch (error) {

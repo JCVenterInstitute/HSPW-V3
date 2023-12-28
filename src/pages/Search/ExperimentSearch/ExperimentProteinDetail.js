@@ -125,10 +125,13 @@ const ExperimentProteinDetail = ({ searchText }) => {
   const fetchData = async (page = currentPage, pageSize = recordsPerPage) => {
     const from = (page - 1) * pageSize;
     const response = await axios
-      .post(`http://localhost:8000/api/experiment-protein/${uniprotid}`, {
-        size: pageSize,
-        from,
-      })
+      .post(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/experiment-protein/${uniprotid}`,
+        {
+          size: pageSize,
+          from,
+        }
+      )
       .then((res) => {
         setTotalPages(Math.ceil(res.data.total.value / pageSize));
         return res.data.hits.map((item) => item._source);

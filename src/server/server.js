@@ -833,70 +833,70 @@ async function search_protein_count_PPa() {
   return response.body.aggregations;
 }
 
-app.get("/countPPa", (req, res) => {
+app.get("/api/countPPa", (req, res) => {
   let a = search_protein_count_PPa();
   a.then(function (result) {
     res.json(result);
   });
 });
 
-app.get("/countSSP", (req, res) => {
+app.get("/api/countSSP", (req, res) => {
   let a = search_protein_count_SSP();
   a.then(function (result) {
     res.json(result);
   });
 });
 
-app.get("/countSSPa", (req, res) => {
+app.get("/api/countSSPa", (req, res) => {
   let a = search_protein_count_SSPa();
   a.then(function (result) {
     res.json(result);
   });
 });
 
-app.get("/countProteinPa", (req, res) => {
+app.get("/api/countProteinPa", (req, res) => {
   let a = search_count_Pa();
   a.then(function (result) {
     res.json(result);
   });
 });
 
-app.get("/countProteinS", (req, res) => {
+app.get("/api/countProteinS", (req, res) => {
   let a = search_count_S();
   a.then(function (result) {
     res.json(result);
   });
 });
 
-app.get("/countProteinPl", (req, res) => {
+app.get("/api/countProteinPl", (req, res) => {
   let a = search_count_Pl();
   a.then(function (result) {
     res.json(result);
   });
 });
 
-app.get("/countProteinSS", (req, res) => {
+app.get("/api/countProteinSS", (req, res) => {
   let a = search_count_SS();
   a.then(function (result) {
     res.json(result);
   });
 });
 
-app.get("/countSPa", (req, res) => {
+app.get("/api/countSPa", (req, res) => {
   let a = search_protein_count_SP();
   a.then(function (result) {
     res.json(result);
   });
 });
 
-app.get("/countSPl", (req, res) => {
+app.get("/api/countSPl", (req, res) => {
   let a = search_protein_count_SB();
   a.then(function (result) {
     res.json(result);
   });
 });
 
-app.get("/countSSS", (req, res) => {
+app.get("/api/countSSS", (req, res) => {
   let a = search_protein_count_SSS();
   a.then(function (result) {
     res.json(result);
@@ -1498,7 +1498,7 @@ async function signature_type_counts() {
   return response.body.aggregations.langs.buckets;
 }
 
-app.get("/signature_type_counts/", (req, res) => {
+app.get("/api/signature_type_counts/", (req, res) => {
   let a = signature_type_counts();
   a.then(function (result) {
     res.json(result);

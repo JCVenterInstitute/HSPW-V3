@@ -15,7 +15,7 @@ const Gene = () => {
   const [message, setMessage] = useState(["Chromosome", "count"]);
   const [isLoading, setLoading] = useState(true);
   useEffect(() => {
-    fetch("http://localhost:8000/gene_location_counts")
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/gene_location_counts`)
       .then((res) => res.json())
       .then((data) => {
         let data1 = [

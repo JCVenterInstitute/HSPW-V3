@@ -150,7 +150,7 @@ const Contact = () => {
     const fileNames = attachments.map((attachment) => attachment.name);
     // Request presigned URLs
     const response = await axios.post(
-      "http://localhost:8000/api/contact/generate-presigned-urls",
+      `${process.env.REACT_APP_API_ENDPOINT}/api/contact/generate-presigned-urls`,
       {
         fileNames,
         topic,
@@ -193,7 +193,10 @@ const Contact = () => {
     };
     try {
       await axios
-        .post("http://localhost:8000/api/contact/send-form", payload)
+        .post(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/contact/send-form`,
+          payload
+        )
         .then((res) => {
           console.log(res);
           if (res.status === 201) {

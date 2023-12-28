@@ -16,8 +16,11 @@ const Chord = (props) => {
   const [countSSParotid, setSSParotid] = useState("");
   const [countPlasmaParotid, setPlasmaParotid] = useState("");
   const [isLoading, setLoading] = useState(true);
+
   const fetchSaliva = async () => {
-    const response = await fetch("http://localhost:8000/countProteinS");
+    const response = await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/countProteinS`
+    );
     if (!response.ok) {
       const message = `An error has occurred: ${response.status}`;
       console.error(message);
@@ -28,7 +31,9 @@ const Chord = (props) => {
   };
 
   const fetchSMSL = async () => {
-    const response = await fetch("http://localhost:8000/countProteinSS");
+    const response = await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/countProteinSS`
+    );
     if (!response.ok) {
       const message = `An error has occurred: ${response.status}`;
       console.error(message);
@@ -39,7 +44,9 @@ const Chord = (props) => {
   };
 
   const fetchParotid = async () => {
-    const response = await fetch("http://localhost:8000/countProteinPa");
+    const response = await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/countProteinPa`
+    );
     if (!response.ok) {
       const message = `An error has occurred: ${response.status}`;
       console.error(message);
@@ -50,7 +57,9 @@ const Chord = (props) => {
   };
 
   const fetchPlasma = async () => {
-    const response = await fetch("http://localhost:8000/countProteinPl");
+    const response = await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/countProteinPl`
+    );
     if (!response.ok) {
       const message = `An error has occurred: ${response.status}`;
       console.error(message);
@@ -61,7 +70,9 @@ const Chord = (props) => {
   };
 
   const fetchSalivaParotid = async () => {
-    const response = await fetch("http://localhost:8000/countSPa");
+    const response = await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/countSPa`
+    );
     if (!response.ok) {
       const message = `An error has occurred: ${response.status}`;
       console.error(message);
@@ -72,7 +83,9 @@ const Chord = (props) => {
   };
 
   const fetchSalivaPlasma = async () => {
-    const response = await fetch("http://localhost:8000/countSPl");
+    const response = await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/countSPl`
+    );
     if (!response.ok) {
       const message = `An error has occurred: ${response.status}`;
       console.error(message);
@@ -84,7 +97,9 @@ const Chord = (props) => {
   };
 
   const fetchSalivaSMSL = async () => {
-    const response = await fetch("http://localhost:8000/countSSS");
+    const response = await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/countSSS`
+    );
     if (!response.ok) {
       const message = `An error has occurred: ${response.status}`;
       console.error(message);
@@ -96,7 +111,9 @@ const Chord = (props) => {
   };
 
   const fetchSMSLPlasma = async () => {
-    const response = await fetch("http://localhost:8000/countSSP");
+    const response = await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/countSSP`
+    );
     if (!response.ok) {
       const message = `An error has occurred: ${response.status}`;
       console.error(message);
@@ -108,7 +125,9 @@ const Chord = (props) => {
   };
 
   const fetchSMSLParotid = async () => {
-    const response = await fetch("http://localhost:8000/countSSPa");
+    const response = await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/countSSPa`
+    );
     if (!response.ok) {
       const message = `An error has occurred: ${response.status}`;
       console.error(message);
@@ -120,7 +139,9 @@ const Chord = (props) => {
   };
 
   const fetchParotidPlasma = async () => {
-    const response = await fetch("http://localhost:8000/countPPa");
+    const response = await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/countPPa`
+    );
     if (!response.ok) {
       const message = `An error has occurred: ${response.status}`;
       console.error(message);
@@ -190,12 +211,10 @@ const Chord = (props) => {
     countSSParotid,
     countPlasmaParotid
   ) => {
-    var windowWidth = 600;
-    var windowHeight = 400;
-    var margin = { top: 0, right: 0, bottom: 0, left: 0 },
-      radius = Math.min(windowWidth, windowHeight) / 2,
-      innerRadius = Math.min(windowWidth, windowHeight) / 2.5,
-      outerRadius = innerRadius * 1.04;
+    const windowWidth = 600;
+    const windowHeight = 400;
+    const innerRadius = Math.min(windowWidth, windowHeight) / 2.5;
+    const outerRadius = innerRadius * 1.04;
 
     const svg = d3
       .select(chartRef.current)
@@ -446,7 +465,7 @@ const Chord = (props) => {
       svg
         .selectAll(".chord path")
         .filter(function (c) {
-          return c != d;
+          return c !== d;
         })
         .transition()
         .duration(500)
@@ -466,7 +485,7 @@ const Chord = (props) => {
         svg
           .selectAll(".chord path")
           .filter(function (d) {
-            return d.source.index != i && d.target.index != i;
+            return d.source.index !== i && d.target.index !== i;
           })
           .transition()
           .duration(500)
@@ -497,7 +516,7 @@ const Chord = (props) => {
     }
 
     function tooltip(d) {
-      if (d.source.index == d.target.index)
+      if (d.source.index === d.target.index)
         return (
           d.target.value +
           " proteins found in " +

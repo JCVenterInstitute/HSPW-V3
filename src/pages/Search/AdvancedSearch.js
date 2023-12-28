@@ -202,7 +202,7 @@ const AdvancedSearch = () => {
         };
         await axios
           .post(
-            "http://localhost:8000/api/advanced-search/build-query",
+            `${process.env.REACT_APP_API_ENDPOINT}/api/advanced-search/build-query`,
             payload
           )
           .then((res) => {
@@ -296,7 +296,9 @@ const AdvancedSearch = () => {
 
     try {
       let propertyList = await axios
-        .get(`http://localhost:8000/api/properties/${e.target.value}`)
+        .get(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/properties/${e.target.value}`
+        )
         .then((res) => res.data);
       setPropertiesOptions(propertyList);
 
@@ -439,7 +441,10 @@ const AdvancedSearch = () => {
         from,
       };
       const result = await axios
-        .post("http://localhost:8000/api/advanced-search/build-query", payload)
+        .post(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/advanced-search/build-query`,
+          payload
+        )
         .then((res) => {
           setTotalPages(Math.ceil(res.data.total.value / pageSize));
           if (entity === "Salivary Proteins") {

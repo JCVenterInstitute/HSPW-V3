@@ -35,8 +35,7 @@ const td = {
 
 const SignatureDetail = (props) => {
   const params = useParams();
-  let url =
-    "http://localhost:8000/api/protein-signature/" + params["interproid"];
+  const url = `${process.env.REACT_APP_API_ENDPOINT}/api/protein-signature/${params["interproid"]}`;
 
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");

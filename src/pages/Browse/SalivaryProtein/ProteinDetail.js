@@ -37,7 +37,7 @@ const th = {
 
 const ProteinDetail = (props) => {
   const params = useParams();
-  let url = "http://localhost:8000/api/protein/" + params["proteinid"];
+  const url = `${process.env.REACT_APP_API_ENDPOINT}/api/protein/${params["proteinid"]}`;
 
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");
@@ -77,7 +77,7 @@ const ProteinDetail = (props) => {
     let line = "";
     let yearTitle = "";
     let authorArr = [];
-    const pubmedLink = "http://localhost:8000/api/citation/" + id;
+    const pubmedLink = `${process.env.REACT_APP_API_ENDPOINT}/api/citation/${id}`;
     const response = await fetch(pubmedLink);
     if (!response.ok) {
       const message = `An error has occured: ${response.status}`;

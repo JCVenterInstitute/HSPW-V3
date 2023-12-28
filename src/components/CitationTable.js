@@ -30,9 +30,6 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { ReactComponent as DownloadLogo } from "../assets/table-icon/download.svg";
 import "./Filter.css";
 
-// TODO: Move
-const HOST_ENDPOINT = "http://localhost:8000";
-
 const recordsPerPageList = [
   {
     value: 50,
@@ -199,7 +196,9 @@ const CitationTable = () => {
     const filterQueries = queryBuilder(facetFilters);
 
     const data = await fetch(
-      `${HOST_ENDPOINT}/api/citations/${pageSize}/${pageNum * pageSize}`,
+      `${process.env.REACT_APP_API_ENDPOINT}/api/citations/${pageSize}/${
+        pageNum * pageSize
+      }`,
       {
         method: "POST",
         headers: customHeaders,

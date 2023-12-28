@@ -42,7 +42,7 @@ const ExperimentSearchDetail = (props) => {
     const fetchExperiment = async () => {
       try {
         const response = await axios
-          .get(`http://localhost:8000/api/study/${id}`)
+          .get(`${process.env.REACT_APP_API_ENDPOINT}/api/study/${id}`)
           .then((res) => res.data);
         setData(response[0]._source);
         setLoading(false);

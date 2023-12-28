@@ -11,11 +11,9 @@ import Box from "@mui/material/Box";
 
 import "../../style.css";
 
-const API_HOST = "http://localhost:8000";
-
 const ProteinDetailSequence = (props) => {
   const params = useParams();
-  let url = `${API_HOST}/api/protein/${params["proteinid"]}`;
+  let url = `${process.env.REACT_APP_API_ENDPOINT}/api/protein/${params["proteinid"]}`;
 
   const th = {
     background: "#f2f2f2",

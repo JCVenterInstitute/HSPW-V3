@@ -152,7 +152,9 @@ const DifferentialExpressionResults = () => {
   const handleDownload = async (jobId, fileName) => {
     try {
       await axios
-        .get(`http://localhost:8000/api/s3Download/${jobId}/${fileName}`)
+        .get(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
+        )
         .then((res) => {
           const link = document.createElement("a");
           link.href = res.data.url;
@@ -190,7 +192,7 @@ const DifferentialExpressionResults = () => {
     setIsLoading(true); // Start loading
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/s3Download/${jobId}/${fileName}`
+        `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
       );
       if (fileName === null) {
         setCsvData([]);

@@ -161,7 +161,7 @@ const DifferentialExpression = () => {
 
   const onGridReady = useCallback((params) => {
     axios
-      .get("http://localhost:8000/api/study")
+      .get(`${process.env.REACT_APP_API_ENDPOINT}/api/study`)
       .then((res) => res.data)
       .then((data) => {
         setTissueTypeFilterList([...data.aggregations.sample_type.buckets]);
@@ -505,7 +505,7 @@ const DifferentialExpression = () => {
   const handleDownloadTemplateData = async () => {
     try {
       const response = await axios
-        .get("http://localhost:8000/api/download-template-data")
+        .get(`${process.env.REACT_APP_API_ENDPOINT}/api/download-template-data`)
         .then((res) => res.data);
 
       const { url } = response;
@@ -523,7 +523,7 @@ const DifferentialExpression = () => {
   const handleDownloadDataStandard = async () => {
     try {
       const response = await axios
-        .get("http://localhost:8000/api/download-data-standard")
+        .get(`${process.env.REACT_APP_API_ENDPOINT}/api/download-data-standard`)
         .then((res) => res.data);
 
       const { url } = response;
@@ -593,7 +593,7 @@ const DifferentialExpression = () => {
     if (fileName) {
       await axios
         .post(
-          "http://localhost:8000/api/differential-expression/analyze-file",
+          `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze-file`,
           {
             inputData,
             logNorm,
@@ -622,25 +622,28 @@ const DifferentialExpression = () => {
         });
     } else {
       await axios
-        .post("http://localhost:8000/api/differential-expression/analyze", {
-          groupAData: groupARowData,
-          groupBData: groupBRowData,
-          logNorm,
-          foldChangeThreshold,
-          pValueThreshold,
-          pValueType,
-          parametricTest,
-          timestamp: {
-            year,
-            month,
-            day,
-            hours,
-            minutes,
-            seconds,
-          },
-          formattedDate,
-          workingDirectory,
-        })
+        .post(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze`,
+          {
+            groupAData: groupARowData,
+            groupBData: groupBRowData,
+            logNorm,
+            foldChangeThreshold,
+            pValueThreshold,
+            pValueType,
+            parametricTest,
+            timestamp: {
+              year,
+              month,
+              day,
+              hours,
+              minutes,
+              seconds,
+            },
+            formattedDate,
+            workingDirectory,
+          }
+        )
         .then(() => {
           // Wait for 3 seconds before redirecting
           setTimeout(() => {

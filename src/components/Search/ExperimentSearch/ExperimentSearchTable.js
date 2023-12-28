@@ -139,7 +139,7 @@ const ExperimentSearchTable = () => {
 
   const onGridReady = useCallback((params) => {
     axios
-      .get("http://localhost:8000/api/study")
+      .get(`${process.env.REACT_APP_API_ENDPOINT}/api/study`)
       .then((res) => res.data)
       .then((data) => {
         setTissueTypeFilterList([...data.aggregations.sample_type.buckets]);

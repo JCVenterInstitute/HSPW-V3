@@ -10,8 +10,6 @@ import Box from "@mui/material/Box";
 
 import MainFeature from "../../../assets/hero.jpeg";
 
-const API_ENDPOINT = "http://localhost:8000";
-
 const Cluster_Detail = (props) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");
@@ -20,7 +18,7 @@ const Cluster_Detail = (props) => {
   const fetchProteinData = async (memberId) => {
     try {
       const response = await fetch(
-        `${API_ENDPOINT}/api/study_protein_uniprot/${memberId}`
+        `${process.env.REACT_APP_API_ENDPOINT}/api/study_protein_uniprot/${memberId}`
       );
 
       if (!response.ok) {
@@ -37,15 +35,18 @@ const Cluster_Detail = (props) => {
   // Fetch all cluster member data
   const fetchClusterMembersData = async (memberIds) => {
     try {
-      const response = await fetch(`${API_ENDPOINT}/api/study-protein/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ids: Array.from(memberIds),
-        }),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/study-protein/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ids: Array.from(memberIds),
+          }),
+        }
+      );
 
       return await response.json();
     } catch (error) {
@@ -56,15 +57,18 @@ const Cluster_Detail = (props) => {
 
   const fetchStudyDetails = async (experimentIds) => {
     try {
-      const response = await fetch(`${API_ENDPOINT}/api/study`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ids: Array.from(experimentIds),
-        }),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/study`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ids: Array.from(experimentIds),
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`An error has occurred: ${response.status}`);
@@ -81,7 +85,7 @@ const Cluster_Detail = (props) => {
     try {
       // Fetch Cluster Data
       const cluster = await fetch(
-        `${API_ENDPOINT}/api/protein-cluster/${params.clusterid}`
+        `${process.env.REACT_APP_API_ENDPOINT}/api/protein-cluster/${params.clusterid}`
       ).then((res) => res.json());
 
       setData(cluster); // Set cluster data

@@ -116,8 +116,6 @@ function LinkComponent(props) {
   );
 }
 
-const HOST_ENDPOINT = "http://localhost:8000";
-
 const columns = [
   {
     headerName: "InterPro ID",
@@ -261,9 +259,9 @@ const ProteinSignatureTable = () => {
     };
 
     const data = await fetch(
-      `${HOST_ENDPOINT}/api/protein-signature/${pageSize}/${
-        pageNum * pageSize
-      }`,
+      `${
+        process.env.REACT_APP_API_ENDPOINT
+      }/api/protein-signature/${pageSize}/${pageNum * pageSize}`,
       {
         method: "POST",
         headers: customHeaders,

@@ -109,7 +109,7 @@ const ExperimentProteinTable = ({ experiment_id_key }) => {
   const fetchData = async (page = currentPage, pageSize = recordsPerPage) => {
     const from = (page - 1) * pageSize;
     const response = await axios
-      .post("http://localhost:8000/api/experiment-protein", {
+      .post(`${process.env.REACT_APP_API_ENDPOINT}/api/experiment-protein`, {
         size: pageSize,
         from,
         experiment_id_key,

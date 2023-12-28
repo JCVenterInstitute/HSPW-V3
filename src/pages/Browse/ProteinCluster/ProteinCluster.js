@@ -33,22 +33,22 @@ export const options = {
   },
 };
 
-const HOST_NAME = "http://localhost:8000";
-
 const ProteinCluster = () => {
   const [message, setMessage] = useState("");
   const [number, setNumber] = useState({});
   const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${HOST_NAME}/api/protein-cluster`)
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/protein-cluster`)
       .then((res) => res.json())
       .then((data) => setMessage(data["Cluster ID"]))
       .catch((error) =>
         console.error("Error fetching protein cluster data:", error)
       );
 
-    fetch(`${HOST_NAME}/api/protein_cluster_member_count`)
+    fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/protein_cluster_member_count`
+    )
       .then((res) => res.json())
       .then((data) => {
         if (data) {

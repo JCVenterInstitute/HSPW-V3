@@ -14,8 +14,6 @@ import { AgGridReact } from "ag-grid-react";
 
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 
-const API_ENDPOINT = "http://localhost:8000";
-
 function proteinLinkComponent(props) {
   return (
     <div style={{ paddingLeft: "20px" }}>
@@ -148,13 +146,16 @@ const ProteinSetSearch = () => {
   };
 
   const fetchData = async (query) => {
-    const data = await fetch(`${API_ENDPOINT}/api/proteins/1000/0/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ filters: query }),
-    })
+    const data = await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/proteins/1000/0/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ filters: query }),
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
         const { hits } = data;

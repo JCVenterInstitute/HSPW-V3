@@ -92,8 +92,6 @@ function LinkComponent(props) {
   );
 }
 
-const HOST_NAME = "http://localhost:8000";
-
 const recordsPerPageList = [
   {
     value: 50,
@@ -258,15 +256,20 @@ const GeneTable = () => {
   const fetchData = async () => {
     const filterQueries = queryBuilder(facetFilters);
 
-    await fetch(`${HOST_NAME}/api/genes/${pageSize}/${pageSize * pageNum}`, {
-      method: "POST",
-      headers: customHeaders,
-      body: JSON.stringify({
-        filters: filterQueries,
-        ...(searchText && { keyword: createGlobalSearchQuery() }),
-        ...(sortedColumn && createSortQuery()),
-      }),
-    })
+    await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/genes/${pageSize}/${
+        pageSize * pageNum
+      }`,
+      {
+        method: "POST",
+        headers: customHeaders,
+        body: JSON.stringify({
+          filters: filterQueries,
+          ...(searchText && { keyword: createGlobalSearchQuery() }),
+          ...(sortedColumn && createSortQuery()),
+        }),
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
         const { hits, total } = data.hits;

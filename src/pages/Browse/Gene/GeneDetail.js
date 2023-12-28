@@ -28,8 +28,6 @@ const td = {
   padding: "0.2em",
 };
 
-const API_HOST = "http://localhost:8000";
-
 const Gene_detail = (props) => {
   const params = useParams();
 
@@ -41,7 +39,7 @@ const Gene_detail = (props) => {
   const gene_link = "https://www.ncbi.nlm.nih.gov/gene/";
 
   const fetchGenes = async () => {
-    const url = `${API_HOST}/genes/${params["geneid"]}`;
+    const url = `${process.env.REACT_APP_API_ENDPOINT}/genes/${params["geneid"]}`;
 
     const response = await fetch(url);
 

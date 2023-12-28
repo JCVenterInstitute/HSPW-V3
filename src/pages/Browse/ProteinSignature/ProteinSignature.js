@@ -42,7 +42,7 @@ const ProteinSignature = () => {
   const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:8000/signature_type_counts")
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/signature_type_counts`)
       .then((res) => res.json())
       .then((data) => {
         let data1 = [

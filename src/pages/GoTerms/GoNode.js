@@ -70,7 +70,7 @@ const GoNode = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/go_nodes/${params.id}`
+          `${process.env.REACT_APP_API_ENDPOINT}/api/go_nodes/${params.id}`
         );
         console.log("75", response.data);
         setData(response.data);
@@ -82,7 +82,9 @@ const GoNode = () => {
     const fetchUsageData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/go_nodes_usage/${params.id.split("_")[1]}`
+          `${process.env.REACT_APP_API_ENDPOINT}/api/go_nodes_usage/${
+            params.id.split("_")[1]
+          }`
         );
         setUsageData(response.data);
       } catch (error) {
@@ -93,7 +95,9 @@ const GoNode = () => {
     const fetchEdgeData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/go_edges/${params.id.split("_")[1]}`
+          `${process.env.REACT_APP_API_ENDPOINT}/api/go_edges/${
+            params.id.split("_")[1]
+          }`
         );
         const edgeResult = response.data;
         const parentEdges = edgeResult.filter(
