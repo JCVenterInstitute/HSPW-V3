@@ -84,7 +84,7 @@ function LinkComponent(props) {
       <a
         target="_blank"
         rel="noopener noreferrer"
-        href={`/study_protein/${props.value}`}
+        href={`/experiment-search/${props.value}`}
       >
         {props.value}
       </a>
@@ -142,7 +142,6 @@ const ExperimentSearchTable = () => {
       .get("http://localhost:8000/api/study")
       .then((res) => res.data)
       .then((data) => {
-        console.log(data.aggregations);
         setTissueTypeFilterList([...data.aggregations.sample_type.buckets]);
         setInstitutionFilterList([...data.aggregations.institution.buckets]);
         setDiseaseFilterList([...data.aggregations.condition_type.buckets]);

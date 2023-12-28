@@ -2677,6 +2677,77 @@ app.post("/api/global-search", async (req, res) => {
   }
 });
 
+const experimentProtein = async ({ size, from, experiment_id_key }) => {
+  // Initialize the client.
+  const client = await getClient();
+
+  const query = {
+    track_total_hits: true,
+    size,
+    from,
+    query: {
+      query_string: {
+        default_field: "experiment_id_key",
+        query: experiment_id_key,
+      },
+    },
+  };
+
+  const response = await client.search({
+    index: "study_protein",
+    body: query,
+  });
+
+  return response.body.hits;
+};
+
+app.post("/api/experiment-protein", async (req, res) => {
+  try {
+    const payload = req.body;
+
+    const result = await experimentProtein(payload);
+    res.json(result);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+const experimentPeptide = async ({ size, from }, uniprotid) => {
+  // Initialize the client.
+  const client = await getClient();
+
+  const query = {
+    track_total_hits: true,
+    size,
+    from,
+    query: {
+      query_string: {
+        default_field: "Uniprot_accession",
+        query: uniprotid,
+      },
+    },
+  };
+
+  const response = await client.search({
+    index: "peptide",
+    body: query,
+  });
+
+  return response.body.hits;
+};
+
+app.post("/api/experiment-protein/:uniprotid", async (req, res) => {
+  try {
+    const uniprotid = req.params.uniprotid;
+    const payload = req.body;
+
+    const result = await experimentPeptide(payload, uniprotid);
+    res.json(result);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 /**
  * Query data used for Salivary Protein page table
  * @param {Number} size Number of records to return
