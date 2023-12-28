@@ -96,7 +96,7 @@ class Footer extends Component {
                 </li>
                 <li>
                   <a
-                    href="Accessibility"
+                    href="/accessibility"
                     className="middle"
                   >
                     Accessibility
@@ -104,7 +104,7 @@ class Footer extends Component {
                 </li>
                 <li>
                   <a
-                    href="Copyrights"
+                    href="/copyrights"
                     className="middle"
                   >
                     Copyrights
@@ -112,7 +112,7 @@ class Footer extends Component {
                 </li>
                 <li>
                   <a
-                    href="General_disclaimer"
+                    href="/general-disclaimer"
                     className="middle"
                   >
                     Disclaimers
@@ -120,7 +120,7 @@ class Footer extends Component {
                 </li>
                 <li className="last">
                   <a
-                    href="Privacy_policy"
+                    href="/privacy-policy"
                     className="last_li"
                   >
                     Privacy Notice

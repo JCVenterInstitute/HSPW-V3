@@ -70,7 +70,7 @@ const GoNode = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/go_nodes/${params.id}`
+          `${process.env.REACT_APP_API_ENDPOINT}/api/go-nodes/${params.id}`
         );
         console.log("75", response.data);
         setData(response.data);
@@ -82,7 +82,7 @@ const GoNode = () => {
     const fetchUsageData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/go_nodes_usage/${
+          `${process.env.REACT_APP_API_ENDPOINT}/api/go-nodes-usage/${
             params.id.split("_")[1]
           }`
         );
@@ -95,7 +95,7 @@ const GoNode = () => {
     const fetchEdgeData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/go_edges/${
+          `${process.env.REACT_APP_API_ENDPOINT}/api/go-edges/${
             params.id.split("_")[1]
           }`
         );

@@ -13,7 +13,7 @@ import "../../style.css";
 
 const ProteinDetailSequence = (props) => {
   const params = useParams();
-  let url = `${process.env.REACT_APP_API_ENDPOINT}/api/protein/${params["proteinid"]}`;
+  let url = `${process.env.REACT_APP_API_ENDPOINT}/api/salivary-protein/${params["proteinid"]}`;
 
   const th = {
     background: "#f2f2f2",

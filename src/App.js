@@ -170,11 +170,11 @@ function App() {
           element={<ProteinSequence />}
         />
         <Route
-          path="GoNodes/:id"
+          path="go-nodes/:id"
           element={<GoNodes />}
         />
         <Route
-          path="GoTable"
+          path="go-table"
           element={<GoTable />}
         />
         <Route

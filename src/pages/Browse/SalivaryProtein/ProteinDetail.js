@@ -37,7 +37,7 @@ const th = {
 
 const ProteinDetail = (props) => {
   const params = useParams();
-  const url = `${process.env.REACT_APP_API_ENDPOINT}/api/protein/${params["proteinid"]}`;
+  const url = `${process.env.REACT_APP_API_ENDPOINT}/api/salivary-protein/${params["proteinid"]}`;
 
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");

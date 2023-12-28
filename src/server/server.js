@@ -21,15 +21,13 @@ const { createContact } = require("./utils/createContact");
 
 app.use(cors());
 app.use(express.json());
-
 app.use(express.static("build"));
-
 app.use("/static", express.static(path.join(__dirname, "./build/static")));
 
-var host =
+const host =
   "https://search-hspw-dev2-dmdd32xae4fmxh7t4g6skv67aa.us-east-2.es.amazonaws.com";
 
-var host1 =
+const host1 =
   "https://search-hspw-dev-open-crluksvxj4mvcgl5nopcl6ykte.us-east-2.es.amazonaws.com";
 
 const getClient = async () => {
@@ -62,24 +60,11 @@ const getClient1 = async () => {
   });
 };
 
-async function getMapping() {
-  var client = await getClient();
-  var response = await client.indices.getMapping({
-    index: "protein_cluster",
-  });
-  return Object.keys(
-    response.body["protein_cluster"]["mappings"]["properties"]
-  );
-}
+/***************************
+ * Protein Cluster Endpoints
+ ***************************/
 
-app.get("/a123", (req, res) => {
-  let a = getMapping();
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function cluster_member_count() {
+async function getClusterMemberCount() {
   var client = await getClient();
 
   var response = await client.search({
@@ -161,15 +146,15 @@ async function cluster_member_count() {
   return response.body.aggregations;
 }
 
-app.get("/api/protein_cluster_member_count", (req, res) => {
-  let a = cluster_member_count();
+app.get("/api/protein-cluster-member-count", (req, res) => {
+  let a = getClusterMemberCount();
 
   a.then(function (result) {
     res.json(result);
   });
 });
 
-async function search_cluster() {
+async function getAllProteinSearchClusterData() {
   // Initialize the client.
   var client = await getClient();
 
@@ -189,14 +174,14 @@ async function search_cluster() {
 }
 
 app.get("/api/protein-cluster", (req, res) => {
-  let a = search_cluster();
+  let a = getAllProteinSearchClusterData();
 
   a.then(function (result) {
     res.json(result);
   });
 });
 
-async function search_clusterID(id) {
+async function getProteinClusterById(id) {
   var client = await getClient();
 
   var query = {
@@ -218,14 +203,59 @@ async function search_clusterID(id) {
 }
 
 app.get("/api/protein-cluster/:id", (req, res) => {
-  let a = search_clusterID(req.params.id);
+  let a = getProteinClusterById(req.params.id);
 
   a.then(function (result) {
     res.json(result);
   });
 });
 
-async function search_proteinID(id) {
+async function queryProteinCluster(
+  size,
+  from,
+  filter,
+  sort = null,
+  keyword = null
+) {
+  const client = await getClient();
+
+  const payload = {
+    index: "protein_cluster",
+    body: {
+      track_total_hits: true,
+      size: size,
+      from: from,
+      query: {
+        bool: {
+          ...(filter && { filter }),
+          ...(keyword && { must: [keyword] }), // Apply global search if present
+        },
+      },
+      ...(sort && { sort }), // Apply sort if present
+    },
+  };
+
+  const response = await client.search(payload);
+
+  return response.body;
+}
+
+app.post("/api/protein-cluster/:size/:from/", (req, res) => {
+  const { filters, sort, keyword } = req.body;
+  const { size, from } = req.params;
+
+  const results = queryProteinCluster(size, from, filters, sort, keyword);
+
+  results.then((result) => {
+    res.json(result);
+  });
+});
+
+/*****************************
+ * Salivary Proteins Endpoints
+ *****************************/
+
+async function getSalivaryProteinById(id) {
   var client = await getClient1();
 
   var query = {
@@ -246,7 +276,124 @@ async function search_proteinID(id) {
   return response.body.hits.hits;
 }
 
-async function search_geneID(id) {
+app.get("/api/salivary-protein/:id", (req, res) => {
+  let a = getSalivaryProteinById(req.params.id);
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+/**
+ * Query data used for Salivary Protein page table
+ * @param {Number} size Number of records to return
+ * @param {Number} from Starting point for the data page to return
+ * @param {Object[]} filter All applied filters applied by user in facet menu
+ * @param {Object[]} sort Sort query for column selected to sort by from table
+ * @param {Object} keyword String entered by user into search bar
+ * @param {Boolean} filterByOr True if using or filters, false otherwise
+ */
+async function querySalivaryProtein(
+  size,
+  from,
+  filter,
+  sort = null,
+  keyword = null,
+  filterByOr = false
+) {
+  const client = await getClient();
+
+  const payload = {
+    index: "new_saliva_protein_test",
+    body: {
+      track_total_hits: true,
+      size: size,
+      from: from,
+      aggs: {
+        IHC: {
+          terms: {
+            field: "IHC.keyword",
+          },
+        },
+        expert_opinion: {
+          terms: {
+            field: "expert_opinion.keyword",
+          },
+        },
+      },
+      query: {
+        bool: {
+          ...(filterByOr === true ? { should: filter } : { filter }),
+          ...(keyword && { must: [keyword] }), // Apply global search if present
+        },
+      },
+      ...(sort && { sort }), // Apply sort if present
+    },
+  };
+
+  const response = await client.search(payload);
+
+  return response.body;
+}
+
+// Used by Salivary Proteins table
+app.post("/api/salivary-proteins/:size/:from/", (req, res) => {
+  const { filters, sort, keyword, filterByOr } = req.body;
+  const { size, from } = req.params;
+
+  const results = querySalivaryProtein(
+    size,
+    from,
+    filters,
+    sort,
+    keyword,
+    filterByOr
+  );
+
+  results.then((result) => {
+    res.json(result);
+  });
+});
+
+async function queryProteins(size, from, filter, sort = null, keyword = null) {
+  const client = await getClient1();
+
+  const payload = {
+    index: "salivary-proteins-112023",
+    body: {
+      track_total_hits: true,
+      size: size,
+      from: from,
+      query: {
+        bool: {
+          should: [...filter],
+        },
+      },
+      ...(sort && { sort }), // Apply sort if present
+    },
+  };
+
+  const response = await client.search(payload);
+
+  return response.body;
+}
+
+// Used by Protein Search to get back matches to a list of salivary protein ids
+app.post("/api/proteins/:size/:from/", (req, res) => {
+  const { filters, sort, keyword } = req.body;
+  const { size, from } = req.params;
+
+  const results = queryProteins(size, from, filters, sort, keyword);
+
+  results.then((result) => {
+    res.json(result);
+  });
+});
+
+/****************
+ * Gene Endpoints
+ ****************/
+
+async function getGeneById(id) {
   var client = await getClient();
 
   var query = {
@@ -268,229 +415,54 @@ async function search_geneID(id) {
 }
 
 app.get("/genes/:id", (req, res) => {
-  let a = search_geneID(req.params.id);
+  let a = getGeneById(req.params.id);
 
   a.then(function (result) {
     res.json(result);
   });
 });
 
-async function search_signature(size, from) {
-  // Initialize the client.
-  var client = await getClient();
+async function queryGenes(size, from, filter, sort = null, keyword = null) {
+  const client = await getClient();
 
-  var query = {
-    size: size,
-    from: from,
-    query: {
-      match_all: {},
-    },
-  };
-
-  var response = await client.search({
-    index: "protein_signature",
-    body: query,
-    _source: ["InterPro ID", "Type", "Name", "# of Members"],
-  });
-  return response.body.hits;
-}
-
-app.get("/api/protein-signature/:size/:from", (req, res) => {
-  let a = search_signature(req.params.size, req.params.from);
-
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function and_search_citation(size, from, wildQuery) {
-  var client = await getClient1();
-
-  var query = {
-    size: size,
-    from: from,
-    sort: [{ PubDate: { order: "desc" } }],
-    query: {
-      bool: {
-        filter: wildQuery,
-      },
-    },
-  };
-
-  var response = await client.search({
-    index: "citation",
-    body: query,
-  });
-
-  return response.body;
-}
-
-app.post("/citation_search/:size/:from/", (req, res) => {
-  let a = and_search_citation(req.params.size, req.params.from, req.body);
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function and_search_signature(size, from, wildQuery, scriptQuery) {
-  var client = await getClient();
-
-  wildQuery = JSON.parse(wildQuery);
-
-  var query = {
-    size: size,
-    from: from,
-    aggs: {
-      Type: {
-        terms: {
-          field: "Type.keyword",
-        },
-      },
-    },
-    query: {
-      bool: {
-        filter: wildQuery,
-      },
-    },
-  };
-
-  var response = await client.search({
-    index: "protein_signature",
-    body: query,
-  });
-
-  return response.body;
-}
-
-app.get("/signature_search/:size/:from/:query/:script", (req, res) => {
-  const query = JSON.parse(req.params.query);
-
-  let a = and_search_signature(
-    req.params.size,
-    req.params.from,
-    req.params.query,
-    req.params.script
-  );
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function and_search_gene(size, from, wildQuery) {
-  var client = await getClient();
-
-  var query = {
-    size: size,
-    from: from,
-    query: {
-      bool: {
-        filter: wildQuery,
-      },
-    },
-  };
-
-  var response = await client.search({
+  const payload = {
     index: "genes",
-    body: query,
-  });
-
-  return response.body;
-}
-
-app.post("/genes_search/:size/:from/", (req, res) => {
-  let a = and_search_gene(req.params.size, req.params.from, req.body);
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function or_search(size, from, wildQuery) {
-  var client = await getClient();
-
-  const response = await client.search({
-    index: "new_saliva_protein_test",
     body: {
+      track_total_hits: true,
       size: size,
       from: from,
-      aggs: {
-        IHC: {
-          terms: {
-            field: "IHC.keyword",
-          },
-        },
-        expert_opinion: {
-          terms: {
-            field: "expert_opinion.keyword",
-          },
-        },
-      },
       query: {
         bool: {
-          should: wildQuery,
+          ...(filter && { filter }),
+          ...(keyword && { must: [keyword] }), // Apply global search if present
         },
       },
+      ...(sort && { sort }), // Apply sort if present
     },
-  });
-  return response.body;
-}
+  };
 
-app.post("/or_search/:size/:from/", (req, res) => {
-  let a = or_search(req.params.size, req.params.from, req.body);
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function multi_search(index, text) {
-  var client = await getClient();
-  var query;
-
-  if (index === "new_saliva_protein_test") {
-    query = {
-      query: {
-        query_string: {
-          query: "*" + text + "*",
-          fields: [],
-        },
-      },
-    };
-  } else if (index === "protein_signature") {
-    query = {
-      query: {
-        query_string: {
-          query: "*" + text + "*",
-          fields: [],
-        },
-      },
-    };
-  } else if (index === "genes") {
-    query = {
-      query: {
-        query_string: {
-          query: "*" + text + "*",
-          fields: [],
-        },
-      },
-    };
-  }
-
-  var response = await client.search({
-    index: index,
-    body: query,
-  });
+  const response = await client.search(payload);
 
   return response.body;
 }
 
-app.get("/multi_search/:index/:text", (req, res) => {
-  let a = multi_search(req.params.index, req.params.text);
+// Used by Gene Browse Page table
+app.post("/api/genes/:size/:from/", (req, res) => {
+  const { filters, sort, keyword } = req.body;
+  const { size, from } = req.params;
 
-  a.then(function (result) {
+  const results = queryGenes(size, from, filters, sort, keyword);
+
+  results.then((result) => {
     res.json(result);
   });
 });
 
-async function search_signatureID(id) {
+/*****************************
+ * Protein Signature Endpoints
+ *****************************/
+
+async function getProteinSignatureById(id) {
   var client = await getClient();
 
   var query = {
@@ -512,14 +484,67 @@ async function search_signatureID(id) {
 }
 
 app.get("/api/protein-signature/:id", (req, res) => {
-  let a = search_signatureID(req.params.id);
+  let a = getProteinSignatureById(req.params.id);
 
   a.then(function (result) {
     res.json(result);
   });
 });
 
-async function search_withID(index, id) {
+async function queryProteinSignature(
+  size,
+  from,
+  filter,
+  sort = null,
+  keyword = null
+) {
+  const client = await getClient();
+
+  const payload = {
+    index: "protein_signature",
+    body: {
+      track_total_hits: true,
+      size: size,
+      from: from,
+      query: {
+        bool: {
+          ...(filter && { filter }),
+          ...(keyword && { must: [keyword] }), // Apply global search if present
+        },
+      },
+      ...(sort && { sort }), // Apply sort if present
+      aggs: {
+        Type: {
+          terms: {
+            field: "Type.keyword",
+          },
+        },
+      },
+    },
+  };
+
+  const response = await client.search(payload);
+
+  return response.body;
+}
+
+// Used by Protein Signature Browse page table
+app.post("/api/protein-signature/:size/:from/", (req, res) => {
+  const { filters, sort, keyword } = req.body;
+  const { size, from } = req.params;
+
+  const results = queryProteinSignature(size, from, filters, sort, keyword);
+
+  results.then((result) => {
+    res.json(result);
+  });
+});
+
+/********************
+ * Citation Endpoints
+ ********************/
+
+async function getCitationById(index, id) {
   var client = await getClient1();
 
   var query = {
@@ -540,59 +565,61 @@ async function search_withID(index, id) {
 }
 
 app.get("/api/citation/:id", (req, res) => {
-  let a = search_withID("citation", req.params.id);
+  let a = getCitationById("citation", req.params.id);
 
   a.then(function (result) {
     res.json(result);
   });
 });
 
-async function search_citation_field() {
-  // Initialize the client.
-  var client = await getClient1();
+async function queryCitationData(
+  size,
+  from,
+  filter,
+  sort = null,
+  keyword = null
+) {
+  const client = await getClient1();
 
-  var response = await client.indices.getFieldMapping({
+  const returnFields = ["PubMed_ID", "PubDate", "Title", "journal_title"];
+
+  const payload = {
     index: "citation",
-  });
-
-  return response.body.hits.hits;
-}
-
-app.get("/api/citation/field", (req, res) => {
-  let a = search_citation_field();
-
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function search_citation(size, from) {
-  // Initialize the client
-  var client = await getClient1();
-
-  var query = {
-    size: size,
-    from: from,
-    sort: [{ PubDate: { order: "desc" } }],
-    query: {
-      match_all: {},
+    body: {
+      track_total_hits: true,
+      size: size,
+      from: from,
+      query: {
+        bool: {
+          ...(filter && { filter }),
+          ...(keyword && { must: [keyword] }), // Apply global search if present
+        },
+      },
+      ...(sort && { sort }), // Apply sort if present
+      _source: returnFields,
     },
   };
 
-  var response = await client.search({
-    index: "citation",
-    body: query,
-  });
-  return response.body.hits;
+  const response = await client.search(payload);
+
+  return response.body;
 }
 
-app.get("/api/citation/:size/:from", (req, res) => {
-  let a = search_citation(req.params.size, req.params.from);
+// Used by Citation Browse page table
+app.post("/api/citations/:size/:from/", (req, res) => {
+  const { filters, sort, keyword } = req.body;
+  const { size, from } = req.params;
 
-  a.then(function (result) {
+  const results = queryCitationData(size, from, filters, sort, keyword);
+
+  results.then((result) => {
     res.json(result);
   });
 });
+
+/******************************
+ * For Homepage Chord Component
+ ******************************/
 
 async function search_protein_count_SP() {
   var client = await getClient();
@@ -903,585 +930,335 @@ app.get("/api/countSSS", (req, res) => {
   });
 });
 
-async function search_saliva_abundance() {
+/*******************
+ * Go Node Endpoints
+ *******************/
+
+const searchGoNodesType = async (type) => {
   // Initialize the client.
   var client = await getClient();
 
   var query = {
+    size: 10000,
     query: {
-      match: {
-        _id: {
-          query: id,
-        },
+      query_string: {
+        query: `*type*`,
+        fields: [],
       },
     },
   };
 
-  var response = await client.search({
-    index: "unique_protein_by_sample_type",
+  const response = await client.search({
+    index: "go_nodes",
     body: query,
   });
-
   return response.body.hits.hits;
-}
+};
 
-async function saliva_protein_count() {
-  // Initialize the client.
-  var client = await getClient();
-
-  var response = await client.count({
-    // required index
-    index: "new_saliva_protein_test",
-    body: {
-      // you can count based on specific query or remove body at all
-      query: { match_all: {} },
-    },
-  });
-
-  return response.body;
-}
-
-app.get("/saliva_protein_count/", (req, res) => {
-  let a = saliva_protein_count();
+app.get("/api/go-nodes-type/:type", (req, res) => {
+  let a = searchGoNodesType(req.params.type);
   a.then(function (result) {
     res.json(result);
   });
 });
 
-async function saliva_protein_table(size, from) {
+const searchGoNodes = async (id) => {
   // Initialize the client.
   var client = await getClient();
 
   var query = {
-    size: size,
-    from: from,
-    aggs: {
-      IHC: {
-        terms: {
-          field: "IHC.keyword",
-        },
-      },
-      expert_opinion: {
-        terms: {
-          field: "expert_opinion.keyword",
-        },
+    size: 10000,
+    query: {
+      query_string: {
+        default_field: "id",
+        query: id,
       },
     },
+  };
+
+  const response = await client.search({
+    index: "go_nodes",
+    body: query,
+  });
+  return response.body.hits.hits;
+};
+
+app.get("/api/go-nodes/:id", (req, res) => {
+  let a = searchGoNodes(req.params.id);
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+const searchGoEdges = async (id) => {
+  var client = await getClient();
+
+  var query = {
+    size: 10000,
+    query: {
+      query_string: {
+        query: `*GO*${id}*`,
+        fields: [],
+      },
+    },
+  };
+
+  const response = await client.search({
+    index: "go_edges",
+    body: query,
+  });
+
+  return response.body.hits.hits;
+};
+
+app.get("/api/go-edges/:id", (req, res) => {
+  let a = searchGoEdges(req.params.id);
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+const searchGoNodesUsage = async (id) => {
+  // Initialize the client.
+  var client = await getClient1();
+
+  var query = {
+    size: 10000,
+    _source: ["id"],
+    query: {
+      query_string: {
+        query: `*GO*${id}*`,
+        fields: [],
+      },
+    },
+  };
+
+  const response = await client.search({
+    index: "salivary-proteins-112023",
+    body: query,
+  });
+  return response.body.hits.hits;
+};
+
+app.get("/api/go-nodes-usage/:id", (req, res) => {
+  let a = searchGoNodesUsage(req.params.id);
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+/******************
+ * Study Endpoints
+ *****************/
+
+const searchAllStudy = async () => {
+  // Initialize the client.
+  const client = await getClient();
+
+  const query = {
+    size: 10000,
     query: {
       match_all: {},
     },
-  };
-
-  var response = await client.search({
-    index: "new_saliva_protein_test",
-    body: query,
-  });
-  return response.body;
-}
-
-app.get("/saliva_protein_table/:size/:from/", (req, res) => {
-  let a = saliva_protein_table(req.params.size, req.params.from);
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function opCount() {
-  var client = await getClient();
-
-  const response = await client.search({
-    index: "new_saliva_protein_test", // Replace with your index name
-    body: {
-      size: 0,
-      aggs: {
-        langs: {
-          terms: {
-            field: "expert_opinion.keyword",
-          },
+    aggs: {
+      sample_type: {
+        terms: {
+          field: "sample_type.keyword",
+        },
+      },
+      institution: {
+        terms: {
+          field: "institution.keyword",
+        },
+      },
+      condition_type: {
+        terms: {
+          field: "condition_type.keyword",
         },
       },
     },
+  };
+
+  const response = await client.search({
+    index: "study",
+    body: query,
   });
 
-  return response.body.aggregations.langs.buckets;
-}
+  return response.body;
+};
 
-app.get("/opCount", (req, res) => {
-  let a = opCount();
-  a.then(function (result) {
-    res.json(result);
+app.get("/api/study/", async (req, res) => {
+  searchAllStudy().then((response) => {
+    res.json(response);
   });
 });
 
-async function searchOp(size, from, text) {
+const searchStudy = async (id) => {
   // Initialize the client.
-  var client = await getClient();
+  const client = await getClient();
 
-  var query = {
-    size: size,
-    from: from,
+  const query = {
+    size: 10000,
     query: {
-      match: {
-        expert_opinion: text,
+      query_string: {
+        default_field: "experiment_id_key",
+        query: id,
+      },
+    },
+    aggs: {
+      sample_type: {
+        terms: {
+          field: "sample_type.keyword",
+        },
+      },
+      institution: {
+        terms: {
+          field: "institution.keyword",
+        },
+      },
+      condition_type: {
+        terms: {
+          field: "condition_type.keyword",
+        },
       },
     },
   };
 
-  var response = await client.search({
-    index: "new_saliva_protein_test",
+  const response = await client.search({
+    index: "study",
     body: query,
   });
 
   return response.body.hits.hits;
-}
+};
 
-app.get("/searchOp/:size/:from/:text", (req, res) => {
-  let a = searchOp(req.params.size, req.params.from, req.params.text);
-  a.then(function (result) {
-    res.json(result);
+app.get("/api/study/:id", async (req, res) => {
+  searchStudy(req.params.id).then((response) => {
+    res.json(response);
   });
 });
 
-async function IHCCount() {
-  var client = await getClient();
+// Used for Cluster Details page
+const bulkStudySearch = async (ids) => {
+  // Initialize the client.
+  const client = await getClient();
 
-  const response = await client.search({
-    index: "new_saliva_protein_test", // Replace with your index name
-    body: {
-      size: 0,
-      aggs: {
-        langs: {
-          terms: {
-            field: "IHC.keyword",
-          },
-        },
+  const query = {
+    size: 10000,
+    query: {
+      terms: {
+        experiment_id_key: ids,
       },
     },
+  };
+
+  const response = await client.search({
+    index: "study",
+    body: query,
   });
 
-  return response.body.aggregations.langs.buckets;
-}
+  return response.body.hits.hits;
+};
 
-app.get("/IHCCount", (req, res) => {
-  let a = IHCCount();
-  a.then(function (result) {
-    res.json(result);
+app.post("/api/study/", async (req, res) => {
+  bulkStudySearch(req.body.ids).then((response) => {
+    res.json(response);
   });
 });
 
-async function WSVal() {
-  var client = await getClient();
+/*************************
+ * Study Protein Endpoints
+ ************************/
 
-  const response = await client.search({
-    index: "new_saliva_protein_test", // Replace with your index name
-    body: {
-      query: {
-        range: {
-          saliva_abundance: {
-            gte: 0,
-            lte: 10,
-          },
-        },
+const searchStudyProtein = async (experiment_id_key) => {
+  // Initialize the client.
+  const client = await getClient();
+
+  const query = {
+    size: 10000,
+    query: {
+      query_string: {
+        default_field: "experiment_id_key",
+        query: experiment_id_key,
       },
     },
+  };
+
+  const response = await client.search({
+    index: "study_protein",
+    body: query,
   });
 
-  return response.body;
-}
+  return response.body.hits.hits;
+};
 
-app.get("/WSVal", (req, res) => {
-  let a = WSVal();
-  a.then(function (result) {
-    res.json(result);
+app.get("/api/study-protein/:id", async (req, res) => {
+  searchStudyProtein(req.params.id).then((response) => {
+    res.json(response);
   });
 });
 
-async function and_search_exclude(
-  size,
-  from,
-  accesion,
-  gene_symbol,
-  protein_name,
-  expert_opinion,
-  start_ws,
-  end_ws,
-  start_par,
-  end_par,
-  start_p,
-  end_p,
-  start_ss,
-  end_ss,
-  start_mRNA,
-  end_mRNA,
-  IHC
-) {
-  if (IHC === "not_detected*") {
-    IHC = "not\\ detected*";
-  } else if (IHC === "n_a*") {
-    IHC = "n\\/a*";
-  }
-  var client = await getClient();
-  const response = await client.search({
-    index: "new_saliva_protein_test",
-    body: {
-      size: size,
-      from: from,
-      aggs: {
-        IHC: {
-          terms: {
-            field: "IHC.keyword",
-          },
-        },
-        expert_opinion: {
-          terms: {
-            field: "expert_opinion.keyword",
-          },
-        },
-      },
-      query: {
-        bool: {
-          must: [
-            { range: { saliva_abundance: { gte: start_ws, lte: end_ws } } },
-            {
-              range: {
-                parotid_gland_abundance: { gte: start_par, lte: end_par },
-              },
-            },
-            { range: { "sm/sl_abundance": { gte: start_ss, lte: end_ss } } },
-            { range: { mRNA: { gte: start_mRNA, lte: end_mRNA } } },
-          ],
-          must_not: [
-            { range: { plasma_abundance: { gte: start_p, lte: end_p } } },
-          ],
-          filter: [
-            {
-              wildcard: {
-                "UniProt Accession": {
-                  value: accesion,
-                  case_insensitive: true,
-                },
-              },
-            },
-            {
-              wildcard: {
-                "Gene Symbol": {
-                  value: gene_symbol,
-                  case_insensitive: true,
-                },
-              },
-            },
-            {
-              wildcard: {
-                "Protein Name": {
-                  value: protein_name,
-                  case_insensitive: true,
-                },
-              },
-            },
-            {
-              wildcard: {
-                expert_opinion: {
-                  value: expert_opinion,
-                  case_insensitive: true,
-                },
-              },
-            },
-            {
-              query_string: {
-                fields: ["IHC.keyword"],
-                query: IHC,
-                analyzer: "keyword",
-              },
-            },
-          ],
-        },
+const searchStudyProteinUniprot = async (uniprot_id) => {
+  // Initialize the client.
+  const client = await getClient();
+
+  const query = {
+    size: 10000,
+    query: {
+      query_string: {
+        default_field: "Uniprot_id",
+        query: uniprot_id,
       },
     },
-  });
-  return response.body;
-}
-
-app.get(
-  "/and_search_exclude/:size/:from/:accession/:gene_symbol/:protein_name/:expert_opinion/:start_ws/:end_ws/:start_par/:end_par/:start_p/:end_p/:start_ss/:end_ss/:start_mRNA/:end_mRNA,:IHC",
-  (req, res) => {
-    let a = and_search_exclude(
-      req.params.size,
-      req.params.from,
-      req.params.accession,
-      req.params.gene_symbol,
-      req.params.protein_name,
-      req.params.expert_opinion,
-      req.params.start_ws,
-      req.params.end_ws,
-      req.params.start_par,
-      req.params.end_par,
-      req.params.start_p,
-      req.params.end_p,
-      req.params.start_ss,
-      req.params.end_ss,
-      req.params.start_mRNA,
-      req.params.end_mRNA,
-      req.params.IHC
-    );
-    a.then(function (result) {
-      res.json(result);
-    });
-  }
-);
-
-async function and_search(size, from, wildQuery) {
-  var client = await getClient();
+  };
 
   const response = await client.search({
-    index: "new_saliva_protein_test",
-    body: {
-      size: size,
-      from: from,
-      aggs: {
-        IHC: {
-          terms: {
-            field: "IHC.keyword",
-          },
-        },
-        expert_opinion: {
-          terms: {
-            field: "expert_opinion.keyword",
-          },
-        },
-      },
-      query: {
-        bool: {
-          must: [],
-          filter: wildQuery,
-        },
-      },
-    },
+    index: "study_protein",
+    body: query,
   });
-  return response.body;
-}
 
-app.post("/and_search/:size/:from/", (req, res) => {
-  let a = and_search(req.params.size, req.params.from, req.body);
-  a.then(function (result) {
-    res.json(result);
+  return response.body.hits.hits;
+};
+
+app.get("/api/study-protein-uniprot/:id", async (req, res) => {
+  searchStudyProteinUniprot(req.params.id).then((response) => {
+    res.json(response);
   });
 });
 
-async function or_search_exclude(
-  size,
-  from,
-  accesion,
-  gene_symbol,
-  protein_name,
-  expert_opinion,
-  start_ws,
-  end_ws,
-  start_par,
-  end_par,
-  start_p,
-  end_p,
-  start_ss,
-  end_ss,
-  start_mRNA,
-  end_mRNA,
-  IHC
-) {
-  if (IHC === "not_detected*") {
-    IHC = "not\\ detected*";
-  } else if (IHC === "n_a*") {
-    IHC = "n\\/a*";
-  }
-  var client = await getClient();
-  const response = await client.search({
-    index: "new_saliva_protein_test",
-    body: {
-      size: size,
-      from: from,
-      aggs: {
-        IHC: {
-          terms: {
-            field: "IHC.keyword",
-          },
-        },
-        expert_opinion: {
-          terms: {
-            field: "expert_opinion.keyword",
-          },
-        },
-      },
-      query: {
-        bool: {
-          should: [
-            {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    wildcard: {
-                      "UniProt Accession": {
-                        value: accesion,
-                        case_insensitive: true,
-                      },
-                    },
-                  },
-                ],
-              },
-            },
-            {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    wildcard: {
-                      "Gene Symbol": {
-                        value: gene_symbol,
-                        case_insensitive: true,
-                      },
-                    },
-                  },
-                ],
-              },
-            },
-            {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    wildcard: {
-                      "Protein Name": {
-                        value: protein_name,
-                        case_insensitive: true,
-                      },
-                    },
-                  },
-                ],
-              },
-            },
-            {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    wildcard: {
-                      expert_opinion: {
-                        value: expert_opinion,
-                        case_insensitive: true,
-                      },
-                    },
-                  },
-                ],
-              },
-            },
-            {
-              bool: {
-                must: [],
-                must_not: [],
-                filter: [
-                  {
-                    query_string: {
-                      fields: ["IHC.keyword"],
-                      query: IHC,
-                      analyzer: "keyword",
-                    },
-                  },
-                ],
-              },
-            },
-            {
-              bool: {
-                must: [
-                  {
-                    range: { saliva_abundance: { gte: start_ws, lte: end_ws } },
-                  },
-                ],
-                must_not: [],
-                filter: [],
-              },
-            },
-            {
-              bool: {
-                must: [
-                  {
-                    range: {
-                      parotid_gland_abundance: { gte: start_par, lte: end_par },
-                    },
-                  },
-                ],
-                must_not: [],
-                filter: [],
-              },
-            },
-            {
-              bool: {
-                must: [],
-                must_not: [
-                  { range: { plasma_abundance: { gte: start_p, lte: end_p } } },
-                ],
-                filter: [],
-              },
-            },
-            {
-              bool: {
-                must: [
-                  {
-                    range: {
-                      "sm/sl_abundance": { gte: start_ss, lte: end_ss },
-                    },
-                  },
-                ],
-                must_not: [],
-                filter: [],
-              },
-            },
-            {
-              bool: {
-                must: [{ range: { mRNA: { gte: start_mRNA, lte: end_mRNA } } }],
-                must_not: [],
-                filter: [],
-              },
-            },
-          ],
-        },
+// Used for Cluster Details page
+const bulkStudyProteins = async (ids) => {
+  // Initialize the client.
+  const client = await getClient();
+
+  const query = {
+    size: 10000,
+    query: {
+      terms: {
+        ["Uniprot_id.keyword"]: ids,
       },
     },
+  };
+
+  const response = await client.search({
+    index: "study_protein",
+    body: query,
   });
 
-  return response.body;
-}
+  return response.body.hits.hits;
+};
 
-app.get(
-  "/or_search_exclude/:size/:from/:accession/:gene_symbol/:protein_name/:expert_opinion/:start_ws/:end_ws/:start_par/:end_par/:start_p/:end_p/:start_ss/:end_ss/:start_mRNA/:end_mRNA,:IHC",
-  (req, res) => {
-    let a = or_search_exclude(
-      req.params.size,
-      req.params.from,
-      req.params.accession,
-      req.params.gene_symbol,
-      req.params.protein_name,
-      req.params.expert_opinion,
-      req.params.start_ws,
-      req.params.end_ws,
-      req.params.start_par,
-      req.params.end_par,
-      req.params.start_p,
-      req.params.end_p,
-      req.params.start_ss,
-      req.params.end_ss,
-      req.params.start_mRNA,
-      req.params.end_mRNA,
-      req.params.IHC
-    );
-    a.then(function (result) {
-      res.json(result);
-    });
-  }
-);
+app.post("/api/study-protein/", async (req, res) => {
+  bulkStudyProteins(req.body.ids).then((response) => {
+    res.json(response);
+  });
+});
 
-async function signature_type_counts() {
+/**********************************
+ * For Protein Signature Pie Chart
+ *********************************/
+
+async function getProteinSignatureTypeCounts() {
   var client = await getClient();
 
   const response = await client.search({
@@ -1498,14 +1275,18 @@ async function signature_type_counts() {
   return response.body.aggregations.langs.buckets;
 }
 
-app.get("/api/signature_type_counts/", (req, res) => {
-  let a = signature_type_counts();
+app.get("/api/signature-type-counts/", (req, res) => {
+  let a = getProteinSignatureTypeCounts();
   a.then(function (result) {
     res.json(result);
   });
 });
 
-async function gene_location_counts() {
+/*************************
+ * For Gene Page Bar Graph
+ *************************/
+
+async function getGeneLocationCounts() {
   var client = await getClient();
 
   const response = await client.search({
@@ -1855,214 +1636,16 @@ async function gene_location_counts() {
   return response.body.aggregations;
 }
 
-app.get("/gene_location_counts/", (req, res) => {
-  let a = gene_location_counts();
+app.get("/api/gene-location-counts/", (req, res) => {
+  let a = getGeneLocationCounts();
   a.then(function (result) {
     res.json(result);
   });
 });
 
-async function search_opinion(opinion, size, from) {
-  var client = await getClient();
-
-  const response = await client.search({
-    index: "new_saliva_protein_test",
-    body: {
-      size: size,
-      from: from,
-      query: {
-        query_string: {
-          query: opinion,
-          fields: ["expert_opinion"],
-        },
-      },
-    },
-  });
-  return response.body;
-}
-
-app.get("/search_opinion/:opinion/:size/:from", (req, res) => {
-  let a = search_opinion(req.params.opinion, req.params.size, req.params.from);
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function filter_search(indexName, field, prefix, size, from) {
-  var client = await getClient();
-
-  const response = await client.search({
-    index: indexName, // Replace with your index name
-    body: {
-      size: size,
-      from: from,
-      query: {
-        match_phrase_prefix: {
-          [field]: {
-            query: prefix,
-          },
-        },
-      },
-    },
-  });
-
-  return response.body.hits;
-}
-
-app.get("/filter_search/:indexName/:field/:prefix/:size/:from", (req, res) => {
-  let a = filter_search(
-    req.params.indexName,
-    req.params.field,
-    req.params.prefix,
-    req.params.size,
-    req.params.from
-  );
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-const search_go_nodes_type = async (type) => {
-  // Initialize the client.
-  var client = await getClient();
-
-  var query = {
-    size: 10000,
-    query: {
-      query_string: {
-        query: `*type*`,
-        fields: [],
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: "go_nodes",
-    body: query,
-  });
-  return response.body.hits.hits;
-};
-
-app.get("/api/go_nodes_type/:type", (req, res) => {
-  let a = search_go_nodes_type(req.params.type);
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-const search_go_nodes = async (id) => {
-  // Initialize the client.
-  var client = await getClient();
-
-  var query = {
-    size: 10000,
-    query: {
-      query_string: {
-        default_field: "id",
-        query: id,
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: "go_nodes",
-    body: query,
-  });
-  return response.body.hits.hits;
-};
-
-app.get("/api/go_nodes/:id", (req, res) => {
-  let a = search_go_nodes(req.params.id);
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-const search_go_edges = async (id) => {
-  var client = await getClient();
-
-  var query = {
-    size: 10000,
-    query: {
-      query_string: {
-        query: `*GO*${id}*`,
-        fields: [],
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: "go_edges",
-    body: query,
-  });
-
-  return response.body.hits.hits;
-};
-
-app.get("/api/go_edges/:id", (req, res) => {
-  let a = search_go_edges(req.params.id);
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-const search_go_nodes_usage = async (id) => {
-  // Initialize the client.
-  var client = await getClient1();
-
-  var query = {
-    size: 10000,
-    _source: ["id"],
-    query: {
-      query_string: {
-        query: `*GO*${id}*`,
-        fields: [],
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: "salivary-proteins-112023",
-    body: query,
-  });
-  return response.body.hits.hits;
-};
-
-app.get("/api/go_nodes_usage/:id", (req, res) => {
-  let a = search_go_nodes_usage(req.params.id);
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-app.get("/api/protein/:id", (req, res) => {
-  let a = search_proteinID(req.params.id);
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-app.get("/api/download-template-data", async (req, res) => {
-  // S3 download parameters
-  const params = {
-    bucketName: "differential-expression-result-dev",
-    s3Key: "inputdata.csv",
-  };
-
-  const presignedUrl = await s3Download(params);
-  res.send({ url: presignedUrl });
-});
-
-app.get("/api/download-data-standard", async (req, res) => {
-  // S3 download parameters
-  const params = {
-    bucketName: "differential-expression-result-dev",
-    s3Key: "Example_inputdata_template.xlsx",
-  };
-
-  const presignedUrl = await s3Download(params);
-  res.send({ url: presignedUrl });
-});
+/***********************************
+ * Differential Expression Endpoints
+ ***********************************/
 
 app.post("/api/differential-expression/analyze", async (req, res) => {
   try {
@@ -2180,147 +1763,30 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
   }
 });
 
-const searchStudy = async (id) => {
-  // Initialize the client.
-  const client = await getClient();
+/*********************
+ * Misc Util Endpoints
+ *********************/
 
-  const query = {
-    size: 10000,
-    query: {
-      query_string: {
-        default_field: "experiment_id_key",
-        query: id,
-      },
-    },
-    aggs: {
-      sample_type: {
-        terms: {
-          field: "sample_type.keyword",
-        },
-      },
-      institution: {
-        terms: {
-          field: "institution.keyword",
-        },
-      },
-      condition_type: {
-        terms: {
-          field: "condition_type.keyword",
-        },
-      },
-    },
+app.get("/api/download-template-data", async (req, res) => {
+  // S3 download parameters
+  const params = {
+    bucketName: "differential-expression-result-dev",
+    s3Key: "inputdata.csv",
   };
 
-  const response = await client.search({
-    index: "study",
-    body: query,
-  });
-
-  return response.body.hits.hits;
-};
-
-app.get("/api/study/:id", async (req, res) => {
-  searchStudy(req.params.id).then((response) => {
-    res.json(response);
-  });
+  const presignedUrl = await s3Download(params);
+  res.send({ url: presignedUrl });
 });
 
-const searchAllStudy = async () => {
-  // Initialize the client.
-  const client = await getClient();
-
-  const query = {
-    size: 10000,
-    query: {
-      match_all: {},
-    },
-    aggs: {
-      sample_type: {
-        terms: {
-          field: "sample_type.keyword",
-        },
-      },
-      institution: {
-        terms: {
-          field: "institution.keyword",
-        },
-      },
-      condition_type: {
-        terms: {
-          field: "condition_type.keyword",
-        },
-      },
-    },
+app.get("/api/download-data-standard", async (req, res) => {
+  // S3 download parameters
+  const params = {
+    bucketName: "differential-expression-result-dev",
+    s3Key: "Example_inputdata_template.xlsx",
   };
 
-  const response = await client.search({
-    index: "study",
-    body: query,
-  });
-
-  return response.body;
-};
-
-app.get("/api/study/", async (req, res) => {
-  searchAllStudy().then((response) => {
-    res.json(response);
-  });
-});
-
-const searchStudyProtein = async (experiment_id_key) => {
-  // Initialize the client.
-  const client = await getClient();
-
-  const query = {
-    size: 10000,
-    query: {
-      query_string: {
-        default_field: "experiment_id_key",
-        query: experiment_id_key,
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: "study_protein",
-    body: query,
-  });
-
-  return response.body.hits.hits;
-};
-
-app.get("/api/study_protein/:id", async (req, res) => {
-  searchStudyProtein(req.params.id).then((response) => {
-    res.json(response);
-  });
-});
-
-const searchStudyProteinUniprot = async (uniprot_id) => {
-  // Initialize the client.
-  const client = await getClient();
-
-  const query = {
-    size: 10000,
-    query: {
-      query_string: {
-        default_field: "Uniprot_id",
-        query: uniprot_id,
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: "study_protein",
-    body: query,
-  });
-
-  return response.body.hits.hits;
-};
-
-app.get("/api/study_protein_uniprot/:id", async (req, res) => {
-  searchStudyProteinUniprot(req.params.id).then((response) => {
-    res.json(response);
-  });
+  const presignedUrl = await s3Download(params);
+  res.send({ url: presignedUrl });
 });
 
 app.get("/api/s3Download/:jobId/:fileName", async (req, res) => {
@@ -2746,406 +2212,6 @@ app.post("/api/experiment-protein/:uniprotid", async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-});
-
-/**
- * Query data used for Salivary Protein page table
- * @param {Number} size Number of records to return
- * @param {Number} from Starting point for the data page to return
- * @param {Object[]} filter All applied filters applied by user in facet menu
- * @param {Object[]} sort Sort query for column selected to sort by from table
- * @param {Object} keyword String entered by user into search bar
- * @param {Boolean} filterByOr True if using or filters, false otherwise
- * @returns
- */
-async function querySalivaryProtein(
-  size,
-  from,
-  filter,
-  sort = null,
-  keyword = null,
-  filterByOr = false
-) {
-  const client = await getClient();
-
-  const payload = {
-    index: "new_saliva_protein_test",
-    body: {
-      track_total_hits: true,
-      size: size,
-      from: from,
-      aggs: {
-        IHC: {
-          terms: {
-            field: "IHC.keyword",
-          },
-        },
-        expert_opinion: {
-          terms: {
-            field: "expert_opinion.keyword",
-          },
-        },
-      },
-      query: {
-        bool: {
-          ...(filterByOr === true ? { should: filter } : { filter }),
-          ...(keyword && { must: [keyword] }), // Apply global search if present
-        },
-      },
-      ...(sort && { sort }), // Apply sort if present
-    },
-  };
-
-  const response = await client.search(payload);
-
-  return response.body;
-}
-
-app.post("/api/salivary-proteins/:size/:from/", (req, res) => {
-  const { filters, sort, keyword, filterByOr } = req.body;
-  const { size, from } = req.params;
-
-  const results = querySalivaryProtein(
-    size,
-    from,
-    filters,
-    sort,
-    keyword,
-    filterByOr
-  );
-
-  results.then((result) => {
-    res.json(result);
-  });
-});
-
-/**
- * Query data used for Salivary Protein page table
- * @param {Number} size Number of records to return
- * @param {Number} from Starting point for the data page to return
- * @param {Object[]} filter All applied filters applied by user in facet menu
- * @param {Object[]} sort Sort query for column selected to sort by from table
- * @param {Object} keyword String entered by user into search bar
- * @param {Boolean} filterByOr True if using or filters, false otherwise
- * @returns
- */
-async function querySalivaryProtein(
-  size,
-  from,
-  filter,
-  sort = null,
-  keyword = null,
-  filterByOr = false
-) {
-  const client = await getClient();
-
-  const payload = {
-    index: "new_saliva_protein_test",
-    body: {
-      track_total_hits: true,
-      size: size,
-      from: from,
-      aggs: {
-        IHC: {
-          terms: {
-            field: "IHC.keyword",
-          },
-        },
-        expert_opinion: {
-          terms: {
-            field: "expert_opinion.keyword",
-          },
-        },
-      },
-      query: {
-        bool: {
-          ...(filterByOr === true ? { should: filter } : { filter }),
-          ...(keyword && { must: [keyword] }), // Apply global search if present
-        },
-      },
-      ...(sort && { sort }), // Apply sort if present
-    },
-  };
-
-  const response = await client.search(payload);
-
-  return response.body;
-}
-
-app.post("/api/salivary-proteins/:size/:from/", (req, res) => {
-  const { filters, sort, keyword, filterByOr } = req.body;
-  const { size, from } = req.params;
-
-  const results = querySalivaryProtein(
-    size,
-    from,
-    filters,
-    sort,
-    keyword,
-    filterByOr
-  );
-
-  results.then((result) => {
-    res.json(result);
-  });
-});
-
-async function queryCitationData(
-  size,
-  from,
-  filter,
-  sort = null,
-  keyword = null
-) {
-  const client = await getClient1();
-
-  const returnFields = ["PubMed_ID", "PubDate", "Title", "journal_title"];
-
-  const payload = {
-    index: "citation",
-    body: {
-      track_total_hits: true,
-      size: size,
-      from: from,
-      query: {
-        bool: {
-          ...(filter && { filter }),
-          ...(keyword && { must: [keyword] }), // Apply global search if present
-        },
-      },
-      ...(sort && { sort }), // Apply sort if present
-      _source: returnFields,
-    },
-  };
-
-  const response = await client.search(payload);
-
-  return response.body;
-}
-
-app.post("/api/citations/:size/:from/", (req, res) => {
-  const { filters, sort, keyword } = req.body;
-  const { size, from } = req.params;
-
-  const results = queryCitationData(size, from, filters, sort, keyword);
-
-  results.then((result) => {
-    res.json(result);
-  });
-});
-
-async function queryProteinCluster(
-  size,
-  from,
-  filter,
-  sort = null,
-  keyword = null
-) {
-  const client = await getClient();
-
-  const payload = {
-    index: "protein_cluster",
-    body: {
-      track_total_hits: true,
-      size: size,
-      from: from,
-      query: {
-        bool: {
-          ...(filter && { filter }),
-          ...(keyword && { must: [keyword] }), // Apply global search if present
-        },
-      },
-      ...(sort && { sort }), // Apply sort if present
-    },
-  };
-
-  const response = await client.search(payload);
-
-  return response.body;
-}
-
-app.post("/api/protein-cluster/:size/:from/", (req, res) => {
-  const { filters, sort, keyword } = req.body;
-  const { size, from } = req.params;
-
-  const results = queryProteinCluster(size, from, filters, sort, keyword);
-
-  results.then((result) => {
-    res.json(result);
-  });
-});
-
-async function queryProteinSignature(
-  size,
-  from,
-  filter,
-  sort = null,
-  keyword = null
-) {
-  const client = await getClient();
-
-  const payload = {
-    index: "protein_signature",
-    body: {
-      track_total_hits: true,
-      size: size,
-      from: from,
-      query: {
-        bool: {
-          ...(filter && { filter }),
-          ...(keyword && { must: [keyword] }), // Apply global search if present
-        },
-      },
-      ...(sort && { sort }), // Apply sort if present
-      aggs: {
-        Type: {
-          terms: {
-            field: "Type.keyword",
-          },
-        },
-      },
-    },
-  };
-
-  const response = await client.search(payload);
-
-  return response.body;
-}
-
-app.post("/api/protein-signature/:size/:from/", (req, res) => {
-  const { filters, sort, keyword } = req.body;
-  const { size, from } = req.params;
-
-  const results = queryProteinSignature(size, from, filters, sort, keyword);
-
-  results.then((result) => {
-    res.json(result);
-  });
-});
-
-async function queryGenes(size, from, filter, sort = null, keyword = null) {
-  const client = await getClient();
-
-  const payload = {
-    index: "genes",
-    body: {
-      track_total_hits: true,
-      size: size,
-      from: from,
-      query: {
-        bool: {
-          ...(filter && { filter }),
-          ...(keyword && { must: [keyword] }), // Apply global search if present
-        },
-      },
-      ...(sort && { sort }), // Apply sort if present
-    },
-  };
-
-  const response = await client.search(payload);
-
-  return response.body;
-}
-
-app.post("/api/genes/:size/:from/", (req, res) => {
-  const { filters, sort, keyword } = req.body;
-  const { size, from } = req.params;
-
-  const results = queryGenes(size, from, filters, sort, keyword);
-
-  results.then((result) => {
-    res.json(result);
-  });
-});
-
-async function queryProteins(size, from, filter, sort = null, keyword = null) {
-  const client = await getClient1();
-
-  const payload = {
-    index: "salivary-proteins-112023",
-    body: {
-      track_total_hits: true,
-      size: size,
-      from: from,
-      query: {
-        bool: {
-          should: [...filter],
-        },
-      },
-      ...(sort && { sort }), // Apply sort if present
-    },
-  };
-
-  const response = await client.search(payload);
-
-  return response.body;
-}
-
-app.post("/api/proteins/:size/:from/", (req, res) => {
-  const { filters, sort, keyword } = req.body;
-  const { size, from } = req.params;
-
-  const results = queryProteins(size, from, filters, sort, keyword);
-
-  results.then((result) => {
-    res.json(result);
-  });
-});
-
-// Used for Cluster Details page
-const bulkStudySearch = async (ids) => {
-  // Initialize the client.
-  const client = await getClient();
-
-  const query = {
-    size: 10000,
-    query: {
-      terms: {
-        experiment_id_key: ids,
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: "study",
-    body: query,
-  });
-
-  return response.body.hits.hits;
-};
-
-app.post("/api/study/", async (req, res) => {
-  bulkStudySearch(req.body.ids).then((response) => {
-    res.json(response);
-  });
-});
-
-// Used for Cluster Details page
-const bulkStudyProteins = async (ids) => {
-  // Initialize the client.
-  const client = await getClient();
-
-  const query = {
-    size: 10000,
-    query: {
-      terms: {
-        ["Uniprot_id.keyword"]: ids,
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: "study_protein",
-    body: query,
-  });
-
-  return response.body.hits.hits;
-};
-
-app.post("/api/study-protein/", async (req, res) => {
-  bulkStudyProteins(req.body.ids).then((response) => {
-    res.json(response);
-  });
 });
 
 app.get("*", function (req, res) {

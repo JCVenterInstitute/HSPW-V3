@@ -5,7 +5,7 @@ const path = require("path");
 const fetchProteinData = async (experimentIdKey) => {
   try {
     const response = await axios(
-      `http://localhost:8000/api/study_protein/${experimentIdKey}`
+      `http://localhost:8000/api/study-protein/${experimentIdKey}`
     );
     return response.data.map((item) => item._source);
   } catch (error) {
