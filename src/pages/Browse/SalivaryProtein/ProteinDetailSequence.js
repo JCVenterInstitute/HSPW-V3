@@ -15,7 +15,7 @@ const API_HOST = "http://localhost:8000";
 
 const Protein_Detail_Sequence = (props) => {
   const params = useParams();
-  let url = `/api/protein/${params["proteinid"]}`;
+  let url = `${API_HOST}/api/protein/${params["proteinid"]}`;
 
   const th = {
     background: "#f2f2f2",
@@ -40,6 +40,7 @@ const Protein_Detail_Sequence = (props) => {
   const [sS, setSS] = useState("");
   const [checkData, setCheckData] = useState(false);
   const [annotation, setAnnotation] = useState("");
+
   const fetchProtein = async () => {
     console.log(url);
     const response = await axios.get(url);
