@@ -106,7 +106,11 @@ const ExperimentSearchDetail = (props) => {
                 </TableCell>
                 <TableCell
                   sx={td}
-                  style={{ fontFamily: "Lato", fontSize: "14px" }}
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "14px",
+                    paddingLeft: "10px",
+                  }}
                 >
                   {data.experiment_id_key}
                 </TableCell>
@@ -129,6 +133,7 @@ const ExperimentSearchDetail = (props) => {
                   style={{
                     fontFamily: "Lato",
                     fontSize: "14px",
+                    paddingLeft: "10px",
                   }}
                 >
                   {data.experiment_short_title}
@@ -149,7 +154,11 @@ const ExperimentSearchDetail = (props) => {
                 </TableCell>
                 <TableCell
                   sx={td}
-                  style={{ fontFamily: "Lato", fontSize: "14px" }}
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "14px",
+                    paddingLeft: "10px",
+                  }}
                 >
                   {data.Study_name} [
                   <a

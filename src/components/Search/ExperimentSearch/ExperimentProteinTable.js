@@ -131,7 +131,7 @@ const ExperimentProteinTable = ({ experiment_id_key }) => {
   }, [experiment_id_key]);
 
   return (
-    <Box sx={{ margin: "15px" }}>
+    <Box sx={{ margin: "10px" }}>
       <Box sx={{ display: "flex" }}>
         <Box
           sx={{
