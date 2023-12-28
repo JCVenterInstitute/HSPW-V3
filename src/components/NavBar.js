@@ -128,7 +128,6 @@ export const NavBar = () => {
                   >
                     Advanced Search
                   </MenuItem>
-                  <MenuItem>Semantic Search</MenuItem>
                   <MenuItem
                     component="a"
                     href="/experiment-search"
@@ -137,7 +136,7 @@ export const NavBar = () => {
                   </MenuItem>
                   <MenuItem
                     component="a"
-                    href="protein-set-search"
+                    href="/protein-set-search"
                   >
                     Protein Search By Identifiers
                   </MenuItem>
