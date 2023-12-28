@@ -75,7 +75,6 @@ async function getMapping() {
 app.get("/a123", (req, res) => {
   let a = getMapping();
   a.then(function (result) {
-    console.log(result);
     res.json(result);
   });
 });
@@ -164,8 +163,8 @@ async function cluster_member_count() {
 
 app.get("/api/protein_cluster_member_count", (req, res) => {
   let a = cluster_member_count();
+
   a.then(function (result) {
-    console.log(result);
     res.json(result);
   });
 });
@@ -185,19 +184,14 @@ async function search_cluster() {
     index: "protein_cluster",
     body: query,
   });
-  console.log(
-    Object.keys(JSON.parse(JSON.stringify(response.body.hits.hits))).length
-  );
-  console.log(
-    JSON.stringify(response.body.hits.hits[0]["_source"]["Cluster ID"])
-  );
+
   return response.body.hits.hits;
 }
 
 app.get("/api/protein-cluster", (req, res) => {
   let a = search_cluster();
+
   a.then(function (result) {
-    console.log(result);
     res.json(result);
   });
 });
@@ -219,17 +213,14 @@ async function search_clusterID(id) {
     index: "protein_cluster",
     body: query,
   });
-  console.log(
-    Object.keys(JSON.parse(JSON.stringify(response.body.hits.hits))).length
-  );
+
   return response.body.hits.hits;
 }
 
 app.get("/api/protein-cluster/:id", (req, res) => {
-  console.log(req.params.id);
   let a = search_clusterID(req.params.id);
+
   a.then(function (result) {
-    console.log(result);
     res.json(result);
   });
 });
@@ -251,9 +242,7 @@ async function search_proteinID(id) {
     index: "salivary-proteins-112023",
     body: query,
   });
-  console.log(
-    Object.keys(JSON.parse(JSON.stringify(response.body.hits.hits))).length
-  );
+
   return response.body.hits.hits;
 }
 
@@ -274,17 +263,14 @@ async function search_geneID(id) {
     index: "genes",
     body: query,
   });
-  console.log(
-    Object.keys(JSON.parse(JSON.stringify(response.body.hits.hits))).length
-  );
+
   return response.body.hits.hits;
 }
 
 app.get("/genes/:id", (req, res) => {
-  console.log(req.params.id);
   let a = search_geneID(req.params.id);
+
   a.then(function (result) {
-    console.log(result);
     res.json(result);
   });
 });
@@ -311,15 +297,14 @@ async function search_signature(size, from) {
 
 app.get("/api/protein-signature/:size/:from", (req, res) => {
   let a = search_signature(req.params.size, req.params.from);
+
   a.then(function (result) {
-    console.log(result);
     res.json(result);
   });
 });
 
 async function and_search_citation(size, from, wildQuery) {
   var client = await getClient1();
-  console.log(wildQuery);
 
   var query = {
     size: size,
@@ -336,7 +321,7 @@ async function and_search_citation(size, from, wildQuery) {
     index: "citation",
     body: query,
   });
-  console.log(response.body.hits.hits);
+
   return response.body;
 }
 
@@ -392,7 +377,6 @@ app.get("/signature_search/:size/:from/:query/:script", (req, res) => {
 });
 
 async function and_search_gene(size, from, wildQuery) {
-  console.log(JSON.stringify(wildQuery));
   var client = await getClient();
 
   var query = {
@@ -422,7 +406,7 @@ app.post("/genes_search/:size/:from/", (req, res) => {
 
 async function or_search(size, from, wildQuery) {
   var client = await getClient();
-  console.log(JSON.stringify(wildQuery));
+
   const response = await client.search({
     index: "new_saliva_protein_test",
     body: {
@@ -460,7 +444,7 @@ app.post("/or_search/:size/:from/", (req, res) => {
 async function multi_search(index, text) {
   var client = await getClient();
   var query;
-  console.log(index);
+
   if (index === "new_saliva_protein_test") {
     query = {
       query: {
@@ -499,11 +483,9 @@ async function multi_search(index, text) {
 }
 
 app.get("/multi_search/:index/:text", (req, res) => {
-  console.log(543);
   let a = multi_search(req.params.index, req.params.text);
-  console.log(234);
+
   a.then(function (result) {
-    console.log(result);
     res.json(result);
   });
 });
@@ -525,20 +507,14 @@ async function search_signatureID(id) {
     index: "protein_signature",
     body: query,
   });
-  console.log(
-    Object.keys(JSON.parse(JSON.stringify(response.body.hits.hits))).length
-  );
-  console.log(
-    JSON.stringify(response.body.hits.hits[0]["_source"]["InterPro ID"])
-  );
+
   return response.body.hits.hits;
 }
 
 app.get("/api/protein-signature/:id", (req, res) => {
-  console.log(req.params.id);
   let a = search_signatureID(req.params.id);
+
   a.then(function (result) {
-    console.log(result);
     res.json(result);
   });
 });
@@ -564,10 +540,9 @@ async function search_withID(index, id) {
 }
 
 app.get("/api/citation/:id", (req, res) => {
-  console.log(req.params.id);
   let a = search_withID("citation", req.params.id);
+
   a.then(function (result) {
-    console.log(result);
     res.json(result);
   });
 });
@@ -579,14 +554,14 @@ async function search_citation_field() {
   var response = await client.indices.getFieldMapping({
     index: "citation",
   });
-  console.log("123");
+
   return response.body.hits.hits;
 }
 
 app.get("/api/citation/field", (req, res) => {
   let a = search_citation_field();
+
   a.then(function (result) {
-    console.log("321:" + result);
     res.json(result);
   });
 });
@@ -613,8 +588,8 @@ async function search_citation(size, from) {
 
 app.get("/api/citation/:size/:from", (req, res) => {
   let a = search_citation(req.params.size, req.params.from);
+
   a.then(function (result) {
-    console.log(result);
     res.json(result);
   });
 });
@@ -639,7 +614,7 @@ async function search_protein_count_SP() {
       },
     },
   });
-  console.log(response.body.aggregations);
+
   return response.body.aggregations;
 }
 
@@ -1255,8 +1230,8 @@ app.get(
 );
 
 async function and_search(size, from, wildQuery) {
-  console.log(JSON.stringify(wildQuery));
   var client = await getClient();
+
   const response = await client.search({
     index: "new_saliva_protein_test",
     body: {
@@ -1525,7 +1500,6 @@ async function signature_type_counts() {
 
 app.get("/signature_type_counts/", (req, res) => {
   let a = signature_type_counts();
-  console.log(1);
   a.then(function (result) {
     res.json(result);
   });
@@ -1883,7 +1857,6 @@ async function gene_location_counts() {
 
 app.get("/gene_location_counts/", (req, res) => {
   let a = gene_location_counts();
-  console.log(1);
   a.then(function (result) {
     res.json(result);
   });
@@ -2006,9 +1979,8 @@ app.get("/api/go_nodes/:id", (req, res) => {
 });
 
 const search_go_edges = async (id) => {
-  // Initialize the client.
   var client = await getClient();
-  console.log(`GO:*${id}*`);
+
   var query = {
     size: 10000,
     query: {
@@ -2023,6 +1995,7 @@ const search_go_edges = async (id) => {
     index: "go_edges",
     body: query,
   });
+
   return response.body.hits.hits;
 };
 
@@ -2036,7 +2009,7 @@ app.get("/api/go_edges/:id", (req, res) => {
 const search_go_nodes_usage = async (id) => {
   // Initialize the client.
   var client = await getClient1();
-  console.log(id);
+
   var query = {
     size: 10000,
     _source: ["id"],
@@ -2056,7 +2029,6 @@ const search_go_nodes_usage = async (id) => {
 };
 
 app.get("/api/go_nodes_usage/:id", (req, res) => {
-  console.log(req.params.id);
   let a = search_go_nodes_usage(req.params.id);
   a.then(function (result) {
     res.json(result);
@@ -2066,7 +2038,6 @@ app.get("/api/go_nodes_usage/:id", (req, res) => {
 app.get("/api/protein/:id", (req, res) => {
   let a = search_proteinID(req.params.id);
   a.then(function (result) {
-    console.log(result);
     res.json(result);
   });
 });
@@ -2337,7 +2308,7 @@ const searchStudyProteinUniprot = async (uniprot_id) => {
       },
     },
   };
-  console.log(query);
+
   const response = await client.search({
     index: "study_protein",
     body: query,
@@ -3031,11 +3002,8 @@ async function queryProteins(size, from, filter, sort = null, keyword = null) {
         },
       },
       ...(sort && { sort }), // Apply sort if present
-      // _source: [""]
     },
   };
-
-  console.log("> Query", JSON.stringify(payload.body));
 
   const response = await client.search(payload);
 
@@ -3045,8 +3013,6 @@ async function queryProteins(size, from, filter, sort = null, keyword = null) {
 app.post("/api/proteins/:size/:from/", (req, res) => {
   const { filters, sort, keyword } = req.body;
   const { size, from } = req.params;
-
-  console.log("> Filters", filters);
 
   const results = queryProteins(size, from, filters, sort, keyword);
 
@@ -3079,6 +3045,34 @@ const bulkStudySearch = async (ids) => {
 
 app.post("/api/study/", async (req, res) => {
   bulkStudySearch(req.body.ids).then((response) => {
+    res.json(response);
+  });
+});
+
+// Used for Cluster Details page
+const bulkStudyProteins = async (ids) => {
+  // Initialize the client.
+  const client = await getClient();
+
+  const query = {
+    size: 10000,
+    query: {
+      terms: {
+        ["Uniprot_id.keyword"]: ids,
+      },
+    },
+  };
+
+  const response = await client.search({
+    index: "study_protein",
+    body: query,
+  });
+
+  return response.body.hits.hits;
+};
+
+app.post("/api/study-protein/", async (req, res) => {
+  bulkStudyProteins(req.body.ids).then((response) => {
     res.json(response);
   });
 });
