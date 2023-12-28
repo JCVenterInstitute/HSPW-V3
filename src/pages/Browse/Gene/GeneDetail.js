@@ -396,17 +396,21 @@ const Gene_detail = (props) => {
                             >
                               <TableCell
                                 style={{
+                                  fontFamily: "Lato",
                                   borderRight: "1px solid grey",
                                   borderBottom: "1px solid grey",
                                   width: "15%",
+                                  fontSize: "14px",
                                 }}
                               >
                                 {value}
                               </TableCell>
                               <TableCell
                                 style={{
+                                  fontFamily: "Lato",
                                   border: "1px solid grey",
                                   width: "20%",
+                                  fontSize: "14px",
                                 }}
                               >
                                 {proteinNameMap[value]}
@@ -416,9 +420,14 @@ const Gene_detail = (props) => {
                                   borderLeft: "1px solid grey",
                                   borderBottom: "1px solid grey",
                                   width: "15%",
+                                  fontSize: "14px",
                                 }}
                               >
                                 <a
+                                  style={{
+                                    fontFamily: "Lato",
+                                    fontSize: "14px",
+                                  }}
                                   target="_blank"
                                   rel="noreferrer"
                                   href={`https://www.uniprot.org/uniprotkb/${value}/entry`}
