@@ -33,9 +33,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import ReCAPTCHA from "react-google-recaptcha";
 
-const RECAPTCHA_PUBLIC_KEY = process.env.RECAPTCHA_PUBLIC_KEY;
-
 const Contact = () => {
+  const RECAPTCHA_PUBLIC_KEY = process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [pageUrl, setPageUrl] = useState("https://www.salivaryproteome.org");
