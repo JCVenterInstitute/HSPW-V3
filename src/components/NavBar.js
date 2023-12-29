@@ -163,7 +163,6 @@ export const NavBar = () => {
                   anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                   transformOrigin={{ vertical: "top", horizontal: "left" }}
                 >
-                  <MenuItem>Annotation Report</MenuItem>
                   <MenuItem
                     component="a"
                     href="/clustalo"
