@@ -38,6 +38,10 @@ import AdvancedSearch from "./pages/Search/AdvancedSearch.js";
 import ProteinSequence from "./pages/Browse/SalivaryProtein/ProteinDetailSequence.js";
 import GoNodes from "./pages/GoTerms/GoNode";
 import GoTable from "./pages/GoTerms/GoTable";
+import PrivacyPolicyPage from "./pages/Footer/PrivacyPolicy.js";
+import CopyrightPage from "./pages/Footer/Copyright.js";
+import DisclaimerPage from "./pages/Footer/Disclaimer.js";
+import AccessibilityPage from "./pages/Footer/Accessibility.js";
 
 // Google Analytics
 import ReactGA from "react-ga4";
@@ -184,6 +188,22 @@ function App() {
         <Route
           path="/analysis"
           element={<Analysis />}
+        />
+        <Route
+          path="/privacy-policy"
+          element={<PrivacyPolicyPage />}
+        />
+        <Route
+          path="/copyrights"
+          element={<CopyrightPage />}
+        />
+        <Route
+          path="/disclaimers"
+          element={<DisclaimerPage />}
+        />
+        <Route
+          path="/accessibility"
+          element={<AccessibilityPage />}
         />
       </Routes>
       <Footer />
