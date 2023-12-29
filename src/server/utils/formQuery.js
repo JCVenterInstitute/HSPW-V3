@@ -12,16 +12,18 @@ exports.formQuery = async (
   // Function to map each operation to its corresponding OpenSearch clause
   const mapOperationToClause = (item) => {
     // Append '.keyword' to each field name
-    const field =
-      item.selectedProperty === "number_of_members" ||
-      item.selectedProperty === "experiment_id_key" ||
-      item.selectedProperty === "Name" ||
-      item.selectedProperty === "Gene Name" ||
-      item.selectedProperty === "PubMed_ID" ||
-      item.selectedProperty === "Date of Publication" ||
-      item.selectedProperty === "PubDate"
-        ? item.selectedProperty
-        : item.selectedProperty + ".keyword";
+    const notKeywordProperty = [
+      "number_of_members",
+      "experiment_id_key",
+      "Name",
+      "Gene Name",
+      "PubMed_ID",
+      "Date of Publication",
+      "PubDate",
+    ];
+    const field = notKeywordProperty.includes(item.selectedProperty)
+      ? item.selectedProperty
+      : item.selectedProperty + ".keyword";
     const value = item.value;
 
     switch (item.selectedOperation) {
@@ -84,12 +86,11 @@ exports.formQuery = async (
 
   // Function to map each operation to its corresponding OpenSearch clause for Salivary Protein
   const mapOperationToClauseSalivaryProtein = (item) => {
+    const notKeywordProperty = ["mass", "protein_sequence_length"];
     // Append '.keyword' to each field name
-    const field =
-      item.selectedProperty === "mass" ||
-      item.selectedProperty === "protein_sequence_length"
-        ? "salivary_proteins." + item.selectedProperty
-        : "salivary_proteins." + item.selectedProperty + ".keyword";
+    const field = notKeywordProperty.includes(item.selectedProperty)
+      ? "salivary_proteins." + item.selectedProperty
+      : "salivary_proteins." + item.selectedProperty + ".keyword";
     const value = item.value;
 
     switch (item.selectedOperation) {

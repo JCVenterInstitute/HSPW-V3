@@ -18,9 +18,8 @@ const SearchResultsTable = ({
   const defaultColDef = {
     flex: 1,
     resizable: true,
-    sortable: true,
+    // sortable: true,
     minWidth: 170,
-    filter: "agTextColumnFilter",
   };
 
   useEffect(() => {
@@ -34,7 +33,7 @@ const SearchResultsTable = ({
           if (entity === "Genes") {
             return (
               <span
-                onClick={() => window.open(`/gene/${params.value}`, "_blank")}
+                onClick={() => (window.location.href = `/gene/${params.value}`)}
                 style={{
                   cursor: "pointer",
                   color: "blue",
@@ -48,7 +47,7 @@ const SearchResultsTable = ({
             return (
               <span
                 onClick={() =>
-                  window.open(`/protein-clusters/${params.value}`, "_blank")
+                  (window.location.href = `/protein-cluster/${params.value}`)
                 }
                 style={{
                   cursor: "pointer",
@@ -63,7 +62,7 @@ const SearchResultsTable = ({
             return (
               <span
                 onClick={() =>
-                  window.open(`/protein-signature/${params.value}`, "_blank")
+                  (window.location.href = `/protein-signature/${params.value}`)
                 }
                 style={{
                   cursor: "pointer",
@@ -78,7 +77,7 @@ const SearchResultsTable = ({
             return (
               <span
                 onClick={() =>
-                  window.open(`/protein/${params.value}`, "_blank")
+                  (window.location.href = `/experiment-protein/${params.value}`)
                 }
                 style={{
                   cursor: "pointer",
@@ -93,7 +92,7 @@ const SearchResultsTable = ({
             return (
               <span
                 onClick={() =>
-                  window.open(`/citation/${params.value}`, "_blank")
+                  (window.location.href = `/citation/${params.value}`)
                 }
                 style={{
                   cursor: "pointer",
@@ -108,7 +107,7 @@ const SearchResultsTable = ({
             return (
               <span
                 onClick={() =>
-                  window.open(`/protein/${params.value}`, "_blank")
+                  (window.location.href = `/protein/${params.value}`)
                 }
                 style={{
                   cursor: "pointer",

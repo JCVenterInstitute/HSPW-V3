@@ -2089,7 +2089,13 @@ app.post("/api/contact/send-form", async (req, res) => {
   }
 });
 
-const globalSearch = async ({ entity, size, from, searchText }) => {
+const globalSearch = async ({
+  entity,
+  size,
+  from,
+  searchText,
+  sortedColumn,
+}) => {
   // Initialize the client.
   let client;
   if (entity === "Salivary Proteins") {
@@ -2113,6 +2119,16 @@ const globalSearch = async ({ entity, size, from, searchText }) => {
 
   const escapedInput = escapeSpecialCharacters(searchText);
 
+  const notKeywordList = [
+    "Gene Name",
+    "number_of_members",
+    "experiment_id_key",
+    "Name",
+    "Date of Publication",
+    "salivary_proteins.protein_sequence_length",
+    "salivary_proteins.mass",
+  ];
+
   const query = {
     track_total_hits: true,
     size,
@@ -2123,6 +2139,19 @@ const globalSearch = async ({ entity, size, from, searchText }) => {
         analyze_wildcard: true, // Enable wildcard search
       },
     },
+    ...(sortedColumn && {
+      sort: [
+        {
+          [notKeywordList.includes(sortedColumn.attribute)
+            ? `${sortedColumn.attribute}`
+            : sortedColumn.attribute === "salivary_proteins.keywords"
+            ? `${sortedColumn.attribute}.keyword.keyword`
+            : `${sortedColumn.attribute}.keyword`]: {
+            order: sortedColumn.order,
+          },
+        },
+      ],
+    }),
   };
 
   const response = await client.search({
@@ -2144,20 +2173,59 @@ app.post("/api/global-search", async (req, res) => {
   }
 });
 
-const experimentProtein = async ({ size, from, experiment_id_key }) => {
+const experimentProtein = async ({
+  size,
+  from,
+  experiment_id_key,
+  searchText,
+  sortedColumn,
+}) => {
   // Initialize the client.
   const client = await getClient();
+
+  const escapeSpecialCharacters = (inputVal) => {
+    return inputVal.trim().replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  };
+
+  // Escape and trim searchText if it is not null or undefined
+  const escapedInput = searchText ? escapeSpecialCharacters(searchText) : "";
 
   const query = {
     track_total_hits: true,
     size,
     from,
     query: {
-      query_string: {
-        default_field: "experiment_id_key",
-        query: experiment_id_key,
+      bool: {
+        must: [
+          {
+            query_string: {
+              default_field: "experiment_id_key",
+              query: experiment_id_key,
+            },
+          },
+          // Include searchText condition only if it is non-empty after trimming and escaping
+          ...(escapedInput
+            ? [
+                {
+                  query_string: {
+                    query: `*${escapedInput}*`,
+                    analyze_wildcard: true,
+                  },
+                },
+              ]
+            : []),
+        ],
       },
     },
+    ...(sortedColumn && {
+      sort: [
+        {
+          [`${sortedColumn.attribute}.keyword`]: {
+            order: sortedColumn.order,
+          },
+        },
+      ],
+    }),
   };
 
   const response = await client.search({
@@ -2179,20 +2247,56 @@ app.post("/api/experiment-protein", async (req, res) => {
   }
 });
 
-const experimentPeptide = async ({ size, from }, uniprotid) => {
+const experimentPeptide = async (
+  { size, from, searchText, sortedColumn },
+  uniprotid
+) => {
   // Initialize the client.
   const client = await getClient();
+
+  const escapeSpecialCharacters = (inputVal) => {
+    return inputVal.trim().replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  };
+
+  // Escape and trim searchText if it is not null or undefined
+  const escapedInput = searchText ? escapeSpecialCharacters(searchText) : "";
 
   const query = {
     track_total_hits: true,
     size,
     from,
     query: {
-      query_string: {
-        default_field: "Uniprot_accession",
-        query: uniprotid,
+      bool: {
+        must: [
+          {
+            query_string: {
+              default_field: "Uniprot_accession",
+              query: uniprotid,
+            },
+          },
+          // Include searchText condition only if it is non-empty after trimming and escaping
+          ...(escapedInput
+            ? [
+                {
+                  query_string: {
+                    query: `*${escapedInput}*`,
+                    analyze_wildcard: true,
+                  },
+                },
+              ]
+            : []),
+        ],
       },
     },
+    ...(sortedColumn && {
+      sort: [
+        {
+          [`${sortedColumn.attribute}.keyword`]: {
+            order: sortedColumn.order,
+          },
+        },
+      ],
+    }),
   };
 
   const response = await client.search({

@@ -74,7 +74,7 @@ const generateColumnDefs = (entity, data) => {
       columnDef.cellRenderer = (params) => {
         return (
           <span
-            onClick={() => window.open(`/protein/${params.value}`, "_blank")}
+            onClick={() => (window.location.href = `/protein/${params.value}`)}
             style={{
               cursor: "pointer",
               color: "blue",
@@ -149,9 +149,8 @@ const AdvancedSearch = () => {
   const defaultColDef = {
     flex: 1,
     resizable: true,
-    sortable: true,
+    // sortable: true,
     minWidth: 170,
-    filter: "agTextColumnFilter",
   };
 
   const loadingOverlayComponent = useMemo(() => {

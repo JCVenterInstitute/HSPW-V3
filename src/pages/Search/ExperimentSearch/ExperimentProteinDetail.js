@@ -1,8 +1,18 @@
-import { Box, Typography, TextField, MenuItem, Container } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  MenuItem,
+  Container,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ClearIcon from "@mui/icons-material/Clear";
+import SearchIcon from "@mui/icons-material/Search";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
@@ -108,14 +118,17 @@ const generateColumnDefs = (data) => {
   return columnDef;
 };
 
-const ExperimentProteinDetail = ({ searchText }) => {
+const ExperimentProteinDetail = () => {
   const { uniprotid } = useParams();
   const [gridApi, setGridApi] = useState();
+  const [columnApi, setColumnApi] = useState(null);
   const [recordsPerPage, setRecordsPerPage] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchResults, setSearchResults] = useState();
   const [columnDefs, setColumnDefs] = useState();
+  const [searchText, setSearchText] = useState("");
+  const [sortedColumn, setSortedColumn] = useState(null);
 
   const defaultColDef = {
     flex: 1,
@@ -131,10 +144,30 @@ const ExperimentProteinDetail = ({ searchText }) => {
     fetchData(newPage);
   };
 
+  const clearSearch = () => {
+    setSearchText("");
+  };
+
   const onGridReady = useCallback((params) => {
     params.api.showLoadingOverlay();
     setGridApi(params.api);
+    setColumnApi(params.columnApi);
   }, []);
+
+  /**
+   * Track which column is selected for sort by user
+   */
+  const onSortChanged = () => {
+    const columnState = columnApi.getColumnState();
+    const sortedColumn = columnState.filter((col) => col.sort !== null);
+
+    if (sortedColumn.length !== 0) {
+      const { sort, colId } = sortedColumn[0];
+      setSortedColumn({ attribute: colId, order: sort });
+    } else {
+      setSortedColumn(null);
+    }
+  };
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
@@ -148,6 +181,8 @@ const ExperimentProteinDetail = ({ searchText }) => {
         {
           size: pageSize,
           from,
+          searchText,
+          sortedColumn,
         }
       )
       .then((res) => {
@@ -156,16 +191,25 @@ const ExperimentProteinDetail = ({ searchText }) => {
       });
 
     const columns = generateColumnDefs(response);
-    console.log(response);
 
     setColumnDefs(columns);
     setSearchResults(response);
+    if (gridApi) {
+      gridApi.hideOverlay();
+    }
   };
 
   useEffect(() => {
     fetchData(1);
     setCurrentPage(1);
   }, [searchText]);
+
+  useEffect(() => {
+    if (gridApi) {
+      gridApi.showLoadingOverlay();
+      fetchData();
+    }
+  }, [sortedColumn]);
 
   return (
     <>
@@ -187,6 +231,52 @@ const ExperimentProteinDetail = ({ searchText }) => {
         maxWidth="xl"
       >
         <Box sx={{ display: "flex" }}>
+          <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
+            <TextField
+              variant="outlined"
+              size="small"
+              label="Search..."
+              value={searchText}
+              onChange={(e) => {
+                setSearchText(e.target.value);
+              }}
+              InputProps={{
+                style: {
+                  height: "44px",
+                  width: "500px",
+                  borderRadius: "16px 0 0 16px",
+                },
+                endAdornment: searchText && (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="clear search"
+                      onClick={() => {
+                        clearSearch();
+                      }}
+                      edge="end"
+                      size="small"
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                border: "2px solid #1463B9",
+                width: "50px",
+                height: "44px",
+                backgroundColor: "#1463B9",
+                borderColor: "#1463B9",
+                cursor: "pointer",
+                borderRadius: "0 16px 16px 0",
+              }}
+            >
+              <SearchIcon sx={{ color: "white" }} />
+            </button>
+          </Box>
           <Box
             sx={{
               textAlign: "right",
@@ -359,6 +449,7 @@ const ExperimentProteinDetail = ({ searchText }) => {
               suppressPaginationPanel={true}
               loadingOverlayComponent={loadingOverlayComponent}
               suppressScrollOnNewData={true}
+              onSortChanged={onSortChanged}
             ></AgGridReact>
           </div>
         </Box>
