@@ -27,7 +27,6 @@ const th = {
 
 const td = {
   border: "1px solid #aaa",
-  fontSize: "18px",
   padding: "0.2em",
   borderTopRightRadius: "10px",
   fontSize: "18px",
@@ -51,7 +50,7 @@ const ExperimentSearchDetail = (props) => {
       }
     };
     fetchExperiment();
-  }, []);
+  }, [id]);
 
   if (isLoading) {
     return (
@@ -351,7 +350,7 @@ const ExperimentSearchDetail = (props) => {
                                 fontWeight: "bold",
                               }}
                             >
-                              NEWT
+                              Taxononomy
                             </TableCell>
                             <TableCell
                               sx={td}
@@ -397,21 +396,10 @@ const ExperimentSearchDetail = (props) => {
                                     rel="noopener noreferrer"
                                   >
                                     {term}
-                                    <LaunchIcon sx={{ fontSize: "small" }} />
+                                    <LaunchIcon
+                                      sx={{ fontSize: "small" }}
+                                    />{" "}
                                   </a>
-                                  <p>
-                                    Source:{" "}
-                                    <a
-                                      href={`http://purl.obolibrary.org/obo/${data.bto_ac[
-                                        index
-                                      ].replace(":", "_")}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                    >
-                                      {data.bto_ac[index]}
-                                      <LaunchIcon sx={{ fontSize: "small" }} />
-                                    </a>
-                                  </p>
                                 </React.Fragment>
                               ))}
                             </TableCell>
@@ -442,7 +430,10 @@ const ExperimentSearchDetail = (props) => {
                     fontSize: "14px",
                   }}
                 >
-                  <ExperimentProteinTable experiment_id_key={id} />
+                  <ExperimentProteinTable
+                    experiment_id_key={id}
+                    search_engine={data.search_engine}
+                  />
                 </TableCell>
               </TableRow>
             </TableHead>

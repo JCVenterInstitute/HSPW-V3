@@ -32,6 +32,15 @@ const generateColumnDefs = (data) => {
       headerName: "Search Database",
       field: "submitted_protein_database",
       wrapText: true,
+      minWidth: 220,
+      headerClass: ["header-border"],
+      cellClass: ["differential-cell"],
+    },
+    {
+      headerName: "Search Engine",
+      field: "search_engine",
+      wrapText: true,
+      minWidth: 220,
       headerClass: ["header-border"],
       cellClass: ["differential-cell"],
     },
@@ -39,6 +48,7 @@ const generateColumnDefs = (data) => {
       headerName: "Protein Score",
       field: "protein_score",
       wrapText: true,
+      minWidth: 220,
       headerClass: ["header-border"],
       cellClass: ["differential-cell"],
     },
@@ -46,6 +56,7 @@ const generateColumnDefs = (data) => {
       headerName: "Peptide Count",
       field: "peptide_count",
       wrapText: true,
+      minWidth: 220,
       headerClass: ["header-border"],
       cellClass: ["differential-cell"],
     },
@@ -53,6 +64,7 @@ const generateColumnDefs = (data) => {
       headerName: "Abundance Score",
       field: "abundance",
       wrapText: true,
+      minWidth: 250,
       headerClass: ["header-border"],
       cellClass: ["differential-cell"],
     },
@@ -65,7 +77,6 @@ function LinkComponent(props) {
   return (
     <div style={{ paddingLeft: "20px" }}>
       <a
-        target="_blank"
         rel="noopener noreferrer"
         href={`/experiment-protein/${props.value}`}
       >
@@ -75,7 +86,7 @@ function LinkComponent(props) {
   );
 }
 
-const ExperimentProteinTable = ({ experiment_id_key }) => {
+const ExperimentProteinTable = ({ experiment_id_key, search_engine }) => {
   const [gridApi, setGridApi] = useState();
   const [recordsPerPage, setRecordsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -116,7 +127,10 @@ const ExperimentProteinTable = ({ experiment_id_key }) => {
       })
       .then((res) => {
         setTotalPages(Math.ceil(res.data.total.value / pageSize));
-        return res.data.hits.map((item) => item._source);
+        return res.data.hits.map((item) => ({
+          ...item._source,
+          search_engine: search_engine,
+        }));
       });
 
     const columns = generateColumnDefs(response);
