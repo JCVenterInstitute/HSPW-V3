@@ -149,9 +149,8 @@ const AdvancedSearch = () => {
   const defaultColDef = {
     flex: 1,
     resizable: true,
-    sortable: true,
+    // sortable: true,
     minWidth: 170,
-    filter: "agTextColumnFilter",
   };
 
   const loadingOverlayComponent = useMemo(() => {
