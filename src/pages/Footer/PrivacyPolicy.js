@@ -107,28 +107,45 @@ const PrivacyNoticePage = () => {
             marginBottom: "30px",
           }}
         ></div>
-        <Typography sx={{ fontFamily: "Lato" }}>
+        <Typography
+          variant="div"
+          sx={{ fontFamily: "Lato" }}
+        >
+          <Typography
+            variant="h5"
+            style={{ marginBottom: "15px" }}
+          >
+            IP and Other Technical Information
+          </Typography>
           <Typography sx={{ marginY: "20px", fontFamily: "Lato" }}>
-            <h3 style={{ marginBottom: "15px" }}>
-              IP and Other Technical Information
-            </h3>
             When a visitor requests or reads a page, or sends email to us, no
             more information is collected than is typically collected by web
             sites. We may keep raw logs of such transactions. Sampled raw log
             data may include the IP address of any user, but it is not
             reproduced publicly.
           </Typography>
-          <Typography sx={{ marginY: "20px", fontFamily: "Lato" }}>
-            <h3 style={{ marginBottom: "15px" }}>Cookies</h3>A "cookie" is a
-            small file that a Web site transfers to your computer's hard disk
-            allowing our server to "remember" specific information about your
-            session. We use cookies only for internal tracking and for providing
-            a better user experience. The cookie and the information about your
-            session is only valid for a short period and will be destroyed
-            automatically -it is not permanently stored on your computer.
+          <Typography
+            variant="h5"
+            style={{ marginBottom: "15px" }}
+          >
+            Cookies
           </Typography>
           <Typography sx={{ marginY: "20px", fontFamily: "Lato" }}>
-            <h3 style={{ marginBottom: "15px" }}>User Contribution</h3>
+            A "cookie" is a small file that a Web site transfers to your
+            computer's hard disk allowing our server to "remember" specific
+            information about your session. We use cookies only for internal
+            tracking and for providing a better user experience. The cookie and
+            the information about your session is only valid for a short period
+            and will be destroyed automatically -it is not permanently stored on
+            your computer.
+          </Typography>
+          <Typography
+            variant="h5"
+            style={{ marginBottom: "15px" }}
+          >
+            User Contribution
+          </Typography>
+          <Typography sx={{ marginY: "20px", fontFamily: "Lato" }}>
             Edits to pages are identified with the username of the editor, and
             editing history is aggregated by author in a contribution list. Such
             information will be available permanently. Data on user
@@ -137,8 +154,13 @@ const PrivacyNoticePage = () => {
             contributions lists, and in aggregated forms published by other
             users.
           </Typography>
+          <Typography
+            variant="h5"
+            style={{ marginBottom: "15px" }}
+          >
+            Page History
+          </Typography>
           <Typography sx={{ marginY: "20px", fontFamily: "Lato" }}>
-            <h3 style={{ marginBottom: "15px" }}>Page History</h3>
             Edits or other contributions to the wiki on its articles, user pages
             and talk pages are generally retained forever. Removing text from a
             project does not permanently delete it. Normally, anyone can look at
