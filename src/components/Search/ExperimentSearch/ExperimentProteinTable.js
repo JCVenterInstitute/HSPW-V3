@@ -97,19 +97,20 @@ function LinkComponent(props) {
 
 const ExperimentProteinTable = ({ experiment_id_key, search_engine }) => {
   const [gridApi, setGridApi] = useState();
+  const [columnApi, setColumnApi] = useState(null);
   const [recordsPerPage, setRecordsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchResults, setSearchResults] = useState();
   const [columnDefs, setColumnDefs] = useState();
   const [searchText, setSearchText] = useState("");
+  const [sortedColumn, setSortedColumn] = useState(null);
 
   const defaultColDef = {
     flex: 1,
     resizable: true,
     sortable: true,
     minWidth: 170,
-    filter: "agTextColumnFilter",
   };
 
   const handlePageChange = (newPage) => {
@@ -125,7 +126,23 @@ const ExperimentProteinTable = ({ experiment_id_key, search_engine }) => {
   const onGridReady = useCallback((params) => {
     params.api.showLoadingOverlay();
     setGridApi(params.api);
+    setColumnApi(params.columnApi);
   }, []);
+
+  /**
+   * Track which column is selected for sort by user
+   */
+  const onSortChanged = () => {
+    const columnState = columnApi.getColumnState();
+    const sortedColumn = columnState.filter((col) => col.sort !== null);
+
+    if (sortedColumn.length !== 0) {
+      const { sort, colId } = sortedColumn[0];
+      setSortedColumn({ attribute: colId, order: sort });
+    } else {
+      setSortedColumn(null);
+    }
+  };
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
@@ -139,6 +156,7 @@ const ExperimentProteinTable = ({ experiment_id_key, search_engine }) => {
         from,
         experiment_id_key,
         searchText,
+        sortedColumn,
       })
       .then((res) => {
         setTotalPages(Math.ceil(res.data.total.value / pageSize));
@@ -152,17 +170,22 @@ const ExperimentProteinTable = ({ experiment_id_key, search_engine }) => {
 
     setColumnDefs(columns);
     setSearchResults(response);
+    if (gridApi) {
+      gridApi.hideOverlay();
+    }
   };
 
   useEffect(() => {
     fetchData(1);
     setCurrentPage(1);
-  }, [experiment_id_key]);
+  }, [experiment_id_key, searchText]);
 
   useEffect(() => {
-    fetchData(1);
-    setCurrentPage(1);
-  }, [searchText]);
+    if (gridApi && sortedColumn && sortedColumn.attribute !== "search_engine") {
+      gridApi.showLoadingOverlay();
+      fetchData();
+    }
+  }, [sortedColumn]);
 
   return (
     <Box sx={{ margin: "10px" }}>
@@ -388,6 +411,7 @@ const ExperimentProteinTable = ({ experiment_id_key, search_engine }) => {
             components={{
               LinkComponent,
             }}
+            onSortChanged={onSortChanged}
           ></AgGridReact>
         </div>
       </Box>

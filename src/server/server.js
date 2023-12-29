@@ -2148,6 +2148,7 @@ const experimentProtein = async ({
   from,
   experiment_id_key,
   searchText,
+  sortedColumn,
 }) => {
   // Initialize the client.
   const client = await getClient();
@@ -2186,6 +2187,15 @@ const experimentProtein = async ({
         ],
       },
     },
+    ...(sortedColumn && {
+      sort: [
+        {
+          [`${sortedColumn.attribute}.keyword`]: {
+            order: sortedColumn.order,
+          },
+        },
+      ],
+    }),
   };
 
   const response = await client.search({
@@ -2207,7 +2217,10 @@ app.post("/api/experiment-protein", async (req, res) => {
   }
 });
 
-const experimentPeptide = async ({ size, from, searchText }, uniprotid) => {
+const experimentPeptide = async (
+  { size, from, searchText, sortedColumn },
+  uniprotid
+) => {
   // Initialize the client.
   const client = await getClient();
 
@@ -2245,6 +2258,15 @@ const experimentPeptide = async ({ size, from, searchText }, uniprotid) => {
         ],
       },
     },
+    ...(sortedColumn && {
+      sort: [
+        {
+          [`${sortedColumn.attribute}.keyword`]: {
+            order: sortedColumn.order,
+          },
+        },
+      ],
+    }),
   };
 
   const response = await client.search({
