@@ -112,7 +112,7 @@ class Footer extends Component {
                 </li>
                 <li>
                   <a
-                    href="/general-disclaimer"
+                    href="/disclaimers"
                     className="middle"
                   >
                     Disclaimers
