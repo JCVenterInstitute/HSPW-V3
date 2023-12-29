@@ -81,8 +81,8 @@ const Gene_detail = (props) => {
         }
 
         if (i === data[0]["_source"]["Gene Products"].length - 1) {
-          setLoading(false);
           setProteinNameMap(proteinNameMapping);
+          setLoading(false);
         }
       } catch (error) {
         console.log(error);
