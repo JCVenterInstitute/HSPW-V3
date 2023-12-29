@@ -121,7 +121,7 @@ const CopyrightPage = () => {
             marginBottom: "30px",
           }}
         ></div>
-        <Typography sx={{ fontFamily: "Lato", fontSize: "18px" }}>
+        <div style={{ fontFamily: "Lato", fontSize: "18px" }}>
           If you cite or display any content, or reference our organization, in
           any format, written or otherwise, including print or web publications,
           presentations, grant applications, websites, other online applications
@@ -160,7 +160,7 @@ const CopyrightPage = () => {
               </ListItemText>
             </ListItem>
           </List>
-        </Typography>
+        </div>
         <Typography
           id="Contacting Us"
           variant="h5"
