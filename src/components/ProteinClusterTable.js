@@ -131,7 +131,7 @@ const ProteinClusterTable = () => {
   const [rowData, setRowData] = useState([]);
 
   const stringAttributes = ["uniprot_id", "protein_name"];
-  const numberAttributes = ["number_of_members"];
+  const termAttributes = ["number_of_members"];
 
   const defColumnDefs = {
     flex: 1,
@@ -333,23 +333,14 @@ const ProteinClusterTable = () => {
   };
 
   /**
-   * Creates a range query for a number field for OpenSearch
-   * @param {{ attrName, start, end }} input Necessary fields for range query
-   * @returns OpenSearch range query based on inputs
+   * Creates a term query for a field for OpenSearch
+   * @param {{ attrName, value }} input Necessary fields for term query
+   * @returns OpenSearch term query based on inputs
    */
-  const createRangeQuery = ({ attrName, start, end }) => {
-    let rangeQuery = {
-      range: {
-        [attrName]: {
-          ...(start && { gte: start }),
-          ...(end && { lte: end }),
-        },
-      },
-    };
-
+  const createTermQuery = ({ attrName, value }) => {
     return {
-      bool: {
-        filter: [rangeQuery],
+      term: {
+        [attrName]: value,
       },
     };
   };
@@ -396,8 +387,8 @@ const ProteinClusterTable = () => {
         queries.push(
           createStringQuery({ attrName: attr, value: filters[attr] })
         );
-      } else if (numberAttributes.includes(attr)) {
-        queries.push(createRangeQuery({ attrName: attr, ...filters[attr] }));
+      } else if (termAttributes.includes(attr)) {
+        queries.push(createTermQuery({ attrName: attr, value: filters[attr] }));
       }
     }
 
