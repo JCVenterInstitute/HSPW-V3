@@ -9,6 +9,7 @@ import { useParams } from "react-router";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 
+import MainFeature from "../../../assets/hero.jpeg";
 import "../../style.css";
 
 const ProteinDetailSequence = (props) => {
@@ -65,6 +66,20 @@ const ProteinDetailSequence = (props) => {
 
   return (
     <>
+      <div
+        style={{
+          backgroundImage: `url(${MainFeature})`,
+        }}
+        className="head_background"
+      >
+        <h1
+          className="head_title"
+          align="left"
+        >
+          {"Protein Sequence: "}
+          {data[0]["_source"]["salivary_proteins"]["protein_name"]}
+        </h1>
+      </div>
       <div style={{ padding: "20px" }}>
         <TableHead
           style={{
