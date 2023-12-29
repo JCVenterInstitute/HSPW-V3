@@ -28,7 +28,7 @@ const td = {
   padding: "0.2em",
 };
 
-const Gene_detail = (props) => {
+const GeneDetail = (props) => {
   const params = useParams();
 
   const [message, setMessage] = useState(true);
@@ -57,15 +57,11 @@ const Gene_detail = (props) => {
   const fetchProtein = async () => {
     const proteinNameMapping = {};
 
-    data[0]["_source"]["Gene Products"].map(async (item, i) => {
+    for (const gene of data[0]["_source"]["Gene Products"]) {
       try {
         const response = await fetch(
-          `https://rest.uniprot.org/uniprotkb/${item}.json`
+          `https://rest.uniprot.org/uniprotkb/${gene}.json`
         );
-
-        if (!response.ok) {
-          throw new Error(`An error occurred: ${response.status}`);
-        }
 
         const proteinName = await response.json();
 
@@ -74,20 +70,18 @@ const Gene_detail = (props) => {
             proteinName.proteinDescription;
 
           if (recommendedName) {
-            proteinNameMapping[item] = recommendedName.fullName.value;
+            proteinNameMapping[gene] = recommendedName.fullName.value;
           } else if (submissionNames) {
-            proteinNameMapping[item] = submissionNames[0].fullName.value;
+            proteinNameMapping[gene] = submissionNames[0].fullName.value;
           }
-        }
-
-        if (i === data[0]["_source"]["Gene Products"].length - 1) {
-          setProteinNameMap(proteinNameMapping);
-          setLoading(false);
         }
       } catch (error) {
         console.log(error);
       }
-    });
+    }
+
+    setProteinNameMap(proteinNameMapping);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -382,7 +376,6 @@ const Gene_detail = (props) => {
                           Link
                         </TableCell>
                       </TableRow>
-
                       {data[0]["_source"]["Gene Products"].map(
                         (value, i, arr) => {
                           return (
@@ -492,4 +485,4 @@ const Gene_detail = (props) => {
   );
 };
 
-export default Gene_detail;
+export default GeneDetail;
