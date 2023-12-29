@@ -74,7 +74,7 @@ const generateColumnDefs = (entity, data) => {
       columnDef.cellRenderer = (params) => {
         return (
           <span
-            onClick={() => window.open(`/protein/${params.value}`, "_blank")}
+            onClick={() => (window.location.href = `/protein/${params.value}`)}
             style={{
               cursor: "pointer",
               color: "blue",

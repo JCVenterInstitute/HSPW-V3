@@ -35,7 +35,7 @@ const generateColumnDefs = (entity, data) => {
       columnDef.cellRenderer = (params) => {
         return (
           <span
-            onClick={() => window.open(`/protein/${params.value}`, "_blank")}
+            onClick={() => (window.location.href = `/protein/${params.value}`)}
             style={{
               cursor: "pointer",
               color: "blue",
@@ -80,18 +80,19 @@ const generateColumnDefs = (entity, data) => {
 
 const SalivaryProteins = ({ searchText }) => {
   const [gridApi, setGridApi] = useState();
+  const [columnApi, setColumnApi] = useState(null);
   const [recordsPerPage, setRecordsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchResults, setSearchResults] = useState();
   const [columnDefs, setColumnDefs] = useState();
+  const [sortedColumn, setSortedColumn] = useState(null);
 
   const defaultColDef = {
     flex: 1,
     resizable: true,
     sortable: true,
     minWidth: 170,
-    filter: "agTextColumnFilter",
   };
 
   const handlePageChange = (newPage) => {
@@ -103,7 +104,23 @@ const SalivaryProteins = ({ searchText }) => {
   const onGridReady = useCallback((params) => {
     params.api.showLoadingOverlay();
     setGridApi(params.api);
+    setColumnApi(params.columnApi);
   }, []);
+
+  /**
+   * Track which column is selected for sort by user
+   */
+  const onSortChanged = () => {
+    const columnState = columnApi.getColumnState();
+    const sortedColumn = columnState.filter((col) => col.sort !== null);
+
+    if (sortedColumn.length !== 0) {
+      const { sort, colId } = sortedColumn[0];
+      setSortedColumn({ attribute: `salivary_proteins.${colId}`, order: sort });
+    } else {
+      setSortedColumn(null);
+    }
+  };
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
@@ -118,6 +135,7 @@ const SalivaryProteins = ({ searchText }) => {
         size: pageSize,
         from,
         searchText,
+        sortedColumn,
       })
       .then((res) => {
         setTotalPages(Math.ceil(res.data.total.value / pageSize));
@@ -128,12 +146,22 @@ const SalivaryProteins = ({ searchText }) => {
 
     setColumnDefs(columns);
     setSearchResults(response);
+    if (gridApi) {
+      gridApi.hideOverlay();
+    }
   };
 
   useEffect(() => {
     fetchData(1);
     setCurrentPage(1);
   }, [searchText]);
+
+  useEffect(() => {
+    if (gridApi) {
+      gridApi.showLoadingOverlay();
+      fetchData();
+    }
+  }, [sortedColumn]);
 
   return (
     <>
@@ -325,6 +353,7 @@ const SalivaryProteins = ({ searchText }) => {
               suppressPaginationPanel={true}
               loadingOverlayComponent={loadingOverlayComponent}
               suppressScrollOnNewData={true}
+              onSortChanged={onSortChanged}
             ></AgGridReact>
           </div>
         </Box>
