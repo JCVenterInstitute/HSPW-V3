@@ -386,6 +386,8 @@ const DisclaimerPage = () => {
             The Annotator developed by the National Center for Biomedical
             Ontology is a Web service that annotates text with relevant ontology
             concepts.
+            <br />
+            <br />
             <strong>Jonquet C, et al.</strong>
             (2009) The open biomedical annotator. Summit on Translat Bioinforma
             2009:56-60
