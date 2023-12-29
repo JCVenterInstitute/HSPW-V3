@@ -1,8 +1,18 @@
-import { Box, Typography, TextField, MenuItem, Container } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  MenuItem,
+  Container,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ClearIcon from "@mui/icons-material/Clear";
+import SearchIcon from "@mui/icons-material/Search";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
@@ -108,7 +118,7 @@ const generateColumnDefs = (data) => {
   return columnDef;
 };
 
-const ExperimentProteinDetail = ({ searchText }) => {
+const ExperimentProteinDetail = () => {
   const { uniprotid } = useParams();
   const [gridApi, setGridApi] = useState();
   const [recordsPerPage, setRecordsPerPage] = useState(20);
@@ -116,6 +126,7 @@ const ExperimentProteinDetail = ({ searchText }) => {
   const [totalPages, setTotalPages] = useState(0);
   const [searchResults, setSearchResults] = useState();
   const [columnDefs, setColumnDefs] = useState();
+  const [searchText, setSearchText] = useState("");
 
   const defaultColDef = {
     flex: 1,
@@ -129,6 +140,10 @@ const ExperimentProteinDetail = ({ searchText }) => {
     gridApi.showLoadingOverlay();
     setCurrentPage(newPage);
     fetchData(newPage);
+  };
+
+  const clearSearch = () => {
+    setSearchText("");
   };
 
   const onGridReady = useCallback((params) => {
@@ -148,6 +163,7 @@ const ExperimentProteinDetail = ({ searchText }) => {
         {
           size: pageSize,
           from,
+          searchText,
         }
       )
       .then((res) => {
@@ -156,7 +172,6 @@ const ExperimentProteinDetail = ({ searchText }) => {
       });
 
     const columns = generateColumnDefs(response);
-    console.log(response);
 
     setColumnDefs(columns);
     setSearchResults(response);
@@ -187,6 +202,52 @@ const ExperimentProteinDetail = ({ searchText }) => {
         maxWidth="xl"
       >
         <Box sx={{ display: "flex" }}>
+          <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
+            <TextField
+              variant="outlined"
+              size="small"
+              label="Search..."
+              value={searchText}
+              onChange={(e) => {
+                setSearchText(e.target.value);
+              }}
+              InputProps={{
+                style: {
+                  height: "44px",
+                  width: "500px",
+                  borderRadius: "16px 0 0 16px",
+                },
+                endAdornment: searchText && (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="clear search"
+                      onClick={() => {
+                        clearSearch();
+                      }}
+                      edge="end"
+                      size="small"
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                border: "2px solid #1463B9",
+                width: "50px",
+                height: "44px",
+                backgroundColor: "#1463B9",
+                borderColor: "#1463B9",
+                cursor: "pointer",
+                borderRadius: "0 16px 16px 0",
+              }}
+            >
+              <SearchIcon sx={{ color: "white" }} />
+            </button>
+          </Box>
           <Box
             sx={{
               textAlign: "right",

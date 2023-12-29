@@ -2143,18 +2143,47 @@ app.post("/api/global-search", async (req, res) => {
   }
 });
 
-const experimentProtein = async ({ size, from, experiment_id_key }) => {
+const experimentProtein = async ({
+  size,
+  from,
+  experiment_id_key,
+  searchText,
+}) => {
   // Initialize the client.
   const client = await getClient();
+
+  const escapeSpecialCharacters = (inputVal) => {
+    return inputVal.trim().replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  };
+
+  // Escape and trim searchText if it is not null or undefined
+  const escapedInput = searchText ? escapeSpecialCharacters(searchText) : "";
 
   const query = {
     track_total_hits: true,
     size,
     from,
     query: {
-      query_string: {
-        default_field: "experiment_id_key",
-        query: experiment_id_key,
+      bool: {
+        must: [
+          {
+            query_string: {
+              default_field: "experiment_id_key",
+              query: experiment_id_key,
+            },
+          },
+          // Include searchText condition only if it is non-empty after trimming and escaping
+          ...(escapedInput
+            ? [
+                {
+                  query_string: {
+                    query: `*${escapedInput}*`,
+                    analyze_wildcard: true,
+                  },
+                },
+              ]
+            : []),
+        ],
       },
     },
   };
@@ -2178,18 +2207,42 @@ app.post("/api/experiment-protein", async (req, res) => {
   }
 });
 
-const experimentPeptide = async ({ size, from }, uniprotid) => {
+const experimentPeptide = async ({ size, from, searchText }, uniprotid) => {
   // Initialize the client.
   const client = await getClient();
+
+  const escapeSpecialCharacters = (inputVal) => {
+    return inputVal.trim().replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  };
+
+  // Escape and trim searchText if it is not null or undefined
+  const escapedInput = searchText ? escapeSpecialCharacters(searchText) : "";
 
   const query = {
     track_total_hits: true,
     size,
     from,
     query: {
-      query_string: {
-        default_field: "Uniprot_accession",
-        query: uniprotid,
+      bool: {
+        must: [
+          {
+            query_string: {
+              default_field: "Uniprot_accession",
+              query: uniprotid,
+            },
+          },
+          // Include searchText condition only if it is non-empty after trimming and escaping
+          ...(escapedInput
+            ? [
+                {
+                  query_string: {
+                    query: `*${escapedInput}*`,
+                    analyze_wildcard: true,
+                  },
+                },
+              ]
+            : []),
+        ],
       },
     },
   };
