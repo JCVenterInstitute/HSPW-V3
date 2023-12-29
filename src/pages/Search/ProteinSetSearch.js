@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback } from "react";
 import main_feature from "../../assets/hero.jpeg";
 import {
   Button,
@@ -14,7 +14,7 @@ import { AgGridReact } from "ag-grid-react";
 
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 
-function proteinLinkComponent(props) {
+function ProteinLinkComponent(props) {
   return (
     <div style={{ paddingLeft: "20px" }}>
       <a
@@ -26,6 +26,33 @@ function proteinLinkComponent(props) {
       </a>
     </div>
   );
+}
+
+function GeneLinkComponent(props) {
+  const { value } = props;
+  const genes = value.split(",");
+  const links = [];
+
+  for (let geneIndex = 0; geneIndex < genes.length; geneIndex++) {
+    // [GeneId, Gene Symbol]
+    const geneDetail = genes[geneIndex].split(";");
+
+    links.push(
+      <>
+        {`${geneDetail[0]}: `}
+        <a
+          key={`gene-${geneDetail[0]}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          href={`/gene/${geneDetail[0]}`}
+        >
+          {`${geneDetail[1]}`}
+        </a>
+        {geneIndex === genes.length - 1 ? "" : ", "}
+      </>
+    );
+  }
+  return <div>{links}</div>;
 }
 
 const ProteinSetSearch = () => {
@@ -109,12 +136,13 @@ const ProteinSetSearch = () => {
       headerName: "Protein",
       field: "uniprot_accession",
       headerClass: ["header-border"],
-      cellRenderer: "proteinLinkComponent",
+      cellRenderer: "ProteinLinkComponent",
     },
     {
       headerName: "Gene",
       field: "gene_symbol",
       headerClass: ["header-border"],
+      cellRenderer: "GeneLinkComponent",
     },
     {
       headerName: "Protein Name",
@@ -267,7 +295,7 @@ const ProteinSetSearch = () => {
                 defaultColDef={defaultColDef}
                 columnDefs={columnDef}
                 onGridReady={onGridReady}
-                components={{ proteinLinkComponent }}
+                components={{ ProteinLinkComponent, GeneLinkComponent }}
                 enableCellTextSelection={true}
                 suppressPaginationPanel={true}
               />
