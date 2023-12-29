@@ -18,6 +18,7 @@ const { s3Download } = require("./utils/s3Download");
 const { formQuery } = require("./utils/formQuery");
 const { generatePresignedUrls } = require("./utils/generatePresignedUrls");
 const { createContact } = require("./utils/createContact");
+const { getSSMParameter } = require("./utils/utils");
 
 app.use(cors());
 app.use(express.json());
@@ -2024,7 +2025,7 @@ app.post("/api/contact/generate-presigned-urls", async (req, res) => {
 });
 
 const verifyCaptcha = async (captchaResponse) => {
-  const secretKey = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"; // Replace with your actual secret key
+  const secretKey = await getSSMParameter(process.env.RECAPTCHA_SECRET_KEY);
   const verificationUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captchaResponse}`;
 
   try {

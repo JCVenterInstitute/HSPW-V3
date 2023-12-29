@@ -33,6 +33,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import ReCAPTCHA from "react-google-recaptcha";
 
+const RECAPTCHA_PUBLIC_KEY = process.env.RECAPTCHA_PUBLIC_KEY;
+
 const Contact = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -536,7 +538,7 @@ const Contact = () => {
                   }}
                 >
                   <ReCAPTCHA
-                    sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                    sitekey={RECAPTCHA_PUBLIC_KEY}
                     onChange={handleCaptchaChange}
                   />
                 </Box>
