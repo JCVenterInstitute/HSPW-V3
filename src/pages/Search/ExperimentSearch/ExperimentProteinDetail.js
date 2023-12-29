@@ -71,10 +71,28 @@ const generateColumnDefs = (data) => {
       cellClass: ["differential-cell"],
     },
     {
+      headerName: "Start:End Coordinate",
+      field: "start_end_coord", // Custom field name
+      wrapText: true,
+      minWidth: 250,
+      headerClass: ["header-border"],
+      cellClass: ["differential-cell"],
+      valueGetter: (params) =>
+        `${params.data.start_coord}:${params.data.end_coord}`, // Custom value getter
+    },
+    {
       headerName: "Peptide Sequence",
       field: "peptide_sequence",
       wrapText: true,
       minWidth: 550,
+      headerClass: ["header-border"],
+      cellClass: ["differential-cell"],
+    },
+    {
+      headerName: "Peptide Spectrum Reference",
+      field: "peptide_spectrum_ref",
+      wrapText: true,
+      minWidth: 320,
       headerClass: ["header-border"],
       cellClass: ["differential-cell"],
     },

@@ -36,9 +36,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 const Contact = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [pageUrl, setPageUrl] = useState(
-    "https://www.salivaryproteome.org/public/index.php/Main_Page"
-  );
+  const [pageUrl, setPageUrl] = useState("https://www.salivaryproteome.org");
   const [topic, setTopic] = useState("");
   const [message, setMessage] = useState("");
   const [attachments, setAttachments] = useState([]);
