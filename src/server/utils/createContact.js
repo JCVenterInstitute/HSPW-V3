@@ -36,8 +36,8 @@ async function sendContactEmail({
 
   // Email content
   const mailOptions = {
-    from: "dl_hspw_help@jcvi.org", // Sender address
-    to: "dl_hspw_help@jcvi.org", // Your helpdesk email
+    from: "noreply@salivaryproteome.org", // Sender address
+    to: "help@salivaryproteome.org", // Your helpdesk email
     subject: `New Issue from ${name}: ${topic}`,
     text:
       `You have received a new message from ${name} (${email}).\n\n` +
