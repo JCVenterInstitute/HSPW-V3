@@ -15,6 +15,7 @@
 }
 
 .carouselInner {
+  position: relative;
   height: 100%;
   width: 100%;
   background-position: center;
@@ -72,8 +73,9 @@ h1 {
 .second_paragraph {
   color: #fff;
   margin-top: -7%;
-  margin-left: 75%;
+  margin-left: 60%;
   font-family: Lato;
+  font-weight: 500;
   font-size: 21px;
 }
 
@@ -114,6 +116,7 @@ p {
 }
 
 .carouselInner .right {
+  position: absolute;
   height: 50px;
   background-color: rgb(215, 221, 222, 0.6);
   display: grid;
@@ -121,5 +124,5 @@ p {
   color: black;
   cursor: pointer;
   margin-top: 200px;
-  margin-left: 10%;
+  right: 0;
 }

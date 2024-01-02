@@ -26,7 +26,7 @@ function Carousel() {
           <ArrowBackIosIcon style={{ fontSize: 30 }} />
         </div>
         {images[currImg].subtitle === stringCheck && (
-          <div>
+          <div style={{ paddingLeft: "2rem" }}>
             {images[currImg].subtitle === stringCheck && (
               <>
                 <div
@@ -67,7 +67,7 @@ function Carousel() {
             )}
           </div>
         )}
-        <div>
+        <div style={{ paddingLeft: "2rem", paddingRight: "2rem" }}>
           {images[currImg].index === 0 && (
             <div className="first_title">
               <h1 style={{ color: "white", textAlign: "left" }}>
