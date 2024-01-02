@@ -7,25 +7,8 @@ import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
-import { styled } from "@mui/material/styles";
-import Typography from "@mui/material/Typography";
 import main_feature from "../../assets/hero.jpeg";
-import { Paper } from "@mui/material";
 import FontAwesome from "react-fontawesome";
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "center",
-  color: theme.palette.text.secondary,
-}));
-
-const table = {
-  table: {
-    borderRadius: "10px 0 0 10px", // Set border radius here
-  },
-};
 
 const th = {
   backgroundColor: "#1463B9",
