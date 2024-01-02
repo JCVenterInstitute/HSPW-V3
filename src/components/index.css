@@ -372,7 +372,6 @@ button span {
   margin-top: 10px;
   margin-bottom: 15px;
   color: #3a3a3a;
-  margin-left: 3%;
 }
 
 #footer-text a {
@@ -381,7 +380,6 @@ button span {
   font-size: 18px;
   font-style: normal;
   font-weight: 600;
-  line-height: 110%; /* 19.8px */
   text-transform: uppercase;
 }
 
