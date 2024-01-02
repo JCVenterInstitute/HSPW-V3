@@ -1,4 +1,3 @@
-import { TrendingUpSharp } from "@mui/icons-material";
 import React from "react";
 import "./BasicCard.css";
 
@@ -33,7 +32,10 @@ class BasicCard extends React.Component {
             <h4>{this.props.title}</h4>
             <p>{this.props.blurb}</p>
             <div className="basic-card-image-wrapper">
-              <img src={this.props.imageSrc} />
+              <img
+                src={this.props.imageSrc}
+                alt={`${this.props.imageSrc}`}
+              />
             </div>
           </div>
         </a>

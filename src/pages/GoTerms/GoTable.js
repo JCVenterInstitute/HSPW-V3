@@ -1,17 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import axios from "axios";
-import LinearProgress from "@mui/material/LinearProgress";
-import Box from "@mui/material/Box";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
-import { styled } from "@mui/material/styles";
-import Typography from "@mui/material/Typography";
 import main_feature from "../../assets/hero.jpeg";
-import { Paper } from "@mui/material";
-import FontAwesome from "react-fontawesome";
 
 const GoTable = () => {
   const [isLoading, setLoading] = useState(true);

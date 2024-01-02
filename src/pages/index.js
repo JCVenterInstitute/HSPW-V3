@@ -1,7 +1,6 @@
 import * as React from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
-import { Timeline } from "react-twitter-widgets";
-
+import { LinkedInEmbed } from "react-social-media-embed";
 import BasicCard from "../components/BasicCard.js";
 import Carousel from "../components/Carousel.js";
 import salivary_protein from "../assets/icon-salivary-protein.png";
@@ -40,8 +39,6 @@ import help from "../assets/icon-help.png";
 class Home extends React.Component {
   constructor(props) {
     super(props);
-    const base = "/hspw_new/";
-    const iconFolder = base + "public/assets/images/icons/";
     this.state = {
       activePage: "/",
       pages: {
@@ -112,17 +109,14 @@ class Home extends React.Component {
               destination: false,
               rawContent: (
                 <div className="basic-card-content basic-card-content-centered">
-                  <Timeline
-                    dataSource={{
-                      sourceType: "profile",
-                      screenName: "reactjs",
-                    }}
-                    options={{
-                      borderColor: "#FF0000",
-                      width: "300",
-                      height: "310",
-                    }}
-                  />
+                  <div style={{ display: "flex", justifyContent: "center" }}>
+                    <LinkedInEmbed
+                      url="https://www.linkedin.com/embed/feed/update/urn:li:share:6898694772484112384"
+                      postUrl="https://www.linkedin.com/posts/peterdiamandis_5-discoveries-the-james-webb-telescope-will-activity-6898694773406875648-z-D7"
+                      width={430}
+                      height={400}
+                    />
+                  </div>
                 </div>
               ),
             },
@@ -131,7 +125,10 @@ class Home extends React.Component {
               rawContent: (
                 <div className="basic-card-content basic-card-content-centered">
                   <h3>Information for HSPW Users</h3>
-                  <img src={help}></img>
+                  <img
+                    src={help}
+                    alt="Help Icon"
+                  ></img>
                   <ul className="bulletless">
                     <li>
                       The new HSPW is built on the AWS system. Data and analysis
@@ -152,6 +149,7 @@ class Home extends React.Component {
                 >
                   <iframe
                     className="embed-responsive-item"
+                    title="youtube"
                     src="https://youtube.com/embed/u4JN1FmLGE4"
                     width="100%"
                   ></iframe>

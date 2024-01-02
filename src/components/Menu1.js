@@ -1,9 +1,3 @@
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import LocalLibraryOutlinedIcon from "@mui/icons-material/LocalLibraryOutlined";
-import TrendingUpOutlinedIcon from "@mui/icons-material/TrendingUpOutlined";
-import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
-import React from "react";
-
 export const menu = [
   {
     title: "Normalization",
