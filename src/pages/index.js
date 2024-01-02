@@ -145,7 +145,7 @@ class Home extends React.Component {
               rawContent: (
                 <div
                   className="basic-card-content basic-card-content-centered embed-responsive"
-                  style={{ height: "300px" }}
+                  style={{ height: "400px" }}
                 >
                   <iframe
                     className="embed-responsive-item"
