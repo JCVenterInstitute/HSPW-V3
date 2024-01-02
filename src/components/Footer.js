@@ -1,14 +1,15 @@
-import React, { Component } from "react";
+import React from "react";
 import "./index.css";
 import jcvi from "../assets/logo-jcvi.svg";
 import forsyth from "../assets/logo-forsyth.png";
 import uthsc from "../assets/logo-uthsc.svg";
 import ub from "../assets/logo-ub.png";
 import nih from "../assets/logo-nih-nidcr.png";
+import { Container } from "@mui/material";
 
-class Footer extends Component {
-  render() {
-    return (
+const Footer = () => {
+  return (
+    <Container maxWidth="false">
       <div id="footer">
         <div className="footer-top">
           <div className="container">
@@ -147,8 +148,8 @@ class Footer extends Component {
           </div>
         </div>
       </div>
-    );
-  }
-}
+    </Container>
+  );
+};
 
 export default Footer;
