@@ -174,7 +174,10 @@ const PsiBlastSequenceParameters = ({ url }) => {
     <>
       {!loading ? (
         <>
-          <Box component="fieldset" sx={{ p: 2, mb: 2 }}>
+          <Box
+            component="fieldset"
+            sx={{ p: 2, mb: 2 }}
+          >
             <legend
               style={{
                 fontSize: "100%",
@@ -205,14 +208,20 @@ const PsiBlastSequenceParameters = ({ url }) => {
                 }}
               >
                 {parameterDetails[13].values.values.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
+                  <MenuItem
+                    key={option.value}
+                    value={option.value}
+                  >
                     {option.label}
                   </MenuItem>
                 ))}
               </TextField>
             )}
           </Box>
-          <Box component="fieldset" sx={{ p: 2, mb: 2 }}>
+          <Box
+            component="fieldset"
+            sx={{ p: 2, mb: 2 }}
+          >
             <legend
               style={{
                 fontSize: "100%",
@@ -242,13 +251,24 @@ const PsiBlastSequenceParameters = ({ url }) => {
             />
             <Typography sx={{ mb: 2, color: "black" }}>
               Or, upload a file:
-              <Button sx={{ ml: 1 }} variant="contained" component="label">
+              <Button
+                sx={{ ml: 1 }}
+                variant="contained"
+                component="label"
+              >
                 Upload File
-                <input type="file" onChange={handleFileChange} hidden />
+                <input
+                  type="file"
+                  onChange={handleFileChange}
+                  hidden
+                />
               </Button>
             </Typography>
           </Box>
-          <Box component="fieldset" sx={{ p: 2, mb: 2 }}>
+          <Box
+            component="fieldset"
+            sx={{ p: 2, mb: 2 }}
+          >
             <legend
               style={{
                 fontSize: "100%",
@@ -266,12 +286,18 @@ const PsiBlastSequenceParameters = ({ url }) => {
                 aria-controls="panel1a-content"
                 id="panel1a-header"
               >
-                <Typography variant="subtitle1" sx={{ color: "black" }}>
+                <Typography
+                  variant="subtitle1"
+                  sx={{ color: "black" }}
+                >
                   Optional Parameters
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Grid container spacing={1}>
+                <Grid
+                  container
+                  spacing={1}
+                >
                   {parameterDetails.map((detail, index) => {
                     if (
                       detail.name !== "Sequence" &&
@@ -282,9 +308,19 @@ const PsiBlastSequenceParameters = ({ url }) => {
                       detail.name !== "Database"
                     ) {
                       return (
-                        <Grid item xs={4} key={index}>
-                          <Grid container spacing={1}>
-                            <Grid item xs={12}>
+                        <Grid
+                          item
+                          xs={4}
+                          key={index}
+                        >
+                          <Grid
+                            container
+                            spacing={1}
+                          >
+                            <Grid
+                              item
+                              xs={12}
+                            >
                               <Typography
                                 sx={{
                                   fontWeight: "bold",
@@ -295,7 +331,10 @@ const PsiBlastSequenceParameters = ({ url }) => {
                                 {detail.name}:
                               </Typography>
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid
+                              item
+                              xs={12}
+                            >
                               <TextField
                                 select
                                 size="small"
@@ -334,9 +373,19 @@ const PsiBlastSequenceParameters = ({ url }) => {
                       detail.name === "Selected Hits"
                     ) {
                       return (
-                        <Grid item xs={4} key={index}>
-                          <Grid container spacing={1}>
-                            <Grid item xs={12}>
+                        <Grid
+                          item
+                          xs={4}
+                          key={index}
+                        >
+                          <Grid
+                            container
+                            spacing={1}
+                          >
+                            <Grid
+                              item
+                              xs={12}
+                            >
                               <Typography
                                 sx={{
                                   fontWeight: "bold",
@@ -347,7 +396,10 @@ const PsiBlastSequenceParameters = ({ url }) => {
                                 {detail.name}:
                               </Typography>
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid
+                              item
+                              xs={12}
+                            >
                               <TextField
                                 size="small"
                                 sx={{ width: "300px" }}
@@ -363,9 +415,19 @@ const PsiBlastSequenceParameters = ({ url }) => {
                       );
                     } else if (detail.name === "Previous Iteration Job Id") {
                       return (
-                        <Grid item xs={4} key={index}>
-                          <Grid container spacing={1}>
-                            <Grid item xs={12}>
+                        <Grid
+                          item
+                          xs={4}
+                          key={index}
+                        >
+                          <Grid
+                            container
+                            spacing={1}
+                          >
+                            <Grid
+                              item
+                              xs={12}
+                            >
                               <Typography
                                 sx={{
                                   fontWeight: "bold",
@@ -376,7 +438,10 @@ const PsiBlastSequenceParameters = ({ url }) => {
                                 {detail.name}:
                               </Typography>
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid
+                              item
+                              xs={12}
+                            >
                               <TextField
                                 size="small"
                                 sx={{ width: "300px" }}
@@ -394,7 +459,10 @@ const PsiBlastSequenceParameters = ({ url }) => {
               </AccordionDetails>
             </Accordion>
           </Box>
-          <Box component="fieldset" sx={{ p: 2, mb: 2 }}>
+          <Box
+            component="fieldset"
+            sx={{ p: 2, mb: 2 }}
+          >
             <legend
               style={{
                 fontSize: "100%",
@@ -443,18 +511,27 @@ const PsiBlastSequenceParameters = ({ url }) => {
               notification email and can be used as a way to identify your
               analysis
             </Typography>
-            <Stack direction="row" spacing={2}>
-              <Button variant="contained" onClick={handleSubmit}>
+            <Stack
+              direction="row"
+              spacing={2}
+            >
+              <Button
+                variant="contained"
+                onClick={handleSubmit}
+              >
                 Submit
               </Button>
-              <Button variant="outlined" onClick={handleReset}>
+              <Button
+                variant="outlined"
+                onClick={handleReset}
+              >
                 Reset
               </Button>
             </Stack>
           </Box>
         </>
       ) : (
-        <LinearProgress sx={{ mb: "500px" }} />
+        <LinearProgress />
       )}
     </>
   );

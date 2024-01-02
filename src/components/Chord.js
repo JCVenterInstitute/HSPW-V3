@@ -154,16 +154,19 @@ const Chord = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      await fetchSaliva();
-      await fetchSMSL();
-      await fetchParotid();
-      await fetchPlasma();
-      await fetchSalivaParotid();
-      await fetchSalivaPlasma();
-      await fetchSalivaSMSL();
-      await fetchSMSLPlasma();
-      await fetchSMSLParotid();
-      await fetchParotidPlasma();
+      await Promise.all([
+        fetchSaliva(),
+        fetchSMSL(),
+        fetchParotid(),
+        fetchPlasma(),
+        fetchSalivaParotid(),
+        fetchSalivaPlasma(),
+        fetchSalivaSMSL(),
+        fetchSMSLPlasma(),
+        fetchSMSLParotid(),
+        fetchParotidPlasma(),
+      ]);
+
       setLoading(false);
     };
 

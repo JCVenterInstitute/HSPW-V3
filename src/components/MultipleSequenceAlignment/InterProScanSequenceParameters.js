@@ -143,7 +143,10 @@ const InterProScanSequenceParameters = ({ url }) => {
     <>
       {!loading ? (
         <>
-          <Box component="fieldset" sx={{ p: 2, mb: 2 }}>
+          <Box
+            component="fieldset"
+            sx={{ p: 2, mb: 2 }}
+          >
             <legend
               style={{
                 fontSize: "100%",
@@ -173,13 +176,24 @@ const InterProScanSequenceParameters = ({ url }) => {
             />
             <Typography sx={{ mb: 2, color: "black" }}>
               Or, upload a file:
-              <Button sx={{ ml: 1 }} variant="contained" component="label">
+              <Button
+                sx={{ ml: 1 }}
+                variant="contained"
+                component="label"
+              >
                 Upload File
-                <input type="file" onChange={handleFileChange} hidden />
+                <input
+                  type="file"
+                  onChange={handleFileChange}
+                  hidden
+                />
               </Button>
             </Typography>
           </Box>
-          <Box component="fieldset" sx={{ p: 2, mb: 2 }}>
+          <Box
+            component="fieldset"
+            sx={{ p: 2, mb: 2 }}
+          >
             <legend
               style={{
                 fontSize: "100%",
@@ -197,21 +211,37 @@ const InterProScanSequenceParameters = ({ url }) => {
                 aria-controls="panel1a-content"
                 id="panel1a-header"
               >
-                <Typography variant="subtitle1" sx={{ color: "black" }}>
+                <Typography
+                  variant="subtitle1"
+                  sx={{ color: "black" }}
+                >
                   Optional Parameters
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Grid container spacing={1}>
+                <Grid
+                  container
+                  spacing={1}
+                >
                   {parameterDetails.map((detail, index) => {
                     if (
                       detail.name !== "Sequence" &&
                       detail.name !== "Applications"
                     ) {
                       return (
-                        <Grid item xs={4} key={index}>
-                          <Grid container spacing={1}>
-                            <Grid item xs={12}>
+                        <Grid
+                          item
+                          xs={4}
+                          key={index}
+                        >
+                          <Grid
+                            container
+                            spacing={1}
+                          >
+                            <Grid
+                              item
+                              xs={12}
+                            >
                               <Typography
                                 sx={{
                                   fontWeight: "bold",
@@ -222,7 +252,10 @@ const InterProScanSequenceParameters = ({ url }) => {
                                 {detail.name}:
                               </Typography>
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid
+                              item
+                              xs={12}
+                            >
                               <TextField
                                 select
                                 size="small"
@@ -283,11 +316,18 @@ const InterProScanSequenceParameters = ({ url }) => {
                 }
               />
             </Box>
-            <Box component="fieldset" sx={{ p: 2 }}>
+            <Box
+              component="fieldset"
+              sx={{ p: 2 }}
+            >
               <Grid container>
                 {parameterDetails[3] &&
                   parameterDetails[3].values.values.map((item, index) => (
-                    <Grid item xs={4} key={item.value}>
+                    <Grid
+                      item
+                      xs={4}
+                      key={item.value}
+                    >
                       <FormControlLabel
                         label={item.label}
                         control={
@@ -303,7 +343,10 @@ const InterProScanSequenceParameters = ({ url }) => {
               </Grid>
             </Box>
           </Box>
-          <Box component="fieldset" sx={{ p: 2, mb: 2 }}>
+          <Box
+            component="fieldset"
+            sx={{ p: 2, mb: 2 }}
+          >
             <legend
               style={{
                 fontSize: "100%",
@@ -352,18 +395,27 @@ const InterProScanSequenceParameters = ({ url }) => {
               notification email and can be used as a way to identify your
               analysis
             </Typography>
-            <Stack direction="row" spacing={2}>
-              <Button variant="contained" onClick={handleSubmit}>
+            <Stack
+              direction="row"
+              spacing={2}
+            >
+              <Button
+                variant="contained"
+                onClick={handleSubmit}
+              >
                 Submit
               </Button>
-              <Button variant="outlined" onClick={handleReset}>
+              <Button
+                variant="outlined"
+                onClick={handleReset}
+              >
                 Reset
               </Button>
             </Stack>
           </Box>
         </>
       ) : (
-        <LinearProgress sx={{ mb: "500px" }} />
+        <LinearProgress />
       )}
     </>
   );
