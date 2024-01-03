@@ -45,6 +45,7 @@ import AccessibilityPage from "./pages/Footer/Accessibility.js";
 
 // Google Analytics
 import ReactGA from "react-ga4";
+import NotFoundPage from "./pages/NotFoundPage.js";
 ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
 
 function App() {
@@ -206,6 +207,10 @@ function App() {
             <Route
               path="/accessibility"
               element={<AccessibilityPage />}
+            />
+            <Route
+              path="*"
+              element={<NotFoundPage />}
             />
           </Routes>
         </div>
