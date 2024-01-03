@@ -186,7 +186,9 @@ const ExperimentProteinDetail = () => {
         }
       )
       .then((res) => {
-        setTotalPages(Math.ceil(res.data.total.value / pageSize));
+        const totalResultsCount =
+          res.data.total.value > 10000 ? 10000 : res.data.total.value;
+        setTotalPages(Math.ceil(totalResultsCount / pageSize));
         return res.data.hits.map((item) => item._source);
       });
 
