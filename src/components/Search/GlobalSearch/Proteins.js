@@ -158,6 +158,7 @@ const Proteins = ({ searchText }) => {
   useEffect(() => {
     fetchData(1);
     setCurrentPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchText]);
 
   useEffect(() => {
@@ -165,6 +166,7 @@ const Proteins = ({ searchText }) => {
       gridApi.showLoadingOverlay();
       fetchData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortedColumn]);
 
   return (

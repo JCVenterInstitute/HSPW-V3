@@ -480,6 +480,7 @@ const AdvancedSearch = () => {
       gridApi.showLoadingOverlay();
       handleSearch();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortedColumn]);
 
   const handleReset = () => {

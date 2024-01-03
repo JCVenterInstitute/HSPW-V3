@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
@@ -130,6 +130,7 @@ const SearchResultsTable = ({
       setColumns(modifiedColumnDefs);
     }
     setRowData(searchResults);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchResults, columnDefs]);
 
   /**
@@ -158,11 +159,11 @@ const SearchResultsTable = ({
     return CustomLoadingOverlay;
   }, []);
 
-  const onGridReady = useCallback((params) => {
+  const onGridReady = (params) => {
     params.api.showLoadingOverlay();
     handleGridApiChange(params.api);
     handleColumnApiChange(params.columnApi);
-  }, []);
+  };
 
   return (
     <Box

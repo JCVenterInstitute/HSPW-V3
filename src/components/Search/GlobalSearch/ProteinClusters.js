@@ -154,6 +154,7 @@ const ProteinClusters = ({ searchText }) => {
   useEffect(() => {
     fetchData(1);
     setCurrentPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchText]);
 
   useEffect(() => {
@@ -161,6 +162,7 @@ const ProteinClusters = ({ searchText }) => {
       gridApi.showLoadingOverlay();
       fetchData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortedColumn]);
 
   return (

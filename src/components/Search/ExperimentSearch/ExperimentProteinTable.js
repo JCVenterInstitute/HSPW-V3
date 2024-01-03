@@ -180,6 +180,7 @@ const ExperimentProteinTable = ({ experiment_id_key, search_engine }) => {
   useEffect(() => {
     fetchData(1);
     setCurrentPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [experiment_id_key, searchText]);
 
   useEffect(() => {
@@ -187,6 +188,7 @@ const ExperimentProteinTable = ({ experiment_id_key, search_engine }) => {
       gridApi.showLoadingOverlay();
       fetchData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortedColumn]);
 
   return (
