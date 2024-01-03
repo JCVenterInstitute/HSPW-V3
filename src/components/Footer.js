@@ -14,6 +14,7 @@ const Footer = () => {
     { href: "/copyrights", text: "Copyrights" },
     { href: "/disclaimers", text: "Disclaimers" },
     { href: "/privacy-policy", text: "Privacy Notice" },
+    { href: "/contact", text: "Contact Us" },
   ];
 
   return (
@@ -121,30 +122,6 @@ const Footer = () => {
               ))}
             </Grid>
           </Grid>
-          {/* <div
-          style={{
-            height: "3px",
-            background: "#C9C9C9",
-            margin: "30px 0",
-          }}
-        ></div>
-        <Grid
-          container
-          spacing={3}
-        >
-          <Grid
-            item
-            container
-            justifyContent="center"
-            sx={{ ml: 4, mr: 4 }}
-          >
-            <Grid item>
-              <p className="address last">
-                Project is funded by NIDCR under grant R01 DE016937-16
-              </p>
-            </Grid>
-          </Grid>
-        </Grid> */}
           <div
             style={{
               height: "3px",
@@ -172,14 +149,6 @@ const Footer = () => {
                 <p className="address last">
                   Project is funded by NIDCR under grant R01 DE016937-16
                 </p>
-              </Grid>
-              <Grid item>
-                <Link
-                  href="/contact"
-                  underline="none"
-                >
-                  <p className="address last">Contact Us</p>
-                </Link>
               </Grid>
             </Grid>
           </Grid>
