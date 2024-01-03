@@ -46,6 +46,7 @@ import AccessibilityPage from "./pages/Footer/Accessibility.js";
 // Google Analytics
 import ReactGA from "react-ga4";
 import NotFoundPage from "./pages/NotFoundPage.js";
+import UploadExperiment from "./pages/UploadExperiment.js";
 ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
 
 function App() {
@@ -187,6 +188,10 @@ function App() {
             <Route
               path="/analysis-home"
               element={<AnalysisHome />}
+            />
+            <Route
+              path="/upload-experiment"
+              element={<UploadExperiment />}
             />
             <Route
               path="/analysis"

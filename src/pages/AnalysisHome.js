@@ -12,8 +12,6 @@ import { StyledEngineProvider } from "@mui/material/styles";
 class analysisHome extends React.Component {
   constructor(props) {
     super(props);
-    const base = "/hspw_new/";
-    const iconFolder = base + "public/assets/images/icons/";
     this.state = {
       activePage: "/",
       pages: {
@@ -79,18 +77,16 @@ class analysisHome extends React.Component {
       <React.StrictMode>
         <StyledEngineProvider injectFirst>
           <div style={{ height: "100%", width: "100%" }}>
-            <div
-              style={{ height: "30%", backgroundImage: `url(${main_feature})` }}
-            >
+            <div style={{ backgroundImage: `url(${main_feature})` }}>
               <h1
                 style={{
                   color: "white",
-                  textAlign: "left",
                   display: "left",
                   marginLeft: "20px",
                   marginBottom: "1rem",
+                  paddingTop: "25px",
+                  paddingLeft: "40px",
                 }}
-                align="left"
               >
                 Analysis
               </h1>
@@ -98,9 +94,12 @@ class analysisHome extends React.Component {
                 style={{
                   textAlign: "left",
                   color: "white",
-                  fontSize: "25px",
-                  paddingBottom: "15px",
+                  fontSize: "18px",
+                  paddingBottom: "25px",
                   marginLeft: "20px",
+                  marginRight: "20px",
+                  paddingLeft: "40px",
+                  paddingRight: "40px",
                 }}
               >
                 Analysis will identify proteins with differential abundance

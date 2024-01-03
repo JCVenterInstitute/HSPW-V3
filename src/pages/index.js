@@ -70,6 +70,7 @@ class Home extends React.Component {
               title: "Upload Experiment",
               blurb:
                 "Upload experiment to the database. Files have to be in mzTab format.",
+              location: "/upload-experiment",
             },
             {
               imageSrc: download,
