@@ -56,6 +56,11 @@
   padding: 0px !important;
 }
 
+.ag-theme-material .ag-checkbox-input-wrapper.ag-checked::after {
+  color: #55aaff !important;
+  /* background-color: black; */
+}
+
 .ag-cell-wrapper {
   width: 100%;
   height: 100%;
