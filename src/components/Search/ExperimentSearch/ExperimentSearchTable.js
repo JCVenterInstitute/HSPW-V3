@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import {
   Container,
   TextField,
@@ -26,6 +26,7 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import axios from "axios";
 import CustomLoadingOverlay from "../../CustomLoadingOverlay";
 import ClearIcon from "@mui/icons-material/Clear";
+import { ReactComponent as DownloadLogo } from "../../../assets/table-icon/download.svg";
 
 const Accordion = styled((props) => (
   <MuiAccordion
@@ -92,6 +93,7 @@ function LinkComponent(props) {
 }
 
 const ExperimentSearchTable = () => {
+  const gridRef = useRef();
   const [gridApi, setGridApi] = useState();
   const [expanded, setExpanded] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
@@ -116,6 +118,7 @@ const ExperimentSearchTable = () => {
     if (gridApi) {
       handleProteinCountFilter(lowerLimit, upperLimit);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lowerLimit, upperLimit]);
 
   const handleProteinCountFilter = (lowerLimit, upperLimit) => {
@@ -134,6 +137,12 @@ const ExperimentSearchTable = () => {
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
+  }, []);
+
+  // Export the current page data as CSV file
+  const onBtExport = useCallback(() => {
+    gridRef.current.api.exportDataAsCsv();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onGridReady = useCallback((params) => {
@@ -163,6 +172,7 @@ const ExperimentSearchTable = () => {
         setTotalPageNumber(Math.ceil(totalCount / recordsPerPage));
         setGridApi(params.api);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Previous Button Click Handler
@@ -774,6 +784,7 @@ const ExperimentSearchTable = () => {
               style={{ height: 700 }}
             >
               <AgGridReact
+                ref={gridRef}
                 className="ag-cell-wrap-text"
                 rowData={rowData}
                 columnDefs={columns}
@@ -791,6 +802,29 @@ const ExperimentSearchTable = () => {
                   LinkComponent,
                 }}
               ></AgGridReact>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <Button
+                onClick={onBtExport}
+                sx={{
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  marginTop: "10px",
+                  textTransform: "unset",
+                  color: "#F6921E",
+                  fontSize: "20",
+                  "&:hover": {
+                    backgroundColor: "inherit",
+                  },
+                }}
+              >
+                <DownloadLogo
+                  style={{
+                    marginRight: "10px",
+                  }}
+                />
+                Download Spreadsheet
+              </Button>
             </div>
           </Box>
         </Container>
