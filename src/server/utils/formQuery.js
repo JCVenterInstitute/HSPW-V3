@@ -5,7 +5,8 @@ exports.formQuery = async (
   selectedProperties,
   size,
   from,
-  paginationKey
+  paginationKey,
+  sortedColumn
 ) => {
   console.log("> Forming query...");
 
@@ -253,6 +254,16 @@ exports.formQuery = async (
       sort: [{ _id: "asc" }],
     };
   } else {
+    // None keyword list for sorting
+    const notKeywordList = [
+      "Gene Name",
+      "number_of_members",
+      "experiment_id_key",
+      "Name",
+      "Date of Publication",
+      "salivary_proteins.protein_sequence_length",
+      "salivary_proteins.mass",
+    ];
     finalQuery = {
       track_total_hits: true,
       size: size,
@@ -263,6 +274,19 @@ exports.formQuery = async (
           [booleanOperator === "OR" ? "should" : "must"]: clauses,
         },
       },
+      ...(sortedColumn && {
+        sort: [
+          {
+            [notKeywordList.includes(sortedColumn.attribute)
+              ? `${sortedColumn.attribute}`
+              : sortedColumn.attribute === "salivary_proteins.keywords"
+              ? `${sortedColumn.attribute}.keyword.keyword`
+              : `${sortedColumn.attribute}.keyword`]: {
+              order: sortedColumn.order,
+            },
+          },
+        ],
+      }),
     };
   }
 

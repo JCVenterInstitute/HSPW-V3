@@ -1,5 +1,5 @@
 import React, { useMemo, useRef } from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import main_feature from "../../assets/hero.jpeg";
 import {
   Typography,
@@ -136,7 +136,7 @@ const AdvancedSearch = () => {
   const [propertiesOptions, setPropertiesOptions] = useState([]);
   const [rows, setRows] = useState([
     { id: Date.now(), selectedProperty: "", selectedOperation: "", value: "" },
-  ]); // Start with one row
+  ]);
   const [selectedProperties, setSelectedProperties] = useState([]);
   const [searchStarted, setSearchStarted] = useState(false);
   const [searchResults, setSearchResults] = useState();
@@ -145,6 +145,8 @@ const AdvancedSearch = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [gridApi, setGridApi] = useState();
+  const [columnApi, setColumnApi] = useState(null);
+  const [sortedColumn, setSortedColumn] = useState(null);
 
   const defaultColDef = {
     flex: 1,
@@ -270,6 +272,14 @@ const AdvancedSearch = () => {
 
   const handleGridApiChange = (params) => {
     setGridApi(params);
+  };
+
+  const handleColumnApiChange = (params) => {
+    setColumnApi(params);
+  };
+
+  const handleSortedColumnChange = (params) => {
+    setSortedColumn(params);
   };
 
   const handleAddRow = () => {
@@ -438,6 +448,7 @@ const AdvancedSearch = () => {
         selectedProperties,
         size: pageSize,
         from,
+        sortedColumn,
       };
       const result = await axios
         .post(
@@ -458,8 +469,18 @@ const AdvancedSearch = () => {
 
       setColumnDefs(columns);
       setSearchResults(result);
+      if (gridApi) {
+        gridApi.hideOverlay();
+      }
     }
   };
+
+  useEffect(() => {
+    if (gridApi) {
+      gridApi.showLoadingOverlay();
+      handleSearch();
+    }
+  }, [sortedColumn]);
 
   const handleReset = () => {
     setEntity("");
@@ -806,6 +827,7 @@ const AdvancedSearch = () => {
           <Button
             variant="contained"
             onClick={() => {
+              setSortedColumn(null);
               setCurrentPage(1);
               handleSearch(1);
             }}
@@ -999,10 +1021,13 @@ const AdvancedSearch = () => {
               </Box>
               <SearchResultsTable
                 entity={entity}
+                columnApi={columnApi}
                 searchResults={searchResults}
                 columnDefs={columnDefs}
                 recordsPerPage={recordsPerPage}
                 handleGridApiChange={handleGridApiChange}
+                handleColumnApiChange={handleColumnApiChange}
+                handleSortedColumnChange={handleSortedColumnChange}
               />
             </Box>
           ) : (

@@ -7,10 +7,13 @@ import { Box } from "@mui/material";
 
 const SearchResultsTable = ({
   entity,
+  columnApi,
   searchResults,
   columnDefs,
   recordsPerPage,
   handleGridApiChange,
+  handleColumnApiChange,
+  handleSortedColumnChange,
 }) => {
   const [rowData, setRowData] = useState([]);
   const [columns, setColumns] = useState([]);
@@ -18,7 +21,7 @@ const SearchResultsTable = ({
   const defaultColDef = {
     flex: 1,
     resizable: true,
-    // sortable: true,
+    sortable: true,
     minWidth: 170,
   };
 
@@ -129,6 +132,28 @@ const SearchResultsTable = ({
     setRowData(searchResults);
   }, [searchResults, columnDefs]);
 
+  /**
+   * Track which column is selected for sort by user
+   */
+  const onSortChanged = () => {
+    const columnState = columnApi.getColumnState();
+    const sortedColumn = columnState.filter((col) => col.sort !== null);
+
+    if (sortedColumn.length !== 0) {
+      const { sort, colId } = sortedColumn[0];
+      if (entity === "Salivary Proteins") {
+        handleSortedColumnChange({
+          attribute: `salivary_proteins.${colId}`,
+          order: sort,
+        });
+      } else {
+        handleSortedColumnChange({ attribute: colId, order: sort });
+      }
+    } else {
+      handleSortedColumnChange(null);
+    }
+  };
+
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
   }, []);
@@ -136,6 +161,7 @@ const SearchResultsTable = ({
   const onGridReady = useCallback((params) => {
     params.api.showLoadingOverlay();
     handleGridApiChange(params.api);
+    handleColumnApiChange(params.columnApi);
   }, []);
 
   return (
@@ -161,6 +187,7 @@ const SearchResultsTable = ({
           suppressPaginationPanel={true}
           loadingOverlayComponent={loadingOverlayComponent}
           suppressScrollOnNewData={true}
+          onSortChanged={onSortChanged}
         ></AgGridReact>
       </div>
     </Box>

@@ -1933,15 +1933,16 @@ app.get("/api/properties/:entity", async (req, res) => {
   }
 });
 
-const advancedSearch = async (
+const advancedSearch = async ({
   entity,
   rows,
   booleanOperator,
   selectedProperties,
   size,
   from,
-  paginationKey
-) => {
+  paginationKey,
+  sortedColumn,
+}) => {
   // Initialize the client.
   let client;
   if (entity === "Salivary Proteins" || entity === "Annotations") {
@@ -1968,7 +1969,8 @@ const advancedSearch = async (
     selectedProperties,
     size,
     from,
-    paginationKey
+    paginationKey,
+    sortedColumn
   );
 
   const response = await client.search({
@@ -1981,25 +1983,9 @@ const advancedSearch = async (
 
 app.post("/api/advanced-search/build-query", async (req, res) => {
   try {
-    const {
-      entity,
-      rows,
-      booleanOperator,
-      selectedProperties,
-      size,
-      from,
-      paginationKey,
-    } = req.body;
+    const payload = req.body;
 
-    const result = await advancedSearch(
-      entity,
-      rows,
-      booleanOperator,
-      selectedProperties,
-      size,
-      from,
-      paginationKey
-    );
+    const result = await advancedSearch(payload);
     res.json(result);
   } catch (error) {
     console.log(error);
