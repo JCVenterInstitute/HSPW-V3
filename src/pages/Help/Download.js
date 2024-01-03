@@ -1,24 +1,8 @@
 import React from "react";
 import DownloadTable from "../../components/Download/DownloadTable.js";
 import "../style.css";
-import { components } from "react-select";
 
 import MainFeature from "../../assets/page-main.png";
-
-const Option = (props) => {
-  return (
-    <div>
-      <components.Option {...props}>
-        <input
-          type="checkbox"
-          checked={props.isSelected}
-          onChange={() => null}
-        />{" "}
-        <label>{props.label}</label>
-      </components.Option>
-    </div>
-  );
-};
 
 const Download = () => {
   return (

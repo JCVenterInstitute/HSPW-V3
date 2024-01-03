@@ -59,12 +59,10 @@ const ProteinSetSearch = () => {
   const [searchType, setSearchType] = useState("uniprot_accession");
   const [rowData, setRowData] = useState([]);
   const [searchInput, setSearchInput] = useState("");
-  const [gridApi, setGridApi] = useState(null);
 
   const gridRef = useRef();
 
   const onGridReady = (params) => {
-    setGridApi(params.api);
     gridRef.current.api.sizeColumnsToFit();
   };
 

@@ -27,7 +27,6 @@ const ProteinDetailSequence = (props) => {
   };
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");
-  const [checkData, setCheckData] = useState(false);
 
   const fetchProtein = async () => {
     const response = await axios.get(url);
@@ -42,18 +41,17 @@ const ProteinDetailSequence = (props) => {
       setData(proteinResult);
 
       if (proteinResult[0]._source.salivary_proteins) {
-        const cites = proteinResult[0]._source.salivary_proteins.cites;
         const promises = [];
 
         await Promise.all(promises);
       }
 
       setLoading(false);
-      setCheckData(true);
     }
   };
   useEffect(() => {
     processData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isLoading === true) {
