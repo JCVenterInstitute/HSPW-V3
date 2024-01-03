@@ -601,19 +601,6 @@ const AdvancedSearch = () => {
             query, using the plus (+) sign to add fields and the minus (-) sign
             to remove fields
           </legend>
-          {/* <Box
-            sx={{
-              backgroundColor: "#fafafa",
-              border: "1px solid #ccc",
-              padding: "0.4em",
-              color: "#666",
-            }}
-          >
-            Use the builder below to create your search
-          </Box>
-          <Typography sx={{ mt: 4, mb: 2, color: "#1463B9" }}>
-            Builder
-          </Typography> */}
           <Grid
             container
             spacing={2}
