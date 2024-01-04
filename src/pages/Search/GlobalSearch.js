@@ -77,7 +77,7 @@ const GlobalSearch = () => {
           find the desired results.
         </p>
       </div>
-      <Container>
+      <Container maxWidth="xl">
         <Box sx={{ display: "flex", alignItems: "center", mt: 4, mb: 4 }}>
           <form
             onSubmit={handleSearch}

@@ -529,7 +529,7 @@ const AdvancedSearch = () => {
           the semantic annotations stored in this database.
         </p>
       </div>
-      <Container>
+      <Container maxWidth="xl">
         <Box
           component="fieldset"
           sx={{ p: 2, mb: 2, mt: 3 }}

@@ -39,7 +39,7 @@ const ClustalOmega = () => {
           the European Bioinformatics Institute (EBI).
         </p>
       </div>
-      <Container>
+      <Container maxWidth="xl">
         <Typography
           variant="h5"
           sx={{ fontWeight: "bold", mt: 3, color: "black" }}
@@ -47,7 +47,10 @@ const ClustalOmega = () => {
           Sequence Alignment Options:
         </Typography>
       </Container>
-      <Container sx={{ mt: 3 }}>
+      <Container
+        maxWidth="xl"
+        sx={{ mt: 3 }}
+      >
         <ClustalOmegaSequenceParameters url="clustalo" />
       </Container>
     </>

@@ -198,7 +198,7 @@ const InterProScanResults = () => {
           refinement procedures, increases the complexity of the problem.
         </p>
       </div>
-      <Container>
+      <Container maxWidth="xl">
         <Typography
           variant="h5"
           sx={{ mt: 3, mb: 2, color: "black" }}
@@ -207,7 +207,10 @@ const InterProScanResults = () => {
         </Typography>
       </Container>
       {!isFinished ? (
-        <Container sx={{ minHeight: "60vh" }}>
+        <Container
+          maxWidth="xl"
+          sx={{ minHeight: "60vh" }}
+        >
           <Typography
             variant="h5"
             sx={{ mt: 3, color: "#1463B9" }}
@@ -223,7 +226,7 @@ const InterProScanResults = () => {
           </Typography>
         </Container>
       ) : (
-        <Container>
+        <Container maxWidth="xl">
           <Tabs>
             <TabList>
               <Tab>Tool Output</Tab>

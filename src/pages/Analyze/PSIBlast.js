@@ -43,7 +43,7 @@ const PSIBlast = () => {
           available to use patterns to restrict search results.
         </p>
       </div>
-      <Container>
+      <Container maxWidth="xl">
         <Typography
           variant="h5"
           sx={{ fontWeight: "bold", mt: 3, color: "black" }}
@@ -51,7 +51,10 @@ const PSIBlast = () => {
           Sequence Search:
         </Typography>
       </Container>
-      <Container sx={{ mt: 3 }}>
+      <Container
+        maxWidth="xl"
+        sx={{ mt: 3 }}
+      >
         <PsiBlastSequenceParameters url="psiblast" />
       </Container>
     </>

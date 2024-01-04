@@ -113,7 +113,7 @@ const ClustalOmegaResults = () => {
       type: "MsaView",
       data: { msa: inputSequence },
     });
-    model.setWidth("1150");
+    model.setWidth("1500");
 
     setModel(model);
     setInputSequence(inputSequence);
@@ -181,7 +181,7 @@ const ClustalOmegaResults = () => {
           the European Bioinformatics Institute (EBI).
         </p>
       </div>
-      <Container>
+      <Container maxWidth="xl">
         <Typography
           variant="h5"
           sx={{ mt: 3, mb: 2, color: "black" }}
@@ -190,7 +190,7 @@ const ClustalOmegaResults = () => {
         </Typography>
       </Container>
       {!isFinished ? (
-        <Container>
+        <Container maxWidth="xl">
           <Typography
             variant="h5"
             sx={{ mt: 3, color: "#1463B9" }}
@@ -206,7 +206,10 @@ const ClustalOmegaResults = () => {
           </Typography>
         </Container>
       ) : (
-        <Container sx={{ minHeight: "60vh" }}>
+        <Container
+          maxWidth="xl"
+          sx={{ minHeight: "60vh" }}
+        >
           <Tabs>
             <TabList>
               <Tab>Alignments</Tab>

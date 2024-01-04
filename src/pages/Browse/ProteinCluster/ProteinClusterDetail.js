@@ -213,7 +213,7 @@ const Cluster_Detail = (props) => {
           Number of Members: {data[0]["_source"]["number_of_members"]}
         </p>
       </div>
-      <Container maxWidth="false">
+      <Container maxWidth="xl">
         <TableContainer style={{ overflowY: "auto" }}>
           <Table style={{ margin: "40px" }}>
             <TableHead>

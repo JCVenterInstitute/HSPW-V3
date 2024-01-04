@@ -37,7 +37,7 @@ const InterProScan = () => {
           refinement procedures, increases the complexity of the problem.
         </p>
       </div>
-      <Container>
+      <Container maxWidth="xl">
         <Typography
           variant="h5"
           sx={{ fontWeight: "bold", mt: 3, color: "black" }}
@@ -45,7 +45,10 @@ const InterProScan = () => {
           Sequence Search:
         </Typography>
       </Container>
-      <Container sx={{ mt: 3 }}>
+      <Container
+        maxWidth="xl"
+        sx={{ mt: 3 }}
+      >
         <InterProScanSequenceParameters url="iprscan5" />
       </Container>
     </>
