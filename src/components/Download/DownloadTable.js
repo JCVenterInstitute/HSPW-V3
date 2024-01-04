@@ -150,7 +150,10 @@ function DownloadTable() {
 
   return (
     <>
-      <Container sx={{ mt: 3 }}>
+      <Container
+        maxWidth="xl"
+        sx={{ mt: 3 }}
+      >
         <div
           className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
           style={{ height: 900 }}

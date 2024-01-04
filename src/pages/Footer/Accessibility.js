@@ -18,7 +18,10 @@ const AccessibilityPage = () => {
           Accessibility
         </h1>
       </div>
-      <Container sx={{ my: 6 }}>
+      <Container
+        maxWidth="xl"
+        sx={{ my: 6 }}
+      >
         <Typography sx={{ fontFamily: "Lato", fontSize: "18px" }}>
           We are making every effort to ensure that the information available on
           our website is accessible to all. If you use special adaptive

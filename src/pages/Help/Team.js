@@ -27,7 +27,10 @@ const Team = () => {
           Team
         </h1>
       </div>
-      <Container sx={{ mt: 4 }}>
+      <Container
+        maxWidth="xl"
+        sx={{ mt: 4 }}
+      >
         <Typography
           variant="h5"
           sx={{

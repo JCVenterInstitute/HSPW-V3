@@ -31,7 +31,10 @@ const PrivacyNoticePage = () => {
           Privacy Policy
         </h1>
       </div>
-      <Container sx={{ my: 4 }}>
+      <Container
+        maxWidth="xl"
+        sx={{ my: 4 }}
+      >
         <Typography
           variant="h5"
           sx={{

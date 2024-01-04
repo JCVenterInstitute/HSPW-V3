@@ -39,7 +39,10 @@ const About = () => {
           of health and disease.
         </p>
       </div>
-      <Container sx={{ mt: 4 }}>
+      <Container
+        maxWidth="xl"
+        sx={{ mt: 4 }}
+      >
         <Typography
           variant="h5"
           sx={{

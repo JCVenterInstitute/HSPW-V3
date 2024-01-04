@@ -262,7 +262,7 @@ const Contact = () => {
           along with your message if desired.
         </p>
       </div>
-      <Container>
+      <Container maxWidth="xl">
         <Box
           component="fieldset"
           sx={{ p: 2, mb: 2, mt: 3 }}
