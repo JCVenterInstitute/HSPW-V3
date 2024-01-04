@@ -25,12 +25,12 @@ export const options = {
     },
   },
   bubble: { textStyle: { fontSize: 11 } },
-  chartArea: {
-    left: "10%",
-    top: "5%",
-    width: "75%", // Decrease if necessary to allow space for bubbles
-    height: "50%",
-  },
+  // chartArea: {
+  //   left: "10%",
+  //   top: "5%",
+  //   width: "75%", // Decrease if necessary to allow space for bubbles
+  //   height: "50%",
+  // },
 };
 
 const ProteinCluster = () => {
