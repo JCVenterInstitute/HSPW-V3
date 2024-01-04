@@ -215,9 +215,14 @@ div p {
 
 .hero-link {
   font-family: Montserrat;
-  font-size: 12px;
+  font-size: 14px;
   margin-left: 10px;
   margin-right: 10px;
+  color: #226ab3;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-transform: lowercase;
 }
 
 .item {
@@ -327,9 +332,6 @@ body {
   flex-direction: row;
   justify-content: space-between;
   cursor: pointer;
-}
-
-.accordion-title:hover {
 }
 
 .accordion-title,
