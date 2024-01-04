@@ -2,7 +2,7 @@ import Table from "@mui/material/Table";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
-import { TableBody, TableHead } from "@mui/material";
+import { Container, TableBody, TableHead } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import LinearProgress from "@mui/material/LinearProgress";
@@ -213,144 +213,147 @@ const Cluster_Detail = (props) => {
           Number of Members: {data[0]["_source"]["number_of_members"]}
         </p>
       </div>
-      <TableContainer style={{ maxHeight: "400px", overflowY: "auto" }}>
-        <Table style={{ margin: "40px", maxWidth: "90%" }}>
-          <TableHead>
-            <TableRow style={{ border: "1px solid white" }}>
-              <TableCell
-                style={{
-                  backgroundColor: "#1463B9",
-                  color: "white",
-                  fontFamily: "Montserrat",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  border: "1px solid white",
-                  borderTopLeftRadius: "10px",
-                }}
-              >
-                Accession Number
-              </TableCell>
-              <TableCell
-                style={{
-                  backgroundColor: "#1463B9",
-                  color: "white",
-                  fontFamily: "Montserrat",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  border: "1px solid white",
-                }}
-              >
-                Name
-              </TableCell>
-              <TableCell
-                style={{
-                  backgroundColor: "#1463B9",
-                  color: "white",
-                  fontFamily: "Montserrat",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  border: "1px solid white",
-                }}
-              >
-                Peptide Count
-              </TableCell>
-              <TableCell
-                style={{
-                  backgroundColor: "#1463B9",
-                  color: "white",
-                  fontFamily: "Montserrat",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  border: "1px solid white",
-                }}
-              >
-                Abundance
-              </TableCell>
-              <TableCell
-                style={{
-                  backgroundColor: "#1463B9",
-                  color: "white",
-                  fontFamily: "Montserrat",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  border: "1px solid white",
-                }}
-              >
-                Tissue
-              </TableCell>
-              <TableCell
-                style={{
-                  backgroundColor: "#1463B9",
-                  color: "white",
-                  fontFamily: "Montserrat",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  border: "1px solid white",
-                }}
-              >
-                Disease State
-              </TableCell>
-              <TableCell
-                style={{
-                  backgroundColor: "#1463B9",
-                  color: "white",
-                  fontFamily: "Montserrat",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  border: "1px solid white",
-                  borderTopRightRadius: "10px",
-                }}
-              >
-                Institute
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {proteinDetails.map((protein, i) => (
-              <TableRow key={i}>
-                <TableCell>
-                  {protein.protein_name !== "Unknown" &&
-                  protein.protein_name !== "Error Fetching" ? (
-                    <a href={`/protein/${protein.uniprot_id}`}>
-                      {protein.uniprot_id}
-                    </a>
-                  ) : (
-                    protein.uniprot_id
-                  )}
+      <Container maxWidth="false">
+        <TableContainer style={{ overflowY: "auto" }}>
+          <Table style={{ margin: "40px" }}>
+            <TableHead>
+              <TableRow style={{ border: "1px solid white" }}>
+                <TableCell
+                  style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    border: "1px solid white",
+                    borderTopLeftRadius: "10px",
+                  }}
+                >
+                  Accession Number
                 </TableCell>
-
-                <TableCell>
-                  {protein.protein_name !== "Unknown" &&
-                  protein.protein_name !== "Error Fetching"
-                    ? protein.protein_name
-                    : "N/A"}
+                <TableCell
+                  style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    border: "1px solid white",
+                  }}
+                >
+                  Name
                 </TableCell>
-                <TableCell>{protein.peptide_count}</TableCell>
-                <TableCell>{protein.abundance_cleavages}</TableCell>
-                {protein.study_details["_source"] !== undefined ? (
-                  <>
-                    <TableCell>
-                      {protein.study_details["_source"].sample_type || "N/A"}
-                    </TableCell>
-                    <TableCell>
-                      {protein.study_details["_source"].condition_type || "N/A"}
-                    </TableCell>
-                    <TableCell>
-                      {protein.study_details["_source"].institution || "N/A"}
-                    </TableCell>
-                  </>
-                ) : (
-                  <>
-                    <TableCell>N/A</TableCell>
-                    <TableCell>N/A</TableCell>
-                    <TableCell>N/A</TableCell>
-                  </>
-                )}
+                <TableCell
+                  style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    border: "1px solid white",
+                  }}
+                >
+                  Peptide Count
+                </TableCell>
+                <TableCell
+                  style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    border: "1px solid white",
+                  }}
+                >
+                  Abundance
+                </TableCell>
+                <TableCell
+                  style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    border: "1px solid white",
+                  }}
+                >
+                  Tissue
+                </TableCell>
+                <TableCell
+                  style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    border: "1px solid white",
+                  }}
+                >
+                  Disease State
+                </TableCell>
+                <TableCell
+                  style={{
+                    backgroundColor: "#1463B9",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    border: "1px solid white",
+                    borderTopRightRadius: "10px",
+                  }}
+                >
+                  Institute
+                </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {proteinDetails.map((protein, i) => (
+                <TableRow key={i}>
+                  <TableCell>
+                    {protein.protein_name !== "Unknown" &&
+                    protein.protein_name !== "Error Fetching" ? (
+                      <a href={`/protein/${protein.uniprot_id}`}>
+                        {protein.uniprot_id}
+                      </a>
+                    ) : (
+                      protein.uniprot_id
+                    )}
+                  </TableCell>
+
+                  <TableCell>
+                    {protein.protein_name !== "Unknown" &&
+                    protein.protein_name !== "Error Fetching"
+                      ? protein.protein_name
+                      : "N/A"}
+                  </TableCell>
+                  <TableCell>{protein.peptide_count}</TableCell>
+                  <TableCell>{protein.abundance_cleavages}</TableCell>
+                  {protein.study_details["_source"] !== undefined ? (
+                    <>
+                      <TableCell>
+                        {protein.study_details["_source"].sample_type || "N/A"}
+                      </TableCell>
+                      <TableCell>
+                        {protein.study_details["_source"].condition_type ||
+                          "N/A"}
+                      </TableCell>
+                      <TableCell>
+                        {protein.study_details["_source"].institution || "N/A"}
+                      </TableCell>
+                    </>
+                  ) : (
+                    <>
+                      <TableCell>N/A</TableCell>
+                      <TableCell>N/A</TableCell>
+                      <TableCell>N/A</TableCell>
+                    </>
+                  )}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Container>
     </>
   );
 };

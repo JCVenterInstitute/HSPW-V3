@@ -871,12 +871,8 @@ const ProteinSignatureTable = () => {
                 paginationPageSize={50}
               />
             </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
+
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Button
                 onClick={onBtExport}
                 sx={{

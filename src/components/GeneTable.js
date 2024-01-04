@@ -798,30 +798,28 @@ const GeneTable = () => {
                 enableCellTextSelection={true}
               />
             </div>
-            <div>
-              <button
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <Button
                 onClick={onBtExport}
-                style={{
+                sx={{
                   fontWeight: "bold",
                   textAlign: "center",
+                  marginTop: "10px",
+                  textTransform: "unset",
                   color: "#F6921E",
-                  background: "white",
                   fontSize: "20",
-                  border: "none",
-                  cursor: "pointer",
+                  "&:hover": {
+                    backgroundColor: "inherit",
+                  },
                 }}
               >
                 <DownloadLogo
                   style={{
                     marginRight: "10px",
-                    paddingTop: "5px",
-                    display: "inline",
-                    position: "relative",
-                    top: "0.15em",
                   }}
                 />
                 Download Spreadsheet
-              </button>
+              </Button>
             </div>
           </Box>
         </Container>
