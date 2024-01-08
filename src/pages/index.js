@@ -112,8 +112,8 @@ class Home extends React.Component {
                 <div className="basic-card-content basic-card-content-centered">
                   <div style={{ display: "flex", justifyContent: "center" }}>
                     <LinkedInEmbed
-                      url="https://www.linkedin.com/embed/feed/update/urn:li:share:6898694772484112384"
-                      postUrl="https://www.linkedin.com/posts/peterdiamandis_5-discoveries-the-james-webb-telescope-will-activity-6898694773406875648-z-D7"
+                      url="https://www.linkedin.com/embed/feed/update/urn:li:share:7150141766891892736"
+                      postUrl="https://www.linkedin.com/posts/salivary-proteome_thehuman-salivary-proteome-wikiis-a-collaborative-activity-7150141767646945280-3nBJ?utm_source=share&utm_medium=member_desktop"
                       width={430}
                       height={400}
                     />
