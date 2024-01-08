@@ -357,15 +357,26 @@ const Chord = (props) => {
     svg
       .append("g")
       .selectAll("path")
-      .data(chord)
+      .data(chord.groups)
       .enter()
       .append("path")
       .style("fill", function (d) {
         return fill(d.index);
       })
       .attr("class", "group")
-      // Remove the error in the Chord plot
-      // .attr("d", d3.arc().innerRadius(innerRadius).outerRadius(outerRadius))
+      .attr(
+        "d",
+        d3
+          .arc()
+          .innerRadius(innerRadius)
+          .outerRadius(outerRadius)
+          .startAngle(function (d) {
+            return d.startAngle;
+          })
+          .endAngle(function (d) {
+            return d.endAngle;
+          })
+      )
       .style("stroke-width", 0.75)
       .style("stroke", function (d) {
         return fill(d.index);
@@ -384,7 +395,9 @@ const Chord = (props) => {
       .style("fill", function (d) {
         return "url(#" + getGradID(d) + ")";
       })
-      //.style("fill", function(d) { return fill(d.source.index); })
+      // .style("fill", function (d) {
+      //   return fill(d.source.index);
+      // })
       .style("stroke-width", 0.5)
       .style("stoke", function (d) {
         return fill(d.index);
@@ -450,7 +463,7 @@ const Chord = (props) => {
       })
       .attr(
         "style",
-        "font-size: 12; font -family: Helvetica, sans-serif; cursor:pointer;color:white;"
+        "font-size: 12; font-family: Helvetica, sans-serif; cursor:pointer; color:white;"
       )
       .style("fill", "white")
       .text(function (d) {
@@ -459,8 +472,7 @@ const Chord = (props) => {
       .attr("class", "text2");
 
     svg.selectAll("g").on("click", function (d, i) {
-      var linkBase =
-        "https://salivaryproteome.org/public/index.php/Category:Salivary_Proteins";
+      var linkBase = "/salivary-protein";
 
       document.location.href = linkBase;
     });
@@ -496,7 +508,7 @@ const Chord = (props) => {
           .style("opacity", opacity);
 
         svg
-          .selectAll(".text2")
+          .selectAll(".text2 path")
           .filter(function (d) {
             return counts(d.index);
           })
@@ -504,7 +516,7 @@ const Chord = (props) => {
           .duration(500)
           .attr("opacity", 1 - opacity)
           .style("fill", "white")
-          .attr("style", "font-size: 12; font-family: Helvetica, sans-serif");
+          .attr("style", "font-size: 12; font-family: Helvetica, sans-serif;");
 
         svg
           .selectAll(".text3")
