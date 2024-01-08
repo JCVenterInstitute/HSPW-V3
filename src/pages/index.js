@@ -110,13 +110,36 @@ class Home extends React.Component {
               destination: false,
               rawContent: (
                 <div className="basic-card-content basic-card-content-centered">
-                  <div style={{ display: "flex", justifyContent: "center" }}>
-                    <LinkedInEmbed
-                      url="https://www.linkedin.com/embed/feed/update/urn:li:share:7150141766891892736"
-                      postUrl="https://www.linkedin.com/posts/salivary-proteome_thehuman-salivary-proteome-wikiis-a-collaborative-activity-7150141767646945280-3nBJ?utm_source=share&utm_medium=member_desktop"
-                      width={430}
-                      height={400}
-                    />
+                  <div
+                    style={{
+                      maxHeight: "400px",
+                      overflowY: "auto",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <iframe
+                        src="https://www.linkedin.com/embed/feed/update/urn:li:share:7150141766891892736"
+                        height="400"
+                        width="410"
+                        frameborder="0"
+                        allowfullscreen=""
+                        title="Embedded post"
+                      ></iframe>
+                      <iframe
+                        src="https://www.linkedin.com/embed/feed/update/urn:li:share:7150141766891892736"
+                        height="400"
+                        width="410"
+                        frameborder="0"
+                        allowfullscreen=""
+                        title="Embedded post"
+                      ></iframe>
+                    </div>
                   </div>
                 </div>
               ),
