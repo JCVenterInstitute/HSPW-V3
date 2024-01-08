@@ -364,7 +364,8 @@ const Chord = (props) => {
         return fill(d.index);
       })
       .attr("class", "group")
-      .attr("d", d3.arc().innerRadius(innerRadius).outerRadius(outerRadius))
+      // Remove the error in the Chord plot
+      // .attr("d", d3.arc().innerRadius(innerRadius).outerRadius(outerRadius))
       .style("stroke-width", 0.75)
       .style("stroke", function (d) {
         return fill(d.index);
