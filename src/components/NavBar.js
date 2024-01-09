@@ -18,7 +18,7 @@ export const NavBar = () => {
       color="transparent"
       sx={{ width: "100%", height: "20%" }}
     >
-      <Toolbar style={{ justifyContent: "space-between" }}>
+      <Toolbar style={{ justifyContent: "flex-start" }}>
         <Box
           component="img"
           sx={{
