@@ -218,6 +218,12 @@ export const NavBar = () => {
                   </MenuItem>
                   <MenuItem
                     component="a"
+                    href="/user-guide"
+                  >
+                    User Guide
+                  </MenuItem>
+                  <MenuItem
+                    component="a"
                     href="/download"
                   >
                     Download

@@ -47,6 +47,7 @@ import AccessibilityPage from "./pages/Footer/Accessibility.js";
 import ReactGA from "react-ga4";
 import NotFoundPage from "./pages/NotFoundPage.js";
 import UploadExperiment from "./pages/UploadExperiment.js";
+import UserGuide from "./pages/Help/UserGuide.js";
 ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
 
 function App() {
@@ -160,6 +161,10 @@ function App() {
             <Route
               path="/about"
               element={<About />}
+            />
+            <Route
+              path="/user-guide"
+              element={<UserGuide />}
             />
             <Route
               path="/download"
