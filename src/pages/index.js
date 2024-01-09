@@ -173,7 +173,6 @@ class Home extends React.Component {
             data-layout={page.layout}
           >
             <Carousel />
-
             <div id="page-content">
               <div className="basic-card-container">
                 {page.basicCards.map((props, i) => {
