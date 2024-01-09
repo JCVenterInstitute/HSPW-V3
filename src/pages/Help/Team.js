@@ -12,20 +12,11 @@ import memberInfo from "../../components/Help/Team/memberInfo";
 const Team = () => {
   return (
     <>
-      <div style={{ backgroundImage: `url(${main_feature})` }}>
-        <h1
-          style={{
-            color: "white",
-            display: "left",
-            marginLeft: "20px",
-            marginBottom: "1rem",
-            paddingTop: "25px",
-            paddingLeft: "40px",
-            paddingBottom: "25px",
-          }}
-        >
-          Team
-        </h1>
+      <div
+        className="head_background"
+        style={{ backgroundImage: `url(${main_feature})` }}
+      >
+        <h1 className="head_title">Team</h1>
       </div>
       <Container
         maxWidth="xl"
