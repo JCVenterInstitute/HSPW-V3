@@ -65,7 +65,11 @@ const ProteinDetail = (props) => {
           promises.push(fetchPubMed(id));
         }
 
-        await Promise.all(promises);
+        const pubmedDetails = await Promise.all(promises);
+
+        setauthorName(pubmedDetails.map((detail) => detail.authorName));
+        setYear(pubmedDetails.map((detail) => detail.yearTitle));
+        setJournal(pubmedDetails.map((detail) => detail.journalTitle));
       }
 
       setLoading(false);
@@ -73,30 +77,33 @@ const ProteinDetail = (props) => {
   };
 
   const fetchPubMed = async (id) => {
-    let line = "";
-    let yearTitle = "";
-    let authorArr = [];
     const pubmedLink = `${process.env.REACT_APP_API_ENDPOINT}/api/citation/${id}`;
     const response = await fetch(pubmedLink);
     if (!response.ok) {
-      const message = `An error has occured: ${response.status}`;
+      const message = `An error has occurred: ${response.status}`;
       throw new Error(message);
     }
     const data = await response.json();
 
-    authorArr = data[0]["_source"]["author_names"];
+    const authorArr = data[0]["_source"]["author_names"];
+    let authorLine = "";
     if (authorArr.length === 2) {
-      line = `${authorArr[0]} and ${authorArr[1]}`;
+      authorLine = `${authorArr[0]} and ${authorArr[1]}`;
     } else if (authorArr.length >= 3) {
-      line = `${authorArr[0]}, et al.`;
+      authorLine = `${authorArr[0]}, et al.`;
+    } else {
+      authorLine = `${authorArr[0]}`;
     }
-    yearTitle = ` (${data[0]["_source"]["PubYear"]}) ${data[0]["_source"]["Title"]} `;
-    setauthorName((prevLines) => [...prevLines, line]);
-    setYear((prevLines) => [...prevLines, yearTitle]);
-    setJournal((prevLines) => [
-      ...prevLines,
-      data[0]["_source"]["journal_title"],
-    ]);
+
+    const yearTitle = ` (${data[0]["_source"]["PubYear"]}) ${data[0]["_source"]["Title"]} `;
+    const journalTitle = data[0]["_source"]["journal_title"];
+
+    return {
+      pubmedId: id,
+      authorName: authorLine,
+      yearTitle: yearTitle,
+      journalTitle: journalTitle,
+    };
   };
 
   useEffect(() => {

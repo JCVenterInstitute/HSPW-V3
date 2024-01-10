@@ -60,7 +60,6 @@ const SignatureDetail = (props) => {
     const signatureResult = fetchSignature().catch(console.errror);
     signatureResult.then((signature) => {
       if (signature) {
-        console.log(signature);
         setData(signature);
         var elements = signature[0]["_source"]["Signature"].split(",");
 
@@ -89,41 +88,47 @@ const SignatureDetail = (props) => {
   }, []);
 
   const constructReferences = async (references) => {
-    const promises = [];
+    const promises = references.map((ref) => {
+      const id = ref.split(":")[1];
+      return fetchPubMed(id);
+    });
 
-    for (let i = 0; i < references.length; i++) {
-      const id = references[i].split(":")[1];
-      promises.push(fetchPubMed(id));
-    }
+    const pubmedDetails = await Promise.all(promises);
 
-    await Promise.all(promises);
+    // Now set the state with the fetched details
+    setauthorName(pubmedDetails.map((detail) => detail.authorName));
+    setYear(pubmedDetails.map((detail) => detail.yearTitle));
+    setJournal(pubmedDetails.map((detail) => detail.journalTitle));
   };
 
   const fetchPubMed = async (id) => {
-    let line = "";
-    let yearTitle = "";
-    let authorArr = [];
     const pubmedLink = `${process.env.REACT_APP_API_ENDPOINT}/api/citation/${id}`;
     const response = await fetch(pubmedLink);
     if (!response.ok) {
-      const message = `An error has occured: ${response.status}`;
+      const message = `An error has occurred: ${response.status}`;
       throw new Error(message);
     }
     const data = await response.json();
 
-    authorArr = data[0]["_source"]["author_names"];
+    const authorArr = data[0]["_source"]["author_names"];
+    let authorLine = "";
     if (authorArr.length === 2) {
-      line = `${authorArr[0]} and ${authorArr[1]}`;
+      authorLine = `${authorArr[0]} and ${authorArr[1]}`;
     } else if (authorArr.length >= 3) {
-      line = `${authorArr[0]}, et al.`;
+      authorLine = `${authorArr[0]}, et al.`;
+    } else {
+      authorLine = `${authorArr[0]}`;
     }
-    yearTitle = ` (${data[0]["_source"]["PubYear"]}) ${data[0]["_source"]["Title"]} `;
-    setauthorName((prevLines) => [...prevLines, line]);
-    setYear((prevLines) => [...prevLines, yearTitle]);
-    setJournal((prevLines) => [
-      ...prevLines,
-      data[0]["_source"]["journal_title"],
-    ]);
+
+    const yearTitle = ` (${data[0]["_source"]["PubYear"]}) ${data[0]["_source"]["Title"]} `;
+    const journalTitle = data[0]["_source"]["journal_title"];
+
+    return {
+      pubmedId: id,
+      authorName: authorLine,
+      yearTitle: yearTitle,
+      journalTitle: journalTitle,
+    };
   };
 
   if (isLoading) {
@@ -563,7 +568,7 @@ const SignatureDetail = (props) => {
                                 {authorName[i]}
                               </b>
                               <span>{year[i]}</span>
-                              <i>{journal[i]}</i>
+                              <i>{journal[i]} </i>{" "}
                               <a
                                 target="_blank"
                                 rel="noreferrer"
@@ -573,6 +578,7 @@ const SignatureDetail = (props) => {
                                 )}`}
                                 style={{ color: "#777777" }}
                               >
+                                {" "}
                                 {` ${value} `}
                                 <FontAwesome
                                   className="super-crazy-colors"
