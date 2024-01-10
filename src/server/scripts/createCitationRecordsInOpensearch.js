@@ -36,7 +36,7 @@ const createCitationRecordsInOpenSearch = async () => {
   const client = await getClient();
 
   const citationData = JSON.parse(
-    fs.readFileSync("/Users/iwu/Desktop/test6/test.json", "utf8")
+    fs.readFileSync("/Users/iwu/Desktop/test6/output_data_5.json", "utf8")
   );
 
   for (const citation of citationData) {
@@ -46,7 +46,7 @@ const createCitationRecordsInOpenSearch = async () => {
     const journalTitle = citation.journal_title;
     const keywords = citation.keywords;
     const affiliation = citation.affiliation;
-    const title = citation.title;
+    const title = citation.Title;
     const abstract = citation.Abstract;
     const pubYear = citation.PubYear;
 
