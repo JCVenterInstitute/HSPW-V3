@@ -44,7 +44,10 @@ const SignatureDetail = (props) => {
   const [abstract, setAbstract] = useState("");
   const [PROFILE, setPROFILE] = useState("");
   const [SMART, setSMART] = useState("");
-  const [reference1, setReference] = useState([]);
+  const [reference, setReference] = useState([]);
+  const [authorName, setauthorName] = useState("");
+  const [year, setYear] = useState("");
+  const [journal, setJournal] = useState("");
 
   let interpro_link = "https://www.ebi.ac.uk/interpro/entry/InterPro/";
 
@@ -74,6 +77,9 @@ const SignatureDetail = (props) => {
         }
         if (signature[0]["_source"]["ReferencesID"] !== "") {
           setReference(signature[0]["_source"]["ReferencesID"].split(","));
+          constructReferences(
+            signature[0]["_source"]["ReferencesID"].split(",")
+          );
         }
         setAbstract(signature[0]["_source"]["Abstract"]);
 
@@ -81,6 +87,44 @@ const SignatureDetail = (props) => {
       }
     });
   }, []);
+
+  const constructReferences = async (references) => {
+    const promises = [];
+
+    for (let i = 0; i < references.length; i++) {
+      const id = references[i].split(":")[1];
+      promises.push(fetchPubMed(id));
+    }
+
+    await Promise.all(promises);
+  };
+
+  const fetchPubMed = async (id) => {
+    let line = "";
+    let yearTitle = "";
+    let authorArr = [];
+    const pubmedLink = `${process.env.REACT_APP_API_ENDPOINT}/api/citation/${id}`;
+    const response = await fetch(pubmedLink);
+    if (!response.ok) {
+      const message = `An error has occured: ${response.status}`;
+      throw new Error(message);
+    }
+    const data = await response.json();
+
+    authorArr = data[0]["_source"]["author_names"];
+    if (authorArr.length === 2) {
+      line = `${authorArr[0]} and ${authorArr[1]}`;
+    } else if (authorArr.length >= 3) {
+      line = `${authorArr[0]}, et al.`;
+    }
+    yearTitle = ` (${data[0]["_source"]["PubYear"]}) ${data[0]["_source"]["Title"]} `;
+    setauthorName((prevLines) => [...prevLines, line]);
+    setYear((prevLines) => [...prevLines, yearTitle]);
+    setJournal((prevLines) => [
+      ...prevLines,
+      data[0]["_source"]["journal_title"],
+    ]);
+  };
 
   if (isLoading) {
     return (
@@ -509,33 +553,39 @@ const SignatureDetail = (props) => {
                     paddingLeft: "1%",
                   }}
                 >
-                  {reference1.length !== 0
-                    ? reference1.map((value, i) => (
-                        <React.Fragment key={i}>
-                          <div>
-                            <h4 style={{ display: "inline" }}>{i + 1}. </h4>
-
-                            <a
-                              rel="noreferrer"
-                              target="_blank"
-                              href={`https://pubmed.ncbi.nlm.nih.gov/${value.replace(
-                                "PubMed:",
-                                ""
-                              )}`}
-                              style={{ color: "#777777" }}
-                            >
-                              {` ${value} `}
-                              <FontAwesome
-                                className="super-crazy-colors"
-                                name="external-link"
-                                style={{
-                                  textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
-                                }}
-                              />
-                            </a>
-                          </div>
-                        </React.Fragment>
-                      ))
+                  {reference.length !== 0
+                    ? reference.map((value, i) => {
+                        return (
+                          <React.Fragment key={i}>
+                            <div style={{ fontFamily: "Lato" }}>
+                              <h4 style={{ display: "inline" }}>{i + 1}. </h4>
+                              <b style={{ color: "#1463B9" }}>
+                                {authorName[i]}
+                              </b>
+                              <span>{year[i]}</span>
+                              <i>{journal[i]}</i>
+                              <a
+                                target="_blank"
+                                rel="noreferrer"
+                                href={`https://pubmed.ncbi.nlm.nih.gov/${value.replace(
+                                  "PubMed:",
+                                  ""
+                                )}`}
+                                style={{ color: "#777777" }}
+                              >
+                                {` ${value} `}
+                                <FontAwesome
+                                  className="super-crazy-colors"
+                                  name="external-link"
+                                  style={{
+                                    textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                                  }}
+                                />
+                              </a>
+                            </div>
+                          </React.Fragment>
+                        );
+                      })
                     : null}
                 </TableCell>
               </TableRow>
