@@ -1,6 +1,9 @@
 import React from "react";
 import main_feature from "../assets/hero.jpeg";
 import differential from "../assets/icon-heatmap.png";
+import msa from "../assets/icon-msa-alignment.png";
+import blast from "../assets/icon-protein-blast.png";
+import signature from "../assets/icon-protein-signature.png";
 import BasicCard from "../components/BasicCard";
 import { StyledEngineProvider } from "@mui/material/styles";
 
@@ -20,28 +23,32 @@ class analysisHome extends React.Component {
           },
           basicCards: [
             {
-              imageSrc: differential,
+              imageSrc: msa,
               title: "Multiple Sequence Alignment",
               blurb:
-                "Shows the difference in protein abundance between samples in Groups A and B.",
+                "ClustalW is a general purpose multiple sequence alignment program for DNA or proteins.",
+              location: "/clustalo",
             },
             {
               imageSrc: differential,
               title: "Differential Expression",
               blurb:
                 "Shows the difference in protein abundance between samples in Groups A and B.",
+              location: "/differential-expression",
             },
             {
-              imageSrc: differential,
+              imageSrc: blast,
               title: "Protein Signature Search",
               blurb:
-                "Shows the difference in protein abundance between samples in Groups A and B.",
+                "Finds regions of sequence similarity, which will yield functional and evolutionary clues about the structure and function of your novel sequence. ",
+              location: "/iprscan5",
             },
             {
-              imageSrc: differential,
+              imageSrc: signature,
               title: "Protein Similarity Search",
               blurb:
-                "Shows the difference in protein abundance between samples in Groups A and B.",
+                "InterProScan is a tool that combines different protein signature recognition methods into one resource.",
+              location: "/psiblast",
             },
           ],
           // basicCards: [
@@ -145,6 +152,7 @@ class analysisHome extends React.Component {
                       imageSrc={props.imageSrc}
                       title={props.title}
                       blurb={props.blurb}
+                      location={props.location}
                     />
                   );
                 })}

@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Stack, Button, MenuItem, Box } from "@mui/material";
+import { AppBar, Toolbar, Button, MenuItem, Box } from "@mui/material";
 import logo from "../assets/hspw-logo.png";
 import React from "react";
 import PopupState from "material-ui-popup-state";
@@ -7,7 +7,6 @@ import HoverMenu from "material-ui-popup-state/HoverMenu";
 import { ArrowDropDownIcon } from "@mui/x-date-pickers";
 
 const navMenuStyles = {
-  marginRight: "45px",
   fontSize: "22px",
 };
 
@@ -18,227 +17,222 @@ export const NavBar = () => {
       color="transparent"
       sx={{ width: "100%", height: "20%" }}
     >
-      <Toolbar style={{ justifyContent: "flex-start" }}>
+      <Toolbar style={{ justifyContent: "space-between", marginRight: "1rem" }}>
         <Box
           component="img"
           sx={{
             height: 240,
             width: 450,
-            maxHeight: { xs: 250, md: 150 },
-            maxWidth: { xs: 550, md: 650 },
+            maxHeight: { xs: 150, md: 150 },
+            maxWidth: { xs: 650, md: 650 },
+            objectFit: "contain",
           }}
           src={logo}
         />
-        <Stack
-          direction="row"
-          spacing={2}
-          sx={{ ml: 8 }}
+        <Button
+          color="primary"
+          size="large"
+          style={navMenuStyles}
+          component="a"
+          href="/"
         >
-          <Button
-            color="primary"
-            size="large"
-            style={navMenuStyles}
-            component="a"
-            href="/"
-          >
-            Home
-          </Button>
-          <PopupState
-            popupId="BrowseMenu"
-            variant="popover"
-          >
-            {(popupState) => (
-              <React.Fragment>
-                <Button
-                  size="large"
-                  style={navMenuStyles}
-                  {...bindHover(popupState)}
-                  endIcon={<ArrowDropDownIcon />}
+          Home
+        </Button>
+        <PopupState
+          popupId="BrowseMenu"
+          variant="popover"
+        >
+          {(popupState) => (
+            <React.Fragment>
+              <Button
+                size="large"
+                style={navMenuStyles}
+                {...bindHover(popupState)}
+                endIcon={<ArrowDropDownIcon />}
+              >
+                Browse
+              </Button>
+              <HoverMenu
+                {...bindMenu(popupState)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                transformOrigin={{ vertical: "top", horizontal: "left" }}
+              >
+                <MenuItem
+                  component="a"
+                  href="/salivary-protein"
                 >
-                  Browse
-                </Button>
-                <HoverMenu
-                  {...bindMenu(popupState)}
-                  anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-                  transformOrigin={{ vertical: "top", horizontal: "left" }}
+                  Salivary Proteins
+                </MenuItem>
+                <MenuItem
+                  component="a"
+                  href="/protein-cluster"
                 >
-                  <MenuItem
-                    component="a"
-                    href="/salivary-protein"
-                  >
-                    Salivary Proteins
-                  </MenuItem>
-                  <MenuItem
-                    component="a"
-                    href="/protein-cluster"
-                  >
-                    Protein Clusters
-                  </MenuItem>
-                  <MenuItem
-                    component="a"
-                    href="/protein-signature"
-                  >
-                    Protein Signatures
-                  </MenuItem>
-                  <MenuItem
-                    component="a"
-                    href="/gene"
-                  >
-                    Genes
-                  </MenuItem>
-                  <MenuItem
-                    component="a"
-                    href="/citation"
-                  >
-                    Citations
-                  </MenuItem>
-                </HoverMenu>
-              </React.Fragment>
-            )}
-          </PopupState>
-          <PopupState
-            popupId="SearchMenu"
-            variant="popover"
-          >
-            {(popupState) => (
-              <React.Fragment>
-                <Button
-                  variant="text"
-                  size="large"
-                  style={navMenuStyles}
-                  {...bindHover(popupState)}
-                  endIcon={<ArrowDropDownIcon />}
+                  Protein Clusters
+                </MenuItem>
+                <MenuItem
+                  component="a"
+                  href="/protein-signature"
                 >
-                  Search
-                </Button>
-                <HoverMenu
-                  {...bindMenu(popupState)}
-                  anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-                  transformOrigin={{ vertical: "top", horizontal: "left" }}
+                  Protein Signatures
+                </MenuItem>
+                <MenuItem
+                  component="a"
+                  href="/gene"
                 >
-                  <MenuItem
-                    component="a"
-                    href="/global-search"
-                  >
-                    Global Search
-                  </MenuItem>
-                  <MenuItem
-                    component="a"
-                    href="/advanced-search"
-                  >
-                    Advanced Search
-                  </MenuItem>
-                  <MenuItem
-                    component="a"
-                    href="/experiment-search"
-                  >
-                    Experiment Search
-                  </MenuItem>
-                  <MenuItem
-                    component="a"
-                    href="/protein-set-search"
-                  >
-                    Protein Search By Identifiers
-                  </MenuItem>
-                </HoverMenu>
-              </React.Fragment>
-            )}
-          </PopupState>
-          <PopupState
-            popupId="AnalyzeMenu"
-            variant="popover"
-          >
-            {(popupState) => (
-              <React.Fragment>
-                <Button
-                  size="large"
-                  style={navMenuStyles}
-                  {...bindHover(popupState)}
-                  endIcon={<ArrowDropDownIcon />}
+                  Genes
+                </MenuItem>
+                <MenuItem
+                  component="a"
+                  href="/citation"
                 >
-                  Analyze
-                </Button>
-                <HoverMenu
-                  {...bindMenu(popupState)}
-                  anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-                  transformOrigin={{ vertical: "top", horizontal: "left" }}
+                  Citations
+                </MenuItem>
+              </HoverMenu>
+            </React.Fragment>
+          )}
+        </PopupState>
+        <PopupState
+          popupId="SearchMenu"
+          variant="popover"
+        >
+          {(popupState) => (
+            <React.Fragment>
+              <Button
+                variant="text"
+                size="large"
+                style={navMenuStyles}
+                {...bindHover(popupState)}
+                endIcon={<ArrowDropDownIcon />}
+              >
+                Search
+              </Button>
+              <HoverMenu
+                {...bindMenu(popupState)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                transformOrigin={{ vertical: "top", horizontal: "left" }}
+              >
+                <MenuItem
+                  component="a"
+                  href="/global-search"
                 >
-                  <MenuItem
-                    component="a"
-                    href="/clustalo"
-                  >
-                    Multiple Sequence Alignment
-                  </MenuItem>
-                  <MenuItem
-                    component="a"
-                    href="/differential-expression"
-                  >
-                    Differential Expression Analysis
-                  </MenuItem>
-                  <MenuItem
-                    component="a"
-                    href="/iprscan5"
-                  >
-                    Protein Signature Search
-                  </MenuItem>
-                  <MenuItem
-                    component="a"
-                    href="/psiblast"
-                  >
-                    Protein Similarity Search (BLAST)
-                  </MenuItem>
-                </HoverMenu>
-              </React.Fragment>
-            )}
-          </PopupState>
-          <PopupState
-            popupId="HelpMenu"
-            variant="popover"
-          >
-            {(popupState) => (
-              <React.Fragment>
-                <Button
-                  size="large"
-                  style={navMenuStyles}
-                  {...bindHover(popupState)}
-                  endIcon={<ArrowDropDownIcon />}
+                  Global Search
+                </MenuItem>
+                <MenuItem
+                  component="a"
+                  href="/advanced-search"
                 >
-                  Help
-                </Button>
-                <HoverMenu
-                  {...bindMenu(popupState)}
-                  anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-                  transformOrigin={{ vertical: "top", horizontal: "left" }}
+                  Advanced Search
+                </MenuItem>
+                <MenuItem
+                  component="a"
+                  href="/experiment-search"
                 >
-                  <MenuItem
-                    component="a"
-                    href="/about"
-                  >
-                    About
-                  </MenuItem>
-                  <MenuItem
-                    component="a"
-                    href="/download"
-                  >
-                    Download
-                  </MenuItem>
-                  <MenuItem
-                    component="a"
-                    href="/team"
-                  >
-                    Team
-                  </MenuItem>
-                  <MenuItem
-                    component="a"
-                    href="/contact"
-                  >
-                    Contact Us
-                  </MenuItem>
-                </HoverMenu>
-              </React.Fragment>
-            )}
-          </PopupState>
-        </Stack>
+                  Experiment Search
+                </MenuItem>
+                <MenuItem
+                  component="a"
+                  href="/protein-set-search"
+                >
+                  Protein Search By Identifiers
+                </MenuItem>
+              </HoverMenu>
+            </React.Fragment>
+          )}
+        </PopupState>
+        <PopupState
+          popupId="AnalyzeMenu"
+          variant="popover"
+        >
+          {(popupState) => (
+            <React.Fragment>
+              <Button
+                size="large"
+                style={navMenuStyles}
+                {...bindHover(popupState)}
+                endIcon={<ArrowDropDownIcon />}
+              >
+                Analyze
+              </Button>
+              <HoverMenu
+                {...bindMenu(popupState)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                transformOrigin={{ vertical: "top", horizontal: "left" }}
+              >
+                <MenuItem
+                  component="a"
+                  href="/clustalo"
+                >
+                  Multiple Sequence Alignment
+                </MenuItem>
+                <MenuItem
+                  component="a"
+                  href="/differential-expression"
+                >
+                  Differential Expression Analysis
+                </MenuItem>
+                <MenuItem
+                  component="a"
+                  href="/iprscan5"
+                >
+                  Protein Signature Search
+                </MenuItem>
+                <MenuItem
+                  component="a"
+                  href="/psiblast"
+                >
+                  Protein Similarity Search (BLAST)
+                </MenuItem>
+              </HoverMenu>
+            </React.Fragment>
+          )}
+        </PopupState>
+        <PopupState
+          popupId="HelpMenu"
+          variant="popover"
+        >
+          {(popupState) => (
+            <React.Fragment>
+              <Button
+                size="large"
+                style={navMenuStyles}
+                {...bindHover(popupState)}
+                endIcon={<ArrowDropDownIcon />}
+              >
+                Help
+              </Button>
+              <HoverMenu
+                {...bindMenu(popupState)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                transformOrigin={{ vertical: "top", horizontal: "left" }}
+              >
+                <MenuItem
+                  component="a"
+                  href="/about"
+                >
+                  About
+                </MenuItem>
+                <MenuItem
+                  component="a"
+                  href="/download"
+                >
+                  Download
+                </MenuItem>
+                <MenuItem
+                  component="a"
+                  href="/team"
+                >
+                  Team
+                </MenuItem>
+                <MenuItem
+                  component="a"
+                  href="/contact"
+                >
+                  Contact Us
+                </MenuItem>
+              </HoverMenu>
+            </React.Fragment>
+          )}
+        </PopupState>
       </Toolbar>
     </AppBar>
   );
