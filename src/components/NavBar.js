@@ -1,12 +1,4 @@
-import {
-  AppBar,
-  Toolbar,
-  Stack,
-  Button,
-  MenuItem,
-  Box,
-  Container,
-} from "@mui/material";
+import { AppBar, Toolbar, Button, MenuItem, Box } from "@mui/material";
 import logo from "../assets/hspw-logo.png";
 import React from "react";
 import PopupState from "material-ui-popup-state";
@@ -15,7 +7,6 @@ import HoverMenu from "material-ui-popup-state/HoverMenu";
 import { ArrowDropDownIcon } from "@mui/x-date-pickers";
 
 const navMenuStyles = {
-  // marginRight: "45px",
   fontSize: "22px",
 };
 
