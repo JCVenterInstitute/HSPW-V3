@@ -32,8 +32,8 @@ export const NavBar = () => {
           sx={{
             height: 240,
             width: 450,
-            maxHeight: { xs: 250, md: 150 },
-            maxWidth: { xs: 550, md: 650 },
+            maxHeight: { xs: 150, md: 150 },
+            maxWidth: { xs: 660, md: 650 },
           }}
           src={logo}
         />
