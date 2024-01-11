@@ -2,6 +2,7 @@ const { Client } = require("@opensearch-project/opensearch");
 const createAwsOpensearchConnector = require("aws-opensearch-connector");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const fs = require("fs");
+const path = require("path");
 const csv = require("csv-parser");
 const axios = require("axios");
 const xml2js = require("xml2js");
@@ -11,6 +12,7 @@ const he = require("he");
 const host =
   "https://search-hspw-dev2-dmdd32xae4fmxh7t4g6skv67aa.us-east-2.es.amazonaws.com";
 const indexName = "genes-010824"; // Specify your index name here
+const uploadedFilePath = "/Users/iwu/Desktop/HSPW/protein_to_gene_mapping.txt";
 
 const getClient = async () => {
   const awsCredentials = await defaultProvider()();
@@ -21,6 +23,27 @@ const getClient = async () => {
   return new Client({
     ...connector,
     node: host,
+  });
+};
+
+// Function to read the GeneIDs from the uploaded file
+const readGeneIDsFromFile = (filePath) => {
+  return new Promise((resolve, reject) => {
+    const geneIds = new Set();
+    fs.createReadStream(filePath)
+      .pipe(csv({ separator: "\t", headers: false }))
+      .on("data", (row) => {
+        const geneId = row[1]?.split(";")[0].trim();
+        if (geneId) {
+          geneIds.add(geneId);
+        }
+      })
+      .on("end", () => {
+        resolve(geneIds);
+      })
+      .on("error", (err) => {
+        reject(err);
+      });
   });
 };
 
@@ -196,7 +219,7 @@ const fetchSummaryData = async (geneId) => {
 };
 
 // Function to read TSV and create records in OpenSearch
-const createGenesRecordsInOpenSearch = async () => {
+const createGenesRecordsInOpenSearch = async (geneIds) => {
   const client = await getClient();
   await ensureIndexExists(client); // Ensure index exists before proceeding
   const parser = fs
@@ -204,63 +227,75 @@ const createGenesRecordsInOpenSearch = async () => {
     .pipe(csv({ separator: "\t" }));
 
   for await (const row of parser) {
-    console.log(`> Processing GeneID: ${row.GeneID}`);
     const geneId = row.GeneID;
-    const geneSymbol = row.Symbol;
-    const geneName = row.description;
-    const aliases = row.Synonyms.replaceAll("|", ", ");
-    const location = row.map_location;
-    const chromosome = row.chromosome;
-    const dbXrefs = row.dbXrefs.replaceAll("|", ", ");
-    const geneType = row.type_of_gene;
-    const modificationDate = row.Modification_date;
 
-    const summaryData = await fetchSummaryData(geneId);
+    if (geneIds.has(geneId)) {
+      console.log(`> Processing GeneID: ${row.GeneID}`);
+      const geneSymbol = row.Symbol;
+      const geneName = row.description;
+      const aliases = row.Synonyms.replaceAll("|", ", ");
+      const location = row.map_location;
+      const chromosome = row.chromosome;
+      const dbXrefs = row.dbXrefs.replaceAll("|", ", ");
+      const geneType = row.type_of_gene;
+      const modificationDate = row.Modification_date;
 
-    // Create a record in OpenSearch
-    try {
-      await client.index({
-        index: indexName,
-        body: {
-          GeneID: geneId,
-          "Gene Symbol": geneSymbol,
-          "Gene Name": geneName,
-          Aliases: aliases,
-          Location: location,
-          Chromosome: chromosome,
-          Organism: {
-            scientificName: "Homo sapiens",
-            commonName: "Human",
-            taxonId: 9606,
-            lineage: [
-              "Eukaryota",
-              "Metazoa",
-              "Chordata",
-              "Craniata",
-              "Vertebrata",
-              "Euteleostomi",
-              "Mammalia",
-              "Eutheria",
-              "Euarchontoglires",
-              "Primates",
-              "Haplorrhini",
-              "Catarrhini",
-              "Hominidae",
-              "Homo",
-            ],
+      const summaryData = await fetchSummaryData(geneId);
+
+      // Create a record in OpenSearch
+      try {
+        await client.index({
+          index: indexName,
+          body: {
+            GeneID: geneId,
+            "Gene Symbol": geneSymbol,
+            "Gene Name": geneName,
+            Aliases: aliases,
+            Location: location,
+            Chromosome: chromosome,
+            Organism: {
+              scientificName: "Homo sapiens",
+              commonName: "Human",
+              taxonId: 9606,
+              lineage: [
+                "Eukaryota",
+                "Metazoa",
+                "Chordata",
+                "Craniata",
+                "Vertebrata",
+                "Euteleostomi",
+                "Mammalia",
+                "Eutheria",
+                "Euarchontoglires",
+                "Primates",
+                "Haplorrhini",
+                "Catarrhini",
+                "Hominidae",
+                "Homo",
+              ],
+            },
+            DbXrefs: dbXrefs,
+            GeneType: geneType,
+            "Modification Date": modificationDate,
+            Summary: summaryData,
+            // Add other fields from the row if needed
           },
-          DbXrefs: dbXrefs,
-          GeneType: geneType,
-          "Modification Date": modificationDate,
-          Summary: summaryData,
-          // Add other fields from the row if needed
-        },
-      });
-    } catch (error) {
-      console.error("Error creating record in OpenSearch:", error);
+        });
+      } catch (error) {
+        console.error("Error creating record in OpenSearch:", error);
+      }
+    } else {
+      console.log(`> Skipping GeneID: ${geneId}`);
     }
   }
 };
 
-// Run the function to create records
-createGenesRecordsInOpenSearch();
+// Main execution
+(async () => {
+  try {
+    const geneIds = await readGeneIDsFromFile(uploadedFilePath);
+    await createGenesRecordsInOpenSearch(geneIds);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+})();
