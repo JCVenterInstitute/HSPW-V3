@@ -386,6 +386,7 @@ const DifferentialExpression = () => {
     );
 
     setGroupARowData([...groupARowData, ...newRowsToAdd]);
+    gridApi.deselectAll();
   };
 
   const handleDeleteGroupA = () => {
@@ -417,6 +418,7 @@ const DifferentialExpression = () => {
     );
 
     setGroupBRowData([...groupBRowData, ...newRowsToAdd]);
+    gridApi.deselectAll();
   };
 
   const handleDeleteGroupB = () => {
@@ -435,11 +437,16 @@ const DifferentialExpression = () => {
   };
 
   const handleFilter = (searchKeyword) => {
+    gridApi.hideOverlay();
     gridApi.setQuickFilter(searchKeyword);
     setTotalPageNumber(gridApi.paginationGetTotalPages());
+    if (gridApi.paginationGetTotalPages() === 0) {
+      gridApi.showNoRowsOverlay();
+    }
   };
 
   const handleSideFilter = (searchKeyword, columnName) => {
+    gridApi.hideOverlay();
     let filterModel = gridApi.getFilterModel();
 
     if (columnName === "Sample ID") {
@@ -473,9 +480,13 @@ const DifferentialExpression = () => {
 
     gridApi.setFilterModel(filterModel);
     setTotalPageNumber(gridApi.paginationGetTotalPages());
+    if (gridApi.paginationGetTotalPages() === 0) {
+      gridApi.showNoRowsOverlay();
+    }
   };
 
   const handleResetFilter = () => {
+    gridApi.hideOverlay();
     gridApi.setQuickFilter("");
     gridApi.setFilterModel({});
     setTotalPageNumber(gridApi.paginationGetTotalPages());
@@ -1110,7 +1121,6 @@ const DifferentialExpression = () => {
                 suppressPaginationPanel={true}
                 rowSelection={"multiple"}
                 rowMultiSelectWithClick={true}
-                noRowsOverlayComponent={noRowsOverlayComponent}
                 loadingOverlayComponent={loadingOverlayComponent}
                 suppressScrollOnNewData={true}
               ></AgGridReact>
