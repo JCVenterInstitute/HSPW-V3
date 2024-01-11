@@ -7,31 +7,12 @@ import { Link } from "react-router-dom";
 const About = () => {
   return (
     <>
-      <div style={{ backgroundImage: `url(${main_feature})` }}>
-        <h1
-          style={{
-            color: "white",
-            display: "left",
-            marginLeft: "20px",
-            marginBottom: "1rem",
-            paddingTop: "25px",
-            paddingLeft: "40px",
-          }}
-        >
-          About
-        </h1>
-        <p
-          style={{
-            textAlign: "left",
-            color: "white",
-            fontSize: "18px",
-            paddingBottom: "25px",
-            marginLeft: "20px",
-            marginRight: "20px",
-            paddingLeft: "40px",
-            paddingRight: "40px",
-          }}
-        >
+      <div
+        className="head_background"
+        style={{ backgroundImage: `url(${main_feature})` }}
+      >
+        <h1 className="head_title">About</h1>
+        <p className="head_text">
           For many decades, researchers have known that saliva is important for
           chewing, tasting, swallowing, and as the first step in digestion. A
           multitude of proteins and other molecules present in saliva also play

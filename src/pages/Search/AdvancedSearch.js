@@ -500,31 +500,12 @@ const AdvancedSearch = () => {
 
   return (
     <>
-      <div style={{ backgroundImage: `url(${main_feature})` }}>
-        <h1
-          style={{
-            color: "white",
-            display: "left",
-            marginLeft: "20px",
-            marginBottom: "1rem",
-            paddingTop: "25px",
-            paddingLeft: "40px",
-          }}
-        >
-          Advanced Search
-        </h1>
-        <p
-          style={{
-            textAlign: "left",
-            color: "white",
-            fontSize: "18px",
-            paddingBottom: "25px",
-            marginLeft: "20px",
-            marginRight: "20px",
-            paddingLeft: "40px",
-            paddingRight: "40px",
-          }}
-        >
+      <div
+        className="head_background"
+        style={{ backgroundImage: `url(${main_feature})` }}
+      >
+        <h1 className="head_title">Advanced Search</h1>
+        <p className="head_text">
           This search interface allows you to build complex queries exploiting
           the semantic annotations stored in this database.
         </p>

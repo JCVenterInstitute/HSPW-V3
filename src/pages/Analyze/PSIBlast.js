@@ -6,31 +6,12 @@ import PsiBlastSequenceParameters from "../../components/MultipleSequenceAlignme
 const PSIBlast = () => {
   return (
     <>
-      <div style={{ backgroundImage: `url(${main_feature})` }}>
-        <h1
-          style={{
-            color: "white",
-            display: "left",
-            marginLeft: "20px",
-            marginBottom: "1rem",
-            paddingTop: "25px",
-            paddingLeft: "40px",
-          }}
-        >
-          Protein Similarity Search
-        </h1>
-        <p
-          style={{
-            textAlign: "left",
-            color: "white",
-            fontSize: "18px",
-            paddingBottom: "25px",
-            marginLeft: "20px",
-            marginRight: "20px",
-            paddingLeft: "40px",
-            paddingRight: "40px",
-          }}
-        >
+      <div
+        className="head_background"
+        style={{ backgroundImage: `url(${main_feature})` }}
+      >
+        <h1 className="head_title">Protein Similarity Search</h1>
+        <p className="head_text">
           BLAST stands for Basic Local Alignment Search Tool.The emphasis of
           this tool is to find regions of sequence similarity, which will yield
           functional and evolutionary clues about the structure and function of

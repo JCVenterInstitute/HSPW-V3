@@ -2,32 +2,16 @@ import React from "react";
 import DownloadTable from "../../components/Download/DownloadTable.js";
 import "../style.css";
 
-import MainFeature from "../../assets/page-main.png";
+import MainFeature from "../../assets/hero.jpeg";
 
 const Download = () => {
   return (
     <>
       <div
-        style={{
-          height: "40%",
-          padding: "35px",
-          backgroundImage: `url(${MainFeature})`,
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-        }}
+        className="head_background"
+        style={{ backgroundImage: `url(${MainFeature})` }}
       >
-        <h1
-          style={{
-            color: "white",
-            display: "left",
-            marginLeft: "20px",
-            marginBottom: "1rem",
-          }}
-          className="title"
-          align="left"
-        >
-          DATA DOWNLOAD
-        </h1>
+        <h1 className="head_title">Data Download</h1>
         <p
           style={{
             textAlign: "left",
@@ -46,7 +30,6 @@ const Download = () => {
           SalivaryProteome.org
         </p>
       </div>
-
       <DownloadTable />
     </>
   );

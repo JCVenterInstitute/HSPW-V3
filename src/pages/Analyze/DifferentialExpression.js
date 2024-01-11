@@ -386,6 +386,7 @@ const DifferentialExpression = () => {
     );
 
     setGroupARowData([...groupARowData, ...newRowsToAdd]);
+    gridApi.deselectAll();
   };
 
   const handleDeleteGroupA = () => {
@@ -417,6 +418,7 @@ const DifferentialExpression = () => {
     );
 
     setGroupBRowData([...groupBRowData, ...newRowsToAdd]);
+    gridApi.deselectAll();
   };
 
   const handleDeleteGroupB = () => {
@@ -435,11 +437,16 @@ const DifferentialExpression = () => {
   };
 
   const handleFilter = (searchKeyword) => {
+    gridApi.hideOverlay();
     gridApi.setQuickFilter(searchKeyword);
     setTotalPageNumber(gridApi.paginationGetTotalPages());
+    if (gridApi.paginationGetTotalPages() === 0) {
+      gridApi.showNoRowsOverlay();
+    }
   };
 
   const handleSideFilter = (searchKeyword, columnName) => {
+    gridApi.hideOverlay();
     let filterModel = gridApi.getFilterModel();
 
     if (columnName === "Sample ID") {
@@ -473,9 +480,13 @@ const DifferentialExpression = () => {
 
     gridApi.setFilterModel(filterModel);
     setTotalPageNumber(gridApi.paginationGetTotalPages());
+    if (gridApi.paginationGetTotalPages() === 0) {
+      gridApi.showNoRowsOverlay();
+    }
   };
 
   const handleResetFilter = () => {
+    gridApi.hideOverlay();
     gridApi.setQuickFilter("");
     gridApi.setFilterModel({});
     setTotalPageNumber(gridApi.paginationGetTotalPages());
@@ -656,31 +667,12 @@ const DifferentialExpression = () => {
 
   return (
     <>
-      <div style={{ backgroundImage: `url(${main_feature})` }}>
-        <h1
-          style={{
-            color: "white",
-            display: "left",
-            marginLeft: "20px",
-            marginBottom: "1rem",
-            paddingTop: "25px",
-            paddingLeft: "40px",
-          }}
-        >
-          Differential Expression Analysis
-        </h1>
-        <p
-          style={{
-            textAlign: "left",
-            color: "white",
-            fontSize: "18px",
-            paddingBottom: "25px",
-            marginLeft: "20px",
-            marginRight: "20px",
-            paddingLeft: "40px",
-            paddingRight: "40px",
-          }}
-        >
+      <div
+        className="head_background"
+        style={{ backgroundImage: `url(${main_feature})` }}
+      >
+        <h1 className="head_title">Differential Expression Analysis</h1>
+        <p className="head_text">
           Please choose experiments from the following table for differential
           expression analysis. This analysis will identify proteins with
           differential abundance between experiments in Groups A and B based on
@@ -1129,7 +1121,6 @@ const DifferentialExpression = () => {
                 suppressPaginationPanel={true}
                 rowSelection={"multiple"}
                 rowMultiSelectWithClick={true}
-                noRowsOverlayComponent={noRowsOverlayComponent}
                 loadingOverlayComponent={loadingOverlayComponent}
                 suppressScrollOnNewData={true}
               ></AgGridReact>

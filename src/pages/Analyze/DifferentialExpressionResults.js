@@ -14,6 +14,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import CSVDataTable from "./CSVDataTable";
 import DownloadIcon from "@mui/icons-material/Download";
+import AnalysisDescription from "../../components/Analyze/DifferentialExpressionAnalysis/AnalysisDescription";
 
 const DifferentialExpressionResults = () => {
   const { jobId } = useParams();
@@ -436,6 +437,13 @@ const DifferentialExpressionResults = () => {
               )}
             </Box>
           </Box>
+          <Typography sx={{ fontFamily: "Lato", mt: 2, ml: 1 }}>
+            <span
+              dangerouslySetInnerHTML={{
+                __html: AnalysisDescription[selected],
+              }}
+            ></span>
+          </Typography>
           <Box
             sx={{
               marginTop: "40px",

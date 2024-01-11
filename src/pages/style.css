@@ -318,7 +318,7 @@ html {
 }
 
 body {
-  overflow: auto;
+  overflow: auto !important;
   height: 100%;
 }
 

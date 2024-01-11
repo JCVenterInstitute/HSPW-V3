@@ -88,7 +88,6 @@ function DownloadTable() {
       checkboxSelection: false,
       headerCheckboxSelection: false,
       maxWidth: 141.5,
-      maxHeight: 10,
       autoHeight: true,
       wrapText: true,
       headerClass: ["header-border"],
@@ -160,7 +159,7 @@ function DownloadTable() {
         >
           <AgGridReact
             rowData={rowData}
-            frameworkComponents={{
+            components={{
               LinkComponent,
             }}
             rowHeight={rowHeight}
