@@ -218,82 +218,134 @@ const fetchSummaryData = async (geneId) => {
   }
 };
 
+// Function to find GeneIDs in OpenSearch index that are not in the uploaded file
+const findMissingGeneIdsInFile = async (client, geneIds) => {
+  let missingCount = 0;
+  let missingGeneIds = new Set();
+  const scrollDuration = "1m"; // Keep the scroll context alive for 1 minute
+
+  // Initiate the scroll query
+  let response = await client.search({
+    index: "genes",
+    scroll: scrollDuration,
+    size: 100, // Adjust the batch size as needed
+    _source: ["GeneID"], // Fetch only the GeneID field
+    body: {
+      query: {
+        match_all: {},
+      },
+    },
+  });
+
+  while (response.body.hits.hits.length) {
+    // Process the batch
+    response.body.hits.hits.forEach((hit) => {
+      const geneId = hit._source.GeneID;
+      if (!geneIds.has(geneId)) {
+        missingCount++;
+        missingGeneIds.add(geneId);
+      }
+    });
+
+    // Fetch the next batch
+    response = await client.scroll({
+      scrollId: response.body._scroll_id,
+      scroll: scrollDuration,
+    });
+  }
+
+  // Close the scroll context
+  await client.clearScroll({ scrollId: response.body._scroll_id });
+
+  return [missingGeneIds, missingCount];
+};
+
 // Function to read TSV and create records in OpenSearch
 const createGenesRecordsInOpenSearch = async (geneIds) => {
   const client = await getClient();
   await ensureIndexExists(client); // Ensure index exists before proceeding
-  const parser = fs
-    .createReadStream("/Users/iwu/Desktop/HSPW/data-test.tsv")
-    .pipe(csv({ separator: "\t" }));
 
-  for await (const row of parser) {
-    const geneId = row.GeneID;
+  // Count missing GeneIDs in the index
+  const [missingGeneIds, missingCount] = await findMissingGeneIdsInFile(
+    client,
+    geneIds
+  );
+  console.log(`GeneIDs in index but not in file:`, [...missingGeneIds]);
+  console.log(`Number of GeneIDs in index but not in file: ${missingCount}`);
 
-    if (geneIds.has(geneId)) {
-      console.log(`> Processing GeneID: ${row.GeneID}`);
-      const geneSymbol = row.Symbol;
-      const geneName = row.description;
-      const aliases = row.Synonyms.replaceAll("|", ", ");
-      const location = row.map_location;
-      const chromosome = row.chromosome;
-      const dbXrefs = row.dbXrefs.replaceAll("|", ", ");
-      const geneType = row.type_of_gene;
-      const modificationDate = row.Modification_date;
+  // const parser = fs
+  //   .createReadStream("/Users/iwu/Desktop/HSPW/data-test.tsv")
+  //   .pipe(csv({ separator: "\t" }));
 
-      const summaryData = await fetchSummaryData(geneId);
+  // for await (const row of parser) {
+  //   const geneId = row.GeneID;
 
-      // Create a record in OpenSearch
-      try {
-        await client.index({
-          index: indexName,
-          body: {
-            GeneID: geneId,
-            "Gene Symbol": geneSymbol,
-            "Gene Name": geneName,
-            Aliases: aliases,
-            Location: location,
-            Chromosome: chromosome,
-            Organism: {
-              scientificName: "Homo sapiens",
-              commonName: "Human",
-              taxonId: 9606,
-              lineage: [
-                "Eukaryota",
-                "Metazoa",
-                "Chordata",
-                "Craniata",
-                "Vertebrata",
-                "Euteleostomi",
-                "Mammalia",
-                "Eutheria",
-                "Euarchontoglires",
-                "Primates",
-                "Haplorrhini",
-                "Catarrhini",
-                "Hominidae",
-                "Homo",
-              ],
-            },
-            DbXrefs: dbXrefs,
-            GeneType: geneType,
-            "Modification Date": modificationDate,
-            Summary: summaryData,
-            // Add other fields from the row if needed
-          },
-        });
-      } catch (error) {
-        console.error("Error creating record in OpenSearch:", error);
-      }
-    } else {
-      console.log(`> Skipping GeneID: ${geneId}`);
-    }
-  }
+  //   if (geneIds.has(geneId)) {
+  //     console.log(`> Processing GeneID: ${row.GeneID}`);
+  //     const geneSymbol = row.Symbol;
+  //     const geneName = row.description;
+  //     const aliases = row.Synonyms.replaceAll("|", ", ");
+  //     const location = row.map_location;
+  //     const chromosome = row.chromosome;
+  //     const dbXrefs = row.dbXrefs.replaceAll("|", ", ");
+  //     const geneType = row.type_of_gene;
+  //     const modificationDate = row.Modification_date;
+
+  //     const summaryData = await fetchSummaryData(geneId);
+
+  //     // Create a record in OpenSearch
+  //     try {
+  //       await client.index({
+  //         index: indexName,
+  //         body: {
+  //           GeneID: geneId,
+  //           "Gene Symbol": geneSymbol,
+  //           "Gene Name": geneName,
+  //           Aliases: aliases,
+  //           Location: location,
+  //           Chromosome: chromosome,
+  //           Organism: {
+  //             scientificName: "Homo sapiens",
+  //             commonName: "Human",
+  //             taxonId: 9606,
+  //             lineage: [
+  //               "Eukaryota",
+  //               "Metazoa",
+  //               "Chordata",
+  //               "Craniata",
+  //               "Vertebrata",
+  //               "Euteleostomi",
+  //               "Mammalia",
+  //               "Eutheria",
+  //               "Euarchontoglires",
+  //               "Primates",
+  //               "Haplorrhini",
+  //               "Catarrhini",
+  //               "Hominidae",
+  //               "Homo",
+  //             ],
+  //           },
+  //           DbXrefs: dbXrefs,
+  //           GeneType: geneType,
+  //           "Modification Date": modificationDate,
+  //           Summary: summaryData,
+  //           // Add other fields from the row if needed
+  //         },
+  //       });
+  //     } catch (error) {
+  //       console.error("Error creating record in OpenSearch:", error);
+  //     }
+  //   } else {
+  //     console.log(`> Skipping GeneID: ${geneId}`);
+  //   }
+  // }
 };
 
 // Main execution
 (async () => {
   try {
     const geneIds = await readGeneIDsFromFile(uploadedFilePath);
+    console.log(`Number of GeneIDs from the file: ${geneIds.size}`);
     await createGenesRecordsInOpenSearch(geneIds);
   } catch (error) {
     console.error("Error:", error);
