@@ -180,7 +180,6 @@ div p {
 .head_title {
   color: white;
   display: left;
-  margin-left: 20px;
   margin-bottom: 1rem;
 }
 
@@ -195,8 +194,6 @@ div p {
   line-height: normal;
   text-align: left;
   padding-bottom: 15px;
-  margin-left: 20px;
-  margin-right: 20px;
 }
 
 #hero-section {

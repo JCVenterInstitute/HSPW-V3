@@ -12,6 +12,7 @@ import gene from "../assets/icon-gene.png";
 import protein_cluster from "../assets/icon-clustering.png";
 import api from "../assets/icon-api.png";
 import help from "../assets/icon-help.png";
+import { Container } from "@mui/material";
 
 /*
   Note: I've tried to be non-destructive with the changes where I can.  Depending on what
@@ -115,7 +116,7 @@ class Home extends React.Component {
                       url="https://www.linkedin.com/embed/feed/update/urn:li:share:7150141766891892736"
                       postUrl="https://www.linkedin.com/posts/salivary-proteome_thehuman-salivary-proteome-wikiis-a-collaborative-activity-7150141767646945280-3nBJ?utm_source=share&utm_medium=member_desktop"
                       width={430}
-                      height={400}
+                      height={340}
                     />
                   </div>
                 </div>
@@ -146,7 +147,7 @@ class Home extends React.Component {
               rawContent: (
                 <div
                   className="basic-card-content basic-card-content-centered embed-responsive"
-                  style={{ height: "400px" }}
+                  style={{ height: "340px" }}
                 >
                   <iframe
                     className="embed-responsive-item"
@@ -173,24 +174,26 @@ class Home extends React.Component {
             data-layout={page.layout}
           >
             <Carousel />
-            <div id="page-content">
-              <div className="basic-card-container">
-                {page.basicCards.map((props, i) => {
-                  return (
-                    <BasicCard
-                      key={i}
-                      rawContent={props.rawContent}
-                      size={props.size}
-                      destination={props.destination}
-                      imageSrc={props.imageSrc}
-                      title={props.title}
-                      blurb={props.blurb}
-                      location={props.location}
-                    />
-                  );
-                })}
+            <Container maxWidth="xl">
+              <div id="page-content">
+                <div className="basic-card-container">
+                  {page.basicCards.map((props, i) => {
+                    return (
+                      <BasicCard
+                        key={i}
+                        rawContent={props.rawContent}
+                        size={props.size}
+                        destination={props.destination}
+                        imageSrc={props.imageSrc}
+                        title={props.title}
+                        blurb={props.blurb}
+                        location={props.location}
+                      />
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            </Container>
           </div>
         </StyledEngineProvider>
       </React.StrictMode>

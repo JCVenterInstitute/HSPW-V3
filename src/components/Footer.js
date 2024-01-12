@@ -19,7 +19,7 @@ const Footer = () => {
 
   return (
     <div className="footer-container">
-      <Container maxWidth="false">
+      <Container maxWidth="xl">
         <div id="footer-logos">
           <ul>
             <li>

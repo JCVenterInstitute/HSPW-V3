@@ -561,11 +561,17 @@ const ExperimentSearchTable = () => {
           })}
         </Box>
         <Container
-          maxWidth="xl"
+          maxWidth="false"
           sx={{ margin: "30px 0 30px 20px" }}
         >
           <Box sx={{ display: "flex" }}>
-            <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
+            <Box
+              style={{
+                display: "flex",
+                // width: "100%",
+                // maxWidth: "550px"
+              }}
+            >
               <TextField
                 variant="outlined"
                 size="small"

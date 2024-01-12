@@ -555,11 +555,17 @@ const GeneTable = () => {
           </div>
         </Box>
         <Container
-          maxWidth="xl"
+          maxWidth="false"
           sx={{ marginTop: "30px" }}
         >
           <Box sx={{ display: "flex" }}>
-            <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
+            <Box
+              style={{
+                display: "flex",
+                // width: "100%",
+                // maxWidth: "550px"
+              }}
+            >
               <TextField
                 variant="outlined"
                 size="small"

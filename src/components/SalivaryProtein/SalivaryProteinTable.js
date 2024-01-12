@@ -1123,7 +1123,7 @@ const SalivaryProteinTable = () => {
   return (
     <>
       <Container
-        maxWidth="false"
+        maxWidth="xl"
         sx={{
           width: "100%",
           display: "flex",
@@ -1135,7 +1135,7 @@ const SalivaryProteinTable = () => {
             backgroundColor: "#f9f8f7",
             width: "285px",
             overflow: "scroll",
-            maxHeight: "760px",
+            height: "auto",
           }}
         >
           <h1
@@ -1789,15 +1789,15 @@ const SalivaryProteinTable = () => {
           </div>
         </Box>
         <Container
-          maxWidth="xl"
+          maxWidth="false"
           sx={{ marginTop: "30px", marginLeft: "20px" }}
         >
           <Box sx={{ display: "flex" }}>
             <Box
               style={{
                 display: "flex",
-                width: "100%",
-                maxWidth: "550px",
+                // width: "100%",
+                // maxWidth: "550px",
               }}
             >
               <TextField
@@ -2019,7 +2019,7 @@ const SalivaryProteinTable = () => {
           >
             <div
               className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
-              style={{ height: 600 }}
+              style={{ height: 2000 }}
             >
               <AgGridReact
                 className="ag-cell-wrap-text saliva_table"

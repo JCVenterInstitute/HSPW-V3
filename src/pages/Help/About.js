@@ -11,14 +11,16 @@ const About = () => {
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}
       >
-        <h1 className="head_title">About</h1>
-        <p className="head_text">
-          For many decades, researchers have known that saliva is important for
-          chewing, tasting, swallowing, and as the first step in digestion. A
-          multitude of proteins and other molecules present in saliva also play
-          vital roles in control of viral and bacterial functions in the context
-          of health and disease.
-        </p>
+        <Container maxWidth="xl">
+          <h1 className="head_title">About</h1>
+          <p className="head_text">
+            For many decades, researchers have known that saliva is important
+            for chewing, tasting, swallowing, and as the first step in
+            digestion. A multitude of proteins and other molecules present in
+            saliva also play vital roles in control of viral and bacterial
+            functions in the context of health and disease.
+          </p>
+        </Container>
       </div>
       <Container
         maxWidth="xl"

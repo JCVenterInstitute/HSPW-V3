@@ -619,15 +619,15 @@ const ProteinSignatureTable = () => {
           </div>
         </Box>
         <Container
-          maxWidth="xl"
+          maxWidth="false"
           sx={{ marginTop: "30px", marginLeft: "20px" }}
         >
           <Box sx={{ display: "flex" }}>
             <Box
               style={{
                 display: "flex",
-                width: "100%",
-                maxWidth: "550px",
+                // width: "100%",
+                // maxWidth: "550px",
               }}
             >
               <TextField
