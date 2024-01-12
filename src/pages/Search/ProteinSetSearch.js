@@ -9,6 +9,7 @@ import {
   TextField,
   Typography,
   Box,
+  Container,
 } from "@mui/material";
 import { AgGridReact } from "ag-grid-react";
 
@@ -201,129 +202,130 @@ const ProteinSetSearch = () => {
         }}
         className="head_background"
       >
-        <h1
-          className="head_title"
-          align="left"
-        >
-          Protein Set Search
-        </h1>
-        <p className="head_text">
-          Use the form below to search for salivary proteins stored in this
-          database. Enter on each line one accession number or gene symbol.
-          Accepted identifier types include UniProt, International Protein Index
-          (IPI), RefSeq, Protein Data Bank (PDB), and Ensembl. To ensure
-          accurate results, please use genes symbols (e.g. AMY2B) approved by
-          the HUGO Gene Nomenclature Committee.
-        </p>
-        <p className="head_text">
-          If you have a large set of proteins, please consider making multiple
-          searches with no more than 100 proteins at a time.
-        </p>
+        <Container maxWidth="xl">
+          <h1 className="head_title">Protein Set Search</h1>
+          <p className="head_text">
+            Use the form below to search for salivary proteins stored in this
+            database. Enter on each line one accession number or gene symbol.
+            Accepted identifier types include UniProt, International Protein
+            Index (IPI), RefSeq, Protein Data Bank (PDB), and Ensembl. To ensure
+            accurate results, please use genes symbols (e.g. AMY2B) approved by
+            the HUGO Gene Nomenclature Committee.
+          </p>
+          <p className="head_text">
+            If you have a large set of proteins, please consider making multiple
+            searches with no more than 100 proteins at a time.
+          </p>
+        </Container>
       </div>
-      <form
-        name="proteinSetSearch"
-        id="proteinSetSearch"
-        method="post"
-        style={{ display: "block", margin: "25px auto", maxWidth: "80vw" }}
-      >
-        <input
-          type="hidden"
-          name="method"
-          value="proteinSetSearch"
-        />
-        <FormControl>
-          <InputLabel>{"Search by"}</InputLabel>
-          <Select
-            labelId="search-type"
-            id="demo-simple-select"
-            label="Search By"
-            onChange={handleSearchType}
-            value={searchType}
-          >
-            <MenuItem value="uniprot_accession">Accession Number</MenuItem>
-            <MenuItem value="gene_symbol">Official Gene Symbol</MenuItem>
-          </Select>
-        </FormControl>
-        <TextField
-          required
-          fullWidth
-          multiline
-          rows={12}
-          onChange={handleInputChange}
-          value={searchInput}
-          sx={{ marginY: "25px" }}
-          InputProps={{
-            inputProps: {
-              pattern: "[,a-zA-Z0-9\\s]*",
-            },
-          }}
-        />
-        <Typography sx={{ mb: 2, color: "black", paddingY: "10px" }}>
-          <Button
-            sx={{ marginRight: "10px" }}
-            variant="contained"
-            onClick={handleSearch}
-          >
-            Search
-          </Button>
-          <Button
-            sx={{ marginX: "10px" }}
-            variant="contained"
-            onClick={resetSearch}
-          >
-            Reset
-          </Button>
-        </Typography>
-      </form>
-      {rowData.length !== 0 ? (
-        <>
-          <Box
-            sx={{
-              margin: "25px auto",
-              maxWidth: "80vw",
-            }}
-          >
-            <div
-              className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
-              style={{ height: 600 }}
+      <Container maxWidth="xl">
+        <form
+          name="proteinSetSearch"
+          id="proteinSetSearch"
+          method="post"
+          style={{ display: "block", margin: "25px auto", maxWidth: "80vw" }}
+        >
+          <input
+            type="hidden"
+            name="method"
+            value="proteinSetSearch"
+          />
+          <FormControl>
+            <InputLabel>{"Search by"}</InputLabel>
+            <Select
+              labelId="search-type"
+              id="demo-simple-select"
+              label="Search By"
+              onChange={handleSearchType}
+              value={searchType}
             >
-              <AgGridReact
-                ref={gridRef}
-                rowData={rowData}
-                defaultColDef={defaultColDef}
-                columnDefs={columnDef}
-                onGridReady={onGridReady}
-                components={{ ProteinLinkComponent, GeneLinkComponent }}
-                enableCellTextSelection={true}
-                suppressPaginationPanel={true}
-              />
-            </div>
-            <div style={{ display: "flex" }}>
-              <Button
-                onClick={onBtExport}
-                sx={{
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  marginTop: "10px",
-                  textTransform: "unset",
-                  color: "#F6921E",
-                  fontSize: "20",
-                  "&:hover": {
-                    backgroundColor: "inherit",
-                  },
-                }}
+              <MenuItem value="uniprot_accession">Accession Number</MenuItem>
+              <MenuItem value="gene_symbol">Official Gene Symbol</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            required
+            fullWidth
+            multiline
+            rows={12}
+            onChange={handleInputChange}
+            value={searchInput}
+            sx={{ marginY: "25px" }}
+            InputProps={{
+              inputProps: {
+                pattern: "[,a-zA-Z0-9\\s]*",
+              },
+            }}
+          />
+          <Typography sx={{ mb: 2, color: "black", paddingY: "10px" }}>
+            <Button
+              sx={{ marginRight: "10px" }}
+              variant="contained"
+              onClick={handleSearch}
+            >
+              Search
+            </Button>
+            <Button
+              sx={{ marginX: "10px" }}
+              variant="contained"
+              onClick={resetSearch}
+            >
+              Reset
+            </Button>
+          </Typography>
+        </form>
+      </Container>
+      <Container maxWidth="xl">
+        {rowData.length !== 0 ? (
+          <>
+            <Box
+              sx={{
+                margin: "25px auto",
+                maxWidth: "80vw",
+              }}
+            >
+              <div
+                className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
+                style={{ height: 600 }}
               >
-                <DownloadLogo
-                  style={{
-                    marginRight: "10px",
-                  }}
+                <AgGridReact
+                  ref={gridRef}
+                  rowData={rowData}
+                  defaultColDef={defaultColDef}
+                  columnDefs={columnDef}
+                  onGridReady={onGridReady}
+                  components={{ ProteinLinkComponent, GeneLinkComponent }}
+                  enableCellTextSelection={true}
+                  suppressPaginationPanel={true}
                 />
-                Download Spreadsheet
-              </Button>
-            </div>
-          </Box>
-        </>
-      ) : null}
+              </div>
+              <div style={{ display: "flex" }}>
+                <Button
+                  onClick={onBtExport}
+                  sx={{
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    marginTop: "10px",
+                    textTransform: "unset",
+                    color: "#F6921E",
+                    fontSize: "20",
+                    "&:hover": {
+                      backgroundColor: "inherit",
+                    },
+                  }}
+                >
+                  <DownloadLogo
+                    style={{
+                      marginRight: "10px",
+                    }}
+                  />
+                  Download Spreadsheet
+                </Button>
+              </div>
+            </Box>
+          </>
+        ) : null}
+      </Container>
     </>
   );
 };

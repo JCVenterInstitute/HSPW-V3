@@ -5,6 +5,7 @@ import Box from "@mui/material/Box";
 
 import GeneTable from "../../../components/GeneTable";
 import MainFeature from "../../../assets/hero.jpeg";
+import { Container } from "@mui/material";
 
 export const options = {
   vAxis: { title: "Count" },
@@ -47,37 +48,27 @@ const Gene = () => {
         className="head_background"
         style={{ backgroundImage: `url(${MainFeature})` }}
       >
-        <h1
-          className="head_title"
-          align="left"
-        >
-          Gene
-        </h1>
-        <p
-          style={{
-            textAlign: "left",
-            color: "white",
-            paddingBottom: "15px",
-            marginLeft: "20px",
-            marginRight: "20px",
-          }}
-          className="head_text"
-        >
-          A gene is a locatable region of genomic sequence, corresponding to a
-          unit of inheritance, which is associated with regulatory regions,
-          transcribed regions, and or other functional sequence regions.
-        </p>
+        <Container maxWidth="xl">
+          <h1 className="head_title">Gene</h1>
+          <p className="head_text">
+            A gene is a locatable region of genomic sequence, corresponding to a
+            unit of inheritance, which is associated with regulatory regions,
+            transcribed regions, and or other functional sequence regions.
+          </p>
+        </Container>
       </div>
-      <h2 style={{ textAlign: "center", marginTop: "10px" }}>
-        Chromosome location of the genes
-      </h2>
-      <Chart
-        chartType="ColumnChart"
-        width="100%"
-        height="400px"
-        data={message}
-        options={options}
-      />
+      <Container maxWidth="xl">
+        <h2 style={{ textAlign: "center", marginTop: "10px" }}>
+          Chromosome location of the genes
+        </h2>
+        <Chart
+          chartType="ColumnChart"
+          width="100%"
+          height="400px"
+          data={message}
+          options={options}
+        />
+      </Container>
       <GeneTable />
     </>
   );

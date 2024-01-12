@@ -353,12 +353,11 @@ const ExperimentSearchTable = () => {
   return (
     <>
       <Container
-        maxWidth="false"
+        maxWidth="xl"
         sx={{
           width: "100%",
           display: "flex",
           paddingLeft: "0px !important",
-          // paddingRight: "0px !important",
         }}
       >
         <Box
@@ -787,7 +786,7 @@ const ExperimentSearchTable = () => {
             <div
               id="differential"
               className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
-              style={{ height: 700 }}
+              style={{ height: 1200 }}
             >
               <AgGridReact
                 ref={gridRef}

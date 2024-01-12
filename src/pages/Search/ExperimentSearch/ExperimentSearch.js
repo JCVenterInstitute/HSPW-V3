@@ -1,3 +1,4 @@
+import { Container } from "@mui/material";
 import MainFeature from "../../../assets/hero.jpeg";
 import ExperimentSearchTable from "../../../components/Search/ExperimentSearch/ExperimentSearchTable";
 
@@ -10,25 +11,13 @@ const ExperimentSearch = () => {
         }}
         className="head_background"
       >
-        <h1
-          className="head_title"
-          align="left"
-        >
-          Experiment Search
-        </h1>
-        <p
-          style={{
-            textAlign: "left",
-            color: "white",
-            paddingBottom: "15px",
-            marginLeft: "20px",
-            marginRight: "20px",
-          }}
-          className="head_text"
-        >
-          This search interface allows you to use filters to search for
-          experiments to find your desired results.
-        </p>
+        <Container maxWidth="xl">
+          <h1 className="head_title">Experiment Search</h1>
+          <p className="head_text">
+            This search interface allows you to use filters to search for
+            experiments to find your desired results.
+          </p>
+        </Container>
       </div>
       <ExperimentSearchTable />
     </>

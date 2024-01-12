@@ -671,16 +671,18 @@ const DifferentialExpression = () => {
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}
       >
-        <h1 className="head_title">Differential Expression Analysis</h1>
-        <p className="head_text">
-          Please choose experiments from the following table for differential
-          expression analysis. This analysis will identify proteins with
-          differential abundance between experiments in Groups A and B based on
-          their normalized spectral counts.
-        </p>
+        <Container maxWidth="xl">
+          <h1 className="head_title">Differential Expression Analysis</h1>
+          <p className="head_text">
+            Please choose experiments from the following table for differential
+            expression analysis. This analysis will identify proteins with
+            differential abundance between experiments in Groups A and B based
+            on their normalized spectral counts.
+          </p>
+        </Container>
       </div>
       <Container
-        maxWidth="false"
+        maxWidth="xl"
         sx={{
           width: "100%",
           display: "flex",

@@ -52,16 +52,13 @@ const GlobalSearch = () => {
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}
       >
-        <h1
-          className="head_title"
-          align="left"
-        >
-          Global Search
-        </h1>
-        <p className="head_text">
-          This search interface allows you to search through all database and
-          find the desired results.
-        </p>
+        <Container maxWidth="xl">
+          <h1 className="head_title">Global Search</h1>
+          <p className="head_text">
+            This search interface allows you to search through all database and
+            find the desired results.
+          </p>
+        </Container>
       </div>
       <Container maxWidth="xl">
         <Box sx={{ display: "flex", alignItems: "center", mt: 4, mb: 4 }}>

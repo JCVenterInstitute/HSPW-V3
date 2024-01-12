@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
 import { AgGridReact } from "ag-grid-react";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -29,6 +35,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 import { ReactComponent as DownloadLogo } from "../assets/table-icon/download.svg";
 import "./Filter.css";
+import CustomLoadingOverlay from "./CustomLoadingOverlay";
 
 const recordsPerPageList = [
   {
@@ -136,6 +143,10 @@ const CitationTable = () => {
       end: dayjs(new Date()).format("YYYY/MM/DD"),
     },
   });
+
+  const loadingOverlayComponent = useMemo(() => {
+    return CustomLoadingOverlay;
+  }, []);
 
   const columns = [
     {
@@ -492,7 +503,7 @@ const CitationTable = () => {
   return (
     <>
       <Container
-        maxWidth="false"
+        maxWidth="xl"
         sx={{
           width: "100%",
           display: "flex",
@@ -503,7 +514,7 @@ const CitationTable = () => {
           sx={{
             backgroundColor: "#f9f8f7",
             width: "285px",
-            height: "47rem",
+            height: "auto",
             overflow: "scroll",
           }}
         >
@@ -920,7 +931,7 @@ const CitationTable = () => {
           >
             <div
               className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
-              style={{ height: 600 }}
+              style={{ height: 1200 }}
             >
               <AgGridReact
                 className="ag-cell-wrap-text"
@@ -930,6 +941,7 @@ const CitationTable = () => {
                 defaultColDef={defColumnDefs}
                 onGridReady={onGridReady}
                 cacheQuickFilter={true}
+                loadingOverlayComponent={loadingOverlayComponent}
                 components={{
                   LinkComponent,
                 }}

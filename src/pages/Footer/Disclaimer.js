@@ -26,12 +26,9 @@ const DisclaimerPage = () => {
         }}
         className="head_background"
       >
-        <h1
-          className="head_title"
-          align="left"
-        >
-          General Disclaimer
-        </h1>
+        <Container maxWidth="xl">
+          <h1 className="head_title">General Disclaimer</h1>
+        </Container>
       </div>
       <Container
         maxWidth="xl"

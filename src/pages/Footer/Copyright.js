@@ -20,12 +20,9 @@ const CopyrightPage = () => {
         }}
         className="head_background"
       >
-        <h1
-          className="head_title"
-          align="left"
-        >
-          Copyright
-        </h1>
+        <Container maxWidth="xl">
+          <h1 className="head_title">Copyright</h1>
+        </Container>
       </div>
       <Container
         maxWidth="xl"

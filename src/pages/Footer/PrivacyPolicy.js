@@ -24,12 +24,9 @@ const PrivacyNoticePage = () => {
         }}
         className="head_background"
       >
-        <h1
-          className="head_title"
-          align="left"
-        >
-          Privacy Policy
-        </h1>
+        <Container maxWidth="xl">
+          <h1 className="head_title">Privacy Policy</h1>
+        </Container>
       </div>
       <Container
         maxWidth="xl"
