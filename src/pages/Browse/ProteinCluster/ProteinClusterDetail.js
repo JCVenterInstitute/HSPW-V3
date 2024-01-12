@@ -193,29 +193,19 @@ const Cluster_Detail = (props) => {
         }}
         className="head_background"
       >
-        <h1
-          className="head_title"
-          align="left"
-        >
-          Protein Cluster Representative Protein:
-          {data[0]["_source"]["uniprot_id"]}
-        </h1>
-        <p
-          style={{
-            textAlign: "left",
-            color: "white",
-            paddingBottom: "15px",
-            marginLeft: "20px",
-            marginRight: "20px",
-          }}
-          className="head_text"
-        >
-          Number of Members: {data[0]["_source"]["number_of_members"]}
-        </p>
+        <Container maxWidth="xl">
+          <h1 className="head_title">
+            Protein Cluster Representative Protein:
+            {data[0]["_source"]["uniprot_id"]}
+          </h1>
+          <p className="head_text">
+            Number of Members: {data[0]["_source"]["number_of_members"]}
+          </p>
+        </Container>
       </div>
       <Container maxWidth="xl">
         <TableContainer style={{ overflowY: "auto" }}>
-          <Table style={{ margin: "40px" }}>
+          <Table style={{ marginTop: "40px" }}>
             <TableHead>
               <TableRow style={{ border: "1px solid white" }}>
                 <TableCell

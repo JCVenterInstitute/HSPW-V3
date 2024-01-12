@@ -15,12 +15,7 @@ const SalivaryProtein = () => {
         className="head_background"
       >
         <Container maxWidth="xl">
-          <h1
-            className="head_title"
-            align="left"
-          >
-            Salivary Protein
-          </h1>
+          <h1 className="head_title">Salivary Protein</h1>
           <p className="head_text">
             Proteins listed below have been manually reviewed and annotated by{" "}
             <a

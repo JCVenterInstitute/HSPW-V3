@@ -6,6 +6,7 @@ import blast from "../assets/icon-protein-blast.png";
 import signature from "../assets/icon-protein-signature.png";
 import BasicCard from "../components/BasicCard";
 import { StyledEngineProvider } from "@mui/material/styles";
+import { Container } from "@mui/material";
 
 class analysisHome extends React.Component {
   constructor(props) {
@@ -104,60 +105,45 @@ class analysisHome extends React.Component {
     return (
       <React.StrictMode>
         <StyledEngineProvider injectFirst>
-          <div style={{ height: "100%", width: "100%" }}>
-            <div style={{ backgroundImage: `url(${main_feature})` }}>
-              <h1
-                style={{
-                  color: "white",
-                  display: "left",
-                  marginLeft: "20px",
-                  marginBottom: "1rem",
-                  paddingTop: "25px",
-                  paddingLeft: "40px",
-                }}
-              >
-                Analysis
-              </h1>
-              <p
-                style={{
-                  textAlign: "left",
-                  color: "white",
-                  fontSize: "18px",
-                  paddingBottom: "25px",
-                  marginLeft: "20px",
-                  marginRight: "20px",
-                  paddingLeft: "40px",
-                  paddingRight: "40px",
-                }}
-              >
+          <div
+            style={{
+              backgroundImage: `url(${main_feature})`,
+            }}
+            className="head_background"
+          >
+            <Container maxWidth="xl">
+              <h1 className="head_title">Analysis</h1>
+              <p className="head_text">
                 Analysis will identify proteins with differential abundance
                 between experiments in Groups A and B based on their normalized
                 spectral counts.
               </p>
-            </div>
+            </Container>
           </div>
           <div
             id="application"
             data-layout={page.layout}
           >
-            <div id="page-content">
-              <div className="basic-card-container">
-                {page.basicCards.map((props, i) => {
-                  return (
-                    <BasicCard
-                      key={i}
-                      rawContent={props.rawContent}
-                      size={props.size}
-                      destination={props.destination}
-                      imageSrc={props.imageSrc}
-                      title={props.title}
-                      blurb={props.blurb}
-                      location={props.location}
-                    />
-                  );
-                })}
+            <Container maxWidth="xl">
+              <div id="page-content">
+                <div className="basic-card-container">
+                  {page.basicCards.map((props, i) => {
+                    return (
+                      <BasicCard
+                        key={i}
+                        rawContent={props.rawContent}
+                        size={props.size}
+                        destination={props.destination}
+                        imageSrc={props.imageSrc}
+                        title={props.title}
+                        blurb={props.blurb}
+                        location={props.location}
+                      />
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            </Container>
           </div>
         </StyledEngineProvider>
       </React.StrictMode>

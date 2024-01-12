@@ -206,15 +206,13 @@ div p {
   font-weight: 600;
   font-family: Lato;
   font-size: 17px;
-  margin-left: 3.3%;
-  padding-right: 6%;
 }
 
 .hero-link {
   font-family: Montserrat;
   font-size: 14px;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
   color: #226ab3;
   font-style: normal;
   font-weight: 500;
