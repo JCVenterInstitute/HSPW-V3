@@ -141,8 +141,8 @@ const Footer = () => {
             >
               <Grid item>
                 <p className="address last">
-                  By J. Craig Venter Institute, 4120 Capricorn Lane, La Jolla,
-                  CA 92037
+                  J. Craig Venter Institute, 4120 Capricorn Lane, La Jolla, CA
+                  92037
                 </p>
               </Grid>
               <Grid item>

@@ -148,38 +148,21 @@ const ClustalOmegaResults = () => {
 
   return (
     <>
-      <div style={{ backgroundImage: `url(${main_feature})` }}>
-        <h1
-          style={{
-            color: "white",
-            display: "left",
-            marginLeft: "20px",
-            marginBottom: "1rem",
-            paddingTop: "25px",
-            paddingLeft: "40px",
-          }}
-        >
-          Multiple Sequence Alignment
-        </h1>
-        <p
-          style={{
-            textAlign: "left",
-            color: "white",
-            fontSize: "18px",
-            paddingBottom: "25px",
-            marginLeft: "20px",
-            marginRight: "20px",
-            paddingLeft: "40px",
-            paddingRight: "40px",
-          }}
-        >
-          ClustalW is a general purpose multiple sequence alignment program for
-          DNA or proteins. It produces biologically meaningful multiple sequence
-          alignments of divergent sequences. It calculates the best match for
-          the selected sequences, and lines them up so that the identities,
-          similarities and differences can be seen. This service is provided by
-          the European Bioinformatics Institute (EBI).
-        </p>
+      <div
+        style={{ backgroundImage: `url(${main_feature})` }}
+        className="head_background"
+      >
+        <Container maxWidth="xl">
+          <h1 className="head_title">Multiple Sequence Alignment</h1>
+          <p className="head_text">
+            ClustalW is a general purpose multiple sequence alignment program
+            for DNA or proteins. It produces biologically meaningful multiple
+            sequence alignments of divergent sequences. It calculates the best
+            match for the selected sequences, and lines them up so that the
+            identities, similarities and differences can be seen. This service
+            is provided by the European Bioinformatics Institute (EBI).
+          </p>
+        </Container>
       </div>
       <Container maxWidth="xl">
         <Typography
