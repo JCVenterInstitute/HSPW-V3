@@ -260,6 +260,11 @@ const findMissingGeneIdsInFile = async (client, geneIds) => {
   return [missingGeneIds, missingCount];
 };
 
+const writeGeneIdsToCSV = (geneIds, filePath) => {
+  const csvContent = Array.from(geneIds).join("\n");
+  fs.writeFileSync(filePath, csvContent);
+};
+
 // Function to read TSV and create records in OpenSearch
 const createGenesRecordsInOpenSearch = async (geneIds) => {
   const client = await getClient();
@@ -272,6 +277,10 @@ const createGenesRecordsInOpenSearch = async (geneIds) => {
   );
   console.log(`GeneIDs in index but not in file:`, [...missingGeneIds]);
   console.log(`Number of GeneIDs in index but not in file: ${missingCount}`);
+
+  // Write the missing GeneIDs to a CSV file
+  const outputFilePath = "/Users/iwu/Desktop/HSPW/missingGeneIds.csv"; // Replace with your desired output path
+  writeGeneIdsToCSV(missingGeneIds, outputFilePath);
 
   // const parser = fs
   //   .createReadStream("/Users/iwu/Desktop/HSPW/data-test.tsv")
