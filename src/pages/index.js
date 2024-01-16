@@ -1,6 +1,7 @@
 import * as React from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
 import { LinkedInEmbed } from "react-social-media-embed";
+
 import Carousel from "../components/Carousel.js";
 import salivary_protein from "../assets/icon-salivary-protein.png";
 import analysis from "../assets/icon-analyze.png";
@@ -20,6 +21,8 @@ import {
   Link,
   Typography,
 } from "@mui/material";
+
+import "../components/BasicCard.css";
 
 /*
   Note: I've tried to be non-destructive with the changes where I can.  Depending on what
