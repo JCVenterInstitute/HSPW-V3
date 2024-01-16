@@ -11,6 +11,7 @@ import {
   CardMedia,
   Container,
   Grid,
+  Link,
   Typography,
 } from "@mui/material";
 
@@ -89,7 +90,10 @@ class analysisHome extends React.Component {
           >
             <Container
               maxWidth="xl"
-              sx={{ marginY: "30px" }}
+              sx={{
+                paddingY: "50px",
+                backgroundColor: "#f9f8f7",
+              }}
             >
               <Grid
                 container
@@ -104,34 +108,39 @@ class analysisHome extends React.Component {
                       md={6}
                       lg={3}
                     >
-                      <Card
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          height: "100%",
-                          minHeight: "400px",
-                          justifyContent: "space-between",
-                        }}
+                      <Link
+                        href={props.location}
+                        sx={{ textDecoration: "none" }}
                       >
-                        <CardContent>
-                          <Typography
-                            variant="h6"
-                            component="div"
-                          >
-                            {props.title}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                          >
-                            {props.blurb}
-                          </Typography>
-                        </CardContent>
-                        <CardMedia
-                          component={"img"}
-                          image={props.imageSrc}
-                        />
-                      </Card>
+                        <Card
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            height: "100%",
+                            minHeight: "400px",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <CardContent>
+                            <Typography
+                              variant="h6"
+                              component="div"
+                            >
+                              {props.title}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                            >
+                              {props.blurb}
+                            </Typography>
+                          </CardContent>
+                          <CardMedia
+                            component={"img"}
+                            image={props.imageSrc}
+                          />
+                        </Card>
+                      </Link>
                     </Grid>
                   );
                 })}
