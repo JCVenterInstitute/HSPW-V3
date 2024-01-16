@@ -18,7 +18,7 @@ import { Link } from "react-router-dom";
 
 const navMenuStyles = {
   marginRight: "20px",
-  fontSize: "22px",
+  fontSize: "20px",
 };
 
 export const NavBar = () => {

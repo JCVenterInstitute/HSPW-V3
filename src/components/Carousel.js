@@ -79,7 +79,7 @@ function Carousel() {
             {images[currImg].index === 0 && (
               <div
                 className="first_title"
-                style={{ paddingRight: "2rem" }}
+                style={{ paddingRight: "2rem", display: "flex" }}
               >
                 <h1 style={{ color: "white", textAlign: "left" }}>
                   {images[currImg].title}
