@@ -202,6 +202,7 @@ class Home extends React.Component {
                             display: "flex",
                             flexDirection: "column",
                             height: "100%",
+                            borderRadius: "16px",
                             minHeight: "400px",
                           }}
                         >
@@ -215,14 +216,22 @@ class Home extends React.Component {
                                 ) : (
                                   <>
                                     <Typography
-                                      variant="h6"
                                       component="div"
+                                      sx={{
+                                        fontFamily: "Lato",
+                                        fontSize: "18px",
+                                        fontWeight: "600",
+                                        textTransform: "uppercase",
+                                      }}
                                     >
                                       {props.title}
                                     </Typography>
                                     <Typography
-                                      variant="body2"
                                       color="text.secondary"
+                                      sx={{
+                                        fontFamily: "Lato",
+                                        fontSize: "16px",
+                                      }}
                                     >
                                       {props.blurb}
                                     </Typography>
