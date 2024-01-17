@@ -102,6 +102,7 @@ class analysisHome extends React.Component {
                 {page.basicCards.map((props, i) => {
                   return (
                     <Grid
+                      key={i}
                       item
                       xs={12}
                       sm={6}

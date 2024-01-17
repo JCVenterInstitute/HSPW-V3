@@ -60,9 +60,10 @@ const Footer = () => {
             justifyContent: "space-evenly",
           }}
         >
-          {logos.map((logo) => {
+          {logos.map((logo, index) => {
             return (
               <Grid
+                key={index}
                 item
                 xs={6}
                 sm={4}
@@ -95,6 +96,7 @@ const Footer = () => {
           >
             {links.map((link, index) => (
               <Grid
+                key={index}
                 item
                 container
                 justifyContent="space-evenly"

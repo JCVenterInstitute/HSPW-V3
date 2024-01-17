@@ -118,13 +118,12 @@ class Home extends React.Component {
                   style={{
                     display: "flex",
                     justifyContent: "center",
-                    height: "300px%",
                   }}
                 >
                   <LinkedInEmbed
                     url="https://www.linkedin.com/embed/feed/update/urn:li:share:7150141766891892736"
                     postUrl="https://www.linkedin.com/posts/salivary-proteome_thehuman-salivary-proteome-wikiis-a-collaborative-activity-7150141767646945280-3nBJ?utm_source=share&utm_medium=member_desktop"
-                    width={430}
+                    width={400}
                   />
                 </div>
               ),
@@ -183,10 +182,9 @@ class Home extends React.Component {
                 sx={{ marginY: "20px" }}
               >
                 {page.basicCards.map((props, i) => {
-                  console.log(props.size);
-
                   return (
                     <Grid
+                      key={i}
                       item
                       xs={12}
                       sm={props.size ? 12 : 6}
