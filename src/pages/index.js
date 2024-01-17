@@ -126,7 +126,7 @@ class Home extends React.Component {
                       <iframe
                         src="https://www.linkedin.com/embed/feed/update/urn:li:share:7150141766891892736"
                         height="400"
-                        width="410"
+                        width="355"
                         frameborder="0"
                         allowfullscreen=""
                         title="Embedded post"
@@ -134,7 +134,7 @@ class Home extends React.Component {
                       <iframe
                         src="https://www.linkedin.com/embed/feed/update/urn:li:share:7150141766891892736"
                         height="400"
-                        width="410"
+                        width="355"
                         frameborder="0"
                         allowfullscreen=""
                         title="Embedded post"
