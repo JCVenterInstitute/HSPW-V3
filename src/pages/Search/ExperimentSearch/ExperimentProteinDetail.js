@@ -223,12 +223,14 @@ const ExperimentProteinDetail = () => {
         }}
         className="head_background"
       >
-        <h1
-          className="head_title"
-          align="left"
-        >
-          Protein: {uniprotid}
-        </h1>
+        <Container maxWidth="xl">
+          <h1
+            className="head_title"
+            align="left"
+          >
+            Protein: {uniprotid}
+          </h1>
+        </Container>
       </div>
       <Container
         sx={{ mt: 2 }}

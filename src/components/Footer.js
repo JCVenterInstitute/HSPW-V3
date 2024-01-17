@@ -5,11 +5,11 @@ import forsyth from "../assets/logo-forsyth.png";
 import uthsc from "../assets/logo-uthsc.svg";
 import ub from "../assets/logo-ub.png";
 import nih from "../assets/logo-nih-nidcr.png";
-import { Container, Grid, Link, Typography } from "@mui/material";
+import { Container, Grid, Link } from "@mui/material";
 
 const Footer = () => {
   const links = [
-    { href: "/about", text: "About HSPW" },
+    { href: "/about", text: "About HSP" },
     { href: "/accessibility", text: "Accessibility" },
     { href: "/copyrights", text: "Copyrights" },
     { href: "/disclaimers", text: "Disclaimers" },
@@ -17,110 +17,103 @@ const Footer = () => {
     { href: "/contact", text: "Contact Us" },
   ];
 
+  const logos = [
+    {
+      href: "http://www.jcvi.org",
+      title: "JCVI Homepage",
+      altText: "JCVI Homepage",
+      image: jcvi,
+    },
+    {
+      href: "http://www.forsyth.org",
+      title: "The Forsyth Institute Homepage",
+      altText: "The Forsyth Institute Homepage",
+      image: forsyth,
+    },
+    {
+      href: "http://www.uthsc.edu",
+      title: "The University of Tennessee Health Science Center Homepage",
+      altText: "The University of Tennessee Health Science Center Homepage",
+      image: uthsc,
+    },
+    {
+      href: "http://www.buffalo.edu",
+      title: "University of Buffalo Homepage",
+      altText: "University of Buffalo Homepage",
+      image: ub,
+    },
+    {
+      href: "http://www.nih.gov",
+      title: "NIH Homepage",
+      altText: "NIH Homepage",
+      image: nih,
+    },
+  ];
+
   return (
     <div className="footer-container">
-      <Container maxWidth="false">
-        <div id="footer-logos">
-          <ul>
-            <li>
-              <a
-                href="http://www.jcvi.org"
-                title="JCVI Homepage"
-                alt="JCVI Homepage"
+      <Container maxWidth="xl">
+        <Grid
+          container
+          spacing={2}
+          sx={{
+            justifyContent: "space-evenly",
+          }}
+        >
+          {logos.map((logo, index) => {
+            return (
+              <Grid
+                key={index}
+                item
+                xs={6}
+                sm={4}
+                md={4}
+                lg={2}
+                className="logo-grid"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
-                <img
-                  src={jcvi}
-                  alt="JCVI Logo"
-                />
-              </a>
-            </li>
-            <li>
-              <a
-                href="http://www.forsyth.org"
-                title="The Forsyth Institute Homepage"
-                alt="The Forsyth Institute Homepage"
-              >
-                <img
-                  src={forsyth}
-                  alt="Forsyth Logo"
-                />
-              </a>
-            </li>
-            <li>
-              <a
-                href="http://www.uthsc.edu"
-                title="The University of Tennessee Health Science Center Homepage"
-                alt="The University of Tennessee Health Science Center Homepage"
-              >
-                <img
-                  src={uthsc}
-                  alt="University of Tennessee Health Center Logo"
-                />
-              </a>
-            </li>
-            <li>
-              <a
-                href="http://www.buffalo.edu"
-                title="University of Buffalo Homepage"
-                alt="University of Buffalo Homepage"
-              >
-                <img
-                  src={ub}
-                  alt="University of Buffalo Logo"
-                />
-              </a>
-            </li>
-            <li>
-              <a
-                href="http://www.nih.gov"
-                title="NIH Homepage"
-                alt="NIH Homepage"
-              >
-                <img
-                  src={nih}
-                  alt="NIH Logo"
-                />
-              </a>
-            </li>
-          </ul>
-        </div>
+                <Link
+                  href={logo.href}
+                  target="_blank"
+                >
+                  <img
+                    src={logo.image}
+                    alt={logo.altText}
+                  />
+                </Link>
+              </Grid>
+            );
+          })}
+        </Grid>
         <div id="footer-text">
           <Grid
             container
             spacing={3}
           >
-            <Grid
-              item
-              container
-              justifyContent="space-evenly"
-            >
-              {links.map((link, index) => (
-                <React.Fragment key={index}>
-                  {index > 0 && (
-                    <Grid item>
-                      <Typography
-                        component="span"
-                        sx={{
-                          mx: 4,
-                          fontFamily: "Montserrat",
-                          color: "#6C6C6C",
-                        }}
-                      >
-                        |
-                      </Typography>
-                    </Grid>
-                  )}
-                  <Grid item>
-                    <Link
-                      href={link.href}
-                      underline="none"
-                    >
-                      {link.text}
-                    </Link>
-                  </Grid>
-                </React.Fragment>
-              ))}
-            </Grid>
+            {links.map((link, index) => (
+              <Grid
+                key={index}
+                item
+                container
+                justifyContent="space-evenly"
+                xs={6}
+                sm={4}
+                md={4}
+                lg={2}
+              >
+                <Link
+                  href={link.href}
+                  underline="none"
+                  style={{ fontSize: "16px" }}
+                >
+                  {link.text}
+                </Link>
+              </Grid>
+            ))}
           </Grid>
           <div
             style={{
@@ -141,8 +134,8 @@ const Footer = () => {
             >
               <Grid item>
                 <p className="address last">
-                  By J. Craig Venter Institute, 4120 Capricorn Lane, La Jolla,
-                  CA 92037
+                  J. Craig Venter Institute, 4120 Capricorn Lane, La Jolla, CA
+                  92037
                 </p>
               </Grid>
               <Grid item>

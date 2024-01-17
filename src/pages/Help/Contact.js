@@ -235,13 +235,15 @@ const Contact = () => {
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}
       >
-        <h1 className="head_title">Contact Us</h1>
-        <p className="head_text">
-          Let us know if you have any questions, comments, or suggestions!
-          Please provide as much details as possible to help us better respond
-          to your inquiry. Screenshots of pages in question can be submitted
-          along with your message if desired.
-        </p>
+        <Container maxWidth="xl">
+          <h1 className="head_title">Contact Us</h1>
+          <p className="head_text">
+            Let us know if you have any questions, comments, or suggestions!
+            Please provide as much details as possible to help us better respond
+            to your inquiry. Screenshots of pages in question can be submitted
+            along with your message if desired.
+          </p>
+        </Container>
       </div>
       <Container maxWidth="xl">
         <Box

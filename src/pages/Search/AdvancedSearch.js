@@ -504,11 +504,13 @@ const AdvancedSearch = () => {
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}
       >
-        <h1 className="head_title">Advanced Search</h1>
-        <p className="head_text">
-          This search interface allows you to build complex queries exploiting
-          the semantic annotations stored in this database.
-        </p>
+        <Container maxWidth="xl">
+          <h1 className="head_title">Advanced Search</h1>
+          <p className="head_text">
+            This search interface allows you to build complex queries exploiting
+            the semantic annotations stored in this database.
+          </p>
+        </Container>
       </div>
       <Container maxWidth="xl">
         <Box

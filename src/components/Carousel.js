@@ -5,6 +5,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { images } from "./CarouselData.js";
 import "./Carousel.css";
 import Chord from "./Chord.js";
+import { Container } from "@mui/material";
 
 function Carousel() {
   const [currImg, setCurrImg] = useState(0);
@@ -15,7 +16,11 @@ function Carousel() {
     <div className="carousel">
       <div
         className="carouselInner"
-        style={{ backgroundImage: `url(${images[currImg].img})` }}
+        style={{
+          backgroundImage: `url(${images[currImg].img})`,
+          display: "flex",
+          justifyContent: "center",
+        }}
       >
         <div
           className="left"
@@ -25,82 +30,86 @@ function Carousel() {
         >
           <ArrowBackIosIcon style={{ fontSize: 30 }} />
         </div>
-        {images[currImg].subtitle === stringCheck && (
-          <div style={{ paddingLeft: "2rem" }}>
-            {images[currImg].subtitle === stringCheck && (
-              <>
-                <div
-                  style={{
-                    float: "left",
-                    width: "20%",
-                    marginTop: "10%",
-                    display: "inline-block",
-                  }}
-                >
-                  <h1
-                    sx="text-align:left"
-                    className="third_title"
+        <Container maxWidth="xl">
+          {images[currImg].subtitle === stringCheck && (
+            <div>
+              {images[currImg].subtitle === stringCheck && (
+                <>
+                  <div
+                    style={{
+                      float: "left",
+                      width: "20%",
+                      marginTop: "10%",
+                      display: "inline-block",
+                    }}
                   >
-                    {images[currImg].title}
-                  </h1>
-                </div>
-                <div
-                  style={{
-                    width: "40%",
-                    margin: "0 auto",
-                    display: "inline-block",
-                    marginTop: "8%",
-                  }}
-                >
-                  <p className="third_paragraph">{images[currImg].subtitle}</p>
-                </div>
-                <div
-                  style={{
-                    float: "right",
-                    display: "inline-block",
-                    width: "40%",
-                  }}
-                >
-                  <Chord />
-                </div>
-              </>
-            )}
-          </div>
-        )}
-        <div style={{ paddingLeft: "2rem", paddingRight: "1rem" }}>
-          {images[currImg].index === 0 && (
-            <div
-              className="first_title"
-              style={{ paddingRight: "2rem" }}
-            >
-              <h1 style={{ color: "white", textAlign: "left" }}>
-                {images[currImg].title}
-              </h1>
-              <p
-                className="first_paragraph"
-                style={{ color: "white", textAlign: "left" }}
-              >
-                {images[currImg].subtitle}
-              </p>
+                    <h1
+                      sx="text-align:left"
+                      className="third_title"
+                    >
+                      {images[currImg].title}
+                    </h1>
+                  </div>
+                  <div
+                    style={{
+                      width: "40%",
+                      margin: "0 auto",
+                      display: "inline-block",
+                      marginTop: "8%",
+                    }}
+                  >
+                    <p className="third_paragraph">
+                      {images[currImg].subtitle}
+                    </p>
+                  </div>
+                  <div
+                    style={{
+                      float: "right",
+                      display: "inline-block",
+                      width: "40%",
+                    }}
+                  >
+                    <Chord />
+                  </div>
+                </>
+              )}
             </div>
           )}
-          {images[currImg].index === 1 && (
-            <>
-              <div className="second_title">
+          <div>
+            {images[currImg].index === 0 && (
+              <div
+                className="first_title"
+                style={{ paddingRight: "2rem", display: "flex" }}
+              >
                 <h1 style={{ color: "white", textAlign: "left" }}>
                   {images[currImg].title}
                 </h1>
+                <p
+                  className="first_paragraph"
+                  style={{ color: "white", textAlign: "left" }}
+                >
+                  {images[currImg].subtitle}
+                </p>
               </div>
-              <p
-                className="second_paragraph"
-                style={{ color: "white", textAlign: "left" }}
-              >
-                {images[currImg].subtitle}
-              </p>
-            </>
-          )}
-          <p>{images[currImg].subtitle1}</p>
-        </div>
+            )}
+            {images[currImg].index === 1 && (
+              <>
+                <div className="second_title">
+                  <h1 style={{ color: "white", textAlign: "left" }}>
+                    {images[currImg].title}
+                  </h1>
+                </div>
+                <p
+                  className="second_paragraph"
+                  style={{ color: "white", textAlign: "left" }}
+                >
+                  {images[currImg].subtitle}
+                </p>
+              </>
+            )}
+            <p>{images[currImg].subtitle1}</p>
+          </div>
+        </Container>
         <div
           className="right"
           onClick={() => {

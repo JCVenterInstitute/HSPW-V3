@@ -1,7 +1,5 @@
 import * as React from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
-import { LinkedInEmbed } from "react-social-media-embed";
-import BasicCard from "../components/BasicCard.js";
 import Carousel from "../components/Carousel.js";
 import salivary_protein from "../assets/icon-salivary-protein.png";
 import analysis from "../assets/icon-analyze.png";
@@ -12,6 +10,17 @@ import gene from "../assets/icon-gene.png";
 import protein_cluster from "../assets/icon-clustering.png";
 import api from "../assets/icon-api.png";
 import help from "../assets/icon-help.png";
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Container,
+  Grid,
+  Link,
+  Typography,
+} from "@mui/material";
+
+import "../components/BasicCard.css";
 
 /*
   Note: I've tried to be non-destructive with the changes where I can.  Depending on what
@@ -44,12 +53,6 @@ class Home extends React.Component {
       pages: {
         "/": {
           layout: "fixed",
-          hero: {
-            width: "fullscreen",
-            title: "Welcome to the Human Salivary Proteome Wiki (HSPW)",
-            blurb:
-              "HSPW is a collaborative, community-based Web portal to more than 1,000 unique human saliva proteins identified by high-throughput proteomic technologies. The wiki is developed for the research community and the public to harness the knowledge in the data and to further enhance the value of the proteome. You are very welcome to share your thoughts in the forums; add your own data to the growing database; annotate the proteins; or just explore the site.",
-          },
           basicCards: [
             {
               imageSrc: salivary_protein,
@@ -110,35 +113,39 @@ class Home extends React.Component {
               destination: false,
               rawContent: (
                 <div className="basic-card-content basic-card-content-centered">
-                  <div style={{ display: "flex", justifyContent: "center" }}>
-                    <LinkedInEmbed
-                      url="https://www.linkedin.com/embed/feed/update/urn:li:share:7150141766891892736"
-                      postUrl="https://www.linkedin.com/posts/salivary-proteome_thehuman-salivary-proteome-wikiis-a-collaborative-activity-7150141767646945280-3nBJ?utm_source=share&utm_medium=member_desktop"
-                      width={430}
-                      height={400}
-                    />
+                  <div
+                    style={{
+                      maxHeight: "400px",
+                      overflowY: "auto",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <iframe
+                        src="https://www.linkedin.com/embed/feed/update/urn:li:share:7150141766891892736"
+                        height="400"
+                        width="340"
+                        frameBorder="0"
+                        allowFullScreen=""
+                        title="Embedded post"
+                      ></iframe>
+                    </div>
                   </div>
                 </div>
               ),
             },
             {
+              imageSrc: help,
+              title: "Information for HSP Users",
+              blurb:
+                "The new HSP is built on the AWS system. Data and analysis tools and services from HSP have now been integrated into the resource.",
               destination: false,
-              rawContent: (
-                <div className="basic-card-content basic-card-content-centered">
-                  <h3>Information for HSPW Users</h3>
-                  <img
-                    src={help}
-                    alt="Help Icon"
-                  ></img>
-                  <ul className="bulletless">
-                    <li>
-                      The new HSPW is built on the AWS system. Data and analysis
-                      tools and services from HSPW have now been integrated into
-                      the resource.
-                    </li>
-                  </ul>
-                </div>
-              ),
             },
             {
               size: "2",
@@ -146,7 +153,10 @@ class Home extends React.Component {
               rawContent: (
                 <div
                   className="basic-card-content basic-card-content-centered embed-responsive"
-                  style={{ height: "400px" }}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
                 >
                   <iframe
                     className="embed-responsive-item"
@@ -165,6 +175,7 @@ class Home extends React.Component {
 
   render() {
     let page = this.state.pages[this.state.activePage];
+
     return (
       <React.StrictMode>
         <StyledEngineProvider injectFirst>
@@ -173,24 +184,84 @@ class Home extends React.Component {
             data-layout={page.layout}
           >
             <Carousel />
-            <div id="page-content">
-              <div className="basic-card-container">
+            <Container
+              maxWidth="xl"
+              sx={{ backgroundColor: "#f9f8f7", paddingY: "20px" }}
+            >
+              <Grid
+                container
+                spacing={2}
+                sx={{ marginY: "20px" }}
+              >
                 {page.basicCards.map((props, i) => {
                   return (
-                    <BasicCard
+                    <Grid
                       key={i}
-                      rawContent={props.rawContent}
-                      size={props.size}
-                      destination={props.destination}
-                      imageSrc={props.imageSrc}
-                      title={props.title}
-                      blurb={props.blurb}
-                      location={props.location}
-                    />
+                      item
+                      xs={12}
+                      sm={props.size ? 12 : 6}
+                      md={props.size ? 8 : 4}
+                      lg={props.size ? 6 : 3}
+                    >
+                      <Link
+                        href={props.location}
+                        sx={{ textDecoration: "none" }}
+                      >
+                        <Card
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            height: "100%",
+                            borderRadius: "16px",
+                            minHeight: "400px",
+                          }}
+                        >
+                          {props.rawContent ? (
+                            props.rawContent
+                          ) : (
+                            <>
+                              <CardContent className="card-content">
+                                {props.rawContent ? (
+                                  props.rawContent
+                                ) : (
+                                  <>
+                                    <Typography
+                                      component="div"
+                                      sx={{
+                                        fontFamily: "Lato",
+                                        fontSize: "18px",
+                                        fontWeight: "600",
+                                        textTransform: "uppercase",
+                                      }}
+                                    >
+                                      {props.title}
+                                    </Typography>
+                                    <Typography
+                                      color="text.secondary"
+                                      sx={{
+                                        fontFamily: "Lato",
+                                        fontSize: "16px",
+                                      }}
+                                    >
+                                      {props.blurb}
+                                    </Typography>
+                                  </>
+                                )}
+                              </CardContent>
+                              <CardMedia
+                                component={"img"}
+                                image={props.imageSrc}
+                                sx={{ marginY: "30px" }}
+                              />
+                            </>
+                          )}
+                        </Card>
+                      </Link>
+                    </Grid>
                   );
                 })}
-              </div>
-            </div>
+              </Grid>
+            </Container>
           </div>
         </StyledEngineProvider>
       </React.StrictMode>

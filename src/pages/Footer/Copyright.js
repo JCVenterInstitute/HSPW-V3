@@ -20,12 +20,9 @@ const CopyrightPage = () => {
         }}
         className="head_background"
       >
-        <h1
-          className="head_title"
-          align="left"
-        >
-          Copyright
-        </h1>
+        <Container maxWidth="xl">
+          <h1 className="head_title">Copyright</h1>
+        </Container>
       </div>
       <Container
         maxWidth="xl"
@@ -88,7 +85,7 @@ const CopyrightPage = () => {
           material under this condition. Some contributors of the original data
           (or the country of origin of such data) may claim patent, copyright,
           or other intellectual property rights in all or a portion of the data
-          (that has been submitted). HSPW is not in a position to assess the
+          (that has been submitted). HSP is not in a position to assess the
           validity of such claims and therefore cannot provide comment or
           unrestricted permission concerning the use, copying, or distribution
           of such content.

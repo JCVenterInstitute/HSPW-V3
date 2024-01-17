@@ -153,139 +153,128 @@ const ProteinDetail = (props) => {
         }}
         className="head_background"
       >
-        <h1
-          className="head_title"
-          align="left"
-        >
-          Protein: {data[0]["_source"]["salivary_proteins"]["protein_name"]}
-        </h1>
-        <p
-          style={{
-            textAlign: "left",
-            color: "white",
-            paddingBottom: "15px",
-            marginLeft: "20px",
-            marginRight: "20px",
-          }}
-          className="head_text"
-        >
-          Altername Names:{" "}
-          {
-            data[0]["_source"]["salivary_proteins"][
-              "protein_alternate_names"
-            ][0]
-          }
-        </p>
+        <Container maxWidth="xl">
+          <h1 className="head_title">
+            Protein: {data[0]["_source"]["salivary_proteins"]["protein_name"]}
+          </h1>
+          <p className="head_text">
+            Altername Names:{" "}
+            {
+              data[0]["_source"]["salivary_proteins"][
+                "protein_alternate_names"
+              ][0]
+            }
+          </p>
+        </Container>
       </div>
       <div
         id="hero-section"
         style={{ paddingTop: "10px" }}
       >
-        <span id="hero-text">Jump To Section</span>
-        <div
-          style={{
-            marginLeft: "10px",
-          }}
-        >
-          <Link
-            to="#names-and-origin"
-            className="hero-link"
-            style={{ marginLeft: "0px" }}
+        <Container maxWidth="xl">
+          <span id="hero-text">Jump To Section</span>
+          <div
+            style={{
+              marginLeft: "30px",
+              display: "inline-block", // Ensuring the links are also in line
+              alignItems: "center", // Centering items vertically
+              flexWrap: "wrap", // Optional: Allows items to wrap to the next line on smaller screens
+            }}
           >
-            Names & Origin
-          </Link>
-          |
-          <Link
-            to="#taxonomy"
-            className="hero-link"
-          >
-            Taxonomy
-          </Link>
-          |
-          <Link
-            to="#sequence-attributes"
-            className="hero-link"
-          >
-            Sequence Attributes
-          </Link>
-          |
-          <Link
-            to="#comments"
-            className="hero-link"
-          >
-            Comments
-          </Link>
-          |
-          <Link
-            to="#feature-map"
-            className="hero-link"
-          >
-            Feature Map
-          </Link>
-          |
-          <Link
-            to="#expression"
-            className="hero-link"
-          >
-            Expression
-          </Link>
-          |
-          {data[0]["_source"]["salivary_proteins"]["glycans"].length !== 0 && (
-            <>
-              <Link
-                to="#glycan"
-                className="hero-link"
-              >
-                Glycan
-              </Link>{" "}
-              |
-            </>
-          )}
-          <Link
-            to="#proteomics"
-            className="hero-link"
-          >
-            Proteomics
-          </Link>
-          |
-          <Link
-            to="#curator"
-            className="hero-link"
-          >
-            Curator's Notes
-          </Link>
-          |
-          <Link
-            to="#cross-reference"
-            className="hero-link"
-          >
-            Cross References
-          </Link>
-          |
-          <Link
-            to="#keyword"
-            className="hero-link"
-          >
-            Keywords
-          </Link>
-          |
-          <Link
-            to="#reference"
-            className="hero-link"
-          >
-            References
-          </Link>
-          |
-          <Link
-            to="#entry-info"
-            className="hero-link"
-          >
-            Entry Info
-          </Link>
-        </div>
+            <Link
+              to="#names-and-origin"
+              className="hero-link"
+              style={{ marginLeft: "0px" }}
+            >
+              Names & Origin
+            </Link>
+            |
+            <Link
+              to="#taxonomy"
+              className="hero-link"
+            >
+              Taxonomy
+            </Link>
+            |
+            <Link
+              to="#sequence-attributes"
+              className="hero-link"
+            >
+              Sequence Attributes
+            </Link>
+            |
+            <Link
+              to="#comments"
+              className="hero-link"
+            >
+              Comments
+            </Link>
+            |
+            <Link
+              to="#feature-map"
+              className="hero-link"
+            >
+              Feature Map
+            </Link>
+            |
+            <Link
+              to="#expression"
+              className="hero-link"
+            >
+              Expression
+            </Link>
+            |
+            {data[0]["_source"]["salivary_proteins"]["glycans"].length !==
+              0 && (
+              <>
+                <Link
+                  to="#glycan"
+                  className="hero-link"
+                >
+                  Glycan
+                </Link>{" "}
+                |
+              </>
+            )}
+            <Link
+              to="#proteomics"
+              className="hero-link"
+            >
+              Proteomics
+            </Link>
+            |
+            <Link
+              to="#cross-reference"
+              className="hero-link"
+            >
+              Cross References
+            </Link>
+            |
+            <Link
+              to="#keyword"
+              className="hero-link"
+            >
+              Keywords
+            </Link>
+            |
+            <Link
+              to="#reference"
+              className="hero-link"
+            >
+              References
+            </Link>
+            |
+            <Link
+              to="#entry-info"
+              className="hero-link"
+            >
+              Entry Info
+            </Link>
+          </div>
+        </Container>
       </div>
-      <Container maxWidth="false">
-        <div style={{ margin: "20px" }}>
+      <Container maxWidth="xl">
+        <div style={{ marginTop: "20px" }}>
           <h2
             style={{
               color: "black",
@@ -1085,119 +1074,6 @@ const ProteinDetail = (props) => {
               </TableBody>
             </Table>
           </TableContainer>
-          <div
-            style={{
-              height: "3px",
-              background: "linear-gradient(to right, #1463B9, #ffffff)",
-              margin: "40px 0",
-            }}
-          ></div>
-          <h2
-            style={{
-              color: "black",
-              marginBottom: "24px",
-              fontWeight: "bold",
-              fontFamily: "Lato",
-              marginTop: "10px",
-            }}
-            id="curator"
-          >
-            Curator's Notes
-          </h2>
-          <div>
-            <TableContainer
-              component={Paper}
-              style={{
-                borderTopLeftRadius: "10px",
-                borderTopRightRadius: "10px",
-                border: "1px solid #CACACA",
-              }}
-            >
-              <Table
-                sx={{ minWidth: 250 }}
-                aria-label="simple table"
-                style={{
-                  border: "1px solid black",
-                  borderTopLeftRadius: "10px",
-                }}
-              >
-                <TableHead>
-                  <TableRow sx={{ border: "1px solid black" }}>
-                    <TableCell
-                      sx={th}
-                      style={{
-                        backgroundColor: "#1463B9",
-                        color: "white",
-                        fontFamily: "Montserrat",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      Salivary gland origin
-                    </TableCell>
-                    <TableCell
-                      sx={td}
-                      style={{
-                        fontFamily: "Lato",
-                        fontSize: "14px",
-                        paddingLeft: "10px",
-                      }}
-                    >
-                      {proteinDetailData[0].expert_opinion}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      sx={th}
-                      style={{
-                        backgroundColor: "#1463B9",
-                        color: "white",
-                        fontFamily: "Montserrat",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      Abundance level
-                    </TableCell>
-                    <TableCell
-                      sx={td}
-                      style={{
-                        fontFamily: "Lato",
-                        fontSize: "14px",
-                        paddingLeft: "10px",
-                      }}
-                    >
-                      {data.experiment_short_title}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      sx={th}
-                      style={{
-                        backgroundColor: "#1463B9",
-                        color: "white",
-                        fontFamily: "Montserrat",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      Curator
-                    </TableCell>
-                    <TableCell
-                      sx={td}
-                      style={{
-                        fontFamily: "Lato",
-                        fontSize: "14px",
-                        paddingLeft: "10px",
-                      }}
-                    >
-                      {data.experiment_short_title}
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-              </Table>
-            </TableContainer>
-          </div>
           <div
             style={{
               height: "3px",

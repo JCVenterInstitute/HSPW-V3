@@ -353,12 +353,11 @@ const ExperimentSearchTable = () => {
   return (
     <>
       <Container
-        maxWidth="false"
+        maxWidth="xl"
         sx={{
           width: "100%",
           display: "flex",
           paddingLeft: "0px !important",
-          // paddingRight: "0px !important",
         }}
       >
         <Box
@@ -561,11 +560,17 @@ const ExperimentSearchTable = () => {
           })}
         </Box>
         <Container
-          maxWidth="xl"
+          maxWidth="false"
           sx={{ margin: "30px 0 30px 20px" }}
         >
           <Box sx={{ display: "flex" }}>
-            <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
+            <Box
+              style={{
+                display: "flex",
+                // width: "100%",
+                // maxWidth: "550px"
+              }}
+            >
               <TextField
                 variant="outlined"
                 size="small"
@@ -781,7 +786,7 @@ const ExperimentSearchTable = () => {
             <div
               id="differential"
               className="ag-theme-material ag-cell-wrap-text ag-theme-alpine differential-expression"
-              style={{ height: 700 }}
+              style={{ height: 1200 }}
             >
               <AgGridReact
                 ref={gridRef}

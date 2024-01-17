@@ -16,7 +16,9 @@ const Team = () => {
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}
       >
-        <h1 className="head_title">Team</h1>
+        <Container maxWidth="xl">
+          <h1 className="head_title">Team</h1>
+        </Container>
       </div>
       <Container
         maxWidth="xl"

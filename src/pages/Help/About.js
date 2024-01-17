@@ -11,14 +11,16 @@ const About = () => {
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}
       >
-        <h1 className="head_title">About</h1>
-        <p className="head_text">
-          For many decades, researchers have known that saliva is important for
-          chewing, tasting, swallowing, and as the first step in digestion. A
-          multitude of proteins and other molecules present in saliva also play
-          vital roles in control of viral and bacterial functions in the context
-          of health and disease.
-        </p>
+        <Container maxWidth="xl">
+          <h1 className="head_title">About</h1>
+          <p className="head_text">
+            For many decades, researchers have known that saliva is important
+            for chewing, tasting, swallowing, and as the first step in
+            digestion. A multitude of proteins and other molecules present in
+            saliva also play vital roles in control of viral and bacterial
+            functions in the context of health and disease.
+          </p>
+        </Container>
       </div>
       <Container
         maxWidth="xl"
@@ -80,16 +82,16 @@ const About = () => {
         <Typography sx={{ fontFamily: "Lato", fontSize: "18px" }}>
           The experimental data from the project as well as information from
           popular knowledge bases such as UniProt and PubMed are now available
-          online in the Human Salivary Proteome Wiki (HSPW). A group of
-          scientists have evolved from one study to multi-center analysis of
-          various datasets to develop the{" "}
+          online in the Human Salivary Proteome (HSP). A group of scientists
+          have evolved from one study to multi-center analysis of various
+          datasets to develop the{" "}
           <a
             href="https://journals.sagepub.com/doi/abs/10.1177/00220345211014432?journalCode=jdrb"
             target="_blank"
             rel="noopener noreferrer"
             style={{ textDecoration: "none" }}
           >
-            HSPW
+            HSP
             <OpenInNewIcon sx={{ fontSize: "medium" }} />
           </a>
           . Saliva tests based on these biomarkers offer many advantages over
@@ -98,9 +100,9 @@ const About = () => {
           required to enrich and refine the salivary ontology and functions.
         </Typography>
         <Typography sx={{ mt: 2, fontFamily: "Lato", fontSize: "18px" }}>
-          The HSPW committee members are recognized researchers in the oral
+          The HSP committee members are recognized researchers in the oral
           biology community. They are tasked to develop curation guidelines,
-          review annotations submitted by the community, and promote the wiki.
+          review annotations submitted by the community, and promote the HSP.
           Click{" "}
           <Link
             to="/team"

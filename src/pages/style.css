@@ -180,7 +180,6 @@ div p {
 .head_title {
   color: white;
   display: left;
-  margin-left: 20px;
   margin-bottom: 1rem;
 }
 
@@ -195,8 +194,6 @@ div p {
   line-height: normal;
   text-align: left;
   padding-bottom: 15px;
-  margin-left: 20px;
-  margin-right: 20px;
 }
 
 #hero-section {
@@ -209,15 +206,13 @@ div p {
   font-weight: 600;
   font-family: Lato;
   font-size: 17px;
-  margin-left: 3.3%;
-  padding-right: 6%;
 }
 
 .hero-link {
   font-family: Montserrat;
-  font-size: 12px;
-  margin-left: 10px;
-  margin-right: 10px;
+  font-size: 14px;
+  margin-left: 5px;
+  margin-right: 5px;
   color: #226ab3;
   font-style: normal;
   font-weight: 500;

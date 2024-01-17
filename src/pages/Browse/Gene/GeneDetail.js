@@ -12,6 +12,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 
 import MainFeature from "../../../assets/hero.jpeg";
+import { Container } from "@mui/material";
 
 const th = {
   background: "#f2f2f2",
@@ -107,380 +108,362 @@ const GeneDetail = (props) => {
         }}
         className="head_background"
       >
-        <h1
-          className="head_title"
-          align="left"
-        >
-          Gene: EntrezGene:{data[0]["_source"]["GeneID"]}
-        </h1>
-        <p
-          style={{
-            textAlign: "left",
-            color: "white",
-            paddingBottom: "15px",
-            marginLeft: "20px",
-            marginRight: "20px",
-          }}
-          className="head_text"
-        >
-          Name: {data[0]["_source"]["Gene Name"]}
-        </p>
-        <p
-          style={{
-            textAlign: "left",
-            color: "white",
-            paddingBottom: "15px",
-            marginLeft: "20px",
-            marginRight: "20px",
-          }}
-          className="head_text"
-        >
-          Gene Symbol: {data[0]["_source"]["Gene Symbol"]}
-        </p>
+        <Container maxWidth="xl">
+          <h1 className="head_title">
+            Gene: EntrezGene:{data[0]["_source"]["GeneID"]}
+          </h1>
+          <p className="head_text">Name: {data[0]["_source"]["Gene Name"]}</p>
+          <p className="head_text">
+            Gene Symbol: {data[0]["_source"]["Gene Symbol"]}
+          </p>
+        </Container>
       </div>
-      <div style={{ margin: "20px" }}>
-        <TableContainer
-          component={Paper}
-          style={{
-            borderTopLeftRadius: "10px",
-            borderTopRightRadius: "10px",
-            border: "1px solid #CACACA",
-          }}
-        >
-          <Table
-            aria-label="simple table"
-            style={{ border: "1px solid white" }}
+      <Container maxWidth="xl">
+        <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+          <TableContainer
+            component={Paper}
+            style={{
+              borderTopLeftRadius: "10px",
+              borderTopRightRadius: "10px",
+              border: "1px solid #CACACA",
+            }}
           >
-            <TableHead>
-              <TableRow sx={{ border: "1px solid white" }}>
-                <TableCell
-                  style={{
-                    backgroundColor: "#1463B9",
-                    color: "white",
-                    fontFamily: "Montserrat",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    border: "1px solid white",
-                    borderTopLeftRadius: "10px",
-                  }}
-                  sx={th}
-                >
-                  Aliases
-                </TableCell>
-                <TableCell
-                  sx={td}
-                  style={{
-                    fontFamily: "Lato",
-                    fontSize: "14px",
-                    borderTopRightRadius: "10px",
-                    border: "1px solid #CACACA",
-                    paddingLeft: "15px",
-                  }}
-                >
-                  {data[0]["_source"]["Aliases"]}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  style={{
-                    backgroundColor: "#1463B9",
-                    color: "white",
-                    fontFamily: "Montserrat",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    border: "1px solid white",
-                  }}
-                  sx={th}
-                >
-                  Organism
-                </TableCell>
-                <TableCell
-                  sx={td}
-                  style={{
-                    fontFamily: "Lato",
-                    fontSize: "14px",
-                    paddingLeft: "15px",
-                  }}
-                >
-                  <a
-                    style={{ color: "/*#116988*/#0b5989" }}
-                    target="_blank"
-                    rel="noreferrer"
-                    href="https://www.uniprot.org/taxonomy/9606 "
+            <Table
+              aria-label="simple table"
+              style={{ border: "1px solid white" }}
+            >
+              <TableHead>
+                <TableRow sx={{ border: "1px solid white" }}>
+                  <TableCell
+                    style={{
+                      backgroundColor: "#1463B9",
+                      color: "white",
+                      fontFamily: "Montserrat",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      border: "1px solid white",
+                      borderTopLeftRadius: "10px",
+                    }}
+                    sx={th}
                   >
-                    Homo sapiens{" "}
-                    <FontAwesome
-                      className="super-crazy-colors"
-                      name="external-link"
-                      style={{
-                        textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
-                      }}
-                    />
-                  </a>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  style={{
-                    backgroundColor: "#1463B9",
-                    color: "white",
-                    fontFamily: "Montserrat",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    border: "1px solid white",
-                  }}
-                  sx={th}
-                >
-                  Taxonomic lineage
-                </TableCell>
-                <TableCell
-                  sx={td}
-                  style={{
-                    fontFamily: "Lato",
-                    fontSize: "14px",
-                    paddingLeft: "15px",
-                  }}
-                >
-                  Eukaryota {">"} Opisthokonta {">"} Metazoa {">"} Eumetazoa{" "}
-                  {">"} Bilateria {">"} Deuterostomia {">"} Chordata {">"}{" "}
-                  Craniata {">"} Vertebrata {">"} Gnathostomata {">"} Teleostomi{" "}
-                  {">"} Euteleostomi {">"} Sarcopterygii {">"}{" "}
-                  Dipnotetrapodomorpha {">"} Tetrapoda {">"} Amniota {">"}{" "}
-                  Mammalia {">"} Theria {">"} Eutheria {">"} Boreoeutheria {">"}{" "}
-                  Euarchontoglires {">"} Primates {">"} Haplorrhini {">"}{" "}
-                  Simiiformes {">"} Catarrhini {">"} Hominoidea {">"} Hominidae{" "}
-                  {">"} Homininae {">"} Homo
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  style={{
-                    backgroundColor: "#1463B9",
-                    color: "white",
-                    fontFamily: "Montserrat",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    border: "1px solid white",
-                  }}
-                  sx={th}
-                >
-                  Chromosome location
-                </TableCell>
-                <TableCell
-                  sx={td}
-                  style={{
-                    fontFamily: "Lato",
-                    fontSize: "14px",
-                    color: "#464646",
-                    paddingLeft: "15px",
-                  }}
-                >
-                  {data[0]["_source"]["Location"]}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell
-                  style={{
-                    backgroundColor: "#1463B9",
-                    color: "white",
-                    fontFamily: "Montserrat",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    border: "1px solid white",
-                  }}
-                  sx={th}
-                >
-                  Summary
-                </TableCell>
-                <TableCell
-                  sx={td}
-                  style={{
-                    fontFamily: "Lato",
-                    fontSize: "14px",
-                    paddingLeft: "15px",
-                  }}
-                >
-                  {data[0]["_source"]["Summary"]}
-                </TableCell>
-              </TableRow>
-              <TableRow
-                size="small"
-                sx={{
-                  border: "1px solid white",
-                  height: "10%",
-                }}
-              >
-                <TableCell
-                  style={{
-                    backgroundColor: "#1463B9",
-                    color: "white",
-                    fontFamily: "Montserrat",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    border: "1px solid white",
-                  }}
-                  sx={th}
-                >
-                  Gene products
-                </TableCell>
-                <TableCell
-                  sx={td}
-                  style={{
-                    fontFamily: "Lato",
-                    fontSize: "14px",
-                  }}
-                >
-                  <Table>
-                    <TableHead>
-                      <TableRow
+                    Aliases
+                  </TableCell>
+                  <TableCell
+                    sx={td}
+                    style={{
+                      fontFamily: "Lato",
+                      fontSize: "14px",
+                      borderTopRightRadius: "10px",
+                      border: "1px solid #CACACA",
+                      paddingLeft: "15px",
+                    }}
+                  >
+                    {data[0]["_source"]["Aliases"]}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell
+                    style={{
+                      backgroundColor: "#1463B9",
+                      color: "white",
+                      fontFamily: "Montserrat",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      border: "1px solid white",
+                    }}
+                    sx={th}
+                  >
+                    Organism
+                  </TableCell>
+                  <TableCell
+                    sx={td}
+                    style={{
+                      fontFamily: "Lato",
+                      fontSize: "14px",
+                      paddingLeft: "15px",
+                    }}
+                  >
+                    <a
+                      style={{ color: "/*#116988*/#0b5989" }}
+                      target="_blank"
+                      rel="noreferrer"
+                      href="https://www.uniprot.org/taxonomy/9606 "
+                    >
+                      Homo sapiens{" "}
+                      <FontAwesome
+                        className="super-crazy-colors"
+                        name="external-link"
                         style={{
-                          border: "1px solid white",
+                          textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
                         }}
-                      >
-                        <TableCell
+                      />
+                    </a>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell
+                    style={{
+                      backgroundColor: "#1463B9",
+                      color: "white",
+                      fontFamily: "Montserrat",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      border: "1px solid white",
+                    }}
+                    sx={th}
+                  >
+                    Taxonomic lineage
+                  </TableCell>
+                  <TableCell
+                    sx={td}
+                    style={{
+                      fontFamily: "Lato",
+                      fontSize: "14px",
+                      paddingLeft: "15px",
+                    }}
+                  >
+                    Eukaryota {">"} Opisthokonta {">"} Metazoa {">"} Eumetazoa{" "}
+                    {">"} Bilateria {">"} Deuterostomia {">"} Chordata {">"}{" "}
+                    Craniata {">"} Vertebrata {">"} Gnathostomata {">"}{" "}
+                    Teleostomi {">"} Euteleostomi {">"} Sarcopterygii {">"}{" "}
+                    Dipnotetrapodomorpha {">"} Tetrapoda {">"} Amniota {">"}{" "}
+                    Mammalia {">"} Theria {">"} Eutheria {">"} Boreoeutheria{" "}
+                    {">"} Euarchontoglires {">"} Primates {">"} Haplorrhini{" "}
+                    {">"} Simiiformes {">"} Catarrhini {">"} Hominoidea {">"}{" "}
+                    Hominidae {">"} Homininae {">"} Homo
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell
+                    style={{
+                      backgroundColor: "#1463B9",
+                      color: "white",
+                      fontFamily: "Montserrat",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      border: "1px solid white",
+                    }}
+                    sx={th}
+                  >
+                    Chromosome location
+                  </TableCell>
+                  <TableCell
+                    sx={td}
+                    style={{
+                      fontFamily: "Lato",
+                      fontSize: "14px",
+                      color: "#464646",
+                      paddingLeft: "15px",
+                    }}
+                  >
+                    {data[0]["_source"]["Location"]}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell
+                    style={{
+                      backgroundColor: "#1463B9",
+                      color: "white",
+                      fontFamily: "Montserrat",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      border: "1px solid white",
+                    }}
+                    sx={th}
+                  >
+                    Summary
+                  </TableCell>
+                  <TableCell
+                    sx={td}
+                    style={{
+                      fontFamily: "Lato",
+                      fontSize: "14px",
+                      paddingLeft: "15px",
+                    }}
+                  >
+                    {data[0]["_source"]["Summary"]}
+                  </TableCell>
+                </TableRow>
+                <TableRow
+                  size="small"
+                  sx={{
+                    border: "1px solid white",
+                    height: "10%",
+                  }}
+                >
+                  <TableCell
+                    style={{
+                      backgroundColor: "#1463B9",
+                      color: "white",
+                      fontFamily: "Montserrat",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      border: "1px solid white",
+                    }}
+                    sx={th}
+                  >
+                    Gene products
+                  </TableCell>
+                  <TableCell
+                    sx={td}
+                    style={{
+                      fontFamily: "Lato",
+                      fontSize: "14px",
+                    }}
+                  >
+                    <Table>
+                      <TableHead>
+                        <TableRow
                           style={{
-                            backgroundColor: "#1463B9",
-                            color: "white",
-                            fontFamily: "Montserrat",
-                            fontSize: "16px",
-                            fontWeight: "bold",
                             border: "1px solid white",
-                            borderTopLeftRadius: "10px",
                           }}
                         >
-                          Accession Number
-                        </TableCell>
-                        <TableCell
-                          style={{
-                            backgroundColor: "#1463B9",
-                            color: "white",
-                            fontFamily: "Montserrat",
-                            fontSize: "16px",
-                            fontWeight: "bold",
-                            border: "1px solid white",
-                          }}
-                        >
-                          Protein Name
-                        </TableCell>
-                        <TableCell
-                          style={{
-                            backgroundColor: "#1463B9",
-                            color: "white",
-                            fontFamily: "Montserrat",
-                            fontSize: "16px",
-                            fontWeight: "bold",
-                            border: "1px solid white",
-                            borderTopRightRadius: "10px",
-                          }}
-                        >
-                          Link
-                        </TableCell>
-                      </TableRow>
-                      {data[0]["_source"]["Gene Products"].map(
-                        (value, i, arr) => {
-                          return (
-                            <TableRow
-                              style={{
-                                border: "1px solid white",
-                              }}
-                              key={`gene-product-${i}`}
-                            >
-                              <TableCell
+                          <TableCell
+                            style={{
+                              backgroundColor: "#1463B9",
+                              color: "white",
+                              fontFamily: "Montserrat",
+                              fontSize: "16px",
+                              fontWeight: "bold",
+                              border: "1px solid white",
+                              borderTopLeftRadius: "10px",
+                            }}
+                          >
+                            Accession Number
+                          </TableCell>
+                          <TableCell
+                            style={{
+                              backgroundColor: "#1463B9",
+                              color: "white",
+                              fontFamily: "Montserrat",
+                              fontSize: "16px",
+                              fontWeight: "bold",
+                              border: "1px solid white",
+                            }}
+                          >
+                            Protein Name
+                          </TableCell>
+                          <TableCell
+                            style={{
+                              backgroundColor: "#1463B9",
+                              color: "white",
+                              fontFamily: "Montserrat",
+                              fontSize: "16px",
+                              fontWeight: "bold",
+                              border: "1px solid white",
+                              borderTopRightRadius: "10px",
+                            }}
+                          >
+                            Link
+                          </TableCell>
+                        </TableRow>
+                        {data[0]["_source"]["Gene Products"].map(
+                          (value, i, arr) => {
+                            return (
+                              <TableRow
                                 style={{
-                                  fontFamily: "Lato",
-                                  borderRight: "1px solid grey",
-                                  borderBottom: "1px solid grey",
-                                  width: "15%",
-                                  fontSize: "14px",
+                                  border: "1px solid white",
                                 }}
+                                key={`gene-product-${i}`}
                               >
-                                {value}
-                              </TableCell>
-                              <TableCell
-                                style={{
-                                  fontFamily: "Lato",
-                                  border: "1px solid grey",
-                                  width: "20%",
-                                  fontSize: "14px",
-                                }}
-                              >
-                                {proteinNameMap[value]}
-                              </TableCell>
-                              <TableCell
-                                style={{
-                                  borderLeft: "1px solid grey",
-                                  borderBottom: "1px solid grey",
-                                  width: "15%",
-                                  fontSize: "14px",
-                                }}
-                              >
-                                <a
+                                <TableCell
                                   style={{
                                     fontFamily: "Lato",
+                                    borderRight: "1px solid grey",
+                                    borderBottom: "1px solid grey",
+                                    width: "15%",
                                     fontSize: "14px",
                                   }}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  href={`https://www.uniprot.org/uniprotkb/${value}/entry`}
                                 >
-                                  UniProt{" "}
-                                  <FontAwesome
-                                    className="super-crazy-colors"
-                                    name="external-link"
+                                  {value}
+                                </TableCell>
+                                <TableCell
+                                  style={{
+                                    fontFamily: "Lato",
+                                    border: "1px solid grey",
+                                    width: "20%",
+                                    fontSize: "14px",
+                                  }}
+                                >
+                                  {proteinNameMap[value]}
+                                </TableCell>
+                                <TableCell
+                                  style={{
+                                    borderLeft: "1px solid grey",
+                                    borderBottom: "1px solid grey",
+                                    width: "15%",
+                                    fontSize: "14px",
+                                  }}
+                                >
+                                  <a
                                     style={{
-                                      textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                                      fontFamily: "Lato",
+                                      fontSize: "14px",
                                     }}
-                                  />
-                                </a>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        }
-                      )}
-                    </TableHead>
-                  </Table>
-                </TableCell>
-              </TableRow>
-              <TableRow style={{ border: "1px solid white" }}>
-                <TableCell
-                  style={{
-                    backgroundColor: "#1463B9",
-                    color: "white",
-                    fontFamily: "Montserrat",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    border: "1px solid white",
-                  }}
-                  sx={th}
-                >
-                  Link
-                </TableCell>
-                <TableCell
-                  style={{
-                    fontFamily: "Lato",
-                    fontSize: "14px",
-                  }}
-                >
-                  <a
-                    rel="noreferrer"
-                    target="_blank"
-                    href={gene_link + data[0]["_source"]["GeneID"]}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    href={`https://www.uniprot.org/uniprotkb/${value}/entry`}
+                                  >
+                                    UniProt{" "}
+                                    <FontAwesome
+                                      className="super-crazy-colors"
+                                      name="external-link"
+                                      style={{
+                                        textShadow:
+                                          "0 1px 0 rgba(0, 0, 0, 0.1)",
+                                      }}
+                                    />
+                                  </a>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          }
+                        )}
+                      </TableHead>
+                    </Table>
+                  </TableCell>
+                </TableRow>
+                <TableRow style={{ border: "1px solid white" }}>
+                  <TableCell
+                    style={{
+                      backgroundColor: "#1463B9",
+                      color: "white",
+                      fontFamily: "Montserrat",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      border: "1px solid white",
+                    }}
+                    sx={th}
                   >
-                    Entrez Gene{" "}
-                    <FontAwesome
-                      className="super-crazy-colors"
-                      name="external-link"
-                      style={{
-                        textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
-                      }}
-                    />
-                  </a>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-          </Table>
-        </TableContainer>
-      </div>
+                    Link
+                  </TableCell>
+                  <TableCell
+                    style={{
+                      fontFamily: "Lato",
+                      fontSize: "14px",
+                    }}
+                  >
+                    <a
+                      rel="noreferrer"
+                      target="_blank"
+                      href={gene_link + data[0]["_source"]["GeneID"]}
+                    >
+                      Entrez Gene{" "}
+                      <FontAwesome
+                        className="super-crazy-colors"
+                        name="external-link"
+                        style={{
+                          textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                        }}
+                      />
+                    </a>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+            </Table>
+          </TableContainer>
+        </div>
+      </Container>
     </>
   );
 };

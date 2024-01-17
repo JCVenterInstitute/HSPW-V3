@@ -6,6 +6,7 @@ import Box from "@mui/material/Box";
 import MainFeature from "../../../assets/hero.jpeg";
 import ProteinSignatureTable from "../../../components/ProteinSignatureTable";
 import "../../style.css";
+import { Container } from "@mui/material";
 
 export const data = [
   [
@@ -77,53 +78,48 @@ const ProteinSignature = () => {
         }}
         className="head_background"
       >
-        <h1
-          className="head_title"
-          align="left"
-        >
-          Protein Signature
-        </h1>
-        <p
-          style={{
-            textAlign: "left",
-            color: "white",
-            paddingBottom: "15px",
-            marginLeft: "20px",
-            marginRight: "20px",
-          }}
-          className="head_text"
-        >
-          InterPro is a searchable database providing information on sequence
-          function and annotation. Sequences InterPro is a searchable database
-          providing information on sequence function and annotation. Sequences
-          are grouped based on protein signatures or 'methods'. These groups
-          represent superfamilies, families or sub-families of sequences. The
-          groups may be defined as families, domains, regions, repeats or sites.
-          The function of sequences within any group may be confined to a single
-          biological process or it may be diverse range of functions (as in a
-          superfamily) or the group may be functionally uncharacterized but
-          without exception every entry has an abstract and references are
-          provided where possible.
-        </p>
+        <Container maxWidth="xl">
+          <h1
+            className="head_title"
+            align="left"
+          >
+            Protein Signature
+          </h1>
+          <p className="head_text">
+            InterPro is a searchable database providing information on sequence
+            function and annotation. Sequences InterPro is a searchable database
+            providing information on sequence function and annotation. Sequences
+            are grouped based on protein signatures or 'methods'. These groups
+            represent superfamilies, families or sub-families of sequences. The
+            groups may be defined as families, domains, regions, repeats or
+            sites. The function of sequences within any group may be confined to
+            a single biological process or it may be diverse range of functions
+            (as in a superfamily) or the group may be functionally
+            uncharacterized but without exception every entry has an abstract
+            and references are provided where possible.
+          </p>
+        </Container>
       </div>
-      <h2 style={{ textAlign: "center", marginTop: "20px" }}>
-        Types of Protein Signatures Detected in Salivary Proteins
-      </h2>
-      {message.length !== 0 ? (
-        <Chart
-          chartType="PieChart"
-          width="600px"
-          height="300px"
-          data={message}
-          options={options}
-          style={{
-            display: "block",
-            marginLeft: "auto",
-            marginRight: "auto",
-            paddingBottom: "5px",
-          }}
-        />
-      ) : null}
+      <Container maxWidth="xl">
+        <h2 style={{ textAlign: "center", marginTop: "20px" }}>
+          Types of Protein Signatures Detected in Salivary Proteins
+        </h2>
+        {message.length !== 0 ? (
+          <Chart
+            chartType="PieChart"
+            width="600px"
+            height="300px"
+            data={message}
+            options={options}
+            style={{
+              display: "block",
+              marginLeft: "auto",
+              marginRight: "auto",
+              paddingBottom: "5px",
+            }}
+          />
+        ) : null}
+      </Container>
       <ProteinSignatureTable />
     </>
   );

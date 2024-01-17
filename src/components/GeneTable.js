@@ -409,7 +409,7 @@ const GeneTable = () => {
   return (
     <>
       <Container
-        maxWidth="false"
+        maxWidth="xl"
         sx={{
           width: "100%",
           display: "flex",
@@ -421,7 +421,7 @@ const GeneTable = () => {
             backgroundColor: "#f9f8f7",
             width: "285px",
             overflow: "scroll",
-            maxHeight: "760px",
+            height: "auto",
           }}
         >
           <h1
@@ -555,11 +555,17 @@ const GeneTable = () => {
           </div>
         </Box>
         <Container
-          maxWidth="xl"
+          maxWidth="false"
           sx={{ marginTop: "30px" }}
         >
           <Box sx={{ display: "flex" }}>
-            <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
+            <Box
+              style={{
+                display: "flex",
+                // width: "100%",
+                // maxWidth: "550px"
+              }}
+            >
               <TextField
                 variant="outlined"
                 size="small"
@@ -782,7 +788,7 @@ const GeneTable = () => {
           >
             <div
               className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
-              style={{ height: 600 }}
+              style={{ height: 1200 }}
             >
               <AgGridReact
                 className="ag-cell-wrap-text"

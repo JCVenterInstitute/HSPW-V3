@@ -4,7 +4,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { useParams } from "react-router";
 import FontAwesome from "react-fontawesome";
-import { Box, LinearProgress } from "@mui/material";
+import { Box, Container, LinearProgress } from "@mui/material";
 
 import MainFeature from "../../../assets/hero.jpeg";
 
@@ -248,63 +248,91 @@ const Citation_detail = (props) => {
         }}
         className="head_background"
       >
-        <h1
-          className="head_title"
-          align="left"
-        >
-          Publication: PubMed: {params["citationid"]}
-        </h1>
+        <Container maxWidth="xl">
+          <h1 className="head_title">
+            Publication: PubMed: {params["citationid"]}
+          </h1>
+        </Container>
       </div>
-      <div style={{ margin: "20px" }}>
-        <TableHead style={{ borderRadius: "1em 0 0 1em" }}>
-          <TableRow
-            sx={{
-              border: "1px solid white",
-              borderTopLeftRadius: "10px",
-            }}
-          >
-            <TableCell
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "16px",
-                fontWeight: "bold",
-                border: "1px solid #3592E4",
+      <Container maxWidth="xl">
+        <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+          <TableHead style={{ borderRadius: "1em 0 0 1em" }}>
+            <TableRow
+              sx={{
+                border: "1px solid white",
                 borderTopLeftRadius: "10px",
               }}
-              sx={th}
             >
-              Title
-            </TableCell>
-            <TableCell
-              sx={td}
-              style={{
-                fontFamily: "Lato",
-                fontSize: "14px",
-                border: "1px solid #CACACA",
-                borderTopRightRadius: "10px",
-              }}
-            >
-              {data[0]["_source"]["Title"]}
-            </TableCell>
-          </TableRow>
+              <TableCell
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  border: "1px solid #3592E4",
+                  borderTopLeftRadius: "10px",
+                }}
+                sx={th}
+              >
+                Title
+              </TableCell>
+              <TableCell
+                sx={td}
+                style={{
+                  fontFamily: "Lato",
+                  fontSize: "14px",
+                  border: "1px solid #CACACA",
+                  borderTopRightRadius: "10px",
+                }}
+              >
+                {data[0]["_source"]["Title"]}
+              </TableCell>
+            </TableRow>
 
-          <TableRow>
-            <TableCell
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "16px",
-                fontWeight: "bold",
-                border: "1px solid white",
-              }}
-              sx={th}
-            >
-              Abstract
-            </TableCell>
-            {abstract ? (
+            <TableRow>
+              <TableCell
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  border: "1px solid white",
+                }}
+                sx={th}
+              >
+                Abstract
+              </TableCell>
+              {abstract ? (
+                <TableCell
+                  sx={td}
+                  style={{
+                    fontFamily: "Lato",
+                    fontSize: "14px",
+                    border: "1px solid #CACACA",
+                  }}
+                >
+                  {abstract}
+                </TableCell>
+              ) : (
+                <TableCell sx={td}>No Abstract Available</TableCell>
+              )}
+            </TableRow>
+            <TableRow>
+              <TableCell
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  border: "1px solid white",
+                }}
+                sx={th}
+              >
+                Authors
+              </TableCell>
               <TableCell
                 sx={td}
                 style={{
@@ -313,176 +341,149 @@ const Citation_detail = (props) => {
                   border: "1px solid #CACACA",
                 }}
               >
-                {abstract}
+                {data[0]["_source"]["author_names"].map((child, i) => (
+                  <span>{data[0]["_source"]["author_names"][i]}</span>
+                ))}
               </TableCell>
-            ) : (
-              <TableCell sx={td}>No Abstract Available</TableCell>
-            )}
-          </TableRow>
-          <TableRow>
-            <TableCell
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "16px",
-                fontWeight: "bold",
-                border: "1px solid white",
-              }}
-              sx={th}
-            >
-              Authors
-            </TableCell>
-            <TableCell
-              sx={td}
-              style={{
-                fontFamily: "Lato",
-                fontSize: "14px",
-                border: "1px solid #CACACA",
-              }}
-            >
-              {data[0]["_source"]["author_names"].map((child, i) => (
-                <span>{data[0]["_source"]["author_names"][i]}</span>
-              ))}
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "16px",
-                fontWeight: "bold",
-                border: "1px solid white",
-              }}
-              sx={th}
-            >
-              Author Affiliation
-            </TableCell>
-            <TableCell
-              sx={td}
-              style={{
-                fontFamily: "Lato",
-                fontSize: "14px",
-                border: "1px solid #CACACA",
-              }}
-            >
-              {data[0]["_source"]["affiliation"]}
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "16px",
-                fontWeight: "bold",
-                border: "1px solid white",
-              }}
-              sx={th}
-            >
-              Journal
-            </TableCell>
-            <TableCell
-              sx={td}
-              style={{
-                fontFamily: "Lato",
-                fontSize: "14px",
-                border: "1px solid #CACACA",
-              }}
-            >
-              {journalTitle} (ISSN:{ISSNNum})
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "16px",
-                fontWeight: "bold",
-                border: "1px solid white",
-              }}
-              sx={th}
-            >
-              Publication Date
-            </TableCell>
-            <TableCell
-              sx={td}
-              style={{
-                fontFamily: "Lato",
-                fontSize: "14px",
-                border: "1px solid #CACACA",
-              }}
-            >
-              {data[0]["_source"]["PubDate"]}
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "16px",
-                fontWeight: "bold",
-                border: "1px solid white",
-              }}
-              sx={th}
-            >
-              MeSH Keywords
-            </TableCell>
-            <TableCell
-              sx={td}
-              style={{
-                fontFamily: "Lato",
-                fontSize: "14px",
-                border: "1px solid #CACACA",
-              }}
-            >
-              <ArrayDisplay elements={data[0]["_source"]["keywords"]} />
-            </TableCell>
-          </TableRow>
-          <TableRow style={{ border: "1px solid white" }}>
-            <TableCell
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "16px",
-                fontWeight: "bold",
-                border: "1px solid white",
-              }}
-              sx={th}
-            >
-              Link
-            </TableCell>
-            <TableCell
-              sx={td}
-              style={{
-                fontFamily: "Lato",
-                fontSize: "14px",
-                border: "1px solid #CACACA",
-              }}
-            >
-              <a
-                target="_blank"
-                href={interpro_link + data[0]["_source"]["PubMed_ID"]}
+            </TableRow>
+            <TableRow>
+              <TableCell
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  border: "1px solid white",
+                }}
+                sx={th}
               >
-                {"PubMed "}
-                <FontAwesome
-                  className="super-crazy-colors"
-                  name="external-link"
-                  style={{ textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)" }}
-                />
-              </a>
-            </TableCell>
-          </TableRow>
-        </TableHead>
-      </div>
+                Author Affiliation
+              </TableCell>
+              <TableCell
+                sx={td}
+                style={{
+                  fontFamily: "Lato",
+                  fontSize: "14px",
+                  border: "1px solid #CACACA",
+                }}
+              >
+                {data[0]["_source"]["affiliation"]}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  border: "1px solid white",
+                }}
+                sx={th}
+              >
+                Journal
+              </TableCell>
+              <TableCell
+                sx={td}
+                style={{
+                  fontFamily: "Lato",
+                  fontSize: "14px",
+                  border: "1px solid #CACACA",
+                }}
+              >
+                {journalTitle} (ISSN:{ISSNNum})
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  border: "1px solid white",
+                }}
+                sx={th}
+              >
+                Publication Date
+              </TableCell>
+              <TableCell
+                sx={td}
+                style={{
+                  fontFamily: "Lato",
+                  fontSize: "14px",
+                  border: "1px solid #CACACA",
+                }}
+              >
+                {data[0]["_source"]["PubDate"]}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  border: "1px solid white",
+                }}
+                sx={th}
+              >
+                MeSH Keywords
+              </TableCell>
+              <TableCell
+                sx={td}
+                style={{
+                  fontFamily: "Lato",
+                  fontSize: "14px",
+                  border: "1px solid #CACACA",
+                }}
+              >
+                <ArrayDisplay elements={data[0]["_source"]["keywords"]} />
+              </TableCell>
+            </TableRow>
+            <TableRow style={{ border: "1px solid white" }}>
+              <TableCell
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  border: "1px solid white",
+                }}
+                sx={th}
+              >
+                Link
+              </TableCell>
+              <TableCell
+                sx={td}
+                style={{
+                  fontFamily: "Lato",
+                  fontSize: "14px",
+                  border: "1px solid #CACACA",
+                }}
+              >
+                <a
+                  target="_blank"
+                  href={interpro_link + data[0]["_source"]["PubMed_ID"]}
+                >
+                  {"PubMed "}
+                  <FontAwesome
+                    className="super-crazy-colors"
+                    name="external-link"
+                    style={{ textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)" }}
+                  />
+                </a>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+        </div>
+      </Container>
     </>
   );
 };

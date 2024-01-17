@@ -6,6 +6,7 @@ import Box from "@mui/material/Box";
 import main_feature from "../../../assets/hero.jpeg";
 import Cluster from "../../../components/ProteinClusterTable";
 import "../../style.css";
+import { Container } from "@mui/material";
 
 export const options = {
   legend: { position: "none" },
@@ -99,50 +100,57 @@ const ProteinCluster = () => {
         }}
         className="head_background"
       >
-        <h1
-          className="head_title"
-          align="left"
-        >
-          Protein Cluster
-        </h1>
-        <p className="head_text">
-          A protein cluster in the Human Salivary Proteome Project consists of
-          protein identifications matching identical peptide lists. Each cluster
-          contains at least one unique peptide not found in the other clusters.
-        </p>
-        <p className="head_text">
-          The representative protein within a cluster is chosen by applying the
-          following steps sequentially:
-        </p>
-        <ol
-          className="head_text"
-          style={{ paddingLeft: "25px" }}
-        >
-          <li>
-            The protein reported by the maximum number of research groups.
-          </li>
-          <li>The protein with the highest number of distinct peptide hits.</li>
-          <li>
-            The protein with a well-defined description in the IPI database or
-            is cross-referenced to the Swiss-Prot database.
-          </li>
-          <li>The protein with the lowest IPI accession number.</li>
-        </ol>
+        <Container maxWidth="xl">
+          <h1
+            className="head_title"
+            align="left"
+          >
+            Protein Cluster
+          </h1>
+          <p className="head_text">
+            A protein cluster in the Human Salivary Proteome Project consists of
+            protein identifications matching identical peptide lists. Each
+            cluster contains at least one unique peptide not found in the other
+            clusters.
+          </p>
+          <p className="head_text">
+            The representative protein within a cluster is chosen by applying
+            the following steps sequentially:
+          </p>
+          <ol
+            className="head_text"
+            style={{ paddingLeft: "30px" }}
+          >
+            <li>
+              The protein reported by the maximum number of research groups.
+            </li>
+            <li>
+              The protein with the highest number of distinct peptide hits.
+            </li>
+            <li>
+              The protein with a well-defined description in the IPI database or
+              is cross-referenced to the Swiss-Prot database.
+            </li>
+            <li>The protein with the lowest IPI accession number.</li>
+          </ol>
+        </Container>
       </div>
-      <h2 style={{ textAlign: "center", marginTop: "20px" }}>Cluster Size</h2>
-      <Chart
-        chartType="BubbleChart"
-        width="1200px"
-        height="600px"
-        data={data}
-        options={options}
-        style={{
-          display: "block",
-          marginLeft: "auto",
-          marginRight: "auto",
-          paddingBottom: "5px",
-        }}
-      />
+      <Container maxWidth="xl">
+        <h2 style={{ textAlign: "center", marginTop: "20px" }}>Cluster Size</h2>
+        <Chart
+          chartType="BubbleChart"
+          width="1200px"
+          height="600px"
+          data={data}
+          options={options}
+          style={{
+            display: "block",
+            marginLeft: "auto",
+            marginRight: "auto",
+            paddingBottom: "5px",
+          }}
+        />
+      </Container>
       <Cluster />
     </>
   );

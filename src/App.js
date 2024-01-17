@@ -60,7 +60,6 @@ const theme = createTheme({
       xl: 1536,
     },
   },
-  // ... other theme customizations
 });
 
 function App() {
