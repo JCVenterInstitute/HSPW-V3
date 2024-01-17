@@ -153,17 +153,16 @@ const DisclaimerPage = () => {
           }}
         ></div>
         <Typography sx={{ fontFamily: "Lato" }}>
-          <strong>General</strong> - The Human Salivary Proteome Wiki (HSPW)
-          endorses or recommends any commercial products, processes, or
-          services. The views and opinions of authors expressed on the site do
-          not necessarily state or reflect those of the U.S. Government, and
-          they may not be used for advertising or product endorsement purposes.{" "}
+          <strong>General</strong> - The Human Salivary Proteome (HSP) endorses
+          or recommends any commercial products, processes, or services. The
+          views and opinions of authors expressed on the site do not necessarily
+          state or reflect those of the U.S. Government, and they may not be
+          used for advertising or product endorsement purposes. <br />
           <br />
-          <br />
-          <strong>External Links</strong> - Some pages in the wiki may provide
-          links to other Internet sites for the convenience of our users. HSPW
-          is not responsible for the availability or content of these external
-          sites, nor does HSPW endorse, warrant or guarantee the products,
+          <strong>External Links</strong> - Some pages in the HSP may provide
+          links to other Internet sites for the convenience of our users. HSP is
+          not responsible for the availability or content of these external
+          sites, nor does HSP endorse, warrant or guarantee the products,
           services or information described or offered at these other Internet
           sites. Users cannot assume that the external sites will abide by the
           same Privacy Policy to which this site adheres. It is the
@@ -174,7 +173,7 @@ const DisclaimerPage = () => {
           <strong>Pop-Up Advertisements</strong> - When visiting our Web site,
           your Web browser may produce pop-up advertisements. These
           advertisements were most likely produced by other Web sites you
-          visited or by third party software installed on your computer. HSPW
+          visited or by third party software installed on your computer. HSP
           does not endorse or recommend products or services contained in any
           pop-up advertisements that may appear on your computer screen while
           visiting our site.
@@ -200,8 +199,8 @@ const DisclaimerPage = () => {
           }}
         ></div>
         <Typography sx={{ fontFamily: "Lato" }}>
-          The HSPW does not claim copyright on the data and software used on
-          this site. However, some documents available from this server may be
+          The HSP does not claim copyright on the data and software used on this
+          site. However, some documents available from this server may be
           protected under U.S. and foreign copyright laws. Users shall adhere to
           our copyright policy when accessing this site.
         </Typography>
@@ -227,7 +226,7 @@ const DisclaimerPage = () => {
         ></div>
         <div style={{ fontFamily: "Lato" }}>
           <Typography sx={{ marginBottom: "30px", fontFamily: "Lato" }}>
-            This wiki uses a number of third-party resources, which are herein
+            The HSP uses a number of third-party resources, which are herein
             acknowledged:
           </Typography>
           <Typography

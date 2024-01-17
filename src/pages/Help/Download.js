@@ -18,8 +18,8 @@ const Download = () => {
             Search and Download data in Zip, MzTab and Metadata Formats. *If you
             cite or display any content, or reference our organization, in any
             format Please follow these guidelines: Include a reference to a
-            Primary publication: The Human Salivary Proteome Wiki: A Community
-            Driven Research Platform OR Include a reference to our website:
+            Primary publication: The Human Salivary Proteome: A Community Driven
+            Research Platform OR Include a reference to our website:
             SalivaryProteome.org
           </p>
         </Container>

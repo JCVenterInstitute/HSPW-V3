@@ -20,7 +20,7 @@ const memberInfo = [
       {
         imageName: "Stefan-Ruhl.jpg",
         image: Stefan,
-        description: `<b>Stefan Ruhl, DDS, PhD</b> Stefan is professor of Oral Biology in the School of Dental Medicine at the University at Buffalo, New York, USA. He is a past President of the Salivary Research Group within the International Association for Dental Research (IADR), in 2015 was named IADR Salivary Researcher of the Year, and in 2020 received the IADR Distinguished Scientist Award in Salivary Research and was elected as fellow of the American Association for the Advancement of Science (AAAS). He has been studying the saliva proteome for over 30 years and served as curator of the HSP Wiki database since 2013. In his laboratory, he currently studies the molecular mechanisms of glycan-mediated microbial adhesion to salivary glycoproteins from an evolutionary perspective. <a href="https://www.ruhl-lab.org/" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">Lab Website &#x2197;</a>`,
+        description: `<b>Stefan Ruhl, DDS, PhD</b> Stefan is professor of Oral Biology in the School of Dental Medicine at the University at Buffalo, New York, USA. He is a past President of the Salivary Research Group within the International Association for Dental Research (IADR), in 2015 was named IADR Salivary Researcher of the Year, and in 2020 received the IADR Distinguished Scientist Award in Salivary Research and was elected as fellow of the American Association for the Advancement of Science (AAAS). He has been studying the saliva proteome for over 30 years and served as curator of the HSP database since 2013. In his laboratory, he currently studies the molecular mechanisms of glycan-mediated microbial adhesion to salivary glycoproteins from an evolutionary perspective. <a href="https://www.ruhl-lab.org/" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">Lab Website &#x2197;</a>`,
       },
       {
         imageName: "Kathryn-Kauffman.jpg",
@@ -61,12 +61,12 @@ const memberInfo = [
         imageName: "Mickey-Zheng.jpg",
         image: Mickey,
         description:
-          "<b>Mickey Zheng, Bs</b> Mickey is a Software Engineer in the Informatics Department at the J. Craig Venter Institute (JCVI). He works on full-stack development and data management on the HSPW and iDPCC projects. He is knowledgeable in an array of programming languages like JavaScript, and adept in utilizing cloud technologies such as AWS.",
+          "<b>Mickey Zheng, Bs</b> Mickey is a Software Engineer in the Informatics Department at the J. Craig Venter Institute (JCVI). He works on full-stack development and data management on the HSP and iDPCC projects. He is knowledgeable in an array of programming languages like JavaScript, and adept in utilizing cloud technologies such as AWS.",
       },
       {
         imageName: "Link-Wu.jpg",
         image: Link,
-        description: `<b>I-Lin (Link) Wu, Bs</b>	Link is a Software Engineer in the Informatics Department at the J. Craig Venter Institute (JCVI). He has a strong background in full-stack development and data management, and he has played a pivotal role in HSPW project and iDPCC project. With expertise in a variety of programming languages and tools, including JavaScript, Java, Python, C++, and cloud services like AWS and Azure, Link excels in creating efficient, scalable solutions.`,
+        description: `<b>I-Lin (Link) Wu, Bs</b>	Link is a Software Engineer in the Informatics Department at the J. Craig Venter Institute (JCVI). He has a strong background in full-stack development and data management, and he has played a pivotal role in HSP project and iDPCC project. With expertise in a variety of programming languages and tools, including JavaScript, Java, Python, C++, and cloud services like AWS and Azure, Link excels in creating efficient, scalable solutions.`,
       },
     ],
   },
@@ -88,7 +88,7 @@ const memberInfo = [
         imageName: "Jessica-Welch.jpg",
         image: Jessica,
         description:
-          "<b>Jessica Mark Welch, PhD</b> Jessica studies the spatial organization and community composition of the oral microbiota. She is a contributor to the Human Oral Microbiome Database (HOMD) and is interested in integration of the Human Salivary Proteome Wiki with the HOMD. She is an Associate Scientist at the Marine Biological Laboratory in Woods Hole, Massachusetts.",
+          "<b>Jessica Mark Welch, PhD</b> Jessica studies the spatial organization and community composition of the oral microbiota. She is a contributor to the Human Oral Microbiome Database (HOMD) and is interested in integration of the Human Salivary Proteome with the HOMD. She is an Associate Scientist at the Marine Biological Laboratory in Woods Hole, Massachusetts.",
       },
       {
         imageName: "Markus-Hardt.jpeg",
@@ -106,7 +106,7 @@ const memberInfo = [
         imageName: "Yanhui-Zhang.jpg",
         image: Yanhui,
         description:
-          "<b>Yanhui Zhang, B.S., M.S., Ph.D.</b> Yanhui is an Associate professor at the Department of Bioscience Research, College of Dentistry, The University of Tennessee Health Science Center. Her research spans three areas: Tetraspanins in oral biology and cancer; Clinical and translational research of biocompatibility and efficacy of oral care devices and therapeutics; Saliva, sputum, dental plaque, and oral cells/tissues metabolomics, proteomics, and microbiome in oral and systemic diseases; She will continue to work with the HSP Wiki and HOMD team to maintain, develop and upgrade the HSP Wiki database to serve scientific communities.",
+          "<b>Yanhui Zhang, B.S., M.S., Ph.D.</b> Yanhui is an Associate professor at the Department of Bioscience Research, College of Dentistry, The University of Tennessee Health Science Center. Her research spans three areas: Tetraspanins in oral biology and cancer; Clinical and translational research of biocompatibility and efficacy of oral care devices and therapeutics; Saliva, sputum, dental plaque, and oral cells/tissues metabolomics, proteomics, and microbiome in oral and systemic diseases; She will continue to work with the HSP and HOMD team to maintain, develop and upgrade the HSP database to serve scientific communities.",
       },
     ],
   },

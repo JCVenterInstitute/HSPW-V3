@@ -9,7 +9,7 @@ import { Container, Grid, Link } from "@mui/material";
 
 const Footer = () => {
   const links = [
-    { href: "/about", text: "About HSPW" },
+    { href: "/about", text: "About HSP" },
     { href: "/accessibility", text: "Accessibility" },
     { href: "/copyrights", text: "Copyrights" },
     { href: "/disclaimers", text: "Disclaimers" },

@@ -131,9 +131,9 @@ class Home extends React.Component {
             },
             {
               imageSrc: help,
-              title: "Information for HSPW Users",
+              title: "Information for HSP Users",
               blurb:
-                "The new HSPW is built on the AWS system. Data and analysis tools and services from HSPW have now been integrated into the resource.",
+                "The new HSP is built on the AWS system. Data and analysis tools and services from HSP have now been integrated into the resource.",
               destination: false,
             },
             {

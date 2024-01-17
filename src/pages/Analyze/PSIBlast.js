@@ -13,7 +13,7 @@ const PSIBlast = () => {
         <Container maxWidth="xl">
           <h1 className="head_title">Protein Similarity Search</h1>
           <p className="head_text">
-            BLAST stands for Basic Local Alignment Search Tool.The emphasis of
+            BLAST stands for Basic Local Alignment Search Tool. The emphasis of
             this tool is to find regions of sequence similarity, which will
             yield functional and evolutionary clues about the structure and
             function of your novel sequence. Position specific iterative BLAST

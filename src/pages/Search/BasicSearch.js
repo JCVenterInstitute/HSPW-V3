@@ -127,7 +127,7 @@ class BasicSearch extends Component {
             }}
           >
             This search interface allows you to build complex queries exploiting
-            the semantic annotations stored in this wiki.
+            the semantic annotations stored in the HSP.
           </p>
           <br></br>
           <p
@@ -145,7 +145,7 @@ class BasicSearch extends Component {
             the query, using the plus (+) sign to add fields; (3) choose the
             properties that you want to display; (4) configure the optional
             parameters; and (5) press Search or Export to display the results
-            either in the wiki or in Microsoft Excel.
+            either in the HSP or in Microsoft Excel.
           </p>
         </div>
         <input

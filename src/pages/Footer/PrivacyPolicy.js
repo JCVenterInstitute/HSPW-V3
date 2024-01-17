@@ -161,14 +161,14 @@ const PrivacyNoticePage = () => {
             Page History
           </Typography>
           <Typography sx={{ marginY: "20px", fontFamily: "Lato" }}>
-            Edits or other contributions to the wiki on its articles, user pages
+            Edits or other contributions to the HSP on its articles, user pages
             and talk pages are generally retained forever. Removing text from a
             project does not permanently delete it. Normally, anyone can look at
             a previous version of an article and see what was there. Even if an
             article is "deleted", a user entrusted with higher level of access
             may still see what was removed from public view. Information can be
             permanently deleted by individuals with access to our servers, but
-            aside from the rare circumstance when HSPW is required to delete
+            aside from the rare circumstance when HSP is required to delete
             editing-history material in response to a court order or equivalent
             legal process, there is no guarantee any permanent deletion will
             happen.
@@ -195,7 +195,7 @@ const PrivacyNoticePage = () => {
           }}
         ></div>
         <Typography sx={{ fontFamily: "Lato" }}>
-          The wiki provides links to other Internet sites that may consist of
+          The HSP provides links to other Internet sites that may consist of
           additional information. Once you link to another site, you are subject
           to the privacy policy of the new site.
         </Typography>
