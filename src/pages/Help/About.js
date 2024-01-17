@@ -91,7 +91,7 @@ const About = () => {
             rel="noopener noreferrer"
             style={{ textDecoration: "none" }}
           >
-            HSPW
+            HSP
             <OpenInNewIcon sx={{ fontSize: "medium" }} />
           </a>
           . Saliva tests based on these biomarkers offer many advantages over
