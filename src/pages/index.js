@@ -1,7 +1,5 @@
 import * as React from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
-import { LinkedInEmbed } from "react-social-media-embed";
-
 import Carousel from "../components/Carousel.js";
 import salivary_protein from "../assets/icon-salivary-protein.png";
 import analysis from "../assets/icon-analyze.png";
@@ -114,17 +112,31 @@ class Home extends React.Component {
             {
               destination: false,
               rawContent: (
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
-                >
-                  <LinkedInEmbed
-                    url="https://www.linkedin.com/embed/feed/update/urn:li:share:7150141766891892736"
-                    postUrl="https://www.linkedin.com/posts/salivary-proteome_thehuman-salivary-proteome-wikiis-a-collaborative-activity-7150141767646945280-3nBJ?utm_source=share&utm_medium=member_desktop"
-                    width={400}
-                  />
+                <div className="basic-card-content basic-card-content-centered">
+                  <div
+                    style={{
+                      maxHeight: "400px",
+                      overflowY: "auto",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <iframe
+                        src="https://www.linkedin.com/embed/feed/update/urn:li:share:7150141766891892736"
+                        height="400"
+                        width="340"
+                        frameBorder="0"
+                        allowFullScreen=""
+                        title="Embedded post"
+                      ></iframe>
+                    </div>
+                  </div>
                 </div>
               ),
             },
