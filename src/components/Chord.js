@@ -5,21 +5,35 @@ import "./index.css";
 
 const Chord = (props) => {
   const chartRef = useRef(null);
-  const [countSaliva, setCountSaliva] = useState("");
-  const [countPlasma, setCountPlasma] = useState("");
-  const [countSMSL, setCountSMSL] = useState("");
-  const [countParotid, setCountParotid] = useState("");
-  const [countSalivaParotid, setSalivaParotid] = useState("");
-  const [countSalivaPlasma, setSalivaPlasma] = useState("");
-  const [countSalivaSS, setSalivaSS] = useState("");
-  const [countSSPlasma, setSSPlasma] = useState("");
-  const [countSSParotid, setSSParotid] = useState("");
-  const [countPlasmaParotid, setPlasmaParotid] = useState("");
+  const [countWholeSaliva, setCountWholeSaliva] = useState(0);
+  const [countWholeSalivaOnly, setCountWholeSalivaOnly] = useState(0);
+  const [countSMSLGlands, setCountSMSLGlands] = useState(0);
+  const [countSMSLGlandsOnly, setCountSMSLGlandsOnly] = useState(0);
+  const [countBloodPlasma, setCountBloodPlasma] = useState(0);
+  const [countBloodPlasmaOnly, setCountBloodPlasmaOnly] = useState(0);
+  const [countParotidGlands, setCountParotidGlands] = useState(0);
+  const [countParotidGlandsOnly, setCountParotidGlandsOnly] = useState(0);
+  const [countWholeSalivaAndSMSLGlands, setCountWholeSalivaAndSMSLGlands] =
+    useState(0);
+  const [countWholeSalivaAndBloodPlasma, setCountWholeSalivaAndBloodPlasma] =
+    useState(0);
+  const [
+    countWholeSalivaAndParotidGlands,
+    setCountWholeSalivaAndParotidGlands,
+  ] = useState(0);
+  const [countSMSLGlandsAndBloodPlasma, setCountSMSLGlandsAndBloodPlasma] =
+    useState(0);
+  const [countSMSLGlandsAndParotidGlands, setCountSMSLGlandsAndParotidGlands] =
+    useState(0);
+  const [
+    countBloodPlasmaAndParotidGlands,
+    setCountBloodPlasmaAndParotidGlands,
+  ] = useState(0);
   const [isLoading, setLoading] = useState(true);
 
-  const fetchSaliva = async () => {
+  const fetchCount = async () => {
     const response = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/countProteinS`
+      `${process.env.REACT_APP_API_ENDPOINT}/api/getChordPlotCount`
     );
     if (!response.ok) {
       const message = `An error has occurred: ${response.status}`;
@@ -27,145 +41,37 @@ const Chord = (props) => {
       throw new Error(message);
     }
     const data = await response.json();
-    setCountSaliva(data.filter_ws.doc_count);
-  };
-
-  const fetchSMSL = async () => {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/countProteinSS`
+    setCountWholeSaliva(data.filter_whole_saliva.doc_count);
+    setCountWholeSalivaOnly(data.filter_whole_saliva_only.doc_count);
+    setCountSMSLGlands(data.filter_smsl_glands.doc_count);
+    setCountSMSLGlandsOnly(data.filter_smsl_glands_only.doc_count);
+    setCountBloodPlasma(data.filter_blood_plasma.doc_count);
+    setCountBloodPlasmaOnly(data.filter_blood_plasma_only.doc_count);
+    setCountParotidGlands(data.filter_parotid_glands.doc_count);
+    setCountParotidGlandsOnly(data.filter_parotid_glands_only.doc_count);
+    setCountWholeSalivaAndSMSLGlands(
+      data.filter_whole_saliva_and_smsl_glands.doc_count
     );
-    if (!response.ok) {
-      const message = `An error has occurred: ${response.status}`;
-      console.error(message);
-      throw new Error(message);
-    }
-    const data = await response.json();
-    setCountSMSL(data.filter_ss.doc_count);
-  };
-
-  const fetchParotid = async () => {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/countProteinPa`
+    setCountWholeSalivaAndBloodPlasma(
+      data.filter_whole_saliva_and_blood_plasma.doc_count
     );
-    if (!response.ok) {
-      const message = `An error has occurred: ${response.status}`;
-      console.error(message);
-      throw new Error(message);
-    }
-    const data = await response.json();
-    setCountParotid(data.filter_par.doc_count);
-  };
-
-  const fetchPlasma = async () => {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/countProteinPl`
+    setCountWholeSalivaAndParotidGlands(
+      data.filter_whole_saliva_and_parotid_glands.doc_count
     );
-    if (!response.ok) {
-      const message = `An error has occurred: ${response.status}`;
-      console.error(message);
-      throw new Error(message);
-    }
-    const data = await response.json();
-    setCountPlasma(data.filter_p.doc_count);
-  };
-
-  const fetchSalivaParotid = async () => {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/countSPa`
+    setCountSMSLGlandsAndBloodPlasma(
+      data.filter_smsl_glands_and_blood_plasma.doc_count
     );
-    if (!response.ok) {
-      const message = `An error has occurred: ${response.status}`;
-      console.error(message);
-      throw new Error(message);
-    }
-    const data = await response.json();
-    setSalivaParotid(data.filter_ws_par.doc_count);
-  };
-
-  const fetchSalivaPlasma = async () => {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/countSPl`
+    setCountSMSLGlandsAndParotidGlands(
+      data.filter_smsl_glands_and_parotid_glands.doc_count
     );
-    if (!response.ok) {
-      const message = `An error has occurred: ${response.status}`;
-      console.error(message);
-      throw new Error(message);
-    }
-    const data = await response.json();
-
-    setSalivaPlasma(data.filter_ws_p.doc_count);
-  };
-
-  const fetchSalivaSMSL = async () => {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/countSSS`
+    setCountBloodPlasmaAndParotidGlands(
+      data.filter_blood_plasma_and_parotid_glands.doc_count
     );
-    if (!response.ok) {
-      const message = `An error has occurred: ${response.status}`;
-      console.error(message);
-      throw new Error(message);
-    }
-    const data = await response.json();
-
-    setSalivaSS(data.filter_ss_ws.doc_count);
-  };
-
-  const fetchSMSLPlasma = async () => {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/countSSP`
-    );
-    if (!response.ok) {
-      const message = `An error has occurred: ${response.status}`;
-      console.error(message);
-      throw new Error(message);
-    }
-    const data = await response.json();
-
-    setSSPlasma(data.filter_ss_p.doc_count);
-  };
-
-  const fetchSMSLParotid = async () => {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/countSSPa`
-    );
-    if (!response.ok) {
-      const message = `An error has occurred: ${response.status}`;
-      console.error(message);
-      throw new Error(message);
-    }
-    const data = await response.json();
-
-    setSSParotid(data.filter_ss_par.doc_count);
-  };
-
-  const fetchParotidPlasma = async () => {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/countPPa`
-    );
-    if (!response.ok) {
-      const message = `An error has occurred: ${response.status}`;
-      console.error(message);
-      throw new Error(message);
-    }
-    const data = await response.json();
-
-    setPlasmaParotid(data.filter_p_par.doc_count);
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      await Promise.all([
-        fetchSaliva(),
-        fetchSMSL(),
-        fetchParotid(),
-        fetchPlasma(),
-        fetchSalivaParotid(),
-        fetchSalivaPlasma(),
-        fetchSalivaSMSL(),
-        fetchSMSLPlasma(),
-        fetchSMSLParotid(),
-        fetchParotidPlasma(),
-      ]);
+      await Promise.all([fetchCount()]);
 
       setLoading(false);
     };
@@ -176,43 +82,39 @@ const Chord = (props) => {
   useEffect(() => {
     if (!isLoading) {
       renderChart(
-        countSaliva,
-        countPlasma,
-        countSMSL,
-        countParotid,
-        countSalivaParotid,
-        countSalivaPlasma,
-        countSalivaSS,
-        countSSPlasma,
-        countSSParotid,
-        countPlasmaParotid
+        countWholeSaliva,
+        countWholeSalivaOnly,
+        countSMSLGlands,
+        countSMSLGlandsOnly,
+        countBloodPlasma,
+        countBloodPlasmaOnly,
+        countParotidGlands,
+        countParotidGlandsOnly,
+        countWholeSalivaAndSMSLGlands,
+        countWholeSalivaAndBloodPlasma,
+        countWholeSalivaAndParotidGlands,
+        countSMSLGlandsAndBloodPlasma,
+        countSMSLGlandsAndParotidGlands,
+        countBloodPlasmaAndParotidGlands
       );
     }
-  }, [
-    isLoading,
-    countSaliva,
-    countPlasma,
-    countSMSL,
-    countParotid,
-    countSalivaParotid,
-    countSalivaPlasma,
-    countSalivaSS,
-    countSSPlasma,
-    countSSParotid,
-    countPlasmaParotid,
-  ]);
+  }, [isLoading]);
 
   const renderChart = (
-    countSaliva,
-    countPlasma,
-    countSMSL,
-    countParotid,
-    countSalivaParotid,
-    countSalivaPlasma,
-    countSalivaSS,
-    countSSPlasma,
-    countSSParotid,
-    countPlasmaParotid
+    countWholeSaliva,
+    countWholeSalivaOnly,
+    countSMSLGlands,
+    countSMSLGlandsOnly,
+    countBloodPlasma,
+    countBloodPlasmaOnly,
+    countParotidGlands,
+    countParotidGlandsOnly,
+    countWholeSalivaAndSMSLGlands,
+    countWholeSalivaAndBloodPlasma,
+    countWholeSalivaAndParotidGlands,
+    countSMSLGlandsAndBloodPlasma,
+    countSMSLGlandsAndParotidGlands,
+    countBloodPlasmaAndParotidGlands
   ) => {
     const windowWidth = 600;
     const windowHeight = 350;
@@ -231,19 +133,44 @@ const Chord = (props) => {
       );
 
     var labels = [
-      "SM/SL glands",
-      "Parotid glands",
       "Whole saliva",
+      "SM/SL glands",
       "Blood plasma",
+      "Parotid glands",
     ];
     var matrix = [
-      [0, countSSParotid, countSalivaSS, countSSPlasma],
-      [countSSParotid, 0, countSalivaParotid, countPlasmaParotid],
-      [countSalivaSS, countSalivaParotid, 1750, countSalivaPlasma],
-      [countSSPlasma, countPlasmaParotid, countSalivaPlasma, 1431],
+      [
+        countWholeSalivaOnly,
+        countWholeSalivaAndSMSLGlands,
+        countWholeSalivaAndBloodPlasma,
+        countWholeSalivaAndParotidGlands,
+      ],
+      [
+        countWholeSalivaAndSMSLGlands,
+        countSMSLGlandsOnly,
+        countSMSLGlandsAndBloodPlasma,
+        countSMSLGlandsAndParotidGlands,
+      ],
+      [
+        countWholeSalivaAndBloodPlasma,
+        countSMSLGlandsAndBloodPlasma,
+        countBloodPlasmaOnly,
+        countBloodPlasmaAndParotidGlands,
+      ],
+      [
+        countWholeSalivaAndParotidGlands,
+        countSMSLGlandsAndParotidGlands,
+        countBloodPlasmaAndParotidGlands,
+        countParotidGlandsOnly,
+      ],
     ];
 
-    var sizes = [countSMSL, countParotid, countSaliva, countPlasma];
+    var sizes = [
+      countWholeSaliva,
+      countSMSLGlands,
+      countBloodPlasma,
+      countParotidGlands,
+    ];
 
     var fill = d3
       .scaleOrdinal()
@@ -481,7 +408,9 @@ const Chord = (props) => {
       svg
         .selectAll(".chord path")
         .filter(function (c) {
-          return c !== d;
+          if (c.source) {
+            return c !== d;
+          }
         })
         .transition()
         .duration(500)
@@ -501,7 +430,9 @@ const Chord = (props) => {
         svg
           .selectAll(".chord path")
           .filter(function (d) {
-            return d.source.index !== i && d.target.index !== i;
+            if (d.source) {
+              return d.source.index !== i && d.target.index !== i;
+            }
           })
           .transition()
           .duration(500)
