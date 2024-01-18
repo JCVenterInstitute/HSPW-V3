@@ -1,6 +1,6 @@
 import * as React from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
-import Carousel from "../components/Carousel.js";
+import Banner from "../components/Carousel.js";
 import salivary_protein from "../assets/icon-salivary-protein.png";
 import analysis from "../assets/icon-analyze.png";
 import download from "../assets/icon-download.png";
@@ -22,29 +22,6 @@ import {
 
 import "../components/BasicCard.css";
 
-/*
-  Note: I've tried to be non-destructive with the changes where I can.  Depending on what
-  you keep, you likely can remove reference to unused components and libraries.
-*/
-
-/*
-  A React Component that controls the operation of the application.
-  
-  The data loading the state of this component likely needs to be refactored and expanded,
-  but it serves as a jumping off point for styling simply the front page.
-  
-  The state is set up ultimately so that page changes can be handled here, so that in the
-  future, updating the activePage variable should be enough to load future page content.
-  Properties:
-    activePage (string) : Used to specify which current page is loaded.
-    pages (Object): A list of path:option pairs with information regarding page content.
-    pages.layout (string): Either 'fixed' or 'fluid'.  'fixed' constrains the page width
-      to the defined maximum in the CSS while 'fluid' allows the page to expand to take up
-      all of the browser width.
-    pages.hero (Object): An object containing configuration for a Hero element.
-    pages.basicCards (Array): A list of configurations used to populate BasicCards on the 
-      page.
-*/
 class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -183,7 +160,7 @@ class Home extends React.Component {
             id="application"
             data-layout={page.layout}
           >
-            <Carousel />
+            <Banner />
             <Container
               maxWidth="xl"
               sx={{ backgroundColor: "#f9f8f7", paddingY: "20px" }}
