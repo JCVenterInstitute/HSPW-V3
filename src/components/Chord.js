@@ -215,8 +215,8 @@ const Chord = (props) => {
     countPlasmaParotid
   ) => {
     const windowWidth = 600;
-    const windowHeight = 400;
-    const innerRadius = Math.min(windowWidth, windowHeight) / 2.5;
+    const windowHeight = 350;
+    const innerRadius = Math.min(windowWidth, windowHeight) / 2.8;
     const outerRadius = innerRadius * 1.04;
 
     const svg = d3
