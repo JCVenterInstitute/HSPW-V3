@@ -490,7 +490,7 @@ const ProteinDetail = (props) => {
                       fontFamily: "Montserrat",
                       fontSize: "17px",
                       fontWeight: "bold",
-                      border: "1px solid #3592E4",
+                      border: "none",
                       borderTopRightRadius: "10px",
                     }}
                   >
@@ -798,7 +798,7 @@ const ProteinDetail = (props) => {
                       fontFamily: "Montserrat",
                       fontSize: "17px",
                       fontWeight: "bold",
-                      border: "1px solid #3592E4",
+                      border: "none",
                       borderTopRightRadius: "10px",
                     }}
                   >
