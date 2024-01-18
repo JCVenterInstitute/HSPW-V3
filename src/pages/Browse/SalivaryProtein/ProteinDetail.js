@@ -283,7 +283,7 @@ const ProteinDetail = (props) => {
                       backgroundColor: "#1463B9",
                       color: "white",
                       fontFamily: "Montserrat",
-                      border: "1px solid #3592E4",
+                      border: "none",
                       borderTopLeftRadius: "10px",
                       width: "10%",
                       fontSize: "14px",
@@ -432,11 +432,7 @@ const ProteinDetail = (props) => {
           <TableContainer>
             <Table>
               <TableBody>
-                <TableRow
-                  style={{
-                    border: "1px solid #3592E4",
-                  }}
-                >
+                <TableRow>
                   <TableCell
                     style={{
                       backgroundColor: "#1463B9",
@@ -444,7 +440,7 @@ const ProteinDetail = (props) => {
                       fontFamily: "Montserrat",
                       fontSize: "17px",
                       fontWeight: "bold",
-                      border: "1px solid #3592E4",
+                      border: "none",
                       borderTopLeftRadius: "10px",
                     }}
                   >
@@ -729,7 +725,7 @@ const ProteinDetail = (props) => {
                       fontFamily: "Montserrat",
                       fontSize: "17px",
                       fontWeight: "bold",
-                      border: "1px solid #3592E4",
+                      border: "none",
                       borderTopLeftRadius: "10px",
                     }}
                   >
@@ -972,7 +968,7 @@ const ProteinDetail = (props) => {
                   >
                     49
                   </TableCell>
-                  <TableCell v>2442</TableCell>
+                  <TableCell>2442</TableCell>
                   <TableCell
                     style={{
                       border: "1px solid #CACACA",
@@ -1076,7 +1072,7 @@ const ProteinDetail = (props) => {
           <TableContainer>
             <Table>
               <TableBody>
-                <TableRow sx={{ border: "1px solid black" }}>
+                <TableRow>
                   <TableCell
                     style={{
                       backgroundColor: "#1463B9",
@@ -1084,7 +1080,7 @@ const ProteinDetail = (props) => {
                       fontFamily: "Montserrat",
                       fontSize: "17px",
                       fontWeight: "bold",
-                      border: "1px solid #3592E4",
+                      border: "none",
                       maxWidth: "50%",
                       borderTopLeftRadius: "10px",
                     }}
@@ -1433,7 +1429,7 @@ const ProteinDetail = (props) => {
           </h2>
           <Table>
             <TableHead>
-              <TableRow sx={{ border: "1px solid black" }}>
+              <TableRow>
                 <TableCell
                   sx={th}
                   style={{
@@ -1441,7 +1437,7 @@ const ProteinDetail = (props) => {
                     color: "white",
                     fontFamily: "Montserrat",
                     fontSize: "16px",
-                    border: "1px solid #3592E4",
+                    border: "none",
                     borderTopLeftRadius: "10px",
                   }}
                 >

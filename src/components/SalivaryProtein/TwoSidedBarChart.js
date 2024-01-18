@@ -18,13 +18,7 @@ const TwoSidedBarChart = React.memo((props) => {
         return 0; // Handle other cases or undefined scores
     }
   };
-  console.log(
-    "Data:",
-    props.data.map((d) => ({
-      score: d.score,
-      mappedValue: mapScoreToValue(d.score),
-    }))
-  );
+
   const chartRef = useRef(null);
   var color = d3
     .scaleOrdinal()
