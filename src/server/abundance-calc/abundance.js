@@ -2,9 +2,10 @@ const { Client } = require("@opensearch-project/opensearch");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const createAwsOpensearchConnector = require("aws-opensearch-connector");
 
-const SALIVARY_PROTEIN_INDEX = "salivary-proteins-112023";
+const SALIVARY_PROTEIN_INDEX = "salivary-proteins-011124";
 const STUDY_PROTEIN_INDEX = "study_protein";
 const STUDY_INDEX = "study";
+
 const DEV_TWO_OS =
   "https://search-hspw-dev2-dmdd32xae4fmxh7t4g6skv67aa.us-east-2.es.amazonaws.com";
 
@@ -52,10 +53,18 @@ const tissueToAccession = {
   plasma: "BTO:0000131",
 };
 
-const getSalivaryProteinById = async (uniprotId, client) => {
+/**
+ * Returns salivary protein with the given uniprotId
+ * @param {string} uniprotId Uniprot Id of Salivary protein to fetch
+ * @param {object} client OpenSearch Client from where to fetch the protein data
+ * @param {boolean} debug If true, log out data for debugging, false by default
+ * @returns The salivary protein record that matches the uniprot id passed in
+ */
+const getSalivaryProteinById = async (uniprotId, client, debug = false) => {
   const payload = {
     index: SALIVARY_PROTEIN_INDEX,
     body: {
+      track_total_hits: true,
       query: {
         match: {
           _id: {
@@ -63,24 +72,34 @@ const getSalivaryProteinById = async (uniprotId, client) => {
           },
         },
       },
+      // Update _source if you need other fields returned from records
+      _source: [
+        "salivary_proteins.uniprot_accession",
+        "salivary_proteins.uniprot_secondary_accession",
+      ],
     },
   };
 
-  var response = await client.search(payload);
+  const response = await client.search(payload);
 
-  console.log("> Query", JSON.stringify(payload.body));
-  console.log("> Response", response);
+  if (debug) {
+    console.log("\n> Salivary Protein Query\n", JSON.stringify(payload.body));
+  }
 
-  return response.body.hits.hits;
+  const { hits } = response.body.hits;
+
+  if (hits.length !== 0) return response.body.hits.hits[0];
+
+  return {};
 };
 
 /**
- * Returns list of sample proteins with the given uniprot id
- * @param {string} uniprotId Id to look for
+ * Returns list of sample proteins for the uniprot ids passed in
+ * @param {string[]} uniprotIds String array of uniprot ids to look for
  * @param {object} client OpenSearch Client used for query
  * @param {boolean} debug Console log statements for debugging, false by default
  */
-const getStudyProteinForProtein = async (uniprotId, client, debug = false) => {
+const getStudyProteinForProtein = async (uniprotIds, client, debug = false) => {
   const payload = {
     index: STUDY_PROTEIN_INDEX,
     body: {
@@ -88,15 +107,16 @@ const getStudyProteinForProtein = async (uniprotId, client, debug = false) => {
       track_total_hits: true,
       query: {
         bool: {
-          filter: [
+          must: [
             {
-              term: {
-                "Uniprot_id.keyword": uniprotId,
+              terms: {
+                "Uniprot_id.keyword": uniprotIds,
               },
             },
           ],
         },
       },
+      // Update _source if you need other fields returned from records
       _source: [
         "Uniprot_id",
         "experiment_protein_count",
@@ -154,6 +174,7 @@ const getStudy = async (experimentIds, client, debug = false) => {
           },
         },
       },
+      // Update _source if you need other fields returned from records
       _source: [
         "bto_ac",
         "bto_term_list",
@@ -225,31 +246,49 @@ const getTissueExperimentCounts = async (client) => {
  * @param {boolean} debug Console log statements for debugging, false by default
  */
 const runCalculation = async (proteinId, debug = false) => {
-  const client = await getDevTwoClient();
-  const devOpen = await getDevOpenClient();
+  const proteinIds = new Set([proteinId]);
   const experimentIdToDataMap = {};
   const experimentByType = {};
   const results = {};
 
+  // Get OpenSearch Clients
+  const client = await getDevTwoClient();
+  const devOpen = await getDevOpenClient();
+
+  // Get aggregate for all the different experiment type counts (Eg: {'parotid gland': 345, saliva: 344 ...})
   const tissueStudyCounts = await getTissueExperimentCounts(client);
 
-  const proteinData = await getSalivaryProteinById(proteinId, devOpen);
+  // Get Protein Record from Salivary Protein index
+  const proteinData = await getSalivaryProteinById(proteinId, devOpen, true);
 
-  console.log("\n> Protein Data:\n", JSON.stringify(proteinData));
+  const { uniprot_accession, uniprot_secondary_accession } =
+    proteinData._source.salivary_proteins;
 
-  // 1. Get all records from study_protein index that have the given accession
+  // Check if protein has any secondary accessions if present add
+  if (uniprot_secondary_accession) {
+    uniprot_secondary_accession.forEach((id) => proteinIds.add(id));
+  }
+
+  if (debug) {
+    console.log("\n> Protein Data:\n", JSON.stringify(proteinData));
+    console.log(`\n> Primary Accessions\n`, uniprot_accession);
+    console.log(`\n> Secondary Accessions:\n`, uniprot_secondary_accession);
+    console.log(`\n> Protein Ids\n`, proteinIds);
+  }
+
+  // Get all records from study_protein index that have the given accession ids
   const studyProteinData = await getStudyProteinForProtein(
-    proteinId,
+    [...proteinIds],
     client,
     true
   );
 
-  // 2. Get all experiment ids from study proteins returned above
+  // Get all experiment ids from study proteins returned above
   const experimentIds = studyProteinData.hits.map(
     (rec) => rec.experiment_id_key
   );
 
-  // 3. Get a list of the unique experiment ids
+  // Get a list of the unique experiment ids
   const uniqueExperimentIds = new Set(experimentIds);
 
   // Fetch study data (from study index) for all of the experiments
@@ -480,7 +519,7 @@ const uploadRecords = async (records, client, indexName) => {
 };
 
 const calculateAndLoadAbundances = async (id) => {
-  const client = await getDevTwoClient();
+  const client = await getDevTwoClient(); // OS Domain to index to
   const recs = await runCalculation(id, true);
   // await uploadRecords(recs, client, "test-study-peptide-abundance");
 };
@@ -500,10 +539,12 @@ const calculateAndLoadAbundances = async (id) => {
 // const salivaryProteinUniprotId = "Q96DA0"; // saliva cov peptide & experiment count higher than site, but blood plasma cov matched
 
 // Covid Matches
-const salivaryProteinUniprotId = "P01036";
+// const salivaryProteinUniprotId = "P01036";
 // const salivaryProteinUniprotId = "Q9Y6R7";
 
 // const salivaryProteinUniprotId = "P0DUB6";
+
+const salivaryProteinUniprotId = "A2RTY3";
 
 // For Testing: rm abundance.output.txt && node abundance.js >> abundance.output.txt
 // console.log(`> Salivary Protein Input:\n`, salivaryProteinUniprotId);
