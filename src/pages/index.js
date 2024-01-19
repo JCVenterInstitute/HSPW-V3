@@ -163,12 +163,16 @@ class Home extends React.Component {
             <Banner />
             <Container
               maxWidth="xl"
-              sx={{ backgroundColor: "#f9f8f7", paddingY: "20px" }}
+              sx={{
+                backgroundColor: "#f9f8f7",
+                paddingBottom: "12px",
+                borderRadius: "16px",
+              }}
             >
               <Grid
                 container
                 spacing={2}
-                sx={{ marginY: "20px" }}
+                sx={{ marginY: "12px" }}
               >
                 {page.basicCards.map((props, i) => {
                   return (
