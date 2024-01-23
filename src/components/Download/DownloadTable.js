@@ -41,7 +41,6 @@ function LinkComponent(props) {
       {imageUrlArray.map((imageUrl, index) => (
         <a
           key={index}
-          target="_blank"
           rel="noopener noreferrer"
           href={props.value}
           className={index === currentIndex && isHovered ? "download-link" : ""}

@@ -332,7 +332,6 @@ function proteinLinkComponent(props) {
   return (
     <div style={{ paddingLeft: "20px" }}>
       <a
-        target="_blank"
         rel="noopener noreferrer"
         href={`/protein/${props.value}`}
       >

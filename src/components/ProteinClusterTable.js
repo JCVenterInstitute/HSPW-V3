@@ -90,7 +90,6 @@ function LinkComponent(props) {
     <div style={{ paddingLeft: "20px" }}>
       <a
         rel="noopener noreferrer"
-        target="_blank"
         href={`protein-cluster/${props.value}`}
       >
         {props.value}
