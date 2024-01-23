@@ -101,12 +101,13 @@ const ExperimentSearchTable = () => {
   const [totalPageNumber, setTotalPageNumber] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(50);
   const [rowData, setRowData] = useState();
+  const [originalData, setOriginalData] = useState();
   const [filterKeyword, setFilterKeyword] = useState("");
   const [sampleIdFilter, setSampleIdFilter] = useState("");
   const [sampleTitleFilter, setSampleTitleFilter] = useState("");
-  const [tissueTypeFilter, setTissueTypeFilter] = useState("");
-  const [institutionFilter, setInstitutionFilter] = useState("");
-  const [diseaseFilter, setDiseaseFilter] = useState("");
+  const [tissueTypeFilter, setTissueTypeFilter] = useState([]);
+  const [institutionFilter, setInstitutionFilter] = useState([]);
+  const [diseaseFilter, setDiseaseFilter] = useState([]);
   const [tissueTypeFilterList, setTissueTypeFilterList] = useState([]);
   const [institutionFilterList, setInstitutionFilterList] = useState([]);
   const [diseaseFilterList, setDiseaseFilterList] = useState([]);
@@ -132,7 +133,11 @@ const ExperimentSearchTable = () => {
     };
 
     gridApi.setFilterModel(filterModel);
-    setTotalPageNumber(gridApi.paginationGetTotalPages());
+    const totalPages = gridApi.paginationGetTotalPages();
+    setTotalPageNumber(totalPages);
+    if (pageNumber > totalPages) {
+      setPageNumber(1);
+    }
   };
 
   const loadingOverlayComponent = useMemo(() => {
@@ -164,12 +169,17 @@ const ExperimentSearchTable = () => {
         });
       })
       .then((sourceData) => {
+        setOriginalData(sourceData);
         setRowData(sourceData);
         setTotalRecordCount(sourceData.length);
         return sourceData.length;
       })
       .then((totalCount) => {
-        setTotalPageNumber(Math.ceil(totalCount / recordsPerPage));
+        const totalPages = Math.ceil(totalCount / recordsPerPage);
+        setTotalPageNumber(totalPages);
+        if (pageNumber > totalPages) {
+          setPageNumber(1);
+        }
         setGridApi(params.api);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -297,8 +307,81 @@ const ExperimentSearchTable = () => {
 
   const handleFilter = (searchKeyword) => {
     gridApi.setQuickFilter(searchKeyword);
-    setTotalPageNumber(gridApi.paginationGetTotalPages());
+    const totalPages = gridApi.paginationGetTotalPages();
+    setTotalPageNumber(totalPages);
+    if (pageNumber > totalPages) {
+      setPageNumber(1);
+    }
   };
+
+  const handleTissueTypeFilterChange = (option) => {
+    setTissueTypeFilter((prev) => {
+      if (prev.includes(option)) {
+        return prev.filter((item) => item !== option);
+      } else {
+        return [...prev, option];
+      }
+    });
+  };
+
+  const handleInstitutionFilterChange = (option) => {
+    setInstitutionFilter((prev) => {
+      if (prev.includes(option)) {
+        return prev.filter((item) => item !== option);
+      } else {
+        return [...prev, option];
+      }
+    });
+  };
+
+  const handleDiseaseFilterChange = (option) => {
+    setDiseaseFilter((prev) => {
+      if (prev.includes(option)) {
+        return prev.filter((item) => item !== option);
+      } else {
+        return [...prev, option];
+      }
+    });
+  };
+
+  // Function to filter data based on current filter states
+  const getFilteredData = (originalData) => {
+    return originalData.filter((item) => {
+      // Apply tissue type filter
+      const tissueTypeMatch =
+        tissueTypeFilter.length === 0 ||
+        tissueTypeFilter.includes(item.sample_type);
+
+      // Apply institution filter
+      const institutionMatch =
+        institutionFilter.length === 0 ||
+        institutionFilter.includes(item.institution);
+
+      // Apply disease filter
+      const diseaseMatch =
+        diseaseFilter.length === 0 ||
+        diseaseFilter.includes(item.condition_type);
+
+      // Apply other filters similarly...
+
+      // Item must match all filters to be included
+      return tissueTypeMatch && institutionMatch && diseaseMatch;
+    });
+  };
+
+  // Use effect hook to update row data when filters change
+  useEffect(() => {
+    if (originalData) {
+      const filteredData = getFilteredData(originalData); // Replace 'originalData' with your original dataset
+      setRowData(filteredData);
+      setTotalRecordCount(filteredData.length);
+      const totalPages = Math.ceil(filteredData.length / recordsPerPage);
+      setTotalPageNumber(totalPages);
+      if (pageNumber > totalPages) {
+        setPageNumber(1);
+      }
+    }
+  }, [tissueTypeFilter, institutionFilter, diseaseFilter]); // Include all filter state variables here
 
   const handleSideFilter = (searchKeyword, columnName) => {
     let filterModel = gridApi.getFilterModel();
@@ -315,36 +398,29 @@ const ExperimentSearchTable = () => {
         type: "contains",
         filter: searchKeyword,
       };
-    } else if (columnName === "Tissue Type") {
-      filterModel.sample_type = {
-        type: "contains",
-        filter: searchKeyword,
-      };
-    } else if (columnName === "Institution") {
-      filterModel.institution = {
-        type: "contains",
-        filter: searchKeyword,
-      };
-    } else if (columnName === "Condition Type") {
-      filterModel.condition_type = {
-        type: "contains",
-        filter: searchKeyword,
-      };
     }
 
     gridApi.setFilterModel(filterModel);
-    setTotalPageNumber(gridApi.paginationGetTotalPages());
+    const totalPages = gridApi.paginationGetTotalPages();
+    setTotalPageNumber(totalPages);
+    if (pageNumber > totalPages) {
+      setPageNumber(1);
+    }
   };
 
   const handleResetFilter = () => {
     gridApi.setQuickFilter("");
     gridApi.setFilterModel({});
-    setTotalPageNumber(gridApi.paginationGetTotalPages());
+    const totalPages = gridApi.paginationGetTotalPages();
+    setTotalPageNumber(totalPages);
+    if (pageNumber > totalPages) {
+      setPageNumber(1);
+    }
     setSampleIdFilter("");
     setSampleTitleFilter("");
-    setTissueTypeFilter("");
-    setInstitutionFilter("");
-    setDiseaseFilter("");
+    setTissueTypeFilter([]);
+    setInstitutionFilter([]);
+    setDiseaseFilter([]);
     setLowerLimit(0);
     setUpperLimit(20000);
     setFilterKeyword("");
@@ -442,15 +518,9 @@ const ExperimentSearchTable = () => {
                           key={`${option}-${index}-${subIndex}`}
                           control={
                             <Checkbox
-                              checked={tissueTypeFilter === option.key}
+                              checked={tissueTypeFilter.includes(option.key)}
                               onChange={() => {
-                                if (tissueTypeFilter === option.key) {
-                                  setTissueTypeFilter("");
-                                  handleSideFilter("", filter);
-                                } else {
-                                  setTissueTypeFilter(option.key);
-                                  handleSideFilter(option.key, filter);
-                                }
+                                handleTissueTypeFilterChange(option.key);
                               }}
                             />
                           }
@@ -470,15 +540,9 @@ const ExperimentSearchTable = () => {
                           key={`${option}-${index}-${subIndex}`}
                           control={
                             <Checkbox
-                              checked={institutionFilter === option.key}
+                              checked={institutionFilter.includes(option.key)}
                               onChange={() => {
-                                if (institutionFilter === option.key) {
-                                  setInstitutionFilter("");
-                                  handleSideFilter("", filter);
-                                } else {
-                                  setInstitutionFilter(option.key);
-                                  handleSideFilter(option.key, filter);
-                                }
+                                handleInstitutionFilterChange(option.key);
                               }}
                             />
                           }
@@ -498,16 +562,10 @@ const ExperimentSearchTable = () => {
                           key={`${option}-${index}-${subIndex}`}
                           control={
                             <Checkbox
-                              checked={diseaseFilter === option.key}
-                              onChange={() => {
-                                if (diseaseFilter === option.key) {
-                                  setDiseaseFilter("");
-                                  handleSideFilter("", filter);
-                                } else {
-                                  setDiseaseFilter(option.key);
-                                  handleSideFilter(option.key, filter);
-                                }
-                              }}
+                              checked={diseaseFilter.includes(option.key)}
+                              onChange={() =>
+                                handleDiseaseFilterChange(option.key)
+                              }
                             />
                           }
                           label={`${option.key} (${option.doc_count})`}
@@ -649,9 +707,13 @@ const ExperimentSearchTable = () => {
                 value={recordsPerPage}
                 onChange={(event) => {
                   setRecordsPerPage(event.target.value);
-                  setTotalPageNumber(
-                    Math.ceil(totalRecordCount / event.target.value)
+                  const totalPages = Math.ceil(
+                    totalRecordCount / event.target.value
                   );
+                  setTotalPageNumber(totalPages);
+                  if (pageNumber > totalPages) {
+                    setPageNumber(1);
+                  }
                   gridApi.paginationSetPageSize(Number(event.target.value));
                 }}
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
