@@ -10,12 +10,16 @@ const he = require("he");
 const csvWriter = require("csv-write-stream");
 
 // OpenSearch connection details
-const host =
+const hostDev2 =
   "https://search-hspw-dev2-dmdd32xae4fmxh7t4g6skv67aa.us-east-2.es.amazonaws.com";
-const indexName = "genes-011724"; // Specify your index name here
-const uploadedFilePath = "/Users/iwu/Desktop/HSPW/protein_to_gene_mapping.txt";
 
-const getClient = async () => {
+const hostDevOpen =
+  "https://search-hspw-dev-open-crluksvxj4mvcgl5nopcl6ykte.us-east-2.es.amazonaws.com";
+
+const indexName = "genes-012224"; // Specify your index name here
+// const uploadedFilePath = "/Users/iwu/Desktop/HSPW/protein_to_gene_mapping.txt";
+
+const getClientDev2 = async () => {
   const awsCredentials = await defaultProvider()();
   const connector = createAwsOpensearchConnector({
     credentials: awsCredentials,
@@ -23,8 +27,59 @@ const getClient = async () => {
   });
   return new Client({
     ...connector,
-    node: host,
+    node: hostDev2,
   });
+};
+
+const getClientDevOpen = async () => {
+  const awsCredentials = await defaultProvider()();
+  const connector = createAwsOpensearchConnector({
+    credentials: awsCredentials,
+    region: process.env.AWS_REGION ?? "us-east-2",
+  });
+  return new Client({
+    ...connector,
+    node: hostDevOpen,
+  });
+};
+
+const fetchAllRecords = async (client) => {
+  let allRecords = [];
+  let scrollId = null;
+
+  // Initial search
+  let response = await client.search({
+    index: "salivary-proteins-011124",
+    scroll: "1m",
+    size: 1000, // Adjust size as needed
+    body: {
+      query: {
+        match_all: {},
+      },
+    },
+  });
+
+  while (response.body.hits.hits.length) {
+    // Process current batch
+    response.body.hits.hits.forEach((hit) => {
+      if (hit._source.salivary_proteins.entrez_gene_id) {
+        hit._source.salivary_proteins.entrez_gene_id.forEach((id) => {
+          console.log("> Pushing ID: ", id);
+          allRecords.push(id);
+        });
+      }
+    });
+
+    scrollId = response.body._scroll_id;
+
+    // Fetch next batch
+    response = await client.scroll({
+      scrollId: scrollId,
+      scroll: "1m",
+    });
+  }
+
+  return allRecords;
 };
 
 // Function to read the GeneIDs from the uploaded file
@@ -331,8 +386,7 @@ const getFirstHundredGeneIds = async () => {
 };
 
 // Function to read TSV and create records in OpenSearch
-const createGenesRecordsInOpenSearch = async (geneIds) => {
-  const client = await getClient();
+const createGenesRecordsInOpenSearch = async (client, geneIds) => {
   await ensureIndexExists(client); // Ensure index exists before proceeding
 
   // Count missing GeneIDs in the index
@@ -359,7 +413,7 @@ const createGenesRecordsInOpenSearch = async (geneIds) => {
     // geneIds.has(geneId)
     if (geneIds.includes(geneId)) {
       count++;
-      console.log(`> Processing GeneID: ${row.GeneID}`);
+      console.log(`> ${count} Processing GeneID: ${row.GeneID}`);
       const geneSymbol = row.Symbol;
       const geneName = row.description;
       const aliases = row.Synonyms.replaceAll("|", ", ");
@@ -417,9 +471,6 @@ const createGenesRecordsInOpenSearch = async (geneIds) => {
     } else {
       console.log(`> Skipping GeneID: ${geneId}`);
     }
-    if (count === 100) {
-      break;
-    }
   }
 };
 
@@ -427,9 +478,13 @@ const createGenesRecordsInOpenSearch = async (geneIds) => {
 (async () => {
   try {
     // const geneIds = await readGeneIDsFromFile(uploadedFilePath);
-    const geneIds = await getFirstHundredGeneIds();
+    // const geneIds = await getFirstHundredGeneIds();
     // console.log(`Number of GeneIDs from the file: ${geneIds.size}`);
-    await createGenesRecordsInOpenSearch(geneIds);
+    const clientDev2 = await getClientDev2();
+    const clientDevOpen = await getClientDevOpen();
+
+    const records = await fetchAllRecords(clientDevOpen);
+    await createGenesRecordsInOpenSearch(clientDev2, records);
   } catch (error) {
     console.error("Error:", error);
   }

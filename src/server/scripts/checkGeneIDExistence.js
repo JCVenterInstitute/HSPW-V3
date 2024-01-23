@@ -114,7 +114,7 @@ const fetchAllRecords = async (client) => {
 const checkAndWriteNonExistingIDs = async (client, records) => {
   // Prepare the _mget request body
   const mgetBody = {
-    docs: records.map((id) => ({ _index: "genes", _id: id })),
+    docs: records.map((id) => ({ _index: "genes-012224", _id: id })),
   };
 
   // Make the _mget request
@@ -129,7 +129,10 @@ const checkAndWriteNonExistingIDs = async (client, records) => {
   const csvContent = idsNotInGenes.join("\n");
 
   // Save to CSV file
-  fs.writeFileSync("/Users/iwu/Desktop/HSPW/ids_not_in_genes.csv", csvContent);
+  fs.writeFileSync(
+    "/Users/iwu/Desktop/HSPW/ids_not_in_new_genes_but_in_protein.csv",
+    csvContent
+  );
   console.log("CSV file created successfully");
 };
 
