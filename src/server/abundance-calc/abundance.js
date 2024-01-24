@@ -2,6 +2,8 @@ const { Client } = require("@opensearch-project/opensearch");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const createAwsOpensearchConnector = require("aws-opensearch-connector");
 
+const { ids } = require("./input-ids"); // Just a string array of ids
+
 const SALIVARY_PROTEIN_INDEX = "salivary-proteins-011124";
 const STUDY_PROTEIN_INDEX = "study_protein";
 const STUDY_INDEX = "study";
@@ -53,6 +55,9 @@ const tissueToAccession = {
   plasma: "BTO:0000131",
 };
 
+// Ids that returned no study proteins for calculating
+const noStudyProteins = [];
+
 /**
  * Returns salivary protein with the given uniprotId
  * @param {string} uniprotId Uniprot Id of Salivary protein to fetch
@@ -76,6 +81,7 @@ const getSalivaryProteinById = async (uniprotId, client, debug = false) => {
       _source: [
         "salivary_proteins.uniprot_accession",
         "salivary_proteins.uniprot_secondary_accession",
+        "salivary_proteins.alternative_products_isoforms",
       ],
     },
   };
@@ -88,7 +94,9 @@ const getSalivaryProteinById = async (uniprotId, client, debug = false) => {
 
   const { hits } = response.body.hits;
 
-  if (hits.length !== 0) return response.body.hits.hits[0];
+  if (hits.length !== 0) {
+    return response.body.hits.hits[0];
+  }
 
   return {};
 };
@@ -243,9 +251,10 @@ const getTissueExperimentCounts = async (client) => {
 /**
  * Calculates and gathers abundance data for a single protein
  * @param {string} proteinId Uniprot ID of protein
+ * @param {object} tissueStudyCounts Object containing aggregates for different tissue studies
  * @param {boolean} debug Console log statements for debugging, false by default
  */
-const runCalculation = async (proteinId, debug = false) => {
+const runCalculation = async (proteinId, tissueStudyCounts, debug = false) => {
   const proteinIds = new Set([proteinId]);
   const experimentIdToDataMap = {};
   const experimentByType = {};
@@ -255,14 +264,19 @@ const runCalculation = async (proteinId, debug = false) => {
   const client = await getDevTwoClient();
   const devOpen = await getDevOpenClient();
 
+  if (debug) console.log("> Protein ID", proteinId);
+
   // Get aggregate for all the different experiment type counts (Eg: {'parotid gland': 345, saliva: 344 ...})
-  const tissueStudyCounts = await getTissueExperimentCounts(client);
+  // const tissueStudyCounts = await getTissueExperimentCounts(client);
 
   // Get Protein Record from Salivary Protein index
-  const proteinData = await getSalivaryProteinById(proteinId, devOpen, true);
+  const proteinData = await getSalivaryProteinById(proteinId, devOpen, debug);
 
-  const { uniprot_accession, uniprot_secondary_accession } =
-    proteinData._source.salivary_proteins;
+  const {
+    uniprot_accession,
+    uniprot_secondary_accession,
+    alternative_products_isoforms,
+  } = proteinData._source.salivary_proteins;
 
   // Check if protein has any secondary accessions if present add
   if (uniprot_secondary_accession) {
@@ -280,7 +294,7 @@ const runCalculation = async (proteinId, debug = false) => {
   const studyProteinData = await getStudyProteinForProtein(
     [...proteinIds],
     client,
-    true
+    debug
   );
 
   // Get all experiment ids from study proteins returned above
@@ -292,7 +306,11 @@ const runCalculation = async (proteinId, debug = false) => {
   const uniqueExperimentIds = new Set(experimentIds);
 
   // Fetch study data (from study index) for all of the experiments
-  const experimentData = await getStudy([...uniqueExperimentIds], client, true);
+  const experimentData = await getStudy(
+    [...uniqueExperimentIds],
+    client,
+    debug
+  );
 
   if (debug) {
     console.log(`\n> Tissue Study Counts\n`, tissueStudyCounts);
@@ -424,67 +442,87 @@ const runCalculation = async (proteinId, debug = false) => {
 
   const records = [];
 
-  for (const tissue of Object.keys(results[proteinId])) {
-    for (const condition of Object.keys(results[proteinId][tissue])) {
-      const {
-        normalizedPeptideCount,
-        abundanceScalingFactor,
-        experimentIds,
-        peptideCount,
-      } = results[proteinId][tissue][condition];
+  if (!results[proteinId]) {
+    // For proteins with no study protein data
+    noStudyProteins.push(proteinId);
 
-      const experimentCount = experimentIds.length;
-      let abundance = 0;
-      let scalingFactor = abundanceScalingFactor;
-      let tissueExperimentCount = tissueStudyCounts[tissue];
+    records.push({
+      tissue_id: "N/A",
+      tissue_term: "N/A",
+      disease_state: "N/A",
+      isoform: [],
+      experiment_count: 0,
+      peptide_count: 0,
+      abundance_score: 0,
+      uniprot_id: proteinId,
+    });
+  } else {
+    for (const tissue of Object.keys(results[proteinId])) {
+      for (const condition of Object.keys(results[proteinId][tissue])) {
+        const {
+          normalizedPeptideCount,
+          abundanceScalingFactor,
+          experimentIds,
+          peptideCount,
+        } = results[proteinId][tissue][condition];
 
-      if (scalingFactor > 0) {
-        scalingFactor =
-          (scalingFactor / experimentCount) * tissueExperimentCount;
+        const experimentCount = experimentIds.length;
+        let abundance = 0;
+        let scalingFactor = abundanceScalingFactor;
+        let tissueExperimentCount = tissueStudyCounts[tissue];
 
-        abundance = (
-          (1000000 * normalizedPeptideCount) /
-          scalingFactor
-        ).toFixed(2);
+        if (scalingFactor > 0) {
+          scalingFactor =
+            (scalingFactor / experimentCount) * tissueExperimentCount;
 
-        results[proteinId][tissue][condition]["abundance"] = abundance;
+          abundance = (
+            (1000000 * normalizedPeptideCount) /
+            scalingFactor
+          ).toFixed(2);
 
-        console.log("\n> Record", results[proteinId][tissue][condition]);
+          results[proteinId][tissue][condition]["abundance"] = abundance;
 
-        console.log(
-          "\n> Scaling Factor:",
-          scalingFactor,
-          " Experiment Count: ",
-          experimentCount,
-          " Tissue Experiment Count: ",
-          tissueExperimentCount
-        );
+          if (debug) {
+            console.log("\n> Record", results[proteinId][tissue][condition]);
 
-        console.log(
-          "> ",
-          (scalingFactor / experimentCount) * tissueExperimentCount
-        );
+            console.log(
+              "\n> Scaling Factor:",
+              scalingFactor,
+              " Experiment Count: ",
+              experimentCount,
+              " Tissue Experiment Count: ",
+              tissueExperimentCount
+            );
 
-        console.log("\n> Abundance:\n", abundance);
+            console.log(
+              "> ",
+              (scalingFactor / experimentCount) * tissueExperimentCount
+            );
 
-        const record = {
-          tissue_id: tissueToAccession[tissue],
-          tissue_term: tissue === "plasma" ? "blood plasma" : tissue,
-          disease_state: condition,
-          isoform: [],
-          experiment_count: experimentCount,
-          peptide_count: peptideCount,
-          abundance_score: Number(abundance),
-          uniprot_id: proteinId,
-        };
+            console.log("\n> Abundance:\n", abundance);
+          }
 
-        records.push(record);
+          const record = {
+            tissue_id: tissueToAccession[tissue],
+            tissue_term: tissue === "plasma" ? "blood plasma" : tissue,
+            disease_state: condition,
+            isoform: alternative_products_isoforms,
+            experiment_count: experimentCount,
+            peptide_count: peptideCount,
+            abundance_score: Number(abundance),
+            uniprot_id: proteinId,
+          };
+
+          records.push(record);
+        }
       }
     }
   }
 
-  console.log(`\nResults:\n`, JSON.stringify(results));
-  console.log(`\Records:\n`, JSON.stringify(records));
+  if (debug) {
+    console.log(`\n> Results:\n`, JSON.stringify(results));
+    console.log(`\n> Records:\n`, JSON.stringify(records));
+  }
 
   return records;
 };
@@ -518,34 +556,47 @@ const uploadRecords = async (records, client, indexName) => {
   }
 };
 
-const calculateAndLoadAbundances = async (id) => {
+const calculateAndLoadAbundances = async (id, tissueStudyCounts) => {
   const client = await getDevTwoClient(); // OS Domain to index to
-  const recs = await runCalculation(id, true);
-  // await uploadRecords(recs, client, "test-study-peptide-abundance");
+  const recs = await runCalculation(id, tissueStudyCounts, false);
+  console.log("\n> Recs\n", recs, "\n");
+  await uploadRecords(recs, client, "study_peptide_abundance_012424");
 };
 
-// P15516
+const calculateAllAbundances = async () => {
+  const client = await getDevTwoClient();
 
-// Accession: P02810
-// https://salivaryproteome.org/public/index.php/HSPW:PE90567
-// http://localhost:8000/protein/P02810
+  // Get aggregate for all the different experiment type counts (Eg: {'parotid gland': 345, saliva: 344 ...})
+  const tissueStudyCounts = await getTissueExperimentCounts(client);
 
-// const salivaryProteinUniprotId = "P00403";
+  const proteinIds = ids;
 
-// Covid Doesnt match
-// const salivaryProteinUniprotId = "P02810"; // Peptide & experiment counts are way higher than site
-// const salivaryProteinUniprotId = "P15515"; // Peptide & experiment counts are way higher than site
-// const salivaryProteinUniprotId = "P01037"; // Peptide count close, but experiment count off by 20
-// const salivaryProteinUniprotId = "Q96DA0"; // saliva cov peptide & experiment count higher than site, but blood plasma cov matched
+  const idBatches = [];
 
-// Covid Matches
-// const salivaryProteinUniprotId = "P01036";
-// const salivaryProteinUniprotId = "Q9Y6R7";
+  while (proteinIds.length > 0) {
+    const batchSize = 10;
+    idBatches.push(proteinIds.splice(0, batchSize));
+  }
 
-// const salivaryProteinUniprotId = "P0DUB6";
+  // Process batches sequentially
+  for (const batch of idBatches) {
+    await processBatch(batch, tissueStudyCounts);
+  }
+};
 
-const salivaryProteinUniprotId = "A2RTY3";
+// Process a single batch of ids in parallel
+async function processBatch(batch, tissueStudyCounts) {
+  const promises = batch.map(async (id) => {
+    return calculateAndLoadAbundances(id, tissueStudyCounts);
+  });
 
+  // Wait for all Promises in the batch to resolve
+  return Promise.all(promises);
+}
+
+// rm output.txt && node abundance.js >> output.txt
+calculateAllAbundances();
+
+const salivaryProteinUniprotId = "P01036";
+// calculateAndLoadAbundances(salivaryProteinUniprotId);
 // For Testing: rm abundance.output.txt && node abundance.js >> abundance.output.txt
-// console.log(`> Salivary Protein Input:\n`, salivaryProteinUniprotId);
-calculateAndLoadAbundances(salivaryProteinUniprotId);
