@@ -42,6 +42,7 @@ const ProteinDetail = (props) => {
   const [authorName, setauthorName] = useState("");
   const [year, setYear] = useState("");
   const [journal, setJournal] = useState("");
+  const [abundanceData, setAbundanceData] = useState([]);
 
   const fetchProtein = async () => {
     const response = await axios.get(url);
@@ -49,11 +50,21 @@ const ProteinDetail = (props) => {
     return json;
   };
 
+  const fetchAbundance = async () => {
+    const resp = await axios.get(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/abundance-score/${params["proteinid"]}`
+    );
+    const abundanceData = resp.data;
+    return abundanceData;
+  };
+
   const processData = async () => {
     const proteinResult = await fetchProtein().catch(console.error);
+    const abundanceData = await fetchAbundance();
 
     if (proteinResult) {
       setData(proteinResult);
+      setAbundanceData(abundanceData);
 
       if (proteinResult[0]._source.salivary_proteins) {
         const cites = proteinResult[0]._source.salivary_proteins.cites;
@@ -755,7 +766,7 @@ const ProteinDetail = (props) => {
                   >
                     Disease State
                   </TableCell>
-                  <TableCell
+                  {/* <TableCell
                     style={{
                       backgroundColor: "#1463B9",
                       color: "white",
@@ -766,7 +777,7 @@ const ProteinDetail = (props) => {
                     }}
                   >
                     Isoform
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell
                     style={{
                       backgroundColor: "#1463B9",
@@ -805,247 +816,99 @@ const ProteinDetail = (props) => {
                     Abundance Score
                   </TableCell>
                 </TableRow>
-                <TableRow>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    <a
-                      target="_blank"
-                      rel="noreferrer"
-                      href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001202"
-                    >
-                      BTO:0001202
-                    </a>
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    Saliva
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    Disease free<br></br>Sjogren's Syndrome<br></br>COVID-19
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    50<br></br>2<br></br>8
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    133<br></br>2870<br></br>24
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    430.74<br></br>1008.23<br></br>0
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  ></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    <a
-                      target="_blank"
-                      rel="noreferrer"
-                      href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001316"
-                    >
-                      BTO:0001316
-                    </a>
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    Submandibular gland
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    Disease free
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    49
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    2442
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    13513.97
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  ></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    <a
-                      target="_blank"
-                      rel="noreferrer"
-                      href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001315"
-                    >
-                      BTO:0001315
-                    </a>
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    Sublingual gland
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    Disease free
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    49
-                  </TableCell>
-                  <TableCell>2442</TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    14,385.84
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  ></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    <a
-                      target="_blank"
-                      rel="noreferrer"
-                      href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001004"
-                    >
-                      BTO:0001004
-                    </a>
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    Parotid gland
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    Disease free
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    56
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    1208
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    3,127.74
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  ></TableCell>
-                </TableRow>
+                {abundanceData.map((row, i) => {
+                  const {
+                    abundance_score,
+                    disease_state,
+                    experiment_count,
+                    isoform,
+                    peptide_count,
+                    tissue_id,
+                    tissue_term,
+                  } = row;
+
+                  return (
+                    <TableRow key={`proteomics-row-${i}`}>
+                      <TableCell
+                        style={{
+                          border: "1px solid #CACACA",
+                          fontFamily: "Lato",
+                        }}
+                      >
+                        {tissue_id === "N/A" ? (
+                          tissue_id
+                        ) : (
+                          <a
+                            target="_blank"
+                            rel="noreferrer"
+                            // href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001202"
+                            // href={`http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=BTO&termId=${tissue_id}`}
+                            href={`https://www.ebi.ac.uk/ols4/ontologies/bto/classes?obo_id=${tissue_id}`}
+                          >
+                            {tissue_id}{" "}
+                            <FontAwesome
+                              className="super-crazy-colors"
+                              name="external-link"
+                              style={{
+                                textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                              }}
+                            />
+                          </a>
+                        )}
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          border: "1px solid #CACACA",
+                          fontFamily: "Lato",
+                          textTransform: "Capitalize",
+                        }}
+                      >
+                        {tissue_term}
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          border: "1px solid #CACACA",
+                          fontFamily: "Lato",
+                          textTransform: "Capitalize",
+                        }}
+                      >
+                        {disease_state}
+                      </TableCell>
+                      {/* <TableCell
+                        style={{
+                          border: "1px solid #CACACA",
+                          fontFamily: "Lato",
+                        }}
+                      >
+                        // For IsoForm 
+                      </TableCell> */}
+                      <TableCell
+                        style={{
+                          border: "1px solid #CACACA",
+                          fontFamily: "Lato",
+                        }}
+                      >
+                        {experiment_count}
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          border: "1px solid #CACACA",
+                          fontFamily: "Lato",
+                        }}
+                      >
+                        {peptide_count}
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          border: "1px solid #CACACA",
+                          fontFamily: "Lato",
+                        }}
+                      >
+                        {abundance_score}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>

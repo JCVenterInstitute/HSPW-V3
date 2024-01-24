@@ -2151,6 +2151,42 @@ app.post("/api/experiment-protein/:uniprotid", async (req, res) => {
   }
 });
 
+/**********************************
+ * For Fetching Abundance Scores
+ *********************************/
+
+const getAbundanceData = async (proteinId) => {
+  var client = await getClient();
+
+  const response = await client.search({
+    index: "study_peptide_abundance_012424",
+    body: {
+      query: {
+        bool: {
+          filter: [
+            {
+              term: {
+                "uniprot_id.keyword": proteinId,
+              },
+            },
+          ],
+        },
+      },
+    },
+  });
+
+  const results = response.body.hits.hits;
+
+  return results.map((res) => res._source);
+};
+
+app.get("/api/abundance-score/:id", (req, res) => {
+  const abundanceData = getAbundanceData(req.params.id);
+  abundanceData.then(function (result) {
+    res.json(result);
+  });
+});
+
 app.get("*", function (req, res) {
   res.sendFile("index.html", {
     root: path.join(__dirname, "./build/"),
