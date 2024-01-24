@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import main_feature from "../../assets/hero.jpeg";
 import {
   Container,
@@ -99,6 +99,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const DifferentialExpression = () => {
+  const gridRef = useRef();
   const [gridApi, setGridApi] = useState();
   const [gridApiGroupA, setGridApiGroupA] = useState();
   const [gridApiGroupB, setGridApiGroupB] = useState();
@@ -108,7 +109,6 @@ const DifferentialExpression = () => {
   const [totalPageNumber, setTotalPageNumber] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(50);
   const [rowData, setRowData] = useState();
-  const [originalData, setOriginalData] = useState();
   const [groupARowData, setGroupARowData] = useState([]);
   const [groupBRowData, setGroupBRowData] = useState([]);
   const [fileName, setFileName] = useState("");
@@ -178,7 +178,6 @@ const DifferentialExpression = () => {
         });
       })
       .then((sourceData) => {
-        setOriginalData(sourceData);
         setRowData(sourceData);
         setTotalRecordCount(sourceData.length);
         return sourceData.length;
@@ -484,44 +483,50 @@ const DifferentialExpression = () => {
     });
   };
 
-  // Function to filter data based on current filter states
-  const getFilteredData = (originalData) => {
-    return originalData.filter((item) => {
-      // Apply tissue type filter
-      const tissueTypeMatch =
-        tissueTypeFilter.length === 0 ||
-        tissueTypeFilter.includes(item.sample_type);
-
-      // Apply institution filter
-      const institutionMatch =
-        institutionFilter.length === 0 ||
-        institutionFilter.includes(item.institution);
-
-      // Apply disease filter
-      const diseaseMatch =
-        diseaseFilter.length === 0 ||
-        diseaseFilter.includes(item.condition_type);
-
-      // Apply other filters similarly...
-
-      // Item must match all filters to be included
-      return tissueTypeMatch && institutionMatch && diseaseMatch;
-    });
-  };
-
-  // Use effect hook to update row data when filters change
-  useEffect(() => {
-    if (originalData) {
-      const filteredData = getFilteredData(originalData); // Replace 'originalData' with your original dataset
-      setRowData(filteredData);
-      setTotalRecordCount(filteredData.length);
-      const totalPages = Math.ceil(filteredData.length / recordsPerPage);
+  const externalFilterChanged = useCallback(() => {
+    if (gridRef.current && gridRef.current.api) {
+      gridRef.current.api.onFilterChanged();
+      const totalPages = gridRef.current.api.paginationGetTotalPages();
       setTotalPageNumber(totalPages);
       if (pageNumber > totalPages) {
         setPageNumber(1);
       }
     }
-  }, [tissueTypeFilter, institutionFilter, diseaseFilter]); // Include all filter state variables here
+  }, [gridRef]);
+
+  const isExternalFilterPresent = useCallback(() => {
+    return (
+      tissueTypeFilter.length > 0 ||
+      institutionFilter.length > 0 ||
+      diseaseFilter.length > 0
+    );
+  }, [tissueTypeFilter, institutionFilter, diseaseFilter]);
+
+  const doesExternalFilterPass = useCallback(
+    (node) => {
+      const tissueTypeMatch =
+        tissueTypeFilter.length === 0 ||
+        tissueTypeFilter.includes(node.data.sample_type);
+      const institutionMatch =
+        institutionFilter.length === 0 ||
+        institutionFilter.includes(node.data.institution);
+      const diseaseMatch =
+        diseaseFilter.length === 0 ||
+        diseaseFilter.includes(node.data.condition_type);
+
+      return tissueTypeMatch && institutionMatch && diseaseMatch;
+    },
+    [tissueTypeFilter, institutionFilter, diseaseFilter]
+  );
+
+  useEffect(() => {
+    externalFilterChanged();
+  }, [
+    tissueTypeFilter,
+    institutionFilter,
+    diseaseFilter,
+    externalFilterChanged,
+  ]);
 
   const handleSideFilter = (searchKeyword, columnName) => {
     gridApi.hideOverlay();
@@ -1175,6 +1180,7 @@ const DifferentialExpression = () => {
               style={{ height: 620 }}
             >
               <AgGridReact
+                ref={gridRef}
                 className="ag-cell-wrap-text"
                 rowData={rowData}
                 columnDefs={columns}
@@ -1188,6 +1194,8 @@ const DifferentialExpression = () => {
                 rowMultiSelectWithClick={true}
                 loadingOverlayComponent={loadingOverlayComponent}
                 suppressScrollOnNewData={true}
+                isExternalFilterPresent={isExternalFilterPresent}
+                doesExternalFilterPass={doesExternalFilterPass}
               ></AgGridReact>
             </div>
           </Box>

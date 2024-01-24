@@ -101,7 +101,6 @@ const ExperimentSearchTable = () => {
   const [totalPageNumber, setTotalPageNumber] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(50);
   const [rowData, setRowData] = useState();
-  const [originalData, setOriginalData] = useState();
   const [filterKeyword, setFilterKeyword] = useState("");
   const [sampleIdFilter, setSampleIdFilter] = useState("");
   const [sampleTitleFilter, setSampleTitleFilter] = useState("");
@@ -169,7 +168,6 @@ const ExperimentSearchTable = () => {
         });
       })
       .then((sourceData) => {
-        setOriginalData(sourceData);
         setRowData(sourceData);
         setTotalRecordCount(sourceData.length);
         return sourceData.length;
@@ -344,42 +342,50 @@ const ExperimentSearchTable = () => {
     });
   };
 
-  // Function to filter data based on current filter states
-  const getFilteredData = (originalData) => {
-    return originalData.filter((item) => {
-      // Apply tissue type filter
-      const tissueTypeMatch =
-        tissueTypeFilter.length === 0 ||
-        tissueTypeFilter.includes(item.sample_type);
-
-      // Apply institution filter
-      const institutionMatch =
-        institutionFilter.length === 0 ||
-        institutionFilter.includes(item.institution);
-
-      // Apply disease filter
-      const diseaseMatch =
-        diseaseFilter.length === 0 ||
-        diseaseFilter.includes(item.condition_type);
-
-      // Item must match all filters to be included
-      return tissueTypeMatch && institutionMatch && diseaseMatch;
-    });
-  };
-
-  // Use effect hook to update row data when filters change
-  useEffect(() => {
-    if (originalData) {
-      const filteredData = getFilteredData(originalData); // Replace 'originalData' with your original dataset
-      setRowData(filteredData);
-      setTotalRecordCount(filteredData.length);
-      const totalPages = Math.ceil(filteredData.length / recordsPerPage);
+  const externalFilterChanged = useCallback(() => {
+    if (gridRef.current && gridRef.current.api) {
+      gridRef.current.api.onFilterChanged();
+      const totalPages = gridRef.current.api.paginationGetTotalPages();
       setTotalPageNumber(totalPages);
       if (pageNumber > totalPages) {
         setPageNumber(1);
       }
     }
-  }, [tissueTypeFilter, institutionFilter, diseaseFilter]); // Include all filter state variables here
+  }, [gridRef]);
+
+  const isExternalFilterPresent = useCallback(() => {
+    return (
+      tissueTypeFilter.length > 0 ||
+      institutionFilter.length > 0 ||
+      diseaseFilter.length > 0
+    );
+  }, [tissueTypeFilter, institutionFilter, diseaseFilter]);
+
+  const doesExternalFilterPass = useCallback(
+    (node) => {
+      const tissueTypeMatch =
+        tissueTypeFilter.length === 0 ||
+        tissueTypeFilter.includes(node.data.sample_type);
+      const institutionMatch =
+        institutionFilter.length === 0 ||
+        institutionFilter.includes(node.data.institution);
+      const diseaseMatch =
+        diseaseFilter.length === 0 ||
+        diseaseFilter.includes(node.data.condition_type);
+
+      return tissueTypeMatch && institutionMatch && diseaseMatch;
+    },
+    [tissueTypeFilter, institutionFilter, diseaseFilter]
+  );
+
+  useEffect(() => {
+    externalFilterChanged();
+  }, [
+    tissueTypeFilter,
+    institutionFilter,
+    diseaseFilter,
+    externalFilterChanged,
+  ]);
 
   const handleSideFilter = (searchKeyword, columnName) => {
     let filterModel = gridApi.getFilterModel();
@@ -866,6 +872,8 @@ const ExperimentSearchTable = () => {
                 components={{
                   LinkComponent,
                 }}
+                isExternalFilterPresent={isExternalFilterPresent}
+                doesExternalFilterPass={doesExternalFilterPass}
               ></AgGridReact>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
