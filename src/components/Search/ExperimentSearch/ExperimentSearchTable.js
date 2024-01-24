@@ -362,8 +362,6 @@ const ExperimentSearchTable = () => {
         diseaseFilter.length === 0 ||
         diseaseFilter.includes(item.condition_type);
 
-      // Apply other filters similarly...
-
       // Item must match all filters to be included
       return tissueTypeMatch && institutionMatch && diseaseMatch;
     });
