@@ -111,7 +111,6 @@ function LinkComponent(props) {
   return (
     <div style={{ paddingLeft: "20px" }}>
       <a
-        target="_blank"
         rel="noopener noreferrer"
         href={`/citation/${props.value}`}
       >

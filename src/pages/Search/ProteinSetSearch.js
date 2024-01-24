@@ -19,7 +19,6 @@ function ProteinLinkComponent(props) {
   return (
     <div style={{ paddingLeft: "20px" }}>
       <a
-        target="_blank"
         rel="noopener noreferrer"
         href={`/protein/${props.value}`}
       >
@@ -43,7 +42,6 @@ function GeneLinkComponent(props) {
         {`${geneDetail[0]}: `}
         <a
           key={`gene-${geneDetail[0]}`}
-          target="_blank"
           rel="noopener noreferrer"
           href={`/gene/${geneDetail[0]}`}
         >

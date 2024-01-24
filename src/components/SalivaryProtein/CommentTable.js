@@ -22,7 +22,6 @@ import "../Filter.css";
 function LinkComponent(props) {
   return (
     <a
-      target="_blank"
       rel="noopener noreferrer"
       href={`/citation/${props.value}`}
     >

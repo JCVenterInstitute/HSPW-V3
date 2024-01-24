@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import main_feature from "../../assets/hero.jpeg";
 import {
   Container,
@@ -30,7 +30,6 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import axios from "axios";
 import CustomHeaderGroup from "./CustomHeaderGroup";
 import CustomLoadingOverlay from "./CustomLoadingOverlay";
-import CustomNoRowsOverlay from "./CustomNoRowsOverlay";
 import CircleCheckedFilled from "@mui/icons-material/CheckCircle";
 import CircleUnchecked from "@mui/icons-material/RadioButtonUnchecked";
 import Swal from "sweetalert2";
@@ -100,6 +99,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const DifferentialExpression = () => {
+  const gridRef = useRef();
   const [gridApi, setGridApi] = useState();
   const [gridApiGroupA, setGridApiGroupA] = useState();
   const [gridApiGroupB, setGridApiGroupB] = useState();
@@ -120,9 +120,9 @@ const DifferentialExpression = () => {
   const [filterKeyword, setFilterKeyword] = useState("");
   const [sampleIdFilter, setSampleIdFilter] = useState("");
   const [sampleTitleFilter, setSampleTitleFilter] = useState("");
-  const [tissueTypeFilter, setTissueTypeFilter] = useState("");
-  const [institutionFilter, setInstitutionFilter] = useState("");
-  const [diseaseFilter, setDiseaseFilter] = useState("");
+  const [tissueTypeFilter, setTissueTypeFilter] = useState([]);
+  const [institutionFilter, setInstitutionFilter] = useState([]);
+  const [diseaseFilter, setDiseaseFilter] = useState([]);
   const [tissueTypeFilterList, setTissueTypeFilterList] = useState([]);
   const [institutionFilterList, setInstitutionFilterList] = useState([]);
   const [diseaseFilterList, setDiseaseFilterList] = useState([]);
@@ -148,15 +148,15 @@ const DifferentialExpression = () => {
     };
 
     gridApi.setFilterModel(filterModel);
-    setTotalPageNumber(gridApi.paginationGetTotalPages());
+    const totalPages = gridApi.paginationGetTotalPages();
+    setTotalPageNumber(totalPages);
+    if (pageNumber > totalPages) {
+      setPageNumber(1);
+    }
   };
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
-  }, []);
-
-  const noRowsOverlayComponent = useMemo(() => {
-    return CustomNoRowsOverlay;
   }, []);
 
   const onGridReady = useCallback((params) => {
@@ -183,7 +183,11 @@ const DifferentialExpression = () => {
         return sourceData.length;
       })
       .then((totalCount) => {
-        setTotalPageNumber(Math.ceil(totalCount / recordsPerPage));
+        const totalPages = Math.ceil(totalCount / recordsPerPage);
+        setTotalPageNumber(totalPages);
+        if (pageNumber > totalPages) {
+          setPageNumber(1);
+        }
         setGridApi(params.api);
       });
   }, []);
@@ -439,11 +443,90 @@ const DifferentialExpression = () => {
   const handleFilter = (searchKeyword) => {
     gridApi.hideOverlay();
     gridApi.setQuickFilter(searchKeyword);
-    setTotalPageNumber(gridApi.paginationGetTotalPages());
+    const totalPages = gridApi.paginationGetTotalPages();
+    setTotalPageNumber(totalPages);
+    if (pageNumber > totalPages) {
+      setPageNumber(1);
+    }
     if (gridApi.paginationGetTotalPages() === 0) {
       gridApi.showNoRowsOverlay();
     }
   };
+
+  const handleTissueTypeFilterChange = (option) => {
+    setTissueTypeFilter((prev) => {
+      if (prev.includes(option)) {
+        return prev.filter((item) => item !== option);
+      } else {
+        return [...prev, option];
+      }
+    });
+  };
+
+  const handleInstitutionFilterChange = (option) => {
+    setInstitutionFilter((prev) => {
+      if (prev.includes(option)) {
+        return prev.filter((item) => item !== option);
+      } else {
+        return [...prev, option];
+      }
+    });
+  };
+
+  const handleDiseaseFilterChange = (option) => {
+    setDiseaseFilter((prev) => {
+      if (prev.includes(option)) {
+        return prev.filter((item) => item !== option);
+      } else {
+        return [...prev, option];
+      }
+    });
+  };
+
+  const externalFilterChanged = useCallback(() => {
+    if (gridRef.current && gridRef.current.api) {
+      gridRef.current.api.onFilterChanged();
+      const totalPages = gridRef.current.api.paginationGetTotalPages();
+      setTotalPageNumber(totalPages);
+      if (pageNumber > totalPages) {
+        setPageNumber(1);
+      }
+    }
+  }, [gridRef]);
+
+  const isExternalFilterPresent = useCallback(() => {
+    return (
+      tissueTypeFilter.length > 0 ||
+      institutionFilter.length > 0 ||
+      diseaseFilter.length > 0
+    );
+  }, [tissueTypeFilter, institutionFilter, diseaseFilter]);
+
+  const doesExternalFilterPass = useCallback(
+    (node) => {
+      const tissueTypeMatch =
+        tissueTypeFilter.length === 0 ||
+        tissueTypeFilter.includes(node.data.sample_type);
+      const institutionMatch =
+        institutionFilter.length === 0 ||
+        institutionFilter.includes(node.data.institution);
+      const diseaseMatch =
+        diseaseFilter.length === 0 ||
+        diseaseFilter.includes(node.data.condition_type);
+
+      return tissueTypeMatch && institutionMatch && diseaseMatch;
+    },
+    [tissueTypeFilter, institutionFilter, diseaseFilter]
+  );
+
+  useEffect(() => {
+    externalFilterChanged();
+  }, [
+    tissueTypeFilter,
+    institutionFilter,
+    diseaseFilter,
+    externalFilterChanged,
+  ]);
 
   const handleSideFilter = (searchKeyword, columnName) => {
     gridApi.hideOverlay();
@@ -461,25 +544,14 @@ const DifferentialExpression = () => {
         type: "contains",
         filter: searchKeyword,
       };
-    } else if (columnName === "Tissue Type") {
-      filterModel.sample_type = {
-        type: "contains",
-        filter: searchKeyword,
-      };
-    } else if (columnName === "Institution") {
-      filterModel.institution = {
-        type: "contains",
-        filter: searchKeyword,
-      };
-    } else if (columnName === "Disease") {
-      filterModel.condition_type = {
-        type: "contains",
-        filter: searchKeyword,
-      };
     }
 
     gridApi.setFilterModel(filterModel);
-    setTotalPageNumber(gridApi.paginationGetTotalPages());
+    const totalPages = gridApi.paginationGetTotalPages();
+    setTotalPageNumber(totalPages);
+    if (pageNumber > totalPages) {
+      setPageNumber(1);
+    }
     if (gridApi.paginationGetTotalPages() === 0) {
       gridApi.showNoRowsOverlay();
     }
@@ -489,12 +561,16 @@ const DifferentialExpression = () => {
     gridApi.hideOverlay();
     gridApi.setQuickFilter("");
     gridApi.setFilterModel({});
-    setTotalPageNumber(gridApi.paginationGetTotalPages());
+    const totalPages = gridApi.paginationGetTotalPages();
+    setTotalPageNumber(totalPages);
+    if (pageNumber > totalPages) {
+      setPageNumber(1);
+    }
     setSampleIdFilter("");
     setSampleTitleFilter("");
-    setTissueTypeFilter("");
-    setInstitutionFilter("");
-    setDiseaseFilter("");
+    setTissueTypeFilter([]);
+    setInstitutionFilter([]);
+    setDiseaseFilter([]);
     setLowerLimit(0);
     setUpperLimit(20000);
     setFilterKeyword("");
@@ -771,15 +847,9 @@ const DifferentialExpression = () => {
                           key={`${option}-${index}-${subIndex}`}
                           control={
                             <Checkbox
-                              checked={tissueTypeFilter === option.key}
+                              checked={tissueTypeFilter.includes(option.key)}
                               onChange={() => {
-                                if (tissueTypeFilter === option.key) {
-                                  setTissueTypeFilter("");
-                                  handleSideFilter("", filter);
-                                } else {
-                                  setTissueTypeFilter(option.key);
-                                  handleSideFilter(option.key, filter);
-                                }
+                                handleTissueTypeFilterChange(option.key);
                               }}
                             />
                           }
@@ -799,15 +869,9 @@ const DifferentialExpression = () => {
                           key={`${option}-${index}-${subIndex}`}
                           control={
                             <Checkbox
-                              checked={institutionFilter === option.key}
+                              checked={institutionFilter.includes(option.key)}
                               onChange={() => {
-                                if (institutionFilter === option.key) {
-                                  setInstitutionFilter("");
-                                  handleSideFilter("", filter);
-                                } else {
-                                  setInstitutionFilter(option.key);
-                                  handleSideFilter(option.key, filter);
-                                }
+                                handleInstitutionFilterChange(option.key);
                               }}
                             />
                           }
@@ -827,16 +891,10 @@ const DifferentialExpression = () => {
                           key={`${option}-${index}-${subIndex}`}
                           control={
                             <Checkbox
-                              checked={diseaseFilter === option.key}
-                              onChange={() => {
-                                if (diseaseFilter === option.key) {
-                                  setDiseaseFilter("");
-                                  handleSideFilter("", filter);
-                                } else {
-                                  setDiseaseFilter(option.key);
-                                  handleSideFilter(option.key, filter);
-                                }
-                              }}
+                              checked={diseaseFilter.includes(option.key)}
+                              onChange={() =>
+                                handleDiseaseFilterChange(option.key)
+                              }
                             />
                           }
                           label={`${option.key} (${option.doc_count})`}
@@ -978,9 +1036,13 @@ const DifferentialExpression = () => {
                 value={recordsPerPage}
                 onChange={(event) => {
                   setRecordsPerPage(event.target.value);
-                  setTotalPageNumber(
-                    Math.ceil(totalRecordCount / event.target.value)
+                  const totalPages = Math.ceil(
+                    totalRecordCount / event.target.value
                   );
+                  setTotalPageNumber(totalPages);
+                  if (pageNumber > totalPages) {
+                    setPageNumber(1);
+                  }
                   gridApi.paginationSetPageSize(Number(event.target.value));
                 }}
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
@@ -1118,6 +1180,7 @@ const DifferentialExpression = () => {
               style={{ height: 620 }}
             >
               <AgGridReact
+                ref={gridRef}
                 className="ag-cell-wrap-text"
                 rowData={rowData}
                 columnDefs={columns}
@@ -1131,6 +1194,8 @@ const DifferentialExpression = () => {
                 rowMultiSelectWithClick={true}
                 loadingOverlayComponent={loadingOverlayComponent}
                 suppressScrollOnNewData={true}
+                isExternalFilterPresent={isExternalFilterPresent}
+                doesExternalFilterPass={doesExternalFilterPass}
               ></AgGridReact>
             </div>
           </Box>
