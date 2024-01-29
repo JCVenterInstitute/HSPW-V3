@@ -8,7 +8,8 @@ const host =
   "https://search-hspw-dev2-dmdd32xae4fmxh7t4g6skv67aa.us-east-2.es.amazonaws.com";
 
 const indexName = "study_protein_012924"; // Replace with index name to index into
-const dataDirectoryPath = "../../../../data_from_harinder/"; // Replace this with the path to your directory with the study protein data to load
+// const dataDirectoryPath = "../../../../data_from_harinder/"; // Replace this with the path to your directory with the study protein data to load
+const dataDirectoryPath = "../download-script/";
 const typeName = "_doc"; // Change this if you are using a different type
 
 const getClient = async () => {
@@ -44,7 +45,9 @@ const readAndProcessFiles = async (directoryPath) => {
       console.log("> Loading file", file);
 
       const filePath = path.join(directoryPath, file);
-      const jsonData = JSON.parse(fs.readFileSync(filePath, "utf8"));
+      const rawFile = fs.readFileSync(filePath, "utf8");
+      const removeTrailingComma = rawFile.trim().replace(/,\s*]$/, "]");
+      const jsonData = JSON.parse(removeTrailingComma);
 
       const body = jsonData
         .map((record) => [
