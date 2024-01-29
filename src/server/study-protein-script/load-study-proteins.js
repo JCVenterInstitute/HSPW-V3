@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { Client } = require("@opensearch-project/opensearch");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
+const createAwsOpensearchConnector = require("aws-opensearch-connector");
 
 const host =
   "https://search-hspw-dev2-dmdd32xae4fmxh7t4g6skv67aa.us-east-2.es.amazonaws.com";
