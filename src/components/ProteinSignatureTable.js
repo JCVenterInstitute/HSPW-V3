@@ -106,7 +106,6 @@ function LinkComponent(props) {
   return (
     <div style={{ paddingLeft: "20px" }}>
       <a
-        target="_blank"
         rel="noopener noreferrer"
         href={`/protein-signature/${props.value}`}
       >
@@ -481,10 +480,7 @@ const ProteinSignatureTable = () => {
           </Button>
           <div>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
@@ -518,10 +514,7 @@ const ProteinSignatureTable = () => {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
@@ -584,10 +577,7 @@ const ProteinSignatureTable = () => {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",

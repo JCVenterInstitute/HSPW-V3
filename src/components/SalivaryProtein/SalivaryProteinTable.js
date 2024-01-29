@@ -332,7 +332,6 @@ function proteinLinkComponent(props) {
   return (
     <div style={{ paddingLeft: "20px" }}>
       <a
-        target="_blank"
         rel="noopener noreferrer"
         href={`/protein/${props.value}`}
       >
@@ -1179,10 +1178,7 @@ const SalivaryProteinTable = () => {
           </FormGroup>
           <div>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
@@ -1216,10 +1212,7 @@ const SalivaryProteinTable = () => {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
@@ -1250,10 +1243,7 @@ const SalivaryProteinTable = () => {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
@@ -1286,10 +1276,7 @@ const SalivaryProteinTable = () => {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
@@ -1374,10 +1361,7 @@ const SalivaryProteinTable = () => {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
@@ -1435,10 +1419,7 @@ const SalivaryProteinTable = () => {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
@@ -1502,10 +1483,7 @@ const SalivaryProteinTable = () => {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
@@ -1569,10 +1547,7 @@ const SalivaryProteinTable = () => {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
@@ -1636,10 +1611,7 @@ const SalivaryProteinTable = () => {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
@@ -1722,10 +1694,7 @@ const SalivaryProteinTable = () => {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",

@@ -111,7 +111,6 @@ function LinkComponent(props) {
   return (
     <div style={{ paddingLeft: "20px" }}>
       <a
-        target="_blank"
         rel="noopener noreferrer"
         href={`/citation/${props.value}`}
       >
@@ -544,10 +543,7 @@ const CitationTable = () => {
           </Button>
           <div>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
@@ -580,10 +576,7 @@ const CitationTable = () => {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
@@ -628,10 +621,7 @@ const CitationTable = () => {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
@@ -661,10 +651,7 @@ const CitationTable = () => {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",

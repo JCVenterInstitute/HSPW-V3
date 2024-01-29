@@ -82,7 +82,6 @@ function LinkComponent(props) {
   return (
     <div style={{ paddingLeft: "20px" }}>
       <a
-        target="_blank"
         rel="noopener noreferrer"
         href={`/gene/${props.value}`}
       >
@@ -450,10 +449,7 @@ const GeneTable = () => {
           </Button>
           <div>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
@@ -483,10 +479,7 @@ const GeneTable = () => {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
@@ -518,10 +511,7 @@ const GeneTable = () => {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",

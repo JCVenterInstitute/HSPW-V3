@@ -91,8 +91,10 @@ class analysisHome extends React.Component {
             <Container
               maxWidth="xl"
               sx={{
-                paddingY: "50px",
+                marginTop: "24px",
+                paddingY: "24px",
                 backgroundColor: "#f9f8f7",
+                borderRadius: "16px",
               }}
             >
               <Grid

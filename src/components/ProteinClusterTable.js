@@ -90,7 +90,6 @@ function LinkComponent(props) {
     <div style={{ paddingLeft: "20px" }}>
       <a
         rel="noopener noreferrer"
-        target="_blank"
         href={`protein-cluster/${props.value}`}
       >
         {props.value}
@@ -454,10 +453,7 @@ const ProteinClusterTable = () => {
           </Button>
           <div>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
@@ -489,10 +485,7 @@ const ProteinClusterTable = () => {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
@@ -526,10 +519,7 @@ const ProteinClusterTable = () => {
               </AccordionDetails>
             </Accordion>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                style={{ flexDirection: "row-reverse" }}
-              >
+              <AccordionSummary>
                 <Typography
                   sx={{
                     color: "#454545",
