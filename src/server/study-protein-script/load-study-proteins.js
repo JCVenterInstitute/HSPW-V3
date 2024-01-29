@@ -9,7 +9,7 @@ const host =
 
 const indexName = "study_protein_012924"; // Replace with index name to index into
 // const dataDirectoryPath = "../../../../data_from_harinder/"; // Replace this with the path to your directory with the study protein data to load
-const dataDirectoryPath = "../download-script/";
+const dataDirectoryPath = "../../../../data_from_harinder/";
 const typeName = "_doc"; // Change this if you are using a different type
 
 const getClient = async () => {
