@@ -10,7 +10,6 @@ const host =
 const indexName = "study_protein_012924"; // Replace with index name to index into
 // const dataDirectoryPath = "../../../../data_from_harinder/"; // Replace this with the path to your directory with the study protein data to load
 const dataDirectoryPath = "../../../../data_from_harinder/";
-const typeName = "_doc"; // Change this if you are using a different type
 
 const getClient = async () => {
   const awsCredentials = await defaultProvider()();
@@ -50,10 +49,7 @@ const readAndProcessFiles = async (directoryPath) => {
       const jsonData = JSON.parse(removeTrailingComma);
 
       const body = jsonData
-        .map((record) => [
-          { index: { _index: indexName, _type: typeName } },
-          record,
-        ])
+        .map((record) => [{ index: { _index: indexName } }, record])
         .flat();
 
       // Bulk insert into OpenSearch
