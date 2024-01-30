@@ -736,15 +736,15 @@ const DifferentialExpression = () => {
           return;
         }
       }
-    }
-
-    if (!fileIsValid) {
-      Swal.fire({
-        icon: "error",
-        title: "Invalid File",
-        text: "Please fix/reupload the file",
-      });
-      return;
+    } else {
+      if (!fileIsValid) {
+        Swal.fire({
+          icon: "error",
+          title: "Invalid File",
+          text: "Please fix/reupload the file",
+        });
+        return;
+      }
     }
 
     const now = new Date();
