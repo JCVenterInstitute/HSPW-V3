@@ -657,9 +657,10 @@ const DifferentialExpression = () => {
             title: "Invalid File",
             text: errorMessage,
           });
+          setFileIsValid(false);
           return;
         }
-        setFileIsValid(isValid);
+        setFileIsValid(true);
         setInputData(content);
       };
       reader.readAsText(file); // Read the file as text
