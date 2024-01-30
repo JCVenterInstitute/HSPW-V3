@@ -194,7 +194,7 @@ const DifferentialExpression = () => {
   const [lowerLimit, setLowerLimit] = useState(0);
   const [upperLimit, setUpperLimit] = useState(20000);
   const [inputData, setInputData] = useState("");
-  const [fileIsValid, setFileIsValid] = useState(false);
+  const [fileIsValid, setFileIsValid] = useState(true);
 
   useEffect(() => {
     // Apply the filter whenever the limits change
@@ -736,15 +736,15 @@ const DifferentialExpression = () => {
           return;
         }
       }
-    } else {
-      if (!fileIsValid) {
-        Swal.fire({
-          icon: "error",
-          title: "Invalid File",
-          text: "Please fix/reupload the file",
-        });
-        return;
-      }
+    }
+
+    if (!fileIsValid) {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid File",
+        text: "Please fix/reupload the file",
+      });
+      return;
     }
 
     const now = new Date();
