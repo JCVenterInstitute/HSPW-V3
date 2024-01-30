@@ -361,7 +361,7 @@ const Chord = (props) => {
         "style",
         "font-size: 16; font-weight: bold; font-family: Helvetica, sans-serif; cursor:pointer; color:white;"
       )
-      .style("fill", "white")
+      .style("fill", `${props.textColor}`) // Protein Text color
       .text(function (d) {
         return names(d.index);
       })
@@ -393,7 +393,7 @@ const Chord = (props) => {
         "style",
         "font-size: 12; font-family: Helvetica, sans-serif; cursor:pointer; color:white;"
       )
-      .style("fill", "white")
+      .style("fill", `${props.textColor}`) // Protein count color
       .text(function (d) {
         return "(" + counts(d.index) + " proteins)";
       })

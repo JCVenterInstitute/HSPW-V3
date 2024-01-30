@@ -37,6 +37,7 @@ import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download
 import "../Filter.css";
 import "../Table.css";
 import Legend from "./Legend.js";
+import Chord from "../../components/Chord.js";
 
 const styles = {
   transform: "translate(0, 0)",
@@ -1121,6 +1122,16 @@ const SalivaryProteinTable = () => {
 
   return (
     <>
+      <Container maxWidth="xl">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+        >
+          <Chord textColor="black" />
+        </Box>
+      </Container>
       <Container
         maxWidth="xl"
         sx={{

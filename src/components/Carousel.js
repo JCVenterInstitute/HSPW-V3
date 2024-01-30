@@ -32,7 +32,7 @@ function Banner() {
                   <p className="third_paragraph">{content.subtitle1}</p>
                 </div>
                 <div className="chord">
-                  <Chord />
+                  <Chord textColor="white" />
                 </div>
               </div>
             ) : (
