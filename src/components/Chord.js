@@ -133,43 +133,44 @@ const Chord = (props) => {
       );
 
     var labels = [
-      "Whole saliva",
       "SM/SL glands",
-      "Blood plasma",
       "Parotid glands",
+      "Whole saliva",
+      "Blood plasma",
     ];
+
     var matrix = [
       [
-        countWholeSalivaOnly,
-        countWholeSalivaAndSMSLGlands,
-        countWholeSalivaAndBloodPlasma,
-        countWholeSalivaAndParotidGlands,
-      ],
-      [
-        countWholeSalivaAndSMSLGlands,
         countSMSLGlandsOnly,
-        countSMSLGlandsAndBloodPlasma,
         countSMSLGlandsAndParotidGlands,
+        countWholeSalivaAndSMSLGlands,
+        countSMSLGlandsAndBloodPlasma,
       ],
       [
-        countWholeSalivaAndBloodPlasma,
-        countSMSLGlandsAndBloodPlasma,
-        countBloodPlasmaOnly,
-        countBloodPlasmaAndParotidGlands,
-      ],
-      [
-        countWholeSalivaAndParotidGlands,
         countSMSLGlandsAndParotidGlands,
-        countBloodPlasmaAndParotidGlands,
         countParotidGlandsOnly,
+        countWholeSalivaAndParotidGlands,
+        countBloodPlasmaAndParotidGlands,
+      ],
+      [
+        countWholeSalivaAndSMSLGlands,
+        countWholeSalivaAndParotidGlands,
+        countWholeSalivaOnly,
+        countWholeSalivaAndBloodPlasma,
+      ],
+      [
+        countSMSLGlandsAndBloodPlasma,
+        countBloodPlasmaAndParotidGlands,
+        countWholeSalivaAndBloodPlasma,
+        countBloodPlasmaOnly,
       ],
     ];
 
     var sizes = [
-      countWholeSaliva,
       countSMSLGlands,
-      countBloodPlasma,
       countParotidGlands,
+      countWholeSaliva,
+      countBloodPlasma,
     ];
 
     var fill = d3
@@ -177,7 +178,7 @@ const Chord = (props) => {
       .range([
         "#D2D0C6",
         "#ECD08D",
-        "steelblue",
+        "rgb(40, 134, 210)",
         "#DB704D",
         "steelblue",
         "khaki",
