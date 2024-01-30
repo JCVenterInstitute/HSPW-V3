@@ -34,6 +34,71 @@ import CircleCheckedFilled from "@mui/icons-material/CheckCircle";
 import CircleUnchecked from "@mui/icons-material/RadioButtonUnchecked";
 import Swal from "sweetalert2";
 import ClearIcon from "@mui/icons-material/Clear";
+import Papa from "papaparse";
+
+const toExcelColumn = (colIndex) => {
+  let column = "";
+  let dividend = colIndex;
+  let modulo;
+
+  while (dividend > 0) {
+    modulo = (dividend - 1) % 26;
+    column = String.fromCharCode(65 + modulo) + column;
+    dividend = Math.floor((dividend - modulo) / 26);
+  }
+
+  return column;
+};
+
+const validateFile = (fileContent) => {
+  let isValid = true;
+  let errorMessage = "";
+
+  Papa.parse(fileContent, {
+    complete: (result) => {
+      const data = result.data;
+
+      // Check headers
+      if (data[0][0] !== "Identifiers" || data[0][1] !== "Group") {
+        isValid = false;
+        errorMessage =
+          'The first row must have "Identifiers" in column 1 and "Group" in column 2';
+        return;
+      }
+
+      // Check if all other values except for row 1 and columns 1 & 2 are numeric and not blank
+      for (let i = 1; i < data.length; i++) {
+        for (let j = 2; j < data[i].length; j++) {
+          const cellValue = data[i][j];
+          if (
+            cellValue === null ||
+            cellValue === undefined ||
+            cellValue.toString().trim() === ""
+          ) {
+            isValid = false;
+            const excelColumn = toExcelColumn(j + 1); // +1 because columns are 1-indexed in Excel
+            errorMessage = `Blank cell found at row ${
+              i + 1
+            }, column ${excelColumn}`;
+            return;
+          }
+
+          if (!cellValue.toString().match(/^-?\d*(\.\d+)?$/)) {
+            isValid = false;
+            const excelColumn = toExcelColumn(j + 1); // +1 because columns are 1-indexed in Excel
+            errorMessage = `Non-numeric value found at row ${
+              i + 1
+            }, column ${excelColumn}`;
+            return;
+          }
+        }
+      }
+    },
+    skipEmptyLines: false, // Set to false to check for blank lines
+  });
+
+  return { isValid, errorMessage };
+};
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -129,6 +194,7 @@ const DifferentialExpression = () => {
   const [lowerLimit, setLowerLimit] = useState(0);
   const [upperLimit, setUpperLimit] = useState(20000);
   const [inputData, setInputData] = useState("");
+  const [fileIsValid, setFileIsValid] = useState(false);
 
   useEffect(() => {
     // Apply the filter whenever the limits change
@@ -583,9 +649,23 @@ const DifferentialExpression = () => {
       const reader = new FileReader();
       reader.onload = (event) => {
         const content = event.target.result;
+        const { isValid, errorMessage } = validateFile(content);
+
+        if (!isValid) {
+          Swal.fire({
+            icon: "error",
+            title: "Invalid File",
+            text: errorMessage,
+          });
+          return;
+        }
+        setFileIsValid(isValid);
         setInputData(content);
       };
       reader.readAsText(file); // Read the file as text
+
+      // Reset the value of the input to allow re-uploading the same file
+      e.target.value = null;
     }
   };
 
@@ -656,6 +736,15 @@ const DifferentialExpression = () => {
           return;
         }
       }
+    }
+
+    if (!fileIsValid) {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid File",
+        text: "Please fix/reupload the file",
+      });
+      return;
     }
 
     const now = new Date();
