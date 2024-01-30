@@ -178,7 +178,7 @@ const Chord = (props) => {
       .range([
         "#D2D0C6",
         "#ECD08D",
-        "steelblue",
+        "rgb(40, 134, 210)",
         "#DB704D",
         "steelblue",
         "khaki",
