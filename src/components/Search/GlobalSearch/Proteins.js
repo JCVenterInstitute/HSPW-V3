@@ -28,7 +28,7 @@ const generateColumnDefs = (entity, data) => {
       wrapText: true,
       minWidth: 200,
       headerClass: ["header-border"],
-      cellClass: ["differential-cell"],
+      cellClass: ["table-border", "global-search-cell"],
     };
 
     if (index === 0) {

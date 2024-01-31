@@ -23,7 +23,7 @@ const generateColumnDefs = (entity, data) => {
       wrapText: true,
       minWidth: 200,
       headerClass: ["header-border"],
-      cellClass: ["differential-cell"],
+      cellClass: ["table-border", "global-search-cell"],
     };
 
     // Conditional cellRenderer for the first column of 'Annotations'
