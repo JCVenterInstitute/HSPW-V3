@@ -831,11 +831,32 @@ const DifferentialExpression = () => {
           });
       }
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: error.response.data,
-      });
+      const payload = {
+        message: error.response.data,
+      };
+      try {
+        await axios
+          .post(
+            `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/send-support-email`,
+            payload
+          )
+          .then((res) => {
+            console.log(res);
+            if (res.status === 201) {
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: `${error.response.data}\n The error/issue has been sent to the support team.`,
+              });
+            }
+          });
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: `${error.response.data}\n The error/issue has been sent to the support team.`,
+        });
+      }
     }
   };
 

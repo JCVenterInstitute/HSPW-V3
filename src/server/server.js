@@ -19,6 +19,7 @@ const { formQuery } = require("./utils/formQuery");
 const { generatePresignedUrls } = require("./utils/generatePresignedUrls");
 const { createContact } = require("./utils/createContact");
 const { getSSMParameter } = require("./utils/utils");
+const { sendSupportEmail } = require("./utils/sendSupportEmail");
 
 app.use(cors());
 app.use(express.json());
@@ -1609,6 +1610,41 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
     res.status(500).send(`Server Error: ${error.message}`);
   }
 });
+
+app.post(
+  "/api/differential-expression/send-support-email",
+  async (req, res) => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+
+    const timestamp = {
+      year,
+      month,
+      day,
+      hours,
+      minutes,
+      seconds,
+    };
+    try {
+      const { message } = req.body;
+
+      const newEmail = await sendSupportEmail({
+        message,
+        timestamp,
+      });
+
+      res.status(201).json({ message: "Support email sent.", newEmail });
+    } catch (error) {
+      console.error("Error in API endpoint: ", error);
+      res.status(500).send("Error sending email");
+    }
+  }
+);
 
 /*********************
  * Misc Util Endpoints
