@@ -739,14 +739,14 @@ const DifferentialExpression = () => {
       }
     }
 
-    if (!fileIsValid) {
-      Swal.fire({
-        icon: "error",
-        title: "Invalid File",
-        text: "Please fix/reupload the file",
-      });
-      return;
-    }
+    // if (!fileIsValid) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Invalid File",
+    //     text: "Please fix/reupload the file",
+    //   });
+    //   return;
+    // }
 
     const now = new Date();
     const year = now.getFullYear();
@@ -767,67 +767,76 @@ const DifferentialExpression = () => {
     });
     Swal.showLoading();
 
-    if (fileName) {
-      await axios
-        .post(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze-file`,
-          {
-            inputData,
-            logNorm,
-            foldChangeThreshold,
-            pValueThreshold,
-            pValueType,
-            parametricTest,
-            timestamp: {
-              year,
-              month,
-              day,
-              hours,
-              minutes,
-              seconds,
-            },
-            formattedDate,
-            workingDirectory,
-          }
-        )
-        .then(() => {
-          // Wait for 3 seconds before redirecting
-          setTimeout(() => {
-            window.location.href = `/differential-expression/results/${jobId}`;
-            Swal.close();
-          }, 3000);
-        });
-    } else {
-      await axios
-        .post(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze`,
-          {
-            groupAData: groupARowData,
-            groupBData: groupBRowData,
-            logNorm,
-            foldChangeThreshold,
-            pValueThreshold,
-            pValueType,
-            parametricTest,
-            timestamp: {
-              year,
-              month,
-              day,
-              hours,
-              minutes,
-              seconds,
-            },
-            formattedDate,
-            workingDirectory,
-          }
-        )
-        .then(() => {
-          // Wait for 3 seconds before redirecting
-          setTimeout(() => {
-            window.location.href = `/differential-expression/results/${jobId}`;
-            Swal.close();
-          }, 3000);
-        });
+    try {
+      if (fileName) {
+        await axios
+          .post(
+            `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze-file`,
+            {
+              inputData,
+              logNorm,
+              foldChangeThreshold,
+              pValueThreshold,
+              pValueType,
+              parametricTest,
+              timestamp: {
+                year,
+                month,
+                day,
+                hours,
+                minutes,
+                seconds,
+              },
+              formattedDate,
+              workingDirectory,
+            }
+          )
+          .then(() => {
+            // Wait for 3 seconds before redirecting
+            setTimeout(() => {
+              window.location.href = `/differential-expression/results/${jobId}`;
+              Swal.close();
+            }, 3000);
+          });
+      } else {
+        await axios
+          .post(
+            `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze`,
+            {
+              groupAData: groupARowData,
+              groupBData: groupBRowData,
+              logNorm,
+              foldChangeThreshold,
+              pValueThreshold,
+              pValueType,
+              parametricTest,
+              timestamp: {
+                year,
+                month,
+                day,
+                hours,
+                minutes,
+                seconds,
+              },
+              formattedDate,
+              workingDirectory,
+            }
+          )
+          .then(() => {
+            // Wait for 3 seconds before redirecting
+            setTimeout(() => {
+              window.location.href = `/differential-expression/results/${jobId}`;
+              Swal.close();
+            }, 3000);
+          });
+      }
+    } catch (error) {
+      console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message,
+      });
     }
   };
 
