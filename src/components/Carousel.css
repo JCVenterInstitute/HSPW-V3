@@ -156,6 +156,8 @@ h1 {
 }
 
 .chord {
+  display: flex;
+  justify-content: center; /* Horizontally center the children */
   width: 40%;
   @media (max-width: 1360px) {
     width: 50%; /* Smaller font size on smaller screens */

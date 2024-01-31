@@ -116,9 +116,9 @@ const Chord = (props) => {
     countSMSLGlandsAndParotidGlands,
     countBloodPlasmaAndParotidGlands
   ) => {
-    const windowWidth = 600;
+    const windowWidth = 500;
     const windowHeight = 350;
-    const innerRadius = Math.min(windowWidth, windowHeight) / 2.8;
+    const innerRadius = Math.min(windowWidth, windowHeight) / 3;
     const outerRadius = innerRadius * 1.04;
 
     const svg = d3
