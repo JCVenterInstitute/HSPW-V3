@@ -403,9 +403,6 @@ const columns = [
     cellClass: ["table-border"],
     cellStyle: {
       wordBreak: "break-word",
-      textAlign: "center",
-      display: "flex",
-      justifyContent: "center",
     },
   },
   {

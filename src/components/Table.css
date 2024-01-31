@@ -75,6 +75,10 @@
   font-size: 12px !important;
 }
 
+.differential-expression-header {
+  font-size: 12px !important;
+}
+
 .comment_table_description {
   height: auto !important;
   padding: 5px !important;
@@ -82,7 +86,6 @@
 
 .ag-theme-material .ag-cell-value {
   --ag-header-column-separator-display: block;
-
   --ag-header-column-separator-width: 2px;
   --ag-header-column-separator-color: #3592e4;
   line-height: 24px !important;
@@ -103,6 +106,24 @@
 
 .differential-expression .ag-selection-checkbox {
   padding: 0 0 0 24px;
+}
+
+.differential-expression-cell .ag-cell-value {
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  line-height: unset !important;
+  word-break: normal; /* prevent words from breaking */
+  color: #464646;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.34px;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+  padding-left: 24px !important;
 }
 
 .header-border {
