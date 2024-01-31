@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import { AgGridReact } from "ag-grid-react";
 import Typography from "@mui/material/Typography";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   Container,
   TextField,
@@ -32,7 +31,6 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-
 import { ReactComponent as DownloadLogo } from "../assets/table-icon/download.svg";
 import "./Filter.css";
 import CustomLoadingOverlay from "./CustomLoadingOverlay";
@@ -109,7 +107,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 function LinkComponent(props) {
   return (
-    <div style={{ paddingLeft: "20px" }}>
+    <div>
       <a
         rel="noopener noreferrer"
         href={`/citation/${props.value}`}
@@ -120,13 +118,10 @@ function LinkComponent(props) {
   );
 }
 
-const rowHeight = 80;
-
 const customHeaders = { "Content-Type": "application/json" };
 
 const CitationTable = () => {
   const gridRef = useRef();
-
   const [rowData, setRowData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [gridApi, setGridApi] = useState();
@@ -158,7 +153,7 @@ const CitationTable = () => {
       maxWidth: 145,
       wrapText: true,
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
+      cellClass: ["table-border", "citation-cell"],
     },
     {
       headerName: "Date of Publication",
@@ -166,34 +161,35 @@ const CitationTable = () => {
       maxWidth: 205,
       sortable: true,
       wrapText: true,
-      suppressSizeToFit: true,
-      headerClass: ["header-border"],
-      cellClass: ["table-border"],
+      headerClass: ["header-border", "citation-header"],
+      cellClass: ["table-border", "citation-cell"],
     },
     {
       headerName: "Title",
       field: "Title",
+      minWidth: 600,
       wrapText: true,
       autoHeight: true,
       cellStyle: { wordBreak: "break-word" },
       sortable: true,
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
+      cellClass: ["table-border", "citation-cell"],
     },
     {
       headerName: "Journal",
       field: "journal_title",
       wrapText: true,
-      maxWidth: 145,
       sortable: true,
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
+      cellClass: ["table-border", "citation-cell"],
     },
   ];
 
   const defColumnDefs = {
     flex: 1,
+    resizable: true,
     wrapHeaderText: true,
+    autoHeight: true,
     autoHeaderHeight: true,
   };
 
@@ -918,7 +914,7 @@ const CitationTable = () => {
           >
             <div
               className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
-              style={{ height: 1200 }}
+              style={{ height: 2470 }}
             >
               <AgGridReact
                 className="ag-cell-wrap-text"
@@ -934,7 +930,6 @@ const CitationTable = () => {
                 }}
                 enableCellTextSelection={true}
                 onSortChanged={onSortChanged}
-                rowHeight={rowHeight}
                 paginationPageSize={pageSize}
               />
             </div>

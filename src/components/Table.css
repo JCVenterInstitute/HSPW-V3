@@ -126,6 +126,103 @@
   padding-left: 24px !important;
 }
 
+.citation-header .ag-header-cell-text {
+  text-align: left;
+}
+
+.protein-cluster-header .ag-header-cell-text {
+  text-align: left;
+}
+
+.salivary-protein-cell .ag-cell-value {
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  word-break: normal; /* prevent words from breaking */
+  color: #464646;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.34px;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+  padding-left: 24px !important;
+}
+
+.citation-cell .ag-cell-value {
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  line-height: unset !important;
+  word-break: normal; /* prevent words from breaking */
+  color: #464646;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.34px;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+  padding-left: 24px !important;
+}
+
+.gene-cell .ag-cell-value {
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  line-height: unset !important;
+  word-break: normal; /* prevent words from breaking */
+  color: #464646;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.34px;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+  padding-left: 24px !important;
+}
+
+.protein-signature-cell .ag-cell-value {
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  line-height: unset !important;
+  word-break: normal; /* prevent words from breaking */
+  color: #464646;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.34px;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+  padding-left: 24px !important;
+}
+
+.protein-cluster-cell .ag-cell-value {
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  line-height: unset !important;
+  word-break: normal; /* prevent words from breaking */
+  color: #464646;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.34px;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+  padding-left: 24px !important;
+}
+
 .header-border {
   border: 1px solid #3592e4;
   --ag-header-size: 3px;

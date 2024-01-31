@@ -24,9 +24,7 @@ import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import { styled } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import Typography from "@mui/material/Typography";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AgGridReact } from "ag-grid-react";
-
 import { ReactComponent as DownloadLogo } from "../assets/table-icon/download.svg";
 import CustomLoadingOverlay from "./CustomLoadingOverlay";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -87,7 +85,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 function LinkComponent(props) {
   return (
-    <div style={{ paddingLeft: "20px" }}>
+    <div>
       <a
         rel="noopener noreferrer"
         href={`protein-cluster/${props.value}`}
@@ -142,11 +140,13 @@ const ProteinClusterTable = () => {
     {
       headerName: "Cluster Representative Protein",
       field: "uniprot_id",
-      maxWidth: 305,
+      maxWidth: 200,
       wrapText: true,
       suppressSizeToFit: true,
       sortable: true,
-      cellStyle: { paddingLeft: "15px !important" },
+      resizable: true,
+      cellClass: ["table-border", "protein-cluster-cell"],
+      headerClass: ["header-border", "protein-cluster-header"],
       cellRenderer: "LinkComponent",
     },
     {
@@ -155,6 +155,9 @@ const ProteinClusterTable = () => {
       sortable: true,
       wrapText: true,
       autoHeight: true,
+      resizable: true,
+      cellClass: ["table-border", "protein-cluster-cell"],
+      headerClass: ["header-border", "protein-cluster-header"],
       cellStyle: { wordBreak: "break-word" },
     },
     {
@@ -162,7 +165,10 @@ const ProteinClusterTable = () => {
       field: "number_of_members",
       sortable: true,
       wrapText: true,
+      resizable: true,
       maxWidth: 145,
+      headerClass: ["header-border", "protein-cluster-header"],
+      cellClass: ["table-border", "protein-cluster-cell"],
     },
   ];
 
@@ -786,7 +792,7 @@ const ProteinClusterTable = () => {
           >
             <div
               className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
-              style={{ height: 1200 }}
+              style={{ height: 2480 }}
             >
               <AgGridReact
                 className="ag-cell-wrap-text"

@@ -12,7 +12,6 @@ import MuiAccordion from "@mui/material/Accordion";
 import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Switch from "@mui/material/Switch";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import {
@@ -330,7 +329,7 @@ function IHCComponent(props) {
 
 function proteinLinkComponent(props) {
   return (
-    <div style={{ paddingLeft: "20px" }}>
+    <div>
       <a
         rel="noopener noreferrer"
         href={`/protein/${props.value}`}
@@ -393,14 +392,15 @@ const columns = [
     checkboxSelection: false,
     headerCheckboxSelection: false,
     wrapText: true,
+    minWidth: 115,
     cellStyle: { wordBreak: "break-word" },
-    cellClass: ["table-border"],
+    cellClass: ["table-border", "salivary-protein-cell"],
     cellRenderer: "proteinLinkComponent",
   },
   {
     headerName: "Gene Symbol",
     field: "Gene Symbol",
-    cellClass: ["table-border"],
+    cellClass: ["table-border", "salivary-protein-cell"],
     cellStyle: {
       wordBreak: "break-word",
     },
@@ -408,7 +408,7 @@ const columns = [
   {
     headerName: "Protein Name",
     field: "Protein Name",
-    cellClass: ["table-border"],
+    cellClass: ["table-border", "salivary-protein-cell"],
     cellStyle: {
       wordBreak: "break-word",
       textWrap: "wrap",
@@ -472,6 +472,7 @@ const columns = [
         headerName: "Value",
         field: "mRNA",
         cellRenderer: "WSComponent",
+        maxWidth: 170,
         cellClass: ["square_table", "salivary-proteins-colored-cell"],
       },
       {
@@ -1985,7 +1986,7 @@ const SalivaryProteinTable = () => {
           >
             <div
               className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
-              style={{ height: 2000 }}
+              style={{ height: 3200 }}
             >
               <AgGridReact
                 className="ag-cell-wrap-text saliva_table"

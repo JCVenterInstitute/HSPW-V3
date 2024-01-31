@@ -6,7 +6,6 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Typography from "@mui/material/Typography";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   Container,
   TextField,
@@ -26,7 +25,6 @@ import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import { styled } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-
 import { ReactComponent as DownloadLogo } from "../assets/table-icon/download.svg";
 import "./Filter.css";
 import "./Table.css";
@@ -104,7 +102,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 function LinkComponent(props) {
   return (
-    <div style={{ paddingLeft: "20px" }}>
+    <div>
       <a
         rel="noopener noreferrer"
         href={`/protein-signature/${props.value}`}
@@ -120,9 +118,9 @@ const columns = [
     headerName: "InterPro ID",
     field: "InterPro ID",
     cellRenderer: "LinkComponent",
-    maxWidth: 320,
+    maxWidth: 150,
     headerClass: ["header-border"],
-    cellClass: ["table-border"],
+    cellClass: ["table-border", "protein-signature-cell"],
   },
   {
     headerName: "Type",
@@ -130,7 +128,7 @@ const columns = [
     wrapText: true,
     maxWidth: 145,
     headerClass: ["header-border"],
-    cellClass: ["table-border"],
+    cellClass: ["table-border", "protein-signature-cell"],
   },
   {
     headerName: "Name",
@@ -139,7 +137,7 @@ const columns = [
     autoHeight: true,
     cellStyle: { wordBreak: "break-word" },
     headerClass: ["header-border"],
-    cellClass: ["table-border"],
+    cellClass: ["table-border", "protein-signature-cell"],
   },
   {
     headerName: "# of Members",
@@ -148,7 +146,7 @@ const columns = [
     wrapText: true,
     maxWidth: 205,
     headerClass: ["header-border"],
-    cellClass: ["table-border"],
+    cellClass: ["table-border", "protein-signature-cell"],
   },
 ];
 
@@ -842,7 +840,7 @@ const ProteinSignatureTable = () => {
           >
             <div
               className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
-              style={{ height: 1200 }}
+              style={{ height: 2470 }}
             >
               <AgGridReact
                 className="ag-cell-wrap-text"

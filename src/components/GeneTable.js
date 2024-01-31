@@ -19,10 +19,8 @@ import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import { styled } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import Typography from "@mui/material/Typography";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-
 import { ReactComponent as DownloadLogo } from "../assets/table-icon/download.svg";
 import "./Filter.css";
 import "./Table.css";
@@ -80,7 +78,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 function LinkComponent(props) {
   return (
-    <div style={{ paddingLeft: "20px" }}>
+    <div>
       <a
         rel="noopener noreferrer"
         href={`/gene/${props.value}`}
@@ -122,7 +120,7 @@ const columns = [
     headerCheckboxSelection: false,
     cellRenderer: "LinkComponent",
     headerClass: ["header-border"],
-    cellClass: ["table-border"],
+    cellClass: ["table-border", "gene-cell"],
   },
   {
     headerName: "Gene Name",
@@ -131,14 +129,14 @@ const columns = [
     autoHeight: true,
     cellStyle: { wordBreak: "break-word" },
     headerClass: ["header-border"],
-    cellClass: ["table-border"],
+    cellClass: ["table-border", "gene-cell"],
   },
   {
     headerName: "Location",
     field: "Location",
     maxWidth: "150",
     headerClass: ["header-border"],
-    cellClass: ["table-border"],
+    cellClass: ["table-border", "gene-cell"],
   },
 ];
 
@@ -146,7 +144,7 @@ const customHeaders = {
   "Content-Type": "application/json",
 };
 
-const defColumnDefs = { flex: 1, sortable: true };
+const defColumnDefs = { flex: 1, sortable: true, resizable: true };
 
 const GeneTable = () => {
   const gridRef = useRef();
@@ -778,7 +776,7 @@ const GeneTable = () => {
           >
             <div
               className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
-              style={{ height: 1200 }}
+              style={{ height: 2470 }}
             >
               <AgGridReact
                 className="ag-cell-wrap-text"
