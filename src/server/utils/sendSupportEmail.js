@@ -22,7 +22,7 @@ async function sendEmail({ message, timestamp }) {
   // Email content
   const mailOptions = {
     from: "noreply@salivaryproteome.org", // Sender address
-    to: "iwu@jcvi.org", // Your helpdesk email
+    to: "help@salivaryproteome.org", // Your helpdesk email
     subject: `New Issue from differential-expression page`,
     text:
       `Message: ${message}\n` +

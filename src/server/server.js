@@ -1638,6 +1638,7 @@ app.post(
         timestamp,
       });
 
+      console.log("Support email sent.");
       res.status(201).json({ message: "Support email sent.", newEmail });
     } catch (error) {
       console.error("Error in API endpoint: ", error);

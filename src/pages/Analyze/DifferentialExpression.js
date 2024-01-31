@@ -739,14 +739,14 @@ const DifferentialExpression = () => {
       }
     }
 
-    // if (!fileIsValid) {
-    //   Swal.fire({
-    //     icon: "error",
-    //     title: "Invalid File",
-    //     text: "Please fix/reupload the file",
-    //   });
-    //   return;
-    // }
+    if (!fileIsValid) {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid File",
+        text: "Please fix/reupload the file",
+      });
+      return;
+    }
 
     const now = new Date();
     const year = now.getFullYear();
@@ -845,16 +845,17 @@ const DifferentialExpression = () => {
             if (res.status === 201) {
               Swal.fire({
                 icon: "error",
-                title: "Error",
-                text: `${error.response.data}\n The error/issue has been sent to the support team.`,
+                title:
+                  "Error - The error/issue has been sent to the support team.",
+                text: error.response.data,
               });
             }
           });
       } catch (error) {
         Swal.fire({
           icon: "error",
-          title: "Error",
-          text: `${error.response.data}\n The error/issue has been sent to the support team.`,
+          title: "Error - The error/issue has been sent to the support team.",
+          text: error.response.data,
         });
       }
     }
