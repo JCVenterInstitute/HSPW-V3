@@ -423,6 +423,7 @@ button span {
   font-weight: 500;
   line-height: 100%;
   border-right: none;
+  letter-spacing: 0.5px;
 }
 .toolTip {
   position: fixed;

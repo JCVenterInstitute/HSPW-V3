@@ -58,6 +58,9 @@ const Footer = () => {
           spacing={2}
           sx={{
             justifyContent: "space-evenly",
+            padding: 0,
+            marginTop: "5px",
+            marginBottom: "5px",
           }}
         >
           {logos.map((logo, index) => {
@@ -130,9 +133,16 @@ const Footer = () => {
               item
               container
               justifyContent="space-between"
-              sx={{ ml: 2, mr: 2, mb: 4 }}
+              sx={{
+                ml: 2,
+                mr: 2,
+                mb: 4,
+              }}
             >
-              <Grid item>
+              <Grid
+                item
+                sx={{ mb: { xs: 2, sm: 2 } }}
+              >
                 <p className="address last">
                   J. Craig Venter Institute, 4120 Capricorn Lane, La Jolla, CA
                   92037
