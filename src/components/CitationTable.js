@@ -34,6 +34,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { ReactComponent as DownloadLogo } from "../assets/table-icon/download.svg";
 import "./Filter.css";
 import CustomLoadingOverlay from "./CustomLoadingOverlay";
+import { Link } from "react-router-dom";
 
 const recordsPerPageList = [
   {
@@ -108,12 +109,12 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 function LinkComponent(props) {
   return (
     <div>
-      <a
+      <Link
         rel="noopener noreferrer"
-        href={`/citation/${props.value}`}
+        to={`/citation/${props.value}`}
       >
         {props.value}
-      </a>
+      </Link>
     </div>
   );
 }

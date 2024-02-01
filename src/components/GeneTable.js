@@ -24,6 +24,7 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { ReactComponent as DownloadLogo } from "../assets/table-icon/download.svg";
 import "./Filter.css";
 import "./Table.css";
+import { Link } from "react-router-dom";
 
 const Accordion = styled((props) => (
   <MuiAccordion
@@ -79,12 +80,12 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 function LinkComponent(props) {
   return (
     <div>
-      <a
+      <Link
         rel="noopener noreferrer"
-        href={`/gene/${props.value}`}
+        to={`/gene/${props.value}`}
       >
         {props.value}
-      </a>
+      </Link>
     </div>
   );
 }

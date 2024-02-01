@@ -13,6 +13,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import React from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Link } from "react-router-dom";
 
 const MobileNavBar = () => {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -40,8 +41,8 @@ const MobileNavBar = () => {
           {/* Home Menu Item */}
           <ListItem disablePadding>
             <ListItemButton
-              component="a"
-              href="/"
+              component={Link}
+              to="/"
             >
               <ListItemText primary="Home" />
             </ListItemButton>
@@ -58,32 +59,32 @@ const MobileNavBar = () => {
                 disablePadding
               >
                 <ListItemButton
-                  component="a"
-                  href="/salivary-protein"
+                  component={Link}
+                  to="/salivary-protein"
                 >
                   <ListItemText primary="Salivary Proteins" />
                 </ListItemButton>
                 <ListItemButton
-                  component="a"
-                  href="/protein-cluster"
+                  component={Link}
+                  to="/protein-cluster"
                 >
                   <ListItemText primary="Protein Clusters" />
                 </ListItemButton>
                 <ListItemButton
-                  component="a"
-                  href="/protein-signature"
+                  component={Link}
+                  to="/protein-signature"
                 >
                   <ListItemText primary="Protein Signatures" />
                 </ListItemButton>
                 <ListItemButton
-                  component="a"
-                  href="/gene"
+                  component={Link}
+                  to="/gene"
                 >
                   <ListItemText primary="Genes" />
                 </ListItemButton>
                 <ListItemButton
-                  component="a"
-                  href="/citation"
+                  component={Link}
+                  to="/citation"
                 >
                   <ListItemText primary="Citations" />
                 </ListItemButton>
@@ -102,26 +103,26 @@ const MobileNavBar = () => {
                 disablePadding
               >
                 <ListItemButton
-                  component="a"
-                  href="/global-search"
+                  component={Link}
+                  to="/global-search"
                 >
                   <ListItemText primary="Global Search" />
                 </ListItemButton>
                 <ListItemButton
-                  component="a"
-                  href="/advanced-search"
+                  component={Link}
+                  to="/advanced-search"
                 >
                   <ListItemText primary="Advanced Search" />
                 </ListItemButton>
                 <ListItemButton
-                  component="a"
-                  href="/experiment-search"
+                  component={Link}
+                  to="/experiment-search"
                 >
                   <ListItemText primary="Experiment Search" />
                 </ListItemButton>
                 <ListItemButton
-                  component="a"
-                  href="/protein-set-search"
+                  component={Link}
+                  to="/protein-set-search"
                 >
                   <ListItemText primary="Protein Search By Identifiers" />
                 </ListItemButton>
@@ -140,26 +141,26 @@ const MobileNavBar = () => {
                 disablePadding
               >
                 <ListItemButton
-                  component="a"
-                  href="/clustalo"
+                  component={Link}
+                  to="/clustalo"
                 >
                   <ListItemText primary="Multiple Sequence Alignment" />
                 </ListItemButton>
                 <ListItemButton
-                  component="a"
-                  href="/differential-expression"
+                  component={Link}
+                  to="/differential-expression"
                 >
                   <ListItemText primary="Differential Expression Analysis" />
                 </ListItemButton>
                 <ListItemButton
-                  component="a"
-                  href="/iprscan5"
+                  component={Link}
+                  to="/iprscan5"
                 >
                   <ListItemText primary="Protein Signature Search" />
                 </ListItemButton>
                 <ListItemButton
-                  component="a"
-                  href="/psiblast"
+                  component={Link}
+                  to="/psiblast"
                 >
                   <ListItemText primary="Protein Similarity Search (BLAST)" />
                 </ListItemButton>
@@ -178,26 +179,26 @@ const MobileNavBar = () => {
                 disablePadding
               >
                 <ListItemButton
-                  component="a"
-                  href="/about"
+                  component={Link}
+                  to="/about"
                 >
                   <ListItemText primary="About" />
                 </ListItemButton>
                 <ListItemButton
-                  component="a"
-                  href="/download"
+                  component={Link}
+                  to="/download"
                 >
                   <ListItemText primary="Download" />
                 </ListItemButton>
                 <ListItemButton
-                  component="a"
-                  href="/team"
+                  component={Link}
+                  to="/team"
                 >
                   <ListItemText primary="Team" />
                 </ListItemButton>
                 <ListItemButton
-                  component="a"
-                  href="/contact"
+                  component={Link}
+                  to="/contact"
                 >
                   <ListItemText primary="Contact Us" />
                 </ListItemButton>

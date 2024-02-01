@@ -15,18 +15,18 @@ import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ClearIcon from "@mui/icons-material/Clear";
-
+import { Link } from "react-router-dom";
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 import "../Filter.css";
 
 function LinkComponent(props) {
   return (
-    <a
+    <Link
       rel="noopener noreferrer"
-      href={`/citation/${props.value}`}
+      to={`/citation/${props.value}`}
     >
       {props.value}
-    </a>
+    </Link>
   );
 }
 

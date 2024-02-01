@@ -29,13 +29,13 @@ import {
 import { styled } from "@mui/material/styles";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-
 import CustomLoadingOverlay from "../CustomLoadingOverlay";
 import CustomHeaderGroup from "../CustomHeaderGroup";
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 import "../Filter.css";
 import "../Table.css";
 import Legend from "./Legend.js";
+import { Link } from "react-router-dom";
 
 const styles = {
   transform: "translate(0, 0)",
@@ -330,12 +330,12 @@ function IHCComponent(props) {
 function proteinLinkComponent(props) {
   return (
     <div>
-      <a
+      <Link
+        to={`/protein/${props.value}`}
         rel="noopener noreferrer"
-        href={`/protein/${props.value}`}
       >
         {props.value}
-      </a>
+      </Link>
     </div>
   );
 }

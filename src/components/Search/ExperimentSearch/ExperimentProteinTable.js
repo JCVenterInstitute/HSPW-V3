@@ -16,6 +16,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import CustomLoadingOverlay from "../CustomLoadingOverlay";
+import { Link } from "react-router-dom";
 
 const generateColumnDefs = (data) => {
   if (!data || data.length === 0) return [];
@@ -85,12 +86,12 @@ const generateColumnDefs = (data) => {
 function LinkComponent(props) {
   return (
     <div>
-      <a
+      <Link
         rel="noopener noreferrer"
-        href={`/experiment-protein/${props.value}`}
+        to={`/experiment-protein/${props.value}`}
       >
         {props.value}
-      </a>
+      </Link>
     </div>
   );
 }

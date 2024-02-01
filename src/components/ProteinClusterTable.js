@@ -31,6 +31,7 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import "./Filter.css";
 import "./Table.css";
+import { Link } from "react-router-dom";
 
 const Accordion = styled((props) => (
   <MuiAccordion
@@ -86,12 +87,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 function LinkComponent(props) {
   return (
     <div>
-      <a
-        rel="noopener noreferrer"
-        href={`protein-cluster/${props.value}`}
-      >
-        {props.value}
-      </a>
+      <Link to={`/protein-cluster/${props.value}`}>{props.value}</Link>
     </div>
   );
 }

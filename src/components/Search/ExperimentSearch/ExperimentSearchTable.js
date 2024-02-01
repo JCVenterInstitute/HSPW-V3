@@ -27,6 +27,7 @@ import axios from "axios";
 import CustomLoadingOverlay from "../../CustomLoadingOverlay";
 import ClearIcon from "@mui/icons-material/Clear";
 import { ReactComponent as DownloadLogo } from "../../../assets/table-icon/download.svg";
+import { Link } from "react-router-dom";
 
 const Accordion = styled((props) => (
   <MuiAccordion
@@ -82,12 +83,12 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 function LinkComponent(props) {
   return (
     <div style={{ paddingLeft: "20px" }}>
-      <a
+      <Link
         rel="noopener noreferrer"
-        href={`/experiment-search/${props.value}`}
+        to={`/experiment-search/${props.value}`}
       >
         {props.value}
-      </a>
+      </Link>
     </div>
   );
 }

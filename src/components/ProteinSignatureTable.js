@@ -29,6 +29,7 @@ import { ReactComponent as DownloadLogo } from "../assets/table-icon/download.sv
 import "./Filter.css";
 import "./Table.css";
 import CustomLoadingOverlay from "./CustomLoadingOverlay";
+import { Link } from "react-router-dom";
 
 const recordsPerPageList = [
   {
@@ -103,12 +104,12 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 function LinkComponent(props) {
   return (
     <div>
-      <a
+      <Link
         rel="noopener noreferrer"
-        href={`/protein-signature/${props.value}`}
+        to={`/protein-signature/${props.value}`}
       >
         {props.value}
-      </a>
+      </Link>
     </div>
   );
 }

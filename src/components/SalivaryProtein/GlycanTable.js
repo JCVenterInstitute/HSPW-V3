@@ -16,7 +16,7 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ClearIcon from "@mui/icons-material/Clear";
 import FontAwesome from "react-fontawesome";
-
+import { Link } from "react-router-dom";
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 import "../Filter.css";
 
@@ -106,18 +106,22 @@ function Glycan_Table(props) {
 
   function LinkComponent(props) {
     return (
-      <a
+      <Link
         target="_blank"
         rel="noopener noreferrer"
-        href={`/citation/${props.value}`}
+        to={`/citation/${props.value}`}
       >
         {props.value}
-      </a>
+      </Link>
     );
   }
 
   const columns = [
-    { headerName: "Accession", field: "glytoucan_accession" },
+    {
+      headerName: "Accession",
+      field: "glytoucan_accession",
+      cellClass: ["table-border", "salivary-protein-cell"],
+    },
     {
       headerName: "Image",
       field: "image",
