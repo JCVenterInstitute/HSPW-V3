@@ -17,7 +17,7 @@ import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download
 
 function ProteinLinkComponent(props) {
   return (
-    <div style={{ paddingLeft: "20px" }}>
+    <div>
       <a
         rel="noopener noreferrer"
         href={`/protein/${props.value}`}
@@ -134,18 +134,21 @@ const ProteinSetSearch = () => {
       field: "uniprot_accession",
       headerClass: ["header-border"],
       cellRenderer: "ProteinLinkComponent",
+      cellClass: ["table-border", "protein-set-search-cell"],
     },
     {
       headerName: "Gene",
       field: "gene_symbol",
       headerClass: ["header-border"],
       cellRenderer: "GeneLinkComponent",
+      cellClass: ["table-border", "protein-set-search-cell"],
     },
     {
       headerName: "Protein Name",
       field: "protein_name",
       headerClass: ["header-border"],
       cellClass: ["table-border"],
+      cellClass: ["table-border", "protein-set-search-cell"],
     },
     {
       headerName: "Data Source",
@@ -157,6 +160,7 @@ const ProteinSetSearch = () => {
         }
       },
       headerClass: ["header-border"],
+      cellClass: ["table-border", "protein-set-search-cell"],
     },
   ];
 
