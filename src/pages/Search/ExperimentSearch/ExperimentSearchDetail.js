@@ -31,6 +31,7 @@ const td = {
   padding: "0.2em",
   borderTopRightRadius: "10px",
   fontSize: "18px",
+  paddingLeft: "15px",
 };
 
 const ExperimentSearchDetail = (props) => {

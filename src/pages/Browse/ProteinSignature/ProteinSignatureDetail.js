@@ -32,6 +32,7 @@ const td = {
   fontSize: "18px",
   padding: "0.2em",
   borderTopRightRadius: "10px",
+  paddingLeft: "15px",
 };
 
 const SignatureDetail = (props) => {
@@ -187,7 +188,7 @@ const SignatureDetail = (props) => {
                     sx={{ ...td, paddingY: "10px" }}
                     style={{ fontFamily: "Lato", fontSize: "14px" }}
                   >
-                    <div style={{ paddingLeft: "1%" }}>
+                    <div>
                       <span style={{ color: "black" }}>
                         {parse(parse(abstract.split("=")[1]))}
                       </span>
@@ -560,7 +561,6 @@ const SignatureDetail = (props) => {
                     style={{
                       fontFamily: "Lato",
                       fontSize: "14px",
-                      paddingLeft: "1%",
                     }}
                   >
                     {reference.length !== 0
@@ -618,7 +618,6 @@ const SignatureDetail = (props) => {
                     style={{
                       fontFamily: "Lato",
                       fontSize: "14px",
-                      paddingLeft: "1%",
                     }}
                   >
                     View Protein Members
@@ -643,7 +642,6 @@ const SignatureDetail = (props) => {
                     style={{
                       fontFamily: "Lato",
                       fontSize: "14px",
-                      paddingLeft: "1%",
                     }}
                   >
                     <a
