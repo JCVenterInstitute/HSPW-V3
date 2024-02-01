@@ -29,6 +29,7 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { Link } from "react-router-dom";
 
 const generateColumnDefs = (entity, data) => {
   if (!data || data.length === 0) return [];
@@ -73,8 +74,8 @@ const generateColumnDefs = (entity, data) => {
     if (entity === "Annotations" && index === 0) {
       columnDef.cellRenderer = (params) => {
         return (
-          <span
-            onClick={() => (window.location.href = `/protein/${params.value}`)}
+          <Link
+            to={`/protein/${params.value}`}
             style={{
               cursor: "pointer",
               color: "blue",
@@ -82,7 +83,7 @@ const generateColumnDefs = (entity, data) => {
             }}
           >
             {params.value}
-          </span>
+          </Link>
         );
       };
     } else {

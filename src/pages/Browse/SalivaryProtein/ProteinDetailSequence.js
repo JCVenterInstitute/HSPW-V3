@@ -11,6 +11,7 @@ import Box from "@mui/material/Box";
 
 import MainFeature from "../../../assets/hero.jpeg";
 import "../../style.css";
+import { Container } from "@mui/material";
 
 const ProteinDetailSequence = (props) => {
   const params = useParams();
@@ -70,187 +71,188 @@ const ProteinDetailSequence = (props) => {
         }}
         className="head_background"
       >
-        <h1
-          className="head_title"
-          align="left"
-        >
-          {"Protein Sequence: "}
-          {data[0]["_source"]["salivary_proteins"]["protein_name"]}
-        </h1>
+        <Container maxWidth="xl">
+          <h1 className="head_title">
+            {"Protein Sequence: "}
+            {data[0]["_source"]["salivary_proteins"]["protein_name"]}
+          </h1>
+        </Container>
       </div>
-      <div style={{ padding: "20px" }}>
-        <TableHead
-          style={{
-            borderTopLeftRadius: "10px",
-            borderTopRightRadius: "10px",
-            maxWidth: "70%",
-            borderRadius: "10px 0 0 10px",
-            margin: "10px",
-          }}
-        >
-          <TableRow>
-            <TableCell
-              variant="header"
-              sx={th}
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "17px",
-                border: "1px solid #3592E4",
-                borderTopLeftRadius: "10px",
-                width: "10%",
-              }}
-            >
-              Variant of
-            </TableCell>
-            <TableCell
-              style={{
-                fontWeight: "bold",
-                border: "1px solid, #3592E4",
-                borderTopRightRadius: "10px",
-              }}
-              sx={{
-                fontSize: "14px",
-                border: "1px solid #CACACA",
-                fontFamily: "Lato",
-              }}
-            >
-              {data[0]["_source"]["salivary_proteins"]["protein_name"]}
-            </TableCell>
-          </TableRow>
-
-          <TableRow>
-            <TableCell
-              sx={th}
-              variant="header"
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "17px",
-                border: "1px solid #3592E4",
-                borderLeft: "none",
-                borderRight: "none",
-              }}
-            >
-              Name
-            </TableCell>
-            <TableCell
-              sx={{
-                border: "1px solid #CACACA",
-                fontFamily: "Lato",
-                fontSize: "14px",
-              }}
-            >
-              Canonical sequence
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell
-              variant="header"
-              sx={th}
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "17px",
-              }}
-            >
-              Accession number
-            </TableCell>
-            <TableCell
-              sx={{
-                border: "1px solid #CACACA",
-                fontFamily: "Lato",
-                fontSize: "14px",
-              }}
-            >
-              {data[0]["_source"]["salivary_proteins"]["uniprot_accession"]}
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell
-              variant="header"
-              sx={th}
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "17px",
-              }}
-            >
-              Sequence
-            </TableCell>
-            <TableCell
-              sx={{
-                border: "1px solid #CACACA",
-                fontFamily: "Lato",
-                fontSize: "14px",
-              }}
-            >
-              <textarea
-                style={{ fontSize: "14px" }}
-                maxLength="100"
-                cols="50"
-                rows="5"
+      <Container maxWidth="xl">
+        <div style={{ marginTop: "20px" }}>
+          <TableHead
+            style={{
+              borderTopLeftRadius: "10px",
+              borderTopRightRadius: "10px",
+              maxWidth: "70%",
+              borderRadius: "10px 0 0 10px",
+              margin: "10px",
+            }}
+          >
+            <TableRow>
+              <TableCell
+                variant="header"
+                sx={th}
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "17px",
+                  border: "1px solid #3592E4",
+                  borderTopLeftRadius: "10px",
+                  width: "10%",
+                }}
               >
-                {data[0]["_source"]["salivary_proteins"]["protein_sequence"]}
-              </textarea>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell
-              variant="header"
-              sx={th}
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "17px",
-              }}
-            >
-              Length (AA)
-            </TableCell>
-            <TableCell
-              sx={{
-                border: "1px solid #CACACA",
-                fontFamily: "Lato",
-                fontSize: "14px",
-              }}
-            >
-              {
-                data[0]["_source"]["salivary_proteins"][
-                  "protein_sequence_length"
-                ]
-              }
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell
-              variant="header"
-              sx={th}
-              style={{
-                backgroundColor: "#1463B9",
-                color: "white",
-                fontFamily: "Montserrat",
-                fontSize: "17px",
-              }}
-            >
-              Molecular Mass (Da)
-            </TableCell>
-            <TableCell
-              sx={{
-                border: "1px solid #CACACA",
-                fontFamily: "Lato",
-                fontSize: "14px",
-              }}
-            >
-              {data[0]["_source"]["salivary_proteins"]["mass"]}
-            </TableCell>
-          </TableRow>
-        </TableHead>
-      </div>
+                Variant of
+              </TableCell>
+              <TableCell
+                style={{
+                  fontWeight: "bold",
+                  border: "1px solid, #3592E4",
+                  borderTopRightRadius: "10px",
+                }}
+                sx={{
+                  fontSize: "14px",
+                  border: "1px solid #CACACA",
+                  fontFamily: "Lato",
+                }}
+              >
+                {data[0]["_source"]["salivary_proteins"]["protein_name"]}
+              </TableCell>
+            </TableRow>
+
+            <TableRow>
+              <TableCell
+                sx={th}
+                variant="header"
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "17px",
+                  border: "1px solid #3592E4",
+                  borderLeft: "none",
+                  borderRight: "none",
+                }}
+              >
+                Name
+              </TableCell>
+              <TableCell
+                sx={{
+                  border: "1px solid #CACACA",
+                  fontFamily: "Lato",
+                  fontSize: "14px",
+                }}
+              >
+                Canonical sequence
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell
+                variant="header"
+                sx={th}
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "17px",
+                }}
+              >
+                Accession number
+              </TableCell>
+              <TableCell
+                sx={{
+                  border: "1px solid #CACACA",
+                  fontFamily: "Lato",
+                  fontSize: "14px",
+                }}
+              >
+                {data[0]["_source"]["salivary_proteins"]["uniprot_accession"]}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell
+                variant="header"
+                sx={th}
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "17px",
+                }}
+              >
+                Sequence
+              </TableCell>
+              <TableCell
+                sx={{
+                  border: "1px solid #CACACA",
+                  fontFamily: "Lato",
+                  fontSize: "14px",
+                }}
+              >
+                <textarea
+                  style={{ fontSize: "14px" }}
+                  maxLength="100"
+                  cols="50"
+                  rows="5"
+                >
+                  {data[0]["_source"]["salivary_proteins"]["protein_sequence"]}
+                </textarea>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell
+                variant="header"
+                sx={th}
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "17px",
+                }}
+              >
+                Length (AA)
+              </TableCell>
+              <TableCell
+                sx={{
+                  border: "1px solid #CACACA",
+                  fontFamily: "Lato",
+                  fontSize: "14px",
+                }}
+              >
+                {
+                  data[0]["_source"]["salivary_proteins"][
+                    "protein_sequence_length"
+                  ]
+                }
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell
+                variant="header"
+                sx={th}
+                style={{
+                  backgroundColor: "#1463B9",
+                  color: "white",
+                  fontFamily: "Montserrat",
+                  fontSize: "17px",
+                }}
+              >
+                Molecular Mass (Da)
+              </TableCell>
+              <TableCell
+                sx={{
+                  border: "1px solid #CACACA",
+                  fontFamily: "Lato",
+                  fontSize: "14px",
+                }}
+              >
+                {data[0]["_source"]["salivary_proteins"]["mass"]}
+              </TableCell>
+            </TableRow>
+          </TableHead>
+        </div>
+      </Container>
     </>
   );
 };

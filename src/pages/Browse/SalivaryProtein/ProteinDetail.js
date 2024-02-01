@@ -20,6 +20,7 @@ import CommentTable from "../../../components/SalivaryProtein/CommentTable";
 import GlycanTable from "../../../components/SalivaryProtein/GlycanTable";
 import main_feature from "../../../assets/hero.jpeg";
 import "../../style.css";
+import { Link as ReactLink } from "react-router-dom";
 
 window.customElements.define("protvista-uniprot", ProtvistaUniprot);
 
@@ -556,16 +557,16 @@ const ProteinDetail = (props) => {
                       fontFamily: "Lato",
                     }}
                   >
-                    <a
+                    <ReactLink
                       style={{ color: "#116988" }}
-                      href={
+                      to={
                         window.location.origin +
                         "/protein-sequence/" +
                         params["proteinid"]
                       }
                     >
                       Sequence
-                    </a>
+                    </ReactLink>
                   </TableCell>
                 </TableRow>
               </TableBody>

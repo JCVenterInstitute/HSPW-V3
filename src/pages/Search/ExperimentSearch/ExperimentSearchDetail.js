@@ -15,6 +15,7 @@ import "../../style.css";
 import LaunchIcon from "@mui/icons-material/Launch";
 import ExperimentProteinTable from "../../../components/Search/ExperimentSearch/ExperimentProteinTable";
 import { Container } from "@mui/material";
+import { Link } from "react-router-dom";
 
 const th = {
   background: "#f2f2f2",
@@ -160,14 +161,14 @@ const ExperimentSearchDetail = (props) => {
                     }}
                   >
                     {data.Study_name} [
-                    <a
-                      href={`https://pubmed.ncbi.nlm.nih.gov/${data.PubMed_ID}/`}
+                    <Link
+                      to={`https://pubmed.ncbi.nlm.nih.gov/${data.PubMed_ID}/`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       {`PubMed: ${data.PubMed_ID}`}
                       <LaunchIcon sx={{ fontSize: "small" }} />
-                    </a>
+                    </Link>
                     ]
                   </TableCell>
                 </TableRow>
@@ -359,14 +360,14 @@ const ExperimentSearchDetail = (props) => {
                                   fontSize: "14px",
                                 }}
                               >
-                                <a
-                                  href={`https://www.uniprot.org/taxonomy/${data.Taxononomy_ID}`}
+                                <Link
+                                  to={`https://www.uniprot.org/taxonomy/${data.Taxononomy_ID}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                 >
                                   {data.Taxononomy_Species}
                                   <LaunchIcon sx={{ fontSize: "small" }} />
-                                </a>
+                                </Link>
                               </TableCell>
                             </TableRow>
                             <TableRow>
@@ -388,8 +389,8 @@ const ExperimentSearchDetail = (props) => {
                               >
                                 {data.bto_term_list.map((term, index) => (
                                   <React.Fragment key={index}>
-                                    <a
-                                      href={`https://www.ebi.ac.uk/ols4/ontologies/bto/classes/http%253A%252F%252Fpurl.obolibrary.org%252Fobo%252F${data.bto_ac[
+                                    <Link
+                                      to={`https://www.ebi.ac.uk/ols4/ontologies/bto/classes/http%253A%252F%252Fpurl.obolibrary.org%252Fobo%252F${data.bto_ac[
                                         index
                                       ].replace(":", "_")}`}
                                       target="_blank"
@@ -399,7 +400,7 @@ const ExperimentSearchDetail = (props) => {
                                       <LaunchIcon
                                         sx={{ fontSize: "small" }}
                                       />{" "}
-                                    </a>
+                                    </Link>
                                   </React.Fragment>
                                 ))}
                               </TableCell>

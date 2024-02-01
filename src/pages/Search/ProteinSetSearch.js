@@ -12,18 +12,18 @@ import {
   Container,
 } from "@mui/material";
 import { AgGridReact } from "ag-grid-react";
-
+import { Link } from "react-router-dom";
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 
 function ProteinLinkComponent(props) {
   return (
     <div>
-      <a
+      <Link
         rel="noopener noreferrer"
-        href={`/protein/${props.value}`}
+        to={`/protein/${props.value}`}
       >
         {props.value}
-      </a>
+      </Link>
     </div>
   );
 }
@@ -40,13 +40,13 @@ function GeneLinkComponent(props) {
     links.push(
       <>
         {`${geneDetail[0]}: `}
-        <a
+        <Link
           key={`gene-${geneDetail[0]}`}
           rel="noopener noreferrer"
-          href={`/gene/${geneDetail[0]}`}
+          to={`/gene/${geneDetail[0]}`}
         >
           {`${geneDetail[1]}`}
-        </a>
+        </Link>
         {geneIndex === genes.length - 1 ? "" : ", "}
       </>
     );
