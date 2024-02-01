@@ -5,7 +5,8 @@ import forsyth from "../assets/logo-forsyth.png";
 import uthsc from "../assets/logo-uthsc.svg";
 import ub from "../assets/logo-ub.png";
 import nih from "../assets/logo-nih-nidcr.png";
-import { Container, Grid, Link } from "@mui/material";
+import { Container, Grid } from "@mui/material";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   const links = [
@@ -80,7 +81,7 @@ const Footer = () => {
                 }}
               >
                 <Link
-                  href={logo.href}
+                  to={logo.href}
                   target="_blank"
                 >
                   <img
@@ -109,9 +110,8 @@ const Footer = () => {
                 lg={2}
               >
                 <Link
-                  href={link.href}
-                  underline="none"
-                  style={{ fontSize: "16px" }}
+                  to={link.href}
+                  style={{ fontSize: "16px", textDecoration: "none" }}
                 >
                   {link.text}
                 </Link>
