@@ -59,8 +59,8 @@ export const NavBar = () => {
                   color="primary"
                   size="large"
                   style={navMenuStyles}
-                  component="a"
-                  href="/"
+                  component={Link}
+                  to="/"
                 >
                   Home
                 </Button>
@@ -90,32 +90,32 @@ export const NavBar = () => {
                         }}
                       >
                         <MenuItem
-                          component="a"
-                          href="/salivary-protein"
+                          component={Link}
+                          to="/salivary-protein"
                         >
                           Salivary Proteins
                         </MenuItem>
                         <MenuItem
-                          component="a"
-                          href="/protein-cluster"
+                          component={Link}
+                          to="/protein-cluster"
                         >
                           Protein Clusters
                         </MenuItem>
                         <MenuItem
-                          component="a"
-                          href="/protein-signature"
+                          component={Link}
+                          to="/protein-signature"
                         >
                           Protein Signatures
                         </MenuItem>
                         <MenuItem
-                          component="a"
-                          href="/gene"
+                          component={Link}
+                          to="/gene"
                         >
                           Genes
                         </MenuItem>
                         <MenuItem
-                          component="a"
-                          href="/citation"
+                          component={Link}
+                          to="/citation"
                         >
                           Citations
                         </MenuItem>
@@ -150,26 +150,26 @@ export const NavBar = () => {
                         }}
                       >
                         <MenuItem
-                          component="a"
-                          href="/global-search"
+                          component={Link}
+                          to="/global-search"
                         >
                           Global Search
                         </MenuItem>
                         <MenuItem
-                          component="a"
-                          href="/advanced-search"
+                          component={Link}
+                          to="/advanced-search"
                         >
                           Advanced Search
                         </MenuItem>
                         <MenuItem
-                          component="a"
-                          href="/experiment-search"
+                          component={Link}
+                          to="/experiment-search"
                         >
                           Experiment Search
                         </MenuItem>
                         <MenuItem
-                          component="a"
-                          href="/protein-set-search"
+                          component={Link}
+                          to="/protein-set-search"
                         >
                           Protein Search By Identifiers
                         </MenuItem>
@@ -203,26 +203,26 @@ export const NavBar = () => {
                         }}
                       >
                         <MenuItem
-                          component="a"
-                          href="/clustalo"
+                          component={Link}
+                          to="/clustalo"
                         >
                           Multiple Sequence Alignment
                         </MenuItem>
                         <MenuItem
-                          component="a"
-                          href="/differential-expression"
+                          component={Link}
+                          to="/differential-expression"
                         >
                           Differential Expression Analysis
                         </MenuItem>
                         <MenuItem
-                          component="a"
-                          href="/iprscan5"
+                          component={Link}
+                          to="/iprscan5"
                         >
                           Protein Signature Search
                         </MenuItem>
                         <MenuItem
-                          component="a"
-                          href="/psiblast"
+                          component={Link}
+                          to="/psiblast"
                         >
                           Protein Similarity Search (BLAST)
                         </MenuItem>
@@ -256,26 +256,26 @@ export const NavBar = () => {
                         }}
                       >
                         <MenuItem
-                          component="a"
-                          href="/about"
+                          component={Link}
+                          to="/about"
                         >
                           About
                         </MenuItem>
                         <MenuItem
-                          component="a"
-                          href="/download"
+                          component={Link}
+                          to="/download"
                         >
                           Download
                         </MenuItem>
                         <MenuItem
-                          component="a"
-                          href="/team"
+                          component={Link}
+                          to="/team"
                         >
                           Team
                         </MenuItem>
                         <MenuItem
-                          component="a"
-                          href="/contact"
+                          component={Link}
+                          to="/contact"
                         >
                           Contact Us
                         </MenuItem>
