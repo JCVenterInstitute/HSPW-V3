@@ -55,7 +55,7 @@ function LinkComponent(props) {
                   : imageUrl
                 : imageUrl
             }
-            style={{ marginLeft: "5px", marginRight: "5px" }}
+            style={{ marginRight: "5px", marginTop: "5px" }}
             alt={`Link ${index + 1}`}
           />
           {index === currentIndex && isHovered && (
@@ -78,7 +78,7 @@ function LinkComponent(props) {
 function DownloadTable() {
   const rowData = DATA;
 
-  const rowHeight = 120;
+  const rowHeight = 70;
 
   const columns = [
     {
@@ -90,7 +90,7 @@ function DownloadTable() {
       autoHeight: true,
       wrapText: true,
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
+      cellClass: ["table-border", "download-cell"],
     },
     {
       headerName: "Study Name",
@@ -99,7 +99,7 @@ function DownloadTable() {
       wrapText: true,
       cellStyle: { wordBreak: "break-word" },
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
+      cellClass: ["table-border", "download-cell"],
     },
     {
       headerName: "Disease",
@@ -108,7 +108,7 @@ function DownloadTable() {
       autoHeight: true,
       wrapText: true,
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
+      cellClass: ["table-border", "download-cell"],
     },
     {
       headerName: "Institution",
@@ -117,7 +117,7 @@ function DownloadTable() {
       autoHeight: true,
       wrapText: true,
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
+      cellClass: ["table-border", "download-cell"],
     },
     {
       headerName: "Year",
@@ -126,7 +126,7 @@ function DownloadTable() {
       autoHeight: true,
       wrapText: true,
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
+      cellClass: ["table-border", "download-cell"],
     },
     {
       headerName: "Download",
@@ -135,7 +135,7 @@ function DownloadTable() {
       maxWidth: 205,
       autoHeight: true,
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
+      cellClass: ["table-border", "download-cell"],
     },
   ];
 
@@ -154,7 +154,7 @@ function DownloadTable() {
       >
         <div
           className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
-          style={{ height: 900 }}
+          style={{ height: 600 }}
         >
           <AgGridReact
             rowData={rowData}

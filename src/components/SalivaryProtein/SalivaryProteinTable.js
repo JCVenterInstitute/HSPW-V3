@@ -478,12 +478,12 @@ const columns = [
       {
         headerName: "Specificity",
         field: "Specificity",
-        cellClass: ["table-border"],
+        cellClass: ["table-border", "salivary-protein-cell"],
       },
       {
         headerName: "Specificity Score",
         field: "Specificity_Score",
-        cellClass: ["table-border"],
+        cellClass: ["table-border", "salivary-protein-cell"],
       },
     ],
   },
