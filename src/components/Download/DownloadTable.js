@@ -132,7 +132,7 @@ function DownloadTable() {
       headerName: "Download",
       field: "download",
       cellRenderer: "LinkComponent",
-      maxWidth: 205,
+      maxWidth: 170,
       autoHeight: true,
       headerClass: ["header-border"],
       cellClass: ["table-border", "download-cell"],
@@ -144,6 +144,7 @@ function DownloadTable() {
     filter: true,
     editable: true,
     sortable: true,
+    resizable: true,
   };
 
   return (
