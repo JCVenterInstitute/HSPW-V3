@@ -70,7 +70,7 @@ async function getClusterMemberCount() {
   var client = await getClient();
 
   var response = await client.search({
-    index: "protein_cluster",
+    index: "protein_cluster_013024",
     body: {
       size: 0,
       aggs: {
@@ -168,7 +168,7 @@ async function getAllProteinSearchClusterData() {
   };
 
   var response = await client.search({
-    index: "protein_cluster",
+    index: "protein_cluster_013024",
     body: query,
   });
 
@@ -197,7 +197,7 @@ async function getProteinClusterById(id) {
   };
 
   var response = await client.search({
-    index: "protein_cluster",
+    index: "protein_cluster_013024",
     body: query,
   });
 
@@ -222,7 +222,7 @@ async function queryProteinCluster(
   const client = await getClient();
 
   const payload = {
-    index: "protein_cluster",
+    index: "protein_cluster_013024",
     body: {
       track_total_hits: true,
       size: size,
@@ -271,7 +271,7 @@ async function getSalivaryProteinById(id) {
   };
 
   var response = await client.search({
-    index: "salivary-proteins-112023",
+    index: "salivary-proteins-013024",
     body: query,
   });
 
@@ -360,7 +360,7 @@ async function queryProteins(size, from, filter, sort = null, keyword = null) {
   const client = await getClient1();
 
   const payload = {
-    index: "salivary-proteins-112023",
+    index: "salivary-proteins-013024",
     body: {
       track_total_hits: true,
       size: size,
@@ -478,7 +478,7 @@ async function getProteinSignatureById(id) {
   };
 
   var response = await client.search({
-    index: "protein_signature",
+    index: "protein_signature_013024",
     body: query,
   });
 
@@ -503,7 +503,7 @@ async function queryProteinSignature(
   const client = await getClient();
 
   const payload = {
-    index: "protein_signature",
+    index: "protein_signature_013024",
     body: {
       track_total_hits: true,
       size: size,
@@ -882,7 +882,7 @@ const searchGoNodesUsage = async (id) => {
   };
 
   const response = await client.search({
-    index: "salivary-proteins-112023",
+    index: "salivary-proteins-013024",
     body: query,
   });
   return response.body.hits.hits;
@@ -1033,7 +1033,7 @@ const searchStudyProtein = async (experiment_id_key) => {
   };
 
   const response = await client.search({
-    index: "study_protein",
+    index: "study_protein_012924",
     body: query,
   });
 
@@ -1061,7 +1061,7 @@ const searchStudyProteinUniprot = async (uniprot_id) => {
   };
 
   const response = await client.search({
-    index: "study_protein",
+    index: "study_protein_012924",
     body: query,
   });
 
@@ -1089,7 +1089,7 @@ const bulkStudyProteins = async (ids) => {
   };
 
   const response = await client.search({
-    index: "study_protein",
+    index: "study_protein_012924",
     body: query,
   });
 
@@ -1110,7 +1110,7 @@ async function getProteinSignatureTypeCounts() {
   var client = await getClient();
 
   const response = await client.search({
-    index: "protein_signature",
+    index: "protein_signature_013024",
     body: {
       size: 0,
       aggs: {
@@ -1741,13 +1741,13 @@ app.get("/api/properties/:entity", async (req, res) => {
 
   const entityIndexMapping = {
     Genes: "genes",
-    "Protein Clusters": "protein_cluster",
-    "Protein Signatures": "protein_signature",
-    Proteins: "study_protein",
+    "Protein Clusters": "protein_cluster_013024",
+    "Protein Signatures": "protein_signature_013024",
+    Proteins: "study_protein_012924",
     "PubMed Citations": "citation",
     // "Salivary Proteins": "protein",
-    "Salivary Proteins": "salivary-proteins-112023",
-    Annotations: "salivary-proteins-112023",
+    "Salivary Proteins": "salivary-proteins-013024",
+    Annotations: "salivary-proteins-013024",
   };
 
   if (entity === "Salivary Proteins") {
@@ -1836,13 +1836,13 @@ const advancedSearch = async ({
 
   const entityIndexMapping = {
     Genes: "genes",
-    "Protein Clusters": "protein_cluster",
-    "Protein Signatures": "protein_signature",
-    Proteins: "study_protein",
+    "Protein Clusters": "protein_cluster_013024",
+    "Protein Signatures": "protein_signature_013024",
+    Proteins: "study_protein_012924",
     "PubMed Citations": "citation",
     // "Salivary Proteins": "protein",
-    "Salivary Proteins": "salivary-proteins-112023",
-    Annotations: "salivary-proteins-112023",
+    "Salivary Proteins": "salivary-proteins-013024",
+    Annotations: "salivary-proteins-013024",
   };
 
   const query = await formQuery(
@@ -1975,11 +1975,11 @@ const globalSearch = async ({
 
   const entityIndexMapping = {
     Genes: "genes",
-    "Protein Clusters": "protein_cluster",
-    "Protein Signatures": "protein_signature",
-    Proteins: "study_protein",
+    "Protein Clusters": "protein_cluster_013024",
+    "Protein Signatures": "protein_signature_013024",
+    Proteins: "study_protein_012924",
     "PubMed Citations": "citation",
-    "Salivary Proteins": "salivary-proteins-112023",
+    "Salivary Proteins": "salivary-proteins-013024",
   };
 
   const escapeSpecialCharacters = (inputVal) => {
@@ -2098,7 +2098,7 @@ const experimentProtein = async ({
   };
 
   const response = await client.search({
-    index: "study_protein",
+    index: "study_protein_012924",
     body: query,
   });
 
@@ -2169,7 +2169,7 @@ const experimentPeptide = async (
   };
 
   const response = await client.search({
-    index: "peptide",
+    index: "peptide_013024",
     body: query,
   });
 

@@ -4,9 +4,10 @@ const createAwsOpensearchConnector = require("aws-opensearch-connector");
 
 const { ids } = require("./input-ids"); // Just a string array of ids
 
-const SALIVARY_PROTEIN_INDEX = "salivary-proteins-011124";
-const STUDY_PROTEIN_INDEX = "study_protein";
+const SALIVARY_PROTEIN_INDEX = "salivary-proteins-013024";
+const STUDY_PROTEIN_INDEX = "study_protein_012924";
 const STUDY_INDEX = "study";
+const ABUNDANCE_INDEX = "study_peptide_abundance_020124";
 
 const DEV_TWO_OS =
   "https://search-hspw-dev2-dmdd32xae4fmxh7t4g6skv67aa.us-east-2.es.amazonaws.com";
@@ -560,7 +561,7 @@ const calculateAndLoadAbundances = async (id, tissueStudyCounts) => {
   const client = await getDevTwoClient(); // OS Domain to index to
   const recs = await runCalculation(id, tissueStudyCounts, false);
   console.log("\n> Recs\n", recs, "\n");
-  await uploadRecords(recs, client, "study_peptide_abundance_012424");
+  await uploadRecords(recs, client, ABUNDANCE_INDEX);
 };
 
 const calculateAllAbundances = async () => {
@@ -574,7 +575,7 @@ const calculateAllAbundances = async () => {
   const idBatches = [];
 
   while (proteinIds.length > 0) {
-    const batchSize = 10;
+    const batchSize = 100;
     idBatches.push(proteinIds.splice(0, batchSize));
   }
 
