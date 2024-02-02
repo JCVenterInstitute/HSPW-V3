@@ -716,58 +716,62 @@ const ProteinDetail = (props) => {
           >
             Proteomics
           </h2>
-          <TableContainer>
-            <Table>
-              <TableBody
-                style={{
-                  borderTopLeftRadius: "10px",
-                  borderTopRightRadius: "10px",
-                }}
-              >
-                <TableRow
+          {abundanceData.length === 1 &&
+          abundanceData[0].tissue_id === "N/A" ? (
+            "There is no human salivary proteomics data for this protein."
+          ) : (
+            <TableContainer>
+              <Table>
+                <TableBody
                   style={{
                     borderTopLeftRadius: "10px",
                     borderTopRightRadius: "10px",
                   }}
                 >
-                  <TableCell
+                  <TableRow
                     style={{
-                      backgroundColor: "#1463B9",
-                      color: "white",
-                      fontFamily: "Montserrat",
-                      fontSize: "17px",
-                      fontWeight: "bold",
-                      border: "none",
                       borderTopLeftRadius: "10px",
+                      borderTopRightRadius: "10px",
                     }}
                   >
-                    Tissue ID
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      backgroundColor: "#1463B9",
-                      color: "white",
-                      fontFamily: "Montserrat",
-                      fontSize: "17px",
-                      fontWeight: "bold",
-                      border: "1px solid #3592E4",
-                    }}
-                  >
-                    Tissue Term
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      backgroundColor: "#1463B9",
-                      color: "white",
-                      fontFamily: "Montserrat",
-                      fontSize: "17px",
-                      fontWeight: "bold",
-                      border: "1px solid #3592E4",
-                    }}
-                  >
-                    Disease State
-                  </TableCell>
-                  {/* <TableCell
+                    <TableCell
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        border: "none",
+                        borderTopLeftRadius: "10px",
+                      }}
+                    >
+                      Tissue ID
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        border: "1px solid #3592E4",
+                      }}
+                    >
+                      Tissue Term
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        border: "1px solid #3592E4",
+                      }}
+                    >
+                      Disease State
+                    </TableCell>
+                    {/* <TableCell
                     style={{
                       backgroundColor: "#1463B9",
                       color: "white",
@@ -779,103 +783,101 @@ const ProteinDetail = (props) => {
                   >
                     Isoform
                   </TableCell> */}
-                  <TableCell
-                    style={{
-                      backgroundColor: "#1463B9",
-                      color: "white",
-                      fontFamily: "Montserrat",
-                      fontSize: "17px",
-                      fontWeight: "bold",
-                      border: "1px solid #3592E4",
-                    }}
-                  >
-                    Experiment Count
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      backgroundColor: "#1463B9",
-                      color: "white",
-                      fontFamily: "Montserrat",
-                      fontSize: "17px",
-                      fontWeight: "bold",
-                      border: "1px solid #3592E4",
-                    }}
-                  >
-                    Peptide Count
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      backgroundColor: "#1463B9",
-                      color: "white",
-                      fontFamily: "Montserrat",
-                      fontSize: "17px",
-                      fontWeight: "bold",
-                      border: "none",
-                      borderTopRightRadius: "10px",
-                    }}
-                  >
-                    Abundance Score
-                  </TableCell>
-                </TableRow>
-                {abundanceData.map((row, i) => {
-                  const {
-                    abundance_score,
-                    disease_state,
-                    experiment_count,
-                    isoform,
-                    peptide_count,
-                    tissue_id,
-                    tissue_term,
-                  } = row;
+                    <TableCell
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        border: "1px solid #3592E4",
+                      }}
+                    >
+                      Experiment Count
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        border: "1px solid #3592E4",
+                      }}
+                    >
+                      Peptide Count
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        border: "none",
+                        borderTopRightRadius: "10px",
+                      }}
+                    >
+                      Abundance Score
+                    </TableCell>
+                  </TableRow>
+                  {abundanceData.map((row, i) => {
+                    const {
+                      abundance_score,
+                      disease_state,
+                      experiment_count,
+                      isoform,
+                      peptide_count,
+                      tissue_id,
+                      tissue_term,
+                    } = row;
 
-                  return (
-                    <TableRow key={`proteomics-row-${i}`}>
-                      <TableCell
-                        style={{
-                          border: "1px solid #CACACA",
-                          fontFamily: "Lato",
-                        }}
-                      >
-                        {tissue_id === "N/A" ? (
-                          tissue_id
-                        ) : (
-                          <a
-                            target="_blank"
-                            rel="noreferrer"
-                            // href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001202"
-                            // href={`http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=BTO&termId=${tissue_id}`}
-                            href={`https://www.ebi.ac.uk/ols4/ontologies/bto/classes?obo_id=${tissue_id}`}
-                          >
-                            {tissue_id}{" "}
-                            <FontAwesome
-                              className="super-crazy-colors"
-                              name="external-link"
-                              style={{
-                                textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
-                              }}
-                            />
-                          </a>
-                        )}
-                      </TableCell>
-                      <TableCell
-                        style={{
-                          border: "1px solid #CACACA",
-                          fontFamily: "Lato",
-                          textTransform: "Capitalize",
-                        }}
-                      >
-                        {tissue_term}
-                      </TableCell>
-                      <TableCell
-                        style={{
-                          border: "1px solid #CACACA",
-                          fontFamily: "Lato",
-                          textTransform: "Capitalize",
-                        }}
-                      >
-                        {disease_state}
-                      </TableCell>
-                      {/* <TableCell
+                    return (
+                      <TableRow key={`proteomics-row-${i}`}>
+                        <TableCell
+                          style={{
+                            border: "1px solid #CACACA",
+                            fontFamily: "Lato",
+                          }}
+                        >
+                          {tissue_id === "N/A" ? (
+                            tissue_id
+                          ) : (
+                            <a
+                              target="_blank"
+                              rel="noreferrer"
+                              href={`https://www.ebi.ac.uk/ols4/ontologies/bto/classes?obo_id=${tissue_id}`}
+                            >
+                              {tissue_id}{" "}
+                              <FontAwesome
+                                className="super-crazy-colors"
+                                name="external-link"
+                                style={{
+                                  textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                                }}
+                              />
+                            </a>
+                          )}
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            border: "1px solid #CACACA",
+                            fontFamily: "Lato",
+                            textTransform: "Capitalize",
+                          }}
+                        >
+                          {tissue_term}
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            border: "1px solid #CACACA",
+                            fontFamily: "Lato",
+                            textTransform: "Capitalize",
+                          }}
+                        >
+                          {disease_state}
+                        </TableCell>
+                        {/* <TableCell
                         style={{
                           border: "1px solid #CACACA",
                           fontFamily: "Lato",
@@ -883,36 +885,38 @@ const ProteinDetail = (props) => {
                       >
                         // For IsoForm 
                       </TableCell> */}
-                      <TableCell
-                        style={{
-                          border: "1px solid #CACACA",
-                          fontFamily: "Lato",
-                        }}
-                      >
-                        {experiment_count}
-                      </TableCell>
-                      <TableCell
-                        style={{
-                          border: "1px solid #CACACA",
-                          fontFamily: "Lato",
-                        }}
-                      >
-                        {peptide_count}
-                      </TableCell>
-                      <TableCell
-                        style={{
-                          border: "1px solid #CACACA",
-                          fontFamily: "Lato",
-                        }}
-                      >
-                        {abundance_score}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                        <TableCell
+                          style={{
+                            border: "1px solid #CACACA",
+                            fontFamily: "Lato",
+                          }}
+                        >
+                          {experiment_count}
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            border: "1px solid #CACACA",
+                            fontFamily: "Lato",
+                          }}
+                        >
+                          {peptide_count}
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            border: "1px solid #CACACA",
+                            fontFamily: "Lato",
+                          }}
+                        >
+                          {abundance_score}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+
           <div
             style={{
               height: "3px",
