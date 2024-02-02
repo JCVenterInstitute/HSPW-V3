@@ -664,11 +664,11 @@ const SalivaryProteinTable = () => {
               sumData.plasma_abundance.value) *
             100
           : item.plasma_abundance,
-        sm_sl_abundance: item.sm_sl_abundance
-          ? ((item.sm_sl_abundance === "" ? 0 : item.sm_sl_abundance) /
+        "sm/sl_abundance": item["sm/sl_abundance"]
+          ? ((item["sm/sl_abundance"] === "" ? 0 : item["sm/sl_abundance"]) /
               sumData.sm_sl_abundance.value) *
             100
-          : item.sm_sl_abundance,
+          : item["sm/sl_abundance"],
       };
     });
   };
@@ -2036,7 +2036,7 @@ const SalivaryProteinTable = () => {
                 onChange={handleToggleNormalization}
               />
             }
-            label="Normalization"
+            label="Raw/Normalized"
             sx={{ marginLeft: "5px" }}
           />
           <Box>
