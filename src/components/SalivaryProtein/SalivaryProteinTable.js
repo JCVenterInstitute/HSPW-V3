@@ -408,7 +408,7 @@ const columns = [
   {
     headerName: "Protein Name",
     field: "Protein Name",
-    cellClass: ["table-border", "salivary-protein-cell"],
+    cellClass: ["table-border", "salivary-protein-protein-name-cell"],
     cellStyle: {
       wordBreak: "break-word",
       textWrap: "wrap",
