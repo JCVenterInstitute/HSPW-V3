@@ -36,6 +36,7 @@ import "../Filter.css";
 import "../Table.css";
 import Legend from "./Legend.js";
 import { Link } from "react-router-dom";
+import NormalizationSwitch from "./NormalizationSwitch.js";
 
 const styles = {
   transform: "translate(0, 0)",
@@ -587,6 +588,7 @@ const SalivaryProteinTable = () => {
   const [gridApi, setGridApi] = useState(null);
   const [sortedColumn, setSortedColumn] = useState(null);
   const [openLegend, setOpenLegend] = useState(false);
+  const [normalizationSelected, setNormalizationSelected] = useState(false);
 
   const handleOpenLegend = () => setOpenLegend(true);
   const handleCloseLegend = () => setOpenLegend(false);
@@ -637,6 +639,40 @@ const SalivaryProteinTable = () => {
     };
   };
 
+  const normalizeData = (rowData, sumData) => {
+    return rowData.map((item) => {
+      // Check for empty strings and use 0 if found, else use the item value, then normalize
+      return {
+        ...item,
+        saliva_abundance: item.saliva_abundance
+          ? ((item.saliva_abundance === "" ? 0 : item.saliva_abundance) /
+              sumData.saliva_abundance.value) *
+            100
+          : item.saliva_abundance,
+        parotid_gland_abundance: item.parotid_gland_abundance
+          ? ((item.parotid_gland_abundance === ""
+              ? 0
+              : item.parotid_gland_abundance) /
+              sumData.parotid_gland_abundance.value) *
+            100
+          : item.parotid_gland_abundance,
+        mRNA: item.mRNA
+          ? ((item.mRNA === "" ? 0 : item.mRNA) / sumData.mRNA.value) * 100
+          : item.mRNA,
+        plasma_abundance: item.plasma_abundance
+          ? ((item.plasma_abundance === "" ? 0 : item.plasma_abundance) /
+              sumData.plasma_abundance.value) *
+            100
+          : item.plasma_abundance,
+        sm_sl_abundance: item.sm_sl_abundance
+          ? ((item.sm_sl_abundance === "" ? 0 : item.sm_sl_abundance) /
+              sumData.sm_sl_abundance.value) *
+            100
+          : item.sm_sl_abundance,
+      };
+    });
+  };
+
   // Handle fetching data for table
   const fetchData = async () => {
     const apiPayload = {
@@ -647,7 +683,7 @@ const SalivaryProteinTable = () => {
       ...(searchText && { keyword: createGlobalSearchQuery() }),
     };
 
-    const data = await fetch(
+    let data = await fetch(
       `${
         process.env.REACT_APP_API_ENDPOINT
       }/api/salivary-proteins/${pageSize}/${pageNum * pageSize}`,
@@ -681,6 +717,15 @@ const SalivaryProteinTable = () => {
 
         return hits.hits.map((rec) => rec._source);
       });
+
+    if (normalizationSelected) {
+      const sum = await fetch(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/get-salivary-sum`
+      ).then((res) => res.json());
+
+      // Normalize the data with the sum values
+      data = normalizeData(data, sum);
+    }
 
     setRowData(data);
   };
@@ -716,7 +761,12 @@ const SalivaryProteinTable = () => {
   useEffect(() => {
     if (gridApi) gridApi.showLoadingOverlay();
     fetchData();
-  }, [pageNum]);
+  }, [pageNum, normalizationSelected]);
+
+  // Function to toggle the normalizationSelected state
+  const handleToggleNormalization = (event) => {
+    setNormalizationSelected(event.target.checked); // Update based on the switch's checked state
+  };
 
   /**
    * Update search entered by user in search bar
@@ -1979,11 +2029,17 @@ const SalivaryProteinTable = () => {
               </button>
             </Box>
           </Box>
-          <Box
-            sx={{
-              marginTop: "20px",
-            }}
-          >
+          <FormControlLabel
+            control={
+              <NormalizationSwitch
+                checked={normalizationSelected}
+                onChange={handleToggleNormalization}
+              />
+            }
+            label="Normalization"
+            sx={{ marginLeft: "5px" }}
+          />
+          <Box>
             <div
               className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
               style={{ height: 3200 }}

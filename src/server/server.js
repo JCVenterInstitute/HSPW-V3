@@ -2224,6 +2224,59 @@ app.get("/api/abundance-score/:id", (req, res) => {
   });
 });
 
+/**********************************
+ * Get Sum of Whole Saliva, Parotid Glands, SM/SL Glands, Blood, and mRNA
+ *********************************/
+
+const getSalivarySum = async () => {
+  var client = await getClient();
+
+  const response = await client.search({
+    index: "salivary_summary",
+    body: {
+      size: 0,
+      aggs: {
+        sm_sl_abundance: {
+          sum: {
+            field: "sm/sl_abundance",
+          },
+        },
+        plasma_abundance: {
+          sum: {
+            field: "plasma_abundance",
+          },
+        },
+        mRNA: {
+          sum: {
+            field: "mRNA",
+          },
+        },
+        saliva_abundance: {
+          sum: {
+            field: "saliva_abundance",
+          },
+        },
+        parotid_gland_abundance: {
+          sum: {
+            field: "parotid_gland_abundance",
+          },
+        },
+      },
+    },
+  });
+
+  const aggsResults = response.body.aggregations;
+
+  return aggsResults;
+};
+
+app.get("/api/get-salivary-sum", (req, res) => {
+  const data = getSalivarySum();
+  data.then(function (result) {
+    res.json(result);
+  });
+});
+
 app.get("*", function (req, res) {
   res.sendFile("index.html", {
     root: path.join(__dirname, "./build/"),
