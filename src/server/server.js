@@ -2225,10 +2225,10 @@ app.get("/api/abundance-score/:id", (req, res) => {
 });
 
 /**********************************
- * Get Sum of Whole Saliva, Parotid Glands, SM/SL Glands, Blood, and mRNA
+ * Get Max of Whole Saliva, Parotid Glands, SM/SL Glands, Blood, and mRNA
  *********************************/
 
-const getSalivarySum = async () => {
+const getSalivaryMax = async () => {
   var client = await getClient();
 
   const response = await client.search({
@@ -2237,27 +2237,27 @@ const getSalivarySum = async () => {
       size: 0,
       aggs: {
         sm_sl_abundance: {
-          sum: {
+          max: {
             field: "sm/sl_abundance",
           },
         },
         plasma_abundance: {
-          sum: {
+          max: {
             field: "plasma_abundance",
           },
         },
         mRNA: {
-          sum: {
+          max: {
             field: "mRNA",
           },
         },
         saliva_abundance: {
-          sum: {
+          max: {
             field: "saliva_abundance",
           },
         },
         parotid_gland_abundance: {
-          sum: {
+          max: {
             field: "parotid_gland_abundance",
           },
         },
@@ -2270,8 +2270,8 @@ const getSalivarySum = async () => {
   return aggsResults;
 };
 
-app.get("/api/get-salivary-sum", (req, res) => {
-  const data = getSalivarySum();
+app.get("/api/get-salivary-max", (req, res) => {
+  const data = getSalivaryMax();
   data.then(function (result) {
     res.json(result);
   });
