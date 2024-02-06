@@ -31,7 +31,7 @@ const downloadAllRecords = async (index, fileName) => {
   const client = await getClient();
   let scrollId;
   const fileStream = createWriteStream(fileName, { encoding: "utf-8" });
-  console.log(`Start streaming data to ${filename}`);
+  console.log(`Start streaming data to ${fileName}`);
 
   try {
     const { body: initialResponse } = await client.search({
