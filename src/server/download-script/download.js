@@ -6,8 +6,8 @@ const fs = require("fs");
 const host =
   "https://search-hspw-dev-open-crluksvxj4mvcgl5nopcl6ykte.us-east-2.es.amazonaws.com";
 
-// Index you want to download
-const index = "salivary-proteins-011124";
+// const host =
+//   "https://search-hspw-dev2-dmdd32xae4fmxh7t4g6skv67aa.us-east-2.es.amazonaws.com";
 
 const getClient = async () => {
   const awsCredentials = await defaultProvider()();
@@ -31,7 +31,7 @@ function saveToFile(filename, data) {
   console.log(`Data saved to ${filename}`);
 }
 
-const downloadAllRecords = async () => {
+const downloadAllRecords = async (index, fileName) => {
   const client = await getClient();
   let allRecords = [];
   let scrollId;
@@ -40,7 +40,7 @@ const downloadAllRecords = async () => {
     const { body: initialResponse } = await client.search({
       index,
       scroll: "1m", // Scroll timeout
-      size: 1000,
+      size: 500,
       body: {
         query: {
           match_all: {},
@@ -73,7 +73,7 @@ const downloadAllRecords = async () => {
       scrollId = scrollResponse._scroll_id;
     }
 
-    saveToFile("output.json", allRecords);
+    saveToFile(fileName, allRecords);
   } catch (error) {
     console.error("Error:", error);
   } finally {
@@ -89,5 +89,9 @@ const downloadAllRecords = async () => {
   }
 };
 
+// Index you want to download
+const index = "salivary-proteins-013024";
+const fileName = "salivary-proteins.json";
+
 // Call the function to download all records
-downloadAllRecords();
+downloadAllRecords(index, fileName);
