@@ -88,6 +88,16 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   fontFamily: "Montserrat",
 }));
 
+const commonStyles = {
+  width: "100%",
+  height: "100%",
+  fontFamily: "Lato",
+  fontSize: "16px",
+  lineHeight: "24px",
+  textAlign: "center",
+  paddingTop: "22%",
+};
+
 function opinionComponent(props) {
   const { value } = props;
 
@@ -107,15 +117,9 @@ function IHCComponent(props) {
       <>
         <div
           style={{
-            width: "100%",
-            height: "100%",
+            ...commonStyles,
             backgroundColor: "rgb(180,250,180)",
             color: "black",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "22%",
           }}
         >
           <span style={{ textAlign: "center" }}>{d}</span>
@@ -127,15 +131,9 @@ function IHCComponent(props) {
       <>
         <div
           style={{
-            width: "100%",
-            height: "100%",
+            ...commonStyles,
             backgroundColor: "rgb(70,170,70)",
             color: "#FFF",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "22%",
           }}
         >
           <span style={{ textAlign: "center" }}>{d}</span>
@@ -147,15 +145,9 @@ function IHCComponent(props) {
       <>
         <div
           style={{
-            width: "100%",
-            height: "100%",
+            ...commonStyles,
             backgroundColor: "rgb(0,100,0)",
             color: "#FFF",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "22%",
           }}
         >
           <span style={{ textAlign: "center" }}>{d}</span>
@@ -167,14 +159,8 @@ function IHCComponent(props) {
       <>
         <div
           style={{
-            width: "100%",
-            height: "100%",
+            ...commonStyles,
             color: "black",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "22%",
           }}
         >
           <span style={{ textAlign: "center" }}>ND</span>
@@ -185,15 +171,9 @@ function IHCComponent(props) {
     return (
       <div
         style={{
-          width: "100%",
-          height: "100%",
+          ...commonStyles,
           backgroundColor: "rgb(250,250,250)",
           color: "black",
-          fontFamily: "Lato",
-          fontSize: "16px",
-          lineHeight: "24px",
-          textAlign: "center",
-          paddingTop: "25%",
         }}
       >
         NA
@@ -214,16 +194,6 @@ function proteinLinkComponent(props) {
     </div>
   );
 }
-
-const commonStyles = {
-  width: "100%",
-  height: "100%",
-  fontFamily: "Lato",
-  fontSize: "16px",
-  lineHeight: "24px",
-  textAlign: "center",
-  paddingTop: "22%",
-};
 
 function GreenComponent(props) {
   const data = typeof props.value === "number" ? props.value : 0;
