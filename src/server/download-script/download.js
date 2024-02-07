@@ -34,10 +34,13 @@ const downloadAllRecords = async (index, fileName) => {
   console.log(`Start streaming data to ${fileName}`);
 
   try {
+    let isFirstBatch = true; // Flag to track the first batch
+    fileStream.write("["); // Start of JSON array
+
     const { body: initialResponse } = await client.search({
       index,
-      scroll: "1m", // Scroll timeout
-      size: 10000,
+      scroll: "1m",
+      size: 500,
       body: {
         query: {
           match_all: {},
@@ -46,9 +49,13 @@ const downloadAllRecords = async (index, fileName) => {
     });
 
     scrollId = initialResponse._scroll_id;
-    initialResponse.hits.hits.forEach((hit) =>
-      fileStream.write(JSON.stringify(hit._source) + "\n")
-    );
+    initialResponse.hits.hits.forEach((hit, index) => {
+      if (!isFirstBatch || index > 0) {
+        fileStream.write(",\n"); // Add a comma and new line before each object except the very first
+      }
+      fileStream.write(JSON.stringify(hit._source));
+    });
+    isFirstBatch = false; // Reset flag after the first batch
 
     while (true) {
       const { body: scrollResponse } = await client.scroll({
@@ -61,17 +68,17 @@ const downloadAllRecords = async (index, fileName) => {
         break; // No more results
       }
 
-      scrollResponse.hits.hits.forEach((hit) =>
-        fileStream.write(JSON.stringify(hit._source) + "\n")
-      );
+      scrollResponse.hits.hits.forEach((hit) => {
+        fileStream.write(",\n" + JSON.stringify(hit._source)); // Add a comma and new line before each object
+      });
+
       console.log("> Records fetched", scrollResponse.hits.hits.length);
       console.log("> Continue");
-
-      scrollId = scrollResponse._scroll_id;
     }
   } catch (error) {
     console.error("Error:", error);
   } finally {
+    fileStream.write("\n]"); // End the JSON array
     fileStream.end(); // Make sure to close the stream
     console.log(`Finished streaming data to ${fileName}`);
 
@@ -90,8 +97,8 @@ const downloadAllRecords = async (index, fileName) => {
 };
 
 // Index you want to download
-const index = "citation-011124";
-const fileName = "citation-011124.json";
+const index = "study_protein_012924";
+const fileName = "study_protein_012924.json";
 
 // Call the function to download all records
 downloadAllRecords(index, fileName);

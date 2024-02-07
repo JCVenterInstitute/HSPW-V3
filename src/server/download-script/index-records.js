@@ -1,25 +1,23 @@
+const fs = require("fs");
+const { pipeline } = require("stream");
+const { parser } = require("stream-json");
+const { streamArray } = require("stream-json/streamers/StreamArray");
 const { Client } = require("@opensearch-project/opensearch");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const createAwsOpensearchConnector = require("aws-opensearch-connector");
 
-// File with records to index
-const records = require("./output");
-
 const host =
-  "https://search-hspw-dev2-dmdd32xae4fmxh7t4g6skv67aa.us-east-2.es.amazonaws.com";
-
-// Name of index to write to
-const index = "citation-011124";
+  "https://search-hspw-prod-y77jqnl5zklvuwu3k66anbowhi.us-east-2.es.amazonaws.com";
+const index = "study_protein";
+const filePath =
+  "/Users/iwu/repo/HSPW-V3/src/server/download-script/study_protein_012924.json"; // Update this to the path of your JSON file
+const batchSize = 1000;
 
 const getClient = async () => {
   const awsCredentials = await defaultProvider()();
-
   const connector = createAwsOpensearchConnector({
     credentials: awsCredentials,
     region: process.env.AWS_REGION ?? "us-east-2",
-    getCredentials: function (cb) {
-      return cb();
-    },
   });
 
   return new Client({
@@ -28,37 +26,54 @@ const getClient = async () => {
   });
 };
 
-// Function to insert records in batches
-async function insertRecordsInBatches(records, batchSize) {
-  for (let i = 0; i < records.length; i += batchSize) {
-    const batch = records.slice(i, i + batchSize);
-    await insertBatch(batch);
+async function insertBatch(client, batch) {
+  const body = batch.flatMap((doc) => [
+    { index: { _index: index } },
+    doc.value,
+  ]);
+
+  try {
+    const { body: response } = await client.bulk({ refresh: true, body });
+    if (response.errors) {
+      console.error("Error inserting batch:", response.errors);
+    } else {
+      console.log("Batch inserted successfully");
+    }
+  } catch (error) {
+    console.error("Bulk insert error:", error);
   }
 }
 
-// Function to insert a batch of records
-async function insertBatch(batch) {
+async function insertRecordsFromStream(filePath, batchSize) {
   const client = await getClient();
-  const body = [];
+  let batch = [];
 
-  // Prepare the bulk insert operation
-  for (const record of batch) {
-    body.push({ index: { _index: index } });
-    body.push(record);
+  const jsonStream = pipeline(
+    fs.createReadStream(filePath),
+    parser(),
+    streamArray(),
+    async (err) => {
+      if (err) {
+        console.error("Pipeline failed.", err);
+      } else {
+        console.log("Pipeline succeeded.");
+      }
+    }
+  );
+
+  for await (const data of jsonStream) {
+    batch.push(data);
+    if (batch.length >= batchSize) {
+      await insertBatch(client, batch);
+      batch = [];
+    }
   }
 
-  const { body: response } = await client.bulk({ refresh: true, body });
-
-  if (response.errors) {
-    console.error("Error inserting batch:", response.errors);
-  } else {
-    console.log("Batch inserted successfully");
+  if (batch.length > 0) {
+    await insertBatch(client, batch);
   }
 }
 
-// Number of recs to index per batch
-const batchSize = 500;
-
-insertRecordsInBatches(records, batchSize)
+insertRecordsFromStream(filePath, batchSize)
   .then(() => console.log("All records inserted successfully"))
   .catch((error) => console.error("Error inserting records:", error));
