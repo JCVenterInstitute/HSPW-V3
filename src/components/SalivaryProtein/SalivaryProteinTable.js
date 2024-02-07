@@ -89,13 +89,15 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const commonStyles = {
+  display: "flex", // Enable flexbox
+  flexDirection: "column", // Stack children vertically
+  justifyContent: "center", // Center vertically in the container
   width: "100%",
   height: "100%",
   fontFamily: "Lato",
   fontSize: "16px",
   lineHeight: "24px",
   textAlign: "center",
-  paddingTop: "22%",
 };
 
 function opinionComponent(props) {
