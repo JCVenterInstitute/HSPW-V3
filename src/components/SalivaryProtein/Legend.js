@@ -396,7 +396,7 @@ const Legend = () => {
           }}
         >
           <div style={{ color: "#616161", textAlign: "center" }}>
-            Expert Opinion
+            Specificity Score
           </div>
         </div>
         <TableContainer
