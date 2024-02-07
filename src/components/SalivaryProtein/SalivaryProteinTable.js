@@ -2063,6 +2063,7 @@ const SalivaryProteinTable = () => {
                   p: 2,
                   width: "60vw",
                   overflow: "scroll",
+                  borderRadius: "16px",
                 }}
               >
                 <Typography

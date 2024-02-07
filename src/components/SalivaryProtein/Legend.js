@@ -57,8 +57,8 @@ const Legend = () => {
                 <TableCell>Salivary gland specific</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>2</TableCell>
-                <TableCell>
+                <TableCell style={{ borderBottom: "none" }}>2</TableCell>
+                <TableCell style={{ borderBottom: "none" }}>
                   Specific to salivary glands and a few other tissues
                 </TableCell>
               </TableRow>
@@ -109,10 +109,22 @@ const Legend = () => {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell style={{ paddingRight: "5px", marginLeft: "35px" }}>
+                <TableCell
+                  style={{
+                    paddingRight: "5px",
+                    marginLeft: "35px",
+                    borderBottom: "none",
+                  }}
+                >
                   C
                 </TableCell>
-                <TableCell style={{ paddingRight: "5px", marginLeft: "35px" }}>
+                <TableCell
+                  style={{
+                    paddingRight: "5px",
+                    marginLeft: "35px",
+                    borderBottom: "none",
+                  }}
+                >
                   Confirmed
                 </TableCell>
               </TableRow>
@@ -345,7 +357,7 @@ const Legend = () => {
                 <TableCell>na</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>
+                <TableCell style={{ borderBottom: "none" }}>
                   <svg
                     width={18}
                     height={18}
@@ -360,7 +372,7 @@ const Legend = () => {
                     </rect>
                   </svg>
                 </TableCell>
-                <TableCell sx={{ marginLeft: "20px" }}>
+                <TableCell sx={{ marginLeft: "20px", borderBottom: "none" }}>
                   <svg
                     width={18}
                     height={18}
@@ -375,8 +387,10 @@ const Legend = () => {
                     </rect>
                   </svg>
                 </TableCell>
-                <TableCell>NA (Not Available)</TableCell>
-                <TableCell>na</TableCell>
+                <TableCell style={{ borderBottom: "none" }}>
+                  NA (Not Available)
+                </TableCell>
+                <TableCell style={{ borderBottom: "none" }}>na</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -426,10 +440,22 @@ const Legend = () => {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell style={{ paddingRight: "5px", marginLeft: "35px" }}>
+                <TableCell
+                  style={{
+                    paddingRight: "5px",
+                    marginLeft: "35px",
+                    borderBottom: "none",
+                  }}
+                >
                   Lower
                 </TableCell>
-                <TableCell style={{ paddingRight: "5px", marginLeft: "35px" }}>
+                <TableCell
+                  style={{
+                    paddingRight: "5px",
+                    marginLeft: "35px",
+                    borderBottom: "none",
+                  }}
+                >
                   On average lower in salivary glands than in other tissues
                 </TableCell>
               </TableRow>
