@@ -5,8 +5,13 @@ const ScrollToTop = () => {
   const location = useLocation();
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location]);
+    // Select the .main-content div
+    const content = document.querySelector(".main-content");
+    if (content) {
+      // Scroll the .main-content div to the top
+      content.scrollTop = 0;
+    }
+  }, [location]); // Dependency on location ensures this effect runs on route change
 
   return null;
 };

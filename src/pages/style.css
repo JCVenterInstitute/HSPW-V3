@@ -171,7 +171,7 @@ div p {
 }
 
 .head_background {
-  height: 40%;
+  /* height: 40%; */
   padding: 35px;
   background-position: center;
   background-size: cover;
@@ -308,7 +308,7 @@ div p {
 }
 
 html {
-  /* overflow: hidden; */
+  overflow: hidden;
   height: 100%;
 }
 

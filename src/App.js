@@ -234,8 +234,8 @@ function App() {
                 element={<NotFoundPage />}
               />
             </Routes>
+            <Footer />
           </div>
-          <Footer />
         </div>
       </Router>
     </ThemeProvider>
