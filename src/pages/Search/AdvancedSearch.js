@@ -51,8 +51,8 @@ const generateColumnDefs = (entity, data) => {
     fields = fields.filter((field) => field !== "Uniprot_id");
     fields.unshift("Uniprot_id");
   } else if (entity === "PubMed Citations") {
-    fields = fields.filter((field) => field !== "CitationID");
-    fields.unshift("CitationID");
+    fields = fields.filter((field) => field !== "PubMed_ID");
+    fields.unshift("PubMed_ID");
   } else if (entity === "Salivary Proteins" || entity === "Annotations") {
     fields = fields.filter((field) => field !== "uniprot_accession");
     fields.unshift("uniprot_accession");
@@ -325,8 +325,8 @@ const AdvancedSearch = () => {
         propertyList = propertyList.filter((item) => item !== "Uniprot_id");
         setSelectedProperties(["Uniprot_id"]);
       } else if (e.target.value === "PubMed Citations") {
-        propertyList = propertyList.filter((item) => item !== "CitationID");
-        setSelectedProperties(["CitationID"]);
+        propertyList = propertyList.filter((item) => item !== "PubMed_ID");
+        setSelectedProperties(["PubMed_ID"]);
       } else if (
         e.target.value === "Salivary Proteins" ||
         e.target.value === "Annotations"

@@ -1703,7 +1703,12 @@ app.get("/api/s3Download/:jobId/:fileName", async (req, res) => {
 
 const getProperties = async (index) => {
   // Initialize the client.
-  const client = await getClient();
+  let client;
+  if (index === "citation") {
+    client = await getClient1();
+  } else {
+    client = await getClient();
+  }
 
   try {
     // Get the mapping of the specified index.
@@ -1828,7 +1833,11 @@ const advancedSearch = async ({
 }) => {
   // Initialize the client.
   let client;
-  if (entity === "Salivary Proteins" || entity === "Annotations") {
+  if (
+    entity === "Salivary Proteins" ||
+    entity === "Annotations" ||
+    entity === "PubMed Citations"
+  ) {
     client = await getClient1();
   } else {
     client = await getClient();

@@ -130,7 +130,7 @@ export default function SelectAllTransferList({
       "uniprot_id",
       "InterPro ID",
       "Uniprot_id",
-      "CitationID",
+      "PubMed_ID",
       "uniprot_accession",
     ];
     return option === "right" && disabledValues.includes(value);
