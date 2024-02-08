@@ -21,6 +21,7 @@ const td = {
   border: "1px solid #aaa",
   fontSize: "14px",
   padding: "0.2em",
+  paddingLeft: "15px",
 };
 
 const Citation_detail = (props) => {

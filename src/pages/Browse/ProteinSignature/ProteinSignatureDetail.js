@@ -12,7 +12,7 @@ import parse from "html-react-parser";
 import FontAwesome from "react-fontawesome";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
-
+import { Link } from "react-router-dom";
 import MainFeature from "../../../assets/hero.jpeg";
 import "../../style.css";
 import { Container } from "@mui/material";
@@ -32,6 +32,7 @@ const td = {
   fontSize: "18px",
   padding: "0.2em",
   borderTopRightRadius: "10px",
+  paddingLeft: "15px",
 };
 
 const SignatureDetail = (props) => {
@@ -187,7 +188,7 @@ const SignatureDetail = (props) => {
                     sx={{ ...td, paddingY: "10px" }}
                     style={{ fontFamily: "Lato", fontSize: "14px" }}
                   >
-                    <div style={{ paddingLeft: "1%" }}>
+                    <div>
                       <span style={{ color: "black" }}>
                         {parse(parse(abstract.split("=")[1]))}
                       </span>
@@ -560,7 +561,6 @@ const SignatureDetail = (props) => {
                     style={{
                       fontFamily: "Lato",
                       fontSize: "14px",
-                      paddingLeft: "1%",
                     }}
                   >
                     {reference.length !== 0
@@ -618,7 +618,6 @@ const SignatureDetail = (props) => {
                     style={{
                       fontFamily: "Lato",
                       fontSize: "14px",
-                      paddingLeft: "1%",
                     }}
                   >
                     View Protein Members
@@ -643,13 +642,12 @@ const SignatureDetail = (props) => {
                     style={{
                       fontFamily: "Lato",
                       fontSize: "14px",
-                      paddingLeft: "1%",
                     }}
                   >
-                    <a
+                    <Link
                       rel="noreferrer"
                       target="_blank"
-                      href={interpro_link + data[0]["_source"]["InterPro ID"]}
+                      to={interpro_link + data[0]["_source"]["InterPro ID"]}
                     >
                       InterPro{" "}
                       <FontAwesome
@@ -659,7 +657,7 @@ const SignatureDetail = (props) => {
                           textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
                         }}
                       />
-                    </a>
+                    </Link>
                   </TableCell>
                 </TableRow>
               </TableHead>

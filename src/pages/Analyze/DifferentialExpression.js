@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import main_feature from "../../assets/hero.jpeg";
 import {
   Container,
@@ -30,11 +30,75 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import axios from "axios";
 import CustomHeaderGroup from "./CustomHeaderGroup";
 import CustomLoadingOverlay from "./CustomLoadingOverlay";
-import CustomNoRowsOverlay from "./CustomNoRowsOverlay";
 import CircleCheckedFilled from "@mui/icons-material/CheckCircle";
 import CircleUnchecked from "@mui/icons-material/RadioButtonUnchecked";
 import Swal from "sweetalert2";
 import ClearIcon from "@mui/icons-material/Clear";
+import Papa from "papaparse";
+
+const toExcelColumn = (colIndex) => {
+  let column = "";
+  let dividend = colIndex;
+  let modulo;
+
+  while (dividend > 0) {
+    modulo = (dividend - 1) % 26;
+    column = String.fromCharCode(65 + modulo) + column;
+    dividend = Math.floor((dividend - modulo) / 26);
+  }
+
+  return column;
+};
+
+const validateFile = (fileContent) => {
+  let isValid = true;
+  let errorMessage = "";
+
+  Papa.parse(fileContent, {
+    complete: (result) => {
+      const data = result.data;
+
+      // Check headers
+      if (data[0][0] !== "Identifiers" || data[0][1] !== "Group") {
+        isValid = false;
+        errorMessage =
+          'The first row must have "Identifiers" in column 1 and "Group" in column 2';
+        return;
+      }
+
+      // Check if all other values except for row 1 and columns 1 & 2 are numeric and not blank
+      for (let i = 1; i < data.length; i++) {
+        for (let j = 2; j < data[i].length; j++) {
+          const cellValue = data[i][j];
+          if (
+            cellValue === null ||
+            cellValue === undefined ||
+            cellValue.toString().trim() === ""
+          ) {
+            isValid = false;
+            const excelColumn = toExcelColumn(j + 1); // +1 because columns are 1-indexed in Excel
+            errorMessage = `Blank cell found at row ${
+              i + 1
+            }, column ${excelColumn}`;
+            return;
+          }
+
+          if (!cellValue.toString().match(/^-?\d*(\.\d+)?$/)) {
+            isValid = false;
+            const excelColumn = toExcelColumn(j + 1); // +1 because columns are 1-indexed in Excel
+            errorMessage = `Non-numeric value found at row ${
+              i + 1
+            }, column ${excelColumn}`;
+            return;
+          }
+        }
+      }
+    },
+    skipEmptyLines: false, // Set to false to check for blank lines
+  });
+
+  return { isValid, errorMessage };
+};
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -100,6 +164,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const DifferentialExpression = () => {
+  const gridRef = useRef();
   const [gridApi, setGridApi] = useState();
   const [gridApiGroupA, setGridApiGroupA] = useState();
   const [gridApiGroupB, setGridApiGroupB] = useState();
@@ -120,15 +185,16 @@ const DifferentialExpression = () => {
   const [filterKeyword, setFilterKeyword] = useState("");
   const [sampleIdFilter, setSampleIdFilter] = useState("");
   const [sampleTitleFilter, setSampleTitleFilter] = useState("");
-  const [tissueTypeFilter, setTissueTypeFilter] = useState("");
-  const [institutionFilter, setInstitutionFilter] = useState("");
-  const [diseaseFilter, setDiseaseFilter] = useState("");
+  const [tissueTypeFilter, setTissueTypeFilter] = useState([]);
+  const [institutionFilter, setInstitutionFilter] = useState([]);
+  const [diseaseFilter, setDiseaseFilter] = useState([]);
   const [tissueTypeFilterList, setTissueTypeFilterList] = useState([]);
   const [institutionFilterList, setInstitutionFilterList] = useState([]);
   const [diseaseFilterList, setDiseaseFilterList] = useState([]);
   const [lowerLimit, setLowerLimit] = useState(0);
   const [upperLimit, setUpperLimit] = useState(20000);
   const [inputData, setInputData] = useState("");
+  const [fileIsValid, setFileIsValid] = useState(true);
 
   useEffect(() => {
     // Apply the filter whenever the limits change
@@ -148,15 +214,15 @@ const DifferentialExpression = () => {
     };
 
     gridApi.setFilterModel(filterModel);
-    setTotalPageNumber(gridApi.paginationGetTotalPages());
+    const totalPages = gridApi.paginationGetTotalPages();
+    setTotalPageNumber(totalPages);
+    if (pageNumber > totalPages) {
+      setPageNumber(1);
+    }
   };
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
-  }, []);
-
-  const noRowsOverlayComponent = useMemo(() => {
-    return CustomNoRowsOverlay;
   }, []);
 
   const onGridReady = useCallback((params) => {
@@ -183,7 +249,11 @@ const DifferentialExpression = () => {
         return sourceData.length;
       })
       .then((totalCount) => {
-        setTotalPageNumber(Math.ceil(totalCount / recordsPerPage));
+        const totalPages = Math.ceil(totalCount / recordsPerPage);
+        setTotalPageNumber(totalPages);
+        if (pageNumber > totalPages) {
+          setPageNumber(1);
+        }
         setGridApi(params.api);
       });
   }, []);
@@ -251,9 +321,10 @@ const DifferentialExpression = () => {
       headerName: "Sample ID",
       field: "experiment_id_key",
       wrapText: true,
-      minWidth: 230,
-      headerClass: ["header-border"],
-      cellClass: ["differential-cell"],
+      minWidth: 200,
+      cellStyle: { wordBreak: "break-word" },
+      headerClass: ["header-border", "differential-expression-header"],
+      cellClass: ["differential-expression-cell"],
       checkboxSelection: true,
       headerCheckboxSelection: true,
       headerCheckboxSelectionFilteredOnly: true,
@@ -263,38 +334,38 @@ const DifferentialExpression = () => {
       headerName: "Sample Title",
       field: "experiment_title",
       wrapText: true,
-      minWidth: 440,
-      headerClass: ["header-border"],
-      cellClass: ["differential-cell"],
+      minWidth: 300,
+      headerClass: ["header-border", "differential-expression-header"],
+      cellClass: ["differential-expression-cell"],
     },
     {
       headerName: "Tissue Type",
       field: "sample_type",
       wrapText: true,
-      headerClass: ["header-border"],
-      cellClass: ["differential-cell"],
+      headerClass: ["header-border", "differential-expression-header"],
+      cellClass: ["differential-expression-cell"],
     },
     {
       headerName: "Institution",
       field: "institution",
       wrapText: true,
-      headerClass: ["header-border"],
-      cellClass: ["differential-cell"],
+      headerClass: ["header-border", "differential-expression-header"],
+      cellClass: ["differential-expression-cell"],
     },
     {
       headerName: "Disease",
       field: "condition_type",
       wrapText: true,
-      headerClass: ["header-border"],
-      cellClass: ["differential-cell"],
+      headerClass: ["header-border", "differential-expression-header"],
+      cellClass: ["differential-expression-cell"],
     },
     {
       headerName: "Protein Count",
       field: "experiment_protein_count",
       wrapText: true,
       minWidth: 230,
-      headerClass: ["header-border"],
-      cellClass: ["differential-cell"],
+      headerClass: ["header-border", "differential-expression-header"],
+      cellClass: ["differential-expression-cell"],
       filter: "agNumberColumnFilter",
     },
   ];
@@ -303,13 +374,15 @@ const DifferentialExpression = () => {
     {
       headerName: "Group A",
       headerGroupComponent: CustomHeaderGroup,
-      headerClass: ["header-border"],
+      headerClass: ["header-border", "differential-expression-header"],
       children: [
         {
           headerName: "Sample ID",
           field: "experiment_id_key",
-          minWidth: "240",
-          headerClass: ["header-border"],
+          minWidth: 200,
+          cellStyle: { wordBreak: "break-word" },
+          headerClass: ["header-border", "differential-expression-header"],
+          cellClass: ["differential-expression-cell"],
           checkboxSelection: true,
           headerCheckboxSelection: true,
           sort: "asc",
@@ -317,8 +390,9 @@ const DifferentialExpression = () => {
         {
           headerName: "Sample Title",
           field: "experiment_title",
-          minWidth: "450",
-          headerClass: ["header-border"],
+          minWidth: 370,
+          headerClass: ["header-border", "differential-expression-header"],
+          cellClass: ["differential-expression-cell"],
         },
       ],
       wrapText: true,
@@ -330,13 +404,15 @@ const DifferentialExpression = () => {
     {
       headerName: "Group B",
       headerGroupComponent: CustomHeaderGroup,
-      headerClass: ["header-border"],
+      headerClass: ["header-border", "differential-expression-header"],
       children: [
         {
           headerName: "Sample ID",
           field: "experiment_id_key",
-          minWidth: "240",
-          headerClass: ["header-border"],
+          minWidth: 200,
+          cellStyle: { wordBreak: "break-word" },
+          headerClass: ["header-border", "differential-expression-header"],
+          cellClass: ["differential-expression-cell"],
           checkboxSelection: true,
           headerCheckboxSelection: true,
           sort: "asc",
@@ -344,8 +420,9 @@ const DifferentialExpression = () => {
         {
           headerName: "Sample Title",
           field: "experiment_title",
-          minWidth: "450",
-          headerClass: ["header-border"],
+          minWidth: 370,
+          headerClass: ["header-border", "differential-expression-header"],
+          cellClass: ["differential-expression-cell"],
         },
       ],
       wrapText: true,
@@ -357,8 +434,10 @@ const DifferentialExpression = () => {
     flex: 1,
     resizable: true,
     sortable: true,
-    minWidth: 170,
+    minWidth: 150,
     autoHeight: true,
+    wrapHeaderText: true,
+    autoHeaderHeight: true,
     filter: "agTextColumnFilter",
   };
 
@@ -439,11 +518,90 @@ const DifferentialExpression = () => {
   const handleFilter = (searchKeyword) => {
     gridApi.hideOverlay();
     gridApi.setQuickFilter(searchKeyword);
-    setTotalPageNumber(gridApi.paginationGetTotalPages());
+    const totalPages = gridApi.paginationGetTotalPages();
+    setTotalPageNumber(totalPages);
+    if (pageNumber > totalPages) {
+      setPageNumber(1);
+    }
     if (gridApi.paginationGetTotalPages() === 0) {
       gridApi.showNoRowsOverlay();
     }
   };
+
+  const handleTissueTypeFilterChange = (option) => {
+    setTissueTypeFilter((prev) => {
+      if (prev.includes(option)) {
+        return prev.filter((item) => item !== option);
+      } else {
+        return [...prev, option];
+      }
+    });
+  };
+
+  const handleInstitutionFilterChange = (option) => {
+    setInstitutionFilter((prev) => {
+      if (prev.includes(option)) {
+        return prev.filter((item) => item !== option);
+      } else {
+        return [...prev, option];
+      }
+    });
+  };
+
+  const handleDiseaseFilterChange = (option) => {
+    setDiseaseFilter((prev) => {
+      if (prev.includes(option)) {
+        return prev.filter((item) => item !== option);
+      } else {
+        return [...prev, option];
+      }
+    });
+  };
+
+  const externalFilterChanged = useCallback(() => {
+    if (gridRef.current && gridRef.current.api) {
+      gridRef.current.api.onFilterChanged();
+      const totalPages = gridRef.current.api.paginationGetTotalPages();
+      setTotalPageNumber(totalPages);
+      if (pageNumber > totalPages) {
+        setPageNumber(1);
+      }
+    }
+  }, [gridRef]);
+
+  const isExternalFilterPresent = useCallback(() => {
+    return (
+      tissueTypeFilter.length > 0 ||
+      institutionFilter.length > 0 ||
+      diseaseFilter.length > 0
+    );
+  }, [tissueTypeFilter, institutionFilter, diseaseFilter]);
+
+  const doesExternalFilterPass = useCallback(
+    (node) => {
+      const tissueTypeMatch =
+        tissueTypeFilter.length === 0 ||
+        tissueTypeFilter.includes(node.data.sample_type);
+      const institutionMatch =
+        institutionFilter.length === 0 ||
+        institutionFilter.includes(node.data.institution);
+      const diseaseMatch =
+        diseaseFilter.length === 0 ||
+        diseaseFilter.includes(node.data.condition_type);
+
+      return tissueTypeMatch && institutionMatch && diseaseMatch;
+    },
+    [tissueTypeFilter, institutionFilter, diseaseFilter]
+  );
+
+  useEffect(() => {
+    externalFilterChanged();
+  }, [
+    tissueTypeFilter,
+    institutionFilter,
+    diseaseFilter,
+    externalFilterChanged,
+  ]);
 
   const handleSideFilter = (searchKeyword, columnName) => {
     gridApi.hideOverlay();
@@ -461,25 +619,14 @@ const DifferentialExpression = () => {
         type: "contains",
         filter: searchKeyword,
       };
-    } else if (columnName === "Tissue Type") {
-      filterModel.sample_type = {
-        type: "contains",
-        filter: searchKeyword,
-      };
-    } else if (columnName === "Institution") {
-      filterModel.institution = {
-        type: "contains",
-        filter: searchKeyword,
-      };
-    } else if (columnName === "Disease") {
-      filterModel.condition_type = {
-        type: "contains",
-        filter: searchKeyword,
-      };
     }
 
     gridApi.setFilterModel(filterModel);
-    setTotalPageNumber(gridApi.paginationGetTotalPages());
+    const totalPages = gridApi.paginationGetTotalPages();
+    setTotalPageNumber(totalPages);
+    if (pageNumber > totalPages) {
+      setPageNumber(1);
+    }
     if (gridApi.paginationGetTotalPages() === 0) {
       gridApi.showNoRowsOverlay();
     }
@@ -489,12 +636,16 @@ const DifferentialExpression = () => {
     gridApi.hideOverlay();
     gridApi.setQuickFilter("");
     gridApi.setFilterModel({});
-    setTotalPageNumber(gridApi.paginationGetTotalPages());
+    const totalPages = gridApi.paginationGetTotalPages();
+    setTotalPageNumber(totalPages);
+    if (pageNumber > totalPages) {
+      setPageNumber(1);
+    }
     setSampleIdFilter("");
     setSampleTitleFilter("");
-    setTissueTypeFilter("");
-    setInstitutionFilter("");
-    setDiseaseFilter("");
+    setTissueTypeFilter([]);
+    setInstitutionFilter([]);
+    setDiseaseFilter([]);
     setLowerLimit(0);
     setUpperLimit(20000);
     setFilterKeyword("");
@@ -507,9 +658,24 @@ const DifferentialExpression = () => {
       const reader = new FileReader();
       reader.onload = (event) => {
         const content = event.target.result;
+        const { isValid, errorMessage } = validateFile(content);
+
+        if (!isValid) {
+          Swal.fire({
+            icon: "error",
+            title: "Invalid File",
+            text: errorMessage,
+          });
+          setFileIsValid(false);
+          return;
+        }
+        setFileIsValid(true);
         setInputData(content);
       };
       reader.readAsText(file); // Read the file as text
+
+      // Reset the value of the input to allow re-uploading the same file
+      e.target.value = null;
     }
   };
 
@@ -582,6 +748,15 @@ const DifferentialExpression = () => {
       }
     }
 
+    if (!fileIsValid) {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid File",
+        text: "Please fix/reupload the file",
+      });
+      return;
+    }
+
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, "0");
@@ -601,67 +776,97 @@ const DifferentialExpression = () => {
     });
     Swal.showLoading();
 
-    if (fileName) {
-      await axios
-        .post(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze-file`,
-          {
-            inputData,
-            logNorm,
-            foldChangeThreshold,
-            pValueThreshold,
-            pValueType,
-            parametricTest,
-            timestamp: {
-              year,
-              month,
-              day,
-              hours,
-              minutes,
-              seconds,
-            },
-            formattedDate,
-            workingDirectory,
-          }
-        )
-        .then(() => {
-          // Wait for 3 seconds before redirecting
-          setTimeout(() => {
-            window.location.href = `/differential-expression/results/${jobId}`;
-            Swal.close();
-          }, 3000);
+    try {
+      if (fileName) {
+        await axios
+          .post(
+            `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze-file`,
+            {
+              inputData,
+              logNorm,
+              foldChangeThreshold,
+              pValueThreshold,
+              pValueType,
+              parametricTest,
+              timestamp: {
+                year,
+                month,
+                day,
+                hours,
+                minutes,
+                seconds,
+              },
+              formattedDate,
+              workingDirectory,
+            }
+          )
+          .then(() => {
+            // Wait for 3 seconds before redirecting
+            setTimeout(() => {
+              window.location.href = `/differential-expression/results/${jobId}`;
+              Swal.close();
+            }, 3000);
+          });
+      } else {
+        await axios
+          .post(
+            `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze`,
+            {
+              groupAData: groupARowData,
+              groupBData: groupBRowData,
+              logNorm,
+              foldChangeThreshold,
+              pValueThreshold,
+              pValueType,
+              parametricTest,
+              timestamp: {
+                year,
+                month,
+                day,
+                hours,
+                minutes,
+                seconds,
+              },
+              formattedDate,
+              workingDirectory,
+            }
+          )
+          .then(() => {
+            // Wait for 3 seconds before redirecting
+            setTimeout(() => {
+              window.location.href = `/differential-expression/results/${jobId}`;
+              Swal.close();
+            }, 3000);
+          });
+      }
+    } catch (error) {
+      const payload = {
+        message: error.response.data,
+      };
+      try {
+        await axios
+          .post(
+            `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/send-support-email`,
+            payload
+          )
+          .then((res) => {
+            console.log(res);
+            if (res.status === 201) {
+              Swal.fire({
+                icon: "error",
+                title:
+                  "Error - The error/issue has been sent to the support team.",
+                text: error.response.data,
+              });
+            }
+          });
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Error - The error/issue has been sent to the support team.",
+          text: error.response.data,
         });
-    } else {
-      await axios
-        .post(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze`,
-          {
-            groupAData: groupARowData,
-            groupBData: groupBRowData,
-            logNorm,
-            foldChangeThreshold,
-            pValueThreshold,
-            pValueType,
-            parametricTest,
-            timestamp: {
-              year,
-              month,
-              day,
-              hours,
-              minutes,
-              seconds,
-            },
-            formattedDate,
-            workingDirectory,
-          }
-        )
-        .then(() => {
-          // Wait for 3 seconds before redirecting
-          setTimeout(() => {
-            window.location.href = `/differential-expression/results/${jobId}`;
-            Swal.close();
-          }, 3000);
-        });
+      }
     }
   };
 
@@ -771,15 +976,9 @@ const DifferentialExpression = () => {
                           key={`${option}-${index}-${subIndex}`}
                           control={
                             <Checkbox
-                              checked={tissueTypeFilter === option.key}
+                              checked={tissueTypeFilter.includes(option.key)}
                               onChange={() => {
-                                if (tissueTypeFilter === option.key) {
-                                  setTissueTypeFilter("");
-                                  handleSideFilter("", filter);
-                                } else {
-                                  setTissueTypeFilter(option.key);
-                                  handleSideFilter(option.key, filter);
-                                }
+                                handleTissueTypeFilterChange(option.key);
                               }}
                             />
                           }
@@ -799,15 +998,9 @@ const DifferentialExpression = () => {
                           key={`${option}-${index}-${subIndex}`}
                           control={
                             <Checkbox
-                              checked={institutionFilter === option.key}
+                              checked={institutionFilter.includes(option.key)}
                               onChange={() => {
-                                if (institutionFilter === option.key) {
-                                  setInstitutionFilter("");
-                                  handleSideFilter("", filter);
-                                } else {
-                                  setInstitutionFilter(option.key);
-                                  handleSideFilter(option.key, filter);
-                                }
+                                handleInstitutionFilterChange(option.key);
                               }}
                             />
                           }
@@ -827,16 +1020,10 @@ const DifferentialExpression = () => {
                           key={`${option}-${index}-${subIndex}`}
                           control={
                             <Checkbox
-                              checked={diseaseFilter === option.key}
-                              onChange={() => {
-                                if (diseaseFilter === option.key) {
-                                  setDiseaseFilter("");
-                                  handleSideFilter("", filter);
-                                } else {
-                                  setDiseaseFilter(option.key);
-                                  handleSideFilter(option.key, filter);
-                                }
-                              }}
+                              checked={diseaseFilter.includes(option.key)}
+                              onChange={() =>
+                                handleDiseaseFilterChange(option.key)
+                              }
                             />
                           }
                           label={`${option.key} (${option.doc_count})`}
@@ -978,9 +1165,13 @@ const DifferentialExpression = () => {
                 value={recordsPerPage}
                 onChange={(event) => {
                   setRecordsPerPage(event.target.value);
-                  setTotalPageNumber(
-                    Math.ceil(totalRecordCount / event.target.value)
+                  const totalPages = Math.ceil(
+                    totalRecordCount / event.target.value
                   );
+                  setTotalPageNumber(totalPages);
+                  if (pageNumber > totalPages) {
+                    setPageNumber(1);
+                  }
                   gridApi.paginationSetPageSize(Number(event.target.value));
                 }}
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
@@ -1118,6 +1309,7 @@ const DifferentialExpression = () => {
               style={{ height: 620 }}
             >
               <AgGridReact
+                ref={gridRef}
                 className="ag-cell-wrap-text"
                 rowData={rowData}
                 columnDefs={columns}
@@ -1131,6 +1323,8 @@ const DifferentialExpression = () => {
                 rowMultiSelectWithClick={true}
                 loadingOverlayComponent={loadingOverlayComponent}
                 suppressScrollOnNewData={true}
+                isExternalFilterPresent={isExternalFilterPresent}
+                doesExternalFilterPass={doesExternalFilterPass}
               ></AgGridReact>
             </div>
           </Box>

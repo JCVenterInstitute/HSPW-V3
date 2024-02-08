@@ -1,126 +1,57 @@
-import React, { useState } from "react";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-
-import { images } from "./CarouselData.js";
+import React from "react";
+import { contents } from "./CarouselData.js";
 import "./Carousel.css";
 import Chord from "./Chord.js";
-import { Container } from "@mui/material";
+import { Container, CardMedia } from "@mui/material";
+import Carousel from "react-material-ui-carousel";
 
-function Carousel() {
-  const [currImg, setCurrImg] = useState(0);
-  const stringCheck =
-    "The chord diagram on left provides salivary protein catalog with each arc in the diagram represents the set of proteins found in the connected tissue or sample types. Click on Chord image to go to salivary protein catalog page that provides the interactive chord diagram and salivary protein search capability.";
-
+function Banner() {
   return (
-    <div className="carousel">
-      <div
-        className="carouselInner"
-        style={{
-          backgroundImage: `url(${images[currImg].img})`,
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <div
-          className="left"
-          onClick={() => {
-            currImg > 0 && setCurrImg(currImg - 1);
+    <Carousel
+      interval={5000}
+      duration={2000}
+    >
+      {contents.map((content, index) => (
+        <CardMedia
+          key={index}
+          image={content.img}
+          title={content.title}
+          sx={{
+            height: "350px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          <ArrowBackIosIcon style={{ fontSize: 30 }} />
-        </div>
-        <Container maxWidth="xl">
-          {images[currImg].subtitle === stringCheck && (
-            <div>
-              {images[currImg].subtitle === stringCheck && (
-                <>
-                  <div
-                    style={{
-                      float: "left",
-                      width: "20%",
-                      marginTop: "10%",
-                      display: "inline-block",
-                    }}
-                  >
-                    <h1
-                      sx="text-align:left"
-                      className="third_title"
-                    >
-                      {images[currImg].title}
-                    </h1>
-                  </div>
-                  <div
-                    style={{
-                      width: "40%",
-                      margin: "0 auto",
-                      display: "inline-block",
-                      marginTop: "8%",
-                    }}
-                  >
-                    <p className="third_paragraph">
-                      {images[currImg].subtitle}
-                    </p>
-                  </div>
-                  <div
-                    style={{
-                      float: "right",
-                      display: "inline-block",
-                      width: "40%",
-                    }}
-                  >
-                    <Chord />
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-          <div>
-            {images[currImg].index === 0 && (
+          <Container maxWidth="xl">
+            {content.index === 0 ? (
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <div style={{ width: "60%" }}>
+                  <h1 className="third_title">{content.title}</h1>
+                  <p className="third_paragraph">{content.subtitle}</p>
+                  <p className="third_paragraph">{content.subtitle1}</p>
+                </div>
+                <div className="chord">
+                  <Chord />
+                </div>
+              </div>
+            ) : (
               <div
-                className="first_title"
-                style={{ paddingRight: "2rem", display: "flex" }}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
               >
-                <h1 style={{ color: "white", textAlign: "left" }}>
-                  {images[currImg].title}
-                </h1>
-                <p
-                  className="first_paragraph"
-                  style={{ color: "white", textAlign: "left" }}
-                >
-                  {images[currImg].subtitle}
-                </p>
+                <h1 className="second_title">{content.title}</h1>
+                <p className="second_paragraph">{content.subtitle}</p>
               </div>
             )}
-            {images[currImg].index === 1 && (
-              <>
-                <div className="second_title">
-                  <h1 style={{ color: "white", textAlign: "left" }}>
-                    {images[currImg].title}
-                  </h1>
-                </div>
-                <p
-                  className="second_paragraph"
-                  style={{ color: "white", textAlign: "left" }}
-                >
-                  {images[currImg].subtitle}
-                </p>
-              </>
-            )}
-            <p>{images[currImg].subtitle1}</p>
-          </div>
-        </Container>
-        <div
-          className="right"
-          onClick={() => {
-            currImg < images.length - 1 && setCurrImg(currImg + 1);
-          }}
-        >
-          <ArrowForwardIosIcon style={{ fontSize: 30 }} />
-        </div>
-      </div>
-    </div>
+          </Container>
+        </CardMedia>
+      ))}
+    </Carousel>
   );
 }
 
-export default Carousel;
+export default Banner;

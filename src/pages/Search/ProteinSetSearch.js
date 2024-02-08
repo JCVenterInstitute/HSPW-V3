@@ -12,19 +12,18 @@ import {
   Container,
 } from "@mui/material";
 import { AgGridReact } from "ag-grid-react";
-
+import { Link } from "react-router-dom";
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 
 function ProteinLinkComponent(props) {
   return (
-    <div style={{ paddingLeft: "20px" }}>
-      <a
-        target="_blank"
+    <div>
+      <Link
         rel="noopener noreferrer"
-        href={`/protein/${props.value}`}
+        to={`/protein/${props.value}`}
       >
         {props.value}
-      </a>
+      </Link>
     </div>
   );
 }
@@ -41,14 +40,13 @@ function GeneLinkComponent(props) {
     links.push(
       <>
         {`${geneDetail[0]}: `}
-        <a
+        <Link
           key={`gene-${geneDetail[0]}`}
-          target="_blank"
           rel="noopener noreferrer"
-          href={`/gene/${geneDetail[0]}`}
+          to={`/gene/${geneDetail[0]}`}
         >
           {`${geneDetail[1]}`}
-        </a>
+        </Link>
         {geneIndex === genes.length - 1 ? "" : ", "}
       </>
     );
@@ -136,18 +134,21 @@ const ProteinSetSearch = () => {
       field: "uniprot_accession",
       headerClass: ["header-border"],
       cellRenderer: "ProteinLinkComponent",
+      cellClass: ["table-border", "protein-set-search-cell"],
     },
     {
       headerName: "Gene",
       field: "gene_symbol",
       headerClass: ["header-border"],
       cellRenderer: "GeneLinkComponent",
+      cellClass: ["table-border", "protein-set-search-cell"],
     },
     {
       headerName: "Protein Name",
       field: "protein_name",
       headerClass: ["header-border"],
       cellClass: ["table-border"],
+      cellClass: ["table-border", "protein-set-search-cell"],
     },
     {
       headerName: "Data Source",
@@ -159,6 +160,7 @@ const ProteinSetSearch = () => {
         }
       },
       headerClass: ["header-border"],
+      cellClass: ["table-border", "protein-set-search-cell"],
     },
   ];
 

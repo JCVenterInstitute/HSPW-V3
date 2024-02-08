@@ -16,6 +16,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import CustomLoadingOverlay from "../CustomLoadingOverlay";
+import { Link } from "react-router-dom";
 
 const generateColumnDefs = (data) => {
   if (!data || data.length === 0) return [];
@@ -27,7 +28,7 @@ const generateColumnDefs = (data) => {
       minWidth: 280,
       cellRenderer: "LinkComponent",
       headerClass: ["header-border"],
-      cellClass: ["differential-cell"],
+      cellClass: ["differential-expression-cell"],
     },
     {
       headerName: "Protein Name",
@@ -35,7 +36,7 @@ const generateColumnDefs = (data) => {
       wrapText: true,
       minWidth: 450,
       headerClass: ["header-border"],
-      cellClass: ["differential-cell"],
+      cellClass: ["differential-expression-cell"],
     },
     {
       headerName: "Search Database",
@@ -43,7 +44,7 @@ const generateColumnDefs = (data) => {
       wrapText: true,
       minWidth: 220,
       headerClass: ["header-border"],
-      cellClass: ["differential-cell"],
+      cellClass: ["differential-expression-cell"],
     },
     {
       headerName: "Search Engine",
@@ -51,7 +52,7 @@ const generateColumnDefs = (data) => {
       wrapText: true,
       minWidth: 220,
       headerClass: ["header-border"],
-      cellClass: ["differential-cell"],
+      cellClass: ["differential-expression-cell"],
     },
     {
       headerName: "Protein Score",
@@ -59,7 +60,7 @@ const generateColumnDefs = (data) => {
       wrapText: true,
       minWidth: 220,
       headerClass: ["header-border"],
-      cellClass: ["differential-cell"],
+      cellClass: ["differential-expression-cell"],
     },
     {
       headerName: "Peptide Count",
@@ -67,7 +68,7 @@ const generateColumnDefs = (data) => {
       wrapText: true,
       minWidth: 220,
       headerClass: ["header-border"],
-      cellClass: ["differential-cell"],
+      cellClass: ["differential-expression-cell"],
     },
     {
       headerName: "Abundance Score",
@@ -75,7 +76,7 @@ const generateColumnDefs = (data) => {
       wrapText: true,
       minWidth: 250,
       headerClass: ["header-border"],
-      cellClass: ["differential-cell"],
+      cellClass: ["differential-expression-cell"],
     },
   ];
 
@@ -84,13 +85,13 @@ const generateColumnDefs = (data) => {
 
 function LinkComponent(props) {
   return (
-    <div style={{ paddingLeft: "20px" }}>
-      <a
+    <div>
+      <Link
         rel="noopener noreferrer"
-        href={`/experiment-protein/${props.value}`}
+        to={`/experiment-protein/${props.value}`}
       >
         {props.value}
-      </a>
+      </Link>
     </div>
   );
 }

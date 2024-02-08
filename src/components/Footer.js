@@ -5,7 +5,8 @@ import forsyth from "../assets/logo-forsyth.png";
 import uthsc from "../assets/logo-uthsc.svg";
 import ub from "../assets/logo-ub.png";
 import nih from "../assets/logo-nih-nidcr.png";
-import { Container, Grid, Link } from "@mui/material";
+import { Container, Grid } from "@mui/material";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   const links = [
@@ -58,6 +59,9 @@ const Footer = () => {
           spacing={2}
           sx={{
             justifyContent: "space-evenly",
+            padding: 0,
+            marginTop: "5px",
+            marginBottom: "5px",
           }}
         >
           {logos.map((logo, index) => {
@@ -77,7 +81,7 @@ const Footer = () => {
                 }}
               >
                 <Link
-                  href={logo.href}
+                  to={logo.href}
                   target="_blank"
                 >
                   <img
@@ -106,9 +110,8 @@ const Footer = () => {
                 lg={2}
               >
                 <Link
-                  href={link.href}
-                  underline="none"
-                  style={{ fontSize: "16px" }}
+                  to={link.href}
+                  style={{ fontSize: "16px", textDecoration: "none" }}
                 >
                   {link.text}
                 </Link>
@@ -130,9 +133,16 @@ const Footer = () => {
               item
               container
               justifyContent="space-between"
-              sx={{ ml: 2, mr: 2, mb: 4 }}
+              sx={{
+                ml: 2,
+                mr: 2,
+                mb: 4,
+              }}
             >
-              <Grid item>
+              <Grid
+                item
+                sx={{ mb: { xs: 2, sm: 2 } }}
+              >
                 <p className="address last">
                   J. Craig Venter Institute, 4120 Capricorn Lane, La Jolla, CA
                   92037

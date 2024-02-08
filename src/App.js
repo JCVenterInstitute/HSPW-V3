@@ -48,6 +48,7 @@ import ReactGA from "react-ga4";
 import NotFoundPage from "./pages/NotFoundPage.js";
 import UploadExperiment from "./pages/UploadExperiment.js";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import ScrollToTop from "./components/ScrollToTop.js";
 ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
 
 const theme = createTheme({
@@ -66,6 +67,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Router>
+        <ScrollToTop />
         <div className="content-wrapper">
           <div className="main-content">
             <NavBar />

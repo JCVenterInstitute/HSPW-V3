@@ -19,6 +19,7 @@ const { formQuery } = require("./utils/formQuery");
 const { generatePresignedUrls } = require("./utils/generatePresignedUrls");
 const { createContact } = require("./utils/createContact");
 const { getSSMParameter } = require("./utils/utils");
+const { sendSupportEmail } = require("./utils/sendSupportEmail");
 
 app.use(cors());
 app.use(express.json());
@@ -69,7 +70,7 @@ async function getClusterMemberCount() {
   var client = await getClient();
 
   var response = await client.search({
-    index: "protein_cluster",
+    index: "protein_cluster_013024",
     body: {
       size: 0,
       aggs: {
@@ -167,7 +168,7 @@ async function getAllProteinSearchClusterData() {
   };
 
   var response = await client.search({
-    index: "protein_cluster",
+    index: "protein_cluster_013024",
     body: query,
   });
 
@@ -196,7 +197,7 @@ async function getProteinClusterById(id) {
   };
 
   var response = await client.search({
-    index: "protein_cluster",
+    index: "protein_cluster_013024",
     body: query,
   });
 
@@ -221,7 +222,7 @@ async function queryProteinCluster(
   const client = await getClient();
 
   const payload = {
-    index: "protein_cluster",
+    index: "protein_cluster_013024",
     body: {
       track_total_hits: true,
       size: size,
@@ -270,7 +271,7 @@ async function getSalivaryProteinById(id) {
   };
 
   var response = await client.search({
-    index: "salivary-proteins-112023",
+    index: "salivary-proteins-013024",
     body: query,
   });
 
@@ -304,7 +305,7 @@ async function querySalivaryProtein(
   const client = await getClient();
 
   const payload = {
-    index: "new_saliva_protein_test",
+    index: "salivary_summary",
     body: {
       track_total_hits: true,
       size: size,
@@ -359,7 +360,7 @@ async function queryProteins(size, from, filter, sort = null, keyword = null) {
   const client = await getClient1();
 
   const payload = {
-    index: "salivary-proteins-112023",
+    index: "salivary-proteins-013024",
     body: {
       track_total_hits: true,
       size: size,
@@ -477,7 +478,7 @@ async function getProteinSignatureById(id) {
   };
 
   var response = await client.search({
-    index: "protein_signature",
+    index: "protein_signature_013024",
     body: query,
   });
 
@@ -502,7 +503,7 @@ async function queryProteinSignature(
   const client = await getClient();
 
   const payload = {
-    index: "protein_signature",
+    index: "protein_signature_013024",
     body: {
       track_total_hits: true,
       size: size,
@@ -622,18 +623,145 @@ app.post("/api/citations/:size/:from/", (req, res) => {
  * For Homepage Chord Component
  ******************************/
 
-async function search_protein_count_SP() {
+async function getCount() {
   var client = await getClient();
+
   const response = await client.search({
-    index: "new_saliva_protein_test", // Replace with your index name
+    index: "salivary_summary", // Replace with your index name
     body: {
       size: 0,
       aggs: {
-        filter_ws_par: {
+        filter_whole_saliva: {
+          filter: {
+            bool: {
+              must: [{ range: { saliva_abundance: { gt: 0 } } }],
+            },
+          },
+        },
+        filter_whole_saliva_only: {
           filter: {
             bool: {
               must: [
                 { range: { saliva_abundance: { gt: 0 } } },
+                { range: { "sm/sl_abundance": { lte: 0 } } },
+                { range: { plasma_abundance: { lte: 0 } } },
+                { range: { parotid_gland_abundance: { lte: 0 } } },
+              ],
+            },
+          },
+        },
+        filter_smsl_glands: {
+          filter: {
+            bool: {
+              must: [{ range: { "sm/sl_abundance": { gt: 0 } } }],
+            },
+          },
+        },
+        filter_smsl_glands_only: {
+          filter: {
+            bool: {
+              must: [
+                { range: { saliva_abundance: { lte: 0 } } },
+                { range: { "sm/sl_abundance": { gt: 0 } } },
+                { range: { plasma_abundance: { lte: 0 } } },
+                { range: { parotid_gland_abundance: { lte: 0 } } },
+              ],
+            },
+          },
+        },
+        filter_blood_plasma: {
+          filter: {
+            bool: {
+              must: [{ range: { plasma_abundance: { gt: 0 } } }],
+            },
+          },
+        },
+        filter_blood_plasma_only: {
+          filter: {
+            bool: {
+              must: [
+                { range: { saliva_abundance: { lte: 0 } } },
+                { range: { "sm/sl_abundance": { lte: 0 } } },
+                { range: { plasma_abundance: { gt: 0 } } },
+                { range: { parotid_gland_abundance: { lte: 0 } } },
+              ],
+            },
+          },
+        },
+        filter_parotid_glands: {
+          filter: {
+            bool: {
+              must: [{ range: { parotid_gland_abundance: { gt: 0 } } }],
+            },
+          },
+        },
+        filter_parotid_glands_only: {
+          filter: {
+            bool: {
+              must: [
+                { range: { saliva_abundance: { lte: 0 } } },
+                { range: { "sm/sl_abundance": { lte: 0 } } },
+                { range: { plasma_abundance: { lte: 0 } } },
+                { range: { parotid_gland_abundance: { gt: 0 } } },
+              ],
+            },
+          },
+        },
+        filter_whole_saliva_and_smsl_glands: {
+          filter: {
+            bool: {
+              must: [
+                { range: { saliva_abundance: { gt: 0 } } },
+                { range: { "sm/sl_abundance": { gt: 0 } } },
+              ],
+            },
+          },
+        },
+        filter_whole_saliva_and_blood_plasma: {
+          filter: {
+            bool: {
+              must: [
+                { range: { saliva_abundance: { gt: 0 } } },
+                { range: { plasma_abundance: { gt: 0 } } },
+              ],
+            },
+          },
+        },
+        filter_whole_saliva_and_parotid_glands: {
+          filter: {
+            bool: {
+              must: [
+                { range: { saliva_abundance: { gt: 0 } } },
+                { range: { parotid_gland_abundance: { gt: 0 } } },
+              ],
+            },
+          },
+        },
+        filter_smsl_glands_and_blood_plasma: {
+          filter: {
+            bool: {
+              must: [
+                { range: { "sm/sl_abundance": { gt: 0 } } },
+                { range: { plasma_abundance: { gt: 0 } } },
+              ],
+            },
+          },
+        },
+        filter_smsl_glands_and_parotid_glands: {
+          filter: {
+            bool: {
+              must: [
+                { range: { "sm/sl_abundance": { gt: 0 } } },
+                { range: { parotid_gland_abundance: { gt: 0 } } },
+              ],
+            },
+          },
+        },
+        filter_blood_plasma_and_parotid_glands: {
+          filter: {
+            bool: {
+              must: [
+                { range: { plasma_abundance: { gt: 0 } } },
                 { range: { parotid_gland_abundance: { gt: 0 } } },
               ],
             },
@@ -646,289 +774,8 @@ async function search_protein_count_SP() {
   return response.body.aggregations;
 }
 
-async function search_protein_count_SB() {
-  var client = await getClient();
-
-  const response = await client.search({
-    index: "new_saliva_protein_test", // Replace with your index name
-    body: {
-      size: 0,
-      aggs: {
-        filter_ws_p: {
-          filter: {
-            bool: {
-              must: [
-                { range: { saliva_abundance: { gt: 0 } } },
-                { range: { plasma_abundance: { gt: 0 } } },
-              ],
-            },
-          },
-        },
-      },
-    },
-  });
-
-  return response.body.aggregations;
-}
-
-async function search_protein_count_SSS() {
-  var client = await getClient();
-
-  const response = await client.search({
-    index: "new_saliva_protein_test", // Replace with your index name
-    body: {
-      size: 0,
-      aggs: {
-        filter_ss_ws: {
-          filter: {
-            bool: {
-              must: [
-                { range: { saliva_abundance: { gt: 0 } } },
-                { range: { "sm/sl_abundance": { gt: 0 } } },
-              ],
-            },
-          },
-        },
-      },
-    },
-  });
-
-  return response.body.aggregations;
-}
-
-async function search_count_Pa() {
-  var client = await getClient();
-
-  const response = await client.search({
-    index: "new_saliva_protein_test", // Replace with your index name
-    body: {
-      size: 0,
-      aggs: {
-        filter_par: {
-          filter: {
-            bool: {
-              must: [{ range: { parotid_gland_abundance: { gt: 0 } } }],
-            },
-          },
-        },
-      },
-    },
-  });
-
-  return response.body.aggregations;
-}
-
-async function search_count_S() {
-  var client = await getClient();
-
-  const response = await client.search({
-    index: "new_saliva_protein_test", // Replace with your index name
-    body: {
-      size: 0,
-      aggs: {
-        filter_ws: {
-          filter: {
-            bool: {
-              must: [{ range: { saliva_abundance: { gt: 0 } } }],
-            },
-          },
-        },
-      },
-    },
-  });
-
-  return response.body.aggregations;
-}
-
-async function search_count_Pl() {
-  var client = await getClient();
-
-  const response = await client.search({
-    index: "new_saliva_protein_test", // Replace with your index name
-    body: {
-      size: 0,
-      aggs: {
-        filter_p: {
-          filter: {
-            bool: {
-              must: [{ range: { plasma_abundance: { gt: 0 } } }],
-            },
-          },
-        },
-      },
-    },
-  });
-
-  return response.body.aggregations;
-}
-
-async function search_count_SS() {
-  var client = await getClient();
-
-  const response = await client.search({
-    index: "new_saliva_protein_test", // Replace with your index name
-    body: {
-      size: 0,
-      aggs: {
-        filter_ss: {
-          filter: {
-            bool: {
-              must: [{ range: { "sm/sl_abundance": { gt: 0 } } }],
-            },
-          },
-        },
-      },
-    },
-  });
-
-  return response.body.aggregations;
-}
-
-async function search_protein_count_SSP() {
-  var client = await getClient();
-
-  const response = await client.search({
-    index: "new_saliva_protein_test", // Replace with your index name
-    body: {
-      size: 0,
-      aggs: {
-        filter_ss_p: {
-          filter: {
-            bool: {
-              must: [
-                { range: { plasma_abundance: { gt: 0 } } },
-                { range: { "sm/sl_abundance": { gt: 0 } } },
-              ],
-            },
-          },
-        },
-      },
-    },
-  });
-
-  return response.body.aggregations;
-
-  return body;
-}
-
-async function search_protein_count_SSPa() {
-  var client = await getClient();
-
-  const response = await client.search({
-    index: "new_saliva_protein_test", // Replace with your index name
-    body: {
-      size: 0,
-      aggs: {
-        filter_ss_par: {
-          filter: {
-            bool: {
-              must: [
-                { range: { parotid_abundance: { gt: 0 } } },
-                { range: { "sm/sl_abundance": { gt: 0 } } },
-              ],
-            },
-          },
-        },
-      },
-    },
-  });
-
-  return response.body.aggregations;
-}
-
-async function search_protein_count_PPa() {
-  var client = await getClient();
-
-  const response = await client.search({
-    index: "new_saliva_protein_test", // Replace with your index name
-    body: {
-      size: 0,
-      aggs: {
-        filter_p_par: {
-          filter: {
-            bool: {
-              must: [
-                { range: { plasma_abundance: { gt: 0 } } },
-                { range: { parotid_abundance: { gt: 0 } } },
-              ],
-            },
-          },
-        },
-      },
-    },
-  });
-
-  return response.body.aggregations;
-}
-
-app.get("/api/countPPa", (req, res) => {
-  let a = search_protein_count_PPa();
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-app.get("/api/countSSP", (req, res) => {
-  let a = search_protein_count_SSP();
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-app.get("/api/countSSPa", (req, res) => {
-  let a = search_protein_count_SSPa();
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-app.get("/api/countProteinPa", (req, res) => {
-  let a = search_count_Pa();
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-app.get("/api/countProteinS", (req, res) => {
-  let a = search_count_S();
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-app.get("/api/countProteinPl", (req, res) => {
-  let a = search_count_Pl();
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-app.get("/api/countProteinSS", (req, res) => {
-  let a = search_count_SS();
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-app.get("/api/countSPa", (req, res) => {
-  let a = search_protein_count_SP();
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-app.get("/api/countSPl", (req, res) => {
-  let a = search_protein_count_SB();
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-app.get("/api/countSSS", (req, res) => {
-  let a = search_protein_count_SSS();
-  a.then(function (result) {
-    res.json(result);
-  });
+app.get("/api/getChordPlotCount", (req, res) => {
+  getCount().then((result) => res.json(result));
 });
 
 /*******************
@@ -1035,7 +882,7 @@ const searchGoNodesUsage = async (id) => {
   };
 
   const response = await client.search({
-    index: "salivary-proteins-112023",
+    index: "salivary-proteins-013024",
     body: query,
   });
   return response.body.hits.hits;
@@ -1186,7 +1033,7 @@ const searchStudyProtein = async (experiment_id_key) => {
   };
 
   const response = await client.search({
-    index: "study_protein",
+    index: "study_protein_012924",
     body: query,
   });
 
@@ -1214,7 +1061,7 @@ const searchStudyProteinUniprot = async (uniprot_id) => {
   };
 
   const response = await client.search({
-    index: "study_protein",
+    index: "study_protein_012924",
     body: query,
   });
 
@@ -1242,7 +1089,7 @@ const bulkStudyProteins = async (ids) => {
   };
 
   const response = await client.search({
-    index: "study_protein",
+    index: "study_protein_012924",
     body: query,
   });
 
@@ -1263,7 +1110,7 @@ async function getProteinSignatureTypeCounts() {
   var client = await getClient();
 
   const response = await client.search({
-    index: "protein_signature",
+    index: "protein_signature_013024",
     body: {
       size: 0,
       aggs: {
@@ -1764,6 +1611,42 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
   }
 });
 
+app.post(
+  "/api/differential-expression/send-support-email",
+  async (req, res) => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+
+    const timestamp = {
+      year,
+      month,
+      day,
+      hours,
+      minutes,
+      seconds,
+    };
+    try {
+      const { message } = req.body;
+
+      const newEmail = await sendSupportEmail({
+        message,
+        timestamp,
+      });
+
+      console.log("Support email sent.");
+      res.status(201).json({ message: "Support email sent.", newEmail });
+    } catch (error) {
+      console.error("Error in API endpoint: ", error);
+      res.status(500).send("Error sending email");
+    }
+  }
+);
+
 /*********************
  * Misc Util Endpoints
  *********************/
@@ -1858,13 +1741,13 @@ app.get("/api/properties/:entity", async (req, res) => {
 
   const entityIndexMapping = {
     Genes: "genes",
-    "Protein Clusters": "protein_cluster",
-    "Protein Signatures": "protein_signature",
-    Proteins: "study_protein",
+    "Protein Clusters": "protein_cluster_013024",
+    "Protein Signatures": "protein_signature_013024",
+    Proteins: "study_protein_012924",
     "PubMed Citations": "citation",
     // "Salivary Proteins": "protein",
-    "Salivary Proteins": "salivary-proteins-112023",
-    Annotations: "salivary-proteins-112023",
+    "Salivary Proteins": "salivary-proteins-013024",
+    Annotations: "salivary-proteins-013024",
   };
 
   if (entity === "Salivary Proteins") {
@@ -1953,13 +1836,13 @@ const advancedSearch = async ({
 
   const entityIndexMapping = {
     Genes: "genes",
-    "Protein Clusters": "protein_cluster",
-    "Protein Signatures": "protein_signature",
-    Proteins: "study_protein",
+    "Protein Clusters": "protein_cluster_013024",
+    "Protein Signatures": "protein_signature_013024",
+    Proteins: "study_protein_012924",
     "PubMed Citations": "citation",
     // "Salivary Proteins": "protein",
-    "Salivary Proteins": "salivary-proteins-112023",
-    Annotations: "salivary-proteins-112023",
+    "Salivary Proteins": "salivary-proteins-013024",
+    Annotations: "salivary-proteins-013024",
   };
 
   const query = await formQuery(
@@ -2092,11 +1975,11 @@ const globalSearch = async ({
 
   const entityIndexMapping = {
     Genes: "genes",
-    "Protein Clusters": "protein_cluster",
-    "Protein Signatures": "protein_signature",
-    Proteins: "study_protein",
+    "Protein Clusters": "protein_cluster_013024",
+    "Protein Signatures": "protein_signature_013024",
+    Proteins: "study_protein_012924",
     "PubMed Citations": "citation",
-    "Salivary Proteins": "salivary-proteins-112023",
+    "Salivary Proteins": "salivary-proteins-013024",
   };
 
   const escapeSpecialCharacters = (inputVal) => {
@@ -2215,7 +2098,7 @@ const experimentProtein = async ({
   };
 
   const response = await client.search({
-    index: "study_protein",
+    index: "study_protein_012924",
     body: query,
   });
 
@@ -2286,7 +2169,7 @@ const experimentPeptide = async (
   };
 
   const response = await client.search({
-    index: "peptide",
+    index: "peptide_013024",
     body: query,
   });
 
@@ -2303,6 +2186,42 @@ app.post("/api/experiment-protein/:uniprotid", async (req, res) => {
   } catch (error) {
     console.log(error);
   }
+});
+
+/**********************************
+ * For Fetching Abundance Scores
+ *********************************/
+
+const getAbundanceData = async (proteinId) => {
+  var client = await getClient();
+
+  const response = await client.search({
+    index: "study_peptide_abundance_012424",
+    body: {
+      query: {
+        bool: {
+          filter: [
+            {
+              term: {
+                "uniprot_id.keyword": proteinId,
+              },
+            },
+          ],
+        },
+      },
+    },
+  });
+
+  const results = response.body.hits.hits;
+
+  return results.map((res) => res._source);
+};
+
+app.get("/api/abundance-score/:id", (req, res) => {
+  const abundanceData = getAbundanceData(req.params.id);
+  abundanceData.then(function (result) {
+    res.json(result);
+  });
 });
 
 app.get("*", function (req, res) {

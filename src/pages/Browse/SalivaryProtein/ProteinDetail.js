@@ -3,7 +3,7 @@ import Table from "@mui/material/Table";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
-import { Container, TableBody, TableHead, Paper } from "@mui/material";
+import { Container, TableBody, TableHead } from "@mui/material";
 import { HashLink as Link } from "react-router-hash-link";
 import { useEffect, useState } from "react";
 import FontAwesome from "react-fontawesome";
@@ -20,6 +20,7 @@ import CommentTable from "../../../components/SalivaryProtein/CommentTable";
 import GlycanTable from "../../../components/SalivaryProtein/GlycanTable";
 import main_feature from "../../../assets/hero.jpeg";
 import "../../style.css";
+import { Link as ReactLink } from "react-router-dom";
 
 window.customElements.define("protvista-uniprot", ProtvistaUniprot);
 
@@ -30,47 +31,41 @@ const th = {
   fontWeight: "bold",
   fontSize: "20px",
   padding: "0.2em",
-  width: "200px",
-};
-
-const td = {
-  border: "1px solid #aaa",
-  padding: "0.2em",
-  borderTopRightRadius: "10px",
-  fontSize: "18px",
+  maxWidth: "1000px",
 };
 
 const ProteinDetail = (props) => {
   const params = useParams();
   const url = `${process.env.REACT_APP_API_ENDPOINT}/api/salivary-protein/${params["proteinid"]}`;
-  const proteinDetailUrl = `${process.env.REACT_APP_API_ENDPOINT}/api/salivary-protein-detail/${params["proteinid"]}`;
 
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");
   const [authorName, setauthorName] = useState("");
   const [year, setYear] = useState("");
   const [journal, setJournal] = useState("");
-  const [proteinDetailData, setProteinDetailData] = useState([]);
+  const [abundanceData, setAbundanceData] = useState([]);
 
   const fetchProtein = async () => {
-    const [response, proteinDetail] = await Promise.all([
-      axios.get(url),
-      axios.get(proteinDetailUrl),
-    ]);
-
+    const response = await axios.get(url);
     const json = response.data;
-    const proteinDetailJson = proteinDetail.data;
-    return [json, proteinDetailJson];
+    return json;
+  };
+
+  const fetchAbundance = async () => {
+    const resp = await axios.get(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/abundance-score/${params["proteinid"]}`
+    );
+    const abundanceData = resp.data;
+    return abundanceData;
   };
 
   const processData = async () => {
-    const [proteinResult, proteinDetailResult] = await fetchProtein().catch(
-      console.error
-    );
-    console.log("ProteinDetailResult", proteinDetailResult);
+    const proteinResult = await fetchProtein().catch(console.error);
+    const abundanceData = await fetchAbundance();
 
     if (proteinResult) {
       setData(proteinResult);
+      setAbundanceData(abundanceData);
 
       if (proteinResult[0]._source.salivary_proteins) {
         const cites = proteinResult[0]._source.salivary_proteins.cites;
@@ -86,10 +81,6 @@ const ProteinDetail = (props) => {
         setauthorName(pubmedDetails.map((detail) => detail.authorName));
         setYear(pubmedDetails.map((detail) => detail.yearTitle));
         setJournal(pubmedDetails.map((detail) => detail.journalTitle));
-      }
-
-      if (proteinDetailResult) {
-        setProteinDetailData(proteinDetailResult);
       }
 
       setLoading(false);
@@ -304,7 +295,7 @@ const ProteinDetail = (props) => {
                       backgroundColor: "#1463B9",
                       color: "white",
                       fontFamily: "Montserrat",
-                      border: "1px solid #3592E4",
+                      border: "none",
                       borderTopLeftRadius: "10px",
                       width: "10%",
                       fontSize: "14px",
@@ -453,11 +444,7 @@ const ProteinDetail = (props) => {
           <TableContainer>
             <Table>
               <TableBody>
-                <TableRow
-                  style={{
-                    border: "1px solid #3592E4",
-                  }}
-                >
+                <TableRow>
                   <TableCell
                     style={{
                       backgroundColor: "#1463B9",
@@ -465,7 +452,7 @@ const ProteinDetail = (props) => {
                       fontFamily: "Montserrat",
                       fontSize: "17px",
                       fontWeight: "bold",
-                      border: "1px solid #3592E4",
+                      border: "none",
                       borderTopLeftRadius: "10px",
                     }}
                   >
@@ -515,7 +502,7 @@ const ProteinDetail = (props) => {
                       fontFamily: "Montserrat",
                       fontSize: "17px",
                       fontWeight: "bold",
-                      border: "1px solid #3592E4",
+                      border: "none",
                       borderTopRightRadius: "10px",
                     }}
                   >
@@ -570,16 +557,16 @@ const ProteinDetail = (props) => {
                       fontFamily: "Lato",
                     }}
                   >
-                    <a
+                    <ReactLink
                       style={{ color: "#116988" }}
-                      href={
+                      to={
                         window.location.origin +
                         "/protein-sequence/" +
                         params["proteinid"]
                       }
                     >
                       Sequence
-                    </a>
+                    </ReactLink>
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -729,58 +716,62 @@ const ProteinDetail = (props) => {
           >
             Proteomics
           </h2>
-          <TableContainer>
-            <Table>
-              <TableBody
-                style={{
-                  borderTopLeftRadius: "10px",
-                  borderTopRightRadius: "10px",
-                }}
-              >
-                <TableRow
+          {abundanceData.length === 1 &&
+          abundanceData[0].tissue_id === "N/A" ? (
+            "There is no human salivary proteomics data for this protein."
+          ) : (
+            <TableContainer>
+              <Table>
+                <TableBody
                   style={{
                     borderTopLeftRadius: "10px",
                     borderTopRightRadius: "10px",
                   }}
                 >
-                  <TableCell
+                  <TableRow
                     style={{
-                      backgroundColor: "#1463B9",
-                      color: "white",
-                      fontFamily: "Montserrat",
-                      fontSize: "17px",
-                      fontWeight: "bold",
-                      border: "1px solid #3592E4",
                       borderTopLeftRadius: "10px",
+                      borderTopRightRadius: "10px",
                     }}
                   >
-                    Tissue ID
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      backgroundColor: "#1463B9",
-                      color: "white",
-                      fontFamily: "Montserrat",
-                      fontSize: "17px",
-                      fontWeight: "bold",
-                      border: "1px solid #3592E4",
-                    }}
-                  >
-                    Tissue Term
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      backgroundColor: "#1463B9",
-                      color: "white",
-                      fontFamily: "Montserrat",
-                      fontSize: "17px",
-                      fontWeight: "bold",
-                      border: "1px solid #3592E4",
-                    }}
-                  >
-                    Disease State
-                  </TableCell>
-                  <TableCell
+                    <TableCell
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        border: "none",
+                        borderTopLeftRadius: "10px",
+                      }}
+                    >
+                      Tissue ID
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        border: "1px solid #3592E4",
+                      }}
+                    >
+                      Tissue Term
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        border: "1px solid #3592E4",
+                      }}
+                    >
+                      Disease State
+                    </TableCell>
+                    {/* <TableCell
                     style={{
                       backgroundColor: "#1463B9",
                       color: "white",
@@ -791,289 +782,141 @@ const ProteinDetail = (props) => {
                     }}
                   >
                     Isoform
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      backgroundColor: "#1463B9",
-                      color: "white",
-                      fontFamily: "Montserrat",
-                      fontSize: "17px",
-                      fontWeight: "bold",
-                      border: "1px solid #3592E4",
-                    }}
-                  >
-                    Experiment Count
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      backgroundColor: "#1463B9",
-                      color: "white",
-                      fontFamily: "Montserrat",
-                      fontSize: "17px",
-                      fontWeight: "bold",
-                      border: "1px solid #3592E4",
-                    }}
-                  >
-                    Peptide Count
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      backgroundColor: "#1463B9",
-                      color: "white",
-                      fontFamily: "Montserrat",
-                      fontSize: "17px",
-                      fontWeight: "bold",
-                      border: "1px solid #3592E4",
-                      borderTopRightRadius: "10px",
-                    }}
-                  >
-                    Abundance Score
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    <a
-                      target="_blank"
-                      rel="noreferrer"
-                      href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001202"
+                  </TableCell> */}
+                    <TableCell
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        border: "1px solid #3592E4",
+                      }}
                     >
-                      BTO:0001202
-                    </a>
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    Saliva
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    Disease free<br></br>Sjogren's Syndrome<br></br>COVID-19
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    50<br></br>2<br></br>8
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    133<br></br>2870<br></br>24
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    430.74<br></br>1008.23<br></br>0
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  ></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    <a
-                      target="_blank"
-                      rel="noreferrer"
-                      href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001316"
+                      Experiment Count
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        border: "1px solid #3592E4",
+                      }}
                     >
-                      BTO:0001316
-                    </a>
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    Submandibular gland
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    Disease free
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    49
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    2442
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    13513.97
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  ></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    <a
-                      target="_blank"
-                      rel="noreferrer"
-                      href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001315"
+                      Peptide Count
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        backgroundColor: "#1463B9",
+                        color: "white",
+                        fontFamily: "Montserrat",
+                        fontSize: "17px",
+                        fontWeight: "bold",
+                        border: "none",
+                        borderTopRightRadius: "10px",
+                      }}
                     >
-                      BTO:0001315
-                    </a>
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    Sublingual gland
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    Disease free
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    49
-                  </TableCell>
-                  <TableCell v>2442</TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    14,385.84
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  ></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    <a
-                      target="_blank"
-                      rel="noreferrer"
-                      href="https://salivaryproteome.org/community/index.php/Special:Ontology_Term/BTO:0001004"
-                    >
-                      BTO:0001004
-                    </a>
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    Parotid gland
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    Disease free
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    56
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    1208
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  >
-                    3,127.74
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      border: "1px solid #CACACA",
-                      fontFamily: "Lato",
-                    }}
-                  ></TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
+                      Abundance Score
+                    </TableCell>
+                  </TableRow>
+                  {abundanceData.map((row, i) => {
+                    const {
+                      abundance_score,
+                      disease_state,
+                      experiment_count,
+                      isoform,
+                      peptide_count,
+                      tissue_id,
+                      tissue_term,
+                    } = row;
+
+                    return (
+                      <TableRow key={`proteomics-row-${i}`}>
+                        <TableCell
+                          style={{
+                            border: "1px solid #CACACA",
+                            fontFamily: "Lato",
+                          }}
+                        >
+                          {tissue_id === "N/A" ? (
+                            tissue_id
+                          ) : (
+                            <a
+                              target="_blank"
+                              rel="noreferrer"
+                              href={`https://www.ebi.ac.uk/ols4/ontologies/bto/classes?obo_id=${tissue_id}`}
+                            >
+                              {tissue_id}{" "}
+                              <FontAwesome
+                                className="super-crazy-colors"
+                                name="external-link"
+                                style={{
+                                  textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                                }}
+                              />
+                            </a>
+                          )}
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            border: "1px solid #CACACA",
+                            fontFamily: "Lato",
+                            textTransform: "Capitalize",
+                          }}
+                        >
+                          {tissue_term}
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            border: "1px solid #CACACA",
+                            fontFamily: "Lato",
+                            textTransform: "Capitalize",
+                          }}
+                        >
+                          {disease_state}
+                        </TableCell>
+                        {/* <TableCell
+                        style={{
+                          border: "1px solid #CACACA",
+                          fontFamily: "Lato",
+                        }}
+                      >
+                        // For IsoForm 
+                      </TableCell> */}
+                        <TableCell
+                          style={{
+                            border: "1px solid #CACACA",
+                            fontFamily: "Lato",
+                          }}
+                        >
+                          {experiment_count}
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            border: "1px solid #CACACA",
+                            fontFamily: "Lato",
+                          }}
+                        >
+                          {peptide_count}
+                        </TableCell>
+                        <TableCell
+                          style={{
+                            border: "1px solid #CACACA",
+                            fontFamily: "Lato",
+                          }}
+                        >
+                          {abundance_score}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+
           <div
             style={{
               height: "3px",
@@ -1097,7 +940,7 @@ const ProteinDetail = (props) => {
           <TableContainer>
             <Table>
               <TableBody>
-                <TableRow sx={{ border: "1px solid black" }}>
+                <TableRow>
                   <TableCell
                     style={{
                       backgroundColor: "#1463B9",
@@ -1105,7 +948,7 @@ const ProteinDetail = (props) => {
                       fontFamily: "Montserrat",
                       fontSize: "17px",
                       fontWeight: "bold",
-                      border: "1px solid #3592E4",
+                      border: "none",
                       maxWidth: "50%",
                       borderTopLeftRadius: "10px",
                     }}
@@ -1454,7 +1297,7 @@ const ProteinDetail = (props) => {
           </h2>
           <Table>
             <TableHead>
-              <TableRow sx={{ border: "1px solid black" }}>
+              <TableRow>
                 <TableCell
                   sx={th}
                   style={{
@@ -1462,7 +1305,7 @@ const ProteinDetail = (props) => {
                     color: "white",
                     fontFamily: "Montserrat",
                     fontSize: "16px",
-                    border: "1px solid #3592E4",
+                    border: "none",
                     borderTopLeftRadius: "10px",
                   }}
                 >

@@ -266,38 +266,23 @@ const DifferentialExpressionResults = () => {
 
   return (
     <>
-      <div style={{ backgroundImage: `url(${main_feature})` }}>
-        <h1
-          style={{
-            color: "white",
-            display: "left",
-            marginLeft: "20px",
-            marginBottom: "1rem",
-            paddingTop: "25px",
-            paddingLeft: "40px",
-          }}
-        >
-          Differential Expression Analysis Results
-        </h1>
-        <p
-          style={{
-            textAlign: "left",
-            color: "white",
-            fontSize: "18px",
-            paddingBottom: "25px",
-            marginLeft: "20px",
-            marginRight: "20px",
-            paddingLeft: "40px",
-            paddingRight: "40px",
-          }}
-        >
-          Visual analytics will identify proteins with differential abundance
-          between experiments in Groups A and B based on their normalized
-          spectral counts.
-        </p>
+      <div
+        className="head_background"
+        style={{ backgroundImage: `url(${main_feature})` }}
+      >
+        <Container maxWidth="xl">
+          <h1 className="head_title">
+            Differential Expression Analysis Results
+          </h1>
+          <p className="head_text">
+            Visual analytics will identify proteins with differential abundance
+            between experiments in Groups A and B based on their normalized
+            spectral counts.
+          </p>
+        </Container>
       </div>
       <Container
-        maxWidth="false"
+        maxWidth="xl"
         sx={{
           width: "100%",
           display: "flex",

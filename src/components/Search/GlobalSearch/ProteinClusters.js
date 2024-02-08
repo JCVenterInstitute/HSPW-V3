@@ -7,6 +7,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import CustomLoadingOverlay from "../CustomLoadingOverlay";
+import { Link } from "react-router-dom";
 
 const generateColumnDefs = (entity, data) => {
   if (!data || data.length === 0) return [];
@@ -23,17 +24,15 @@ const generateColumnDefs = (entity, data) => {
       wrapText: true,
       minWidth: 200,
       headerClass: ["header-border"],
-      cellClass: ["differential-cell"],
+      cellClass: ["table-border", "global-search-cell"],
     };
 
     // Conditional cellRenderer for the first column of 'Annotations'
     if (index === 0) {
       columnDef.cellRenderer = (params) => {
         return (
-          <span
-            onClick={() =>
-              (window.location.href = `/protein-cluster/${params.value}`)
-            }
+          <Link
+            to={`/protein-cluster/${params.value}`}
             style={{
               cursor: "pointer",
               color: "blue",
@@ -41,7 +40,7 @@ const generateColumnDefs = (entity, data) => {
             }}
           >
             {params.value}
-          </span>
+          </Link>
         );
       };
     } else {

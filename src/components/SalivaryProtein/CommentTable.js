@@ -15,19 +15,18 @@ import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ClearIcon from "@mui/icons-material/Clear";
-
+import { Link } from "react-router-dom";
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 import "../Filter.css";
 
 function LinkComponent(props) {
   return (
-    <a
-      target="_blank"
+    <Link
       rel="noopener noreferrer"
-      href={`/citation/${props.value}`}
+      to={`/citation/${props.value}`}
     >
       {props.value}
-    </a>
+    </Link>
   );
 }
 
@@ -52,24 +51,31 @@ function Comment_Table(props) {
       headerName: "Annotation Type",
       field: "annotation_type",
       headerClass: ["header-border"],
+      resizable: true,
+      cellClass: ["table-border", "salivary-protein-cell"],
       maxWidth: 200,
     },
     {
       headerName: "Type",
       field: "type",
       headerClass: ["header-border"],
-      maxWidth: 100,
+      resizable: true,
+      cellClass: ["table-border", "salivary-protein-cell"],
+      maxWidth: 200,
     },
     {
       headerName: "Description",
       field: "description",
       headerClass: ["header-border"],
-      cellClass: ["table-border", "comment_table_description"],
+      resizable: true,
+      cellClass: ["table-border", "salivary-protein-cell"],
     },
     {
       headerName: "Position",
       field: "position",
       headerClass: ["header-border"],
+      resizable: true,
+      cellClass: ["table-border", "salivary-protein-cell"],
       maxWidth: 150,
     },
     {
@@ -81,11 +87,15 @@ function Comment_Table(props) {
         height: "100%",
       },
       headerClass: ["header-border"],
+      resizable: true,
+      cellClass: ["table-border", "salivary-protein-cell"],
     },
     {
       headerName: "Evidences Code",
       field: "evidenceCode",
       headerClass: ["header-border"],
+      resizable: true,
+      cellClass: ["table-border", "salivary-protein-cell"],
       cellStyle: {
         wordBreak: "break-word",
         textWrap: "wrap",

@@ -54,30 +54,49 @@ h1 {
   text-align: left;
 }
 
-.first_title {
-  margin-top: 5%;
-}
-
 .first_paragraph {
   color: #fff;
-  margin-top: 65px;
   font-family: Lato;
   font-size: 21px;
   font-weight: 400;
+  @media (max-width: 768px) {
+    font-size: 18px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 480px) {
+    font-size: 14px; /* Even smaller font size for very small screens */
+  }
 }
 
 .second_title {
-  margin-top: 5%;
   width: 20%;
+  color: white;
+  text-align: left;
+  font-size: 2.5rem;
+  /* Media query for smaller screens */
+  @media (max-width: 1150px) {
+    font-size: 2.1rem; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 768px) {
+    font-size: 2rem; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 480px) {
+    font-size: 1.5rem; /* Even smaller font size for very small screens */
+  }
 }
 
 .second_paragraph {
   color: #fff;
-  margin-top: -7%;
-  margin-left: 60%;
   font-family: Lato;
   font-weight: 500;
-  font-size: 21px;
+  font-size: 1.5rem;
+  width: 40%; /* Adjust the width as necessary */
+  /* Media query for smaller screens */
+  @media (max-width: 768px) {
+    font-size: 1.2rem; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 480px) {
+    font-size: 1rem; /* Even smaller font size for very small screens */
+  }
 }
 
 .third_title {
@@ -86,8 +105,23 @@ h1 {
   font-size: 36px;
   font-style: normal;
   font-weight: 800;
-  line-height: 100%; /* 36px */
   text-transform: uppercase;
+  padding-bottom: 15px;
+  @media (max-width: 1100px) {
+    font-size: 32px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 1000px) {
+    font-size: 30px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 800px) {
+    font-size: 26px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 750px) {
+    font-size: 22px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 730px) {
+    display: none; /* Smaller font size on smaller screens */
+  }
 }
 
 .third_paragraph {
@@ -97,6 +131,58 @@ h1 {
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  padding-bottom: 15px;
+  @media (max-width: 1230px) {
+    font-size: 20px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 1100px) {
+    font-size: 18px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 1000px) {
+    font-size: 16px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 870px) {
+    font-size: 14px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 830px) {
+    font-size: 12px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 750px) {
+    font-size: 10px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 730px) {
+    display: none; /* Smaller font size on smaller screens */
+  }
+}
+
+.chord {
+  display: flex;
+  justify-content: center; /* Horizontally center the children */
+  width: 40%;
+  @media (max-width: 1360px) {
+    width: 50%; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 1100px) {
+    width: 55%; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 1000px) {
+    width: 60%; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 920px) {
+    width: 65%; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 860px) {
+    width: 70%; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 800px) {
+    width: 75%; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 750px) {
+    width: 80%; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 730px) {
+    width: 100%; /* Smaller font size on smaller screens */
+  }
 }
 
 p {
@@ -104,7 +190,6 @@ p {
   font-family: Lato;
   font-size: 22px;
   font-style: normal;
-  font-weight: 600;
   line-height: normal;
 }
 
