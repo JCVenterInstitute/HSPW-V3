@@ -29,7 +29,12 @@ export const NavBar = () => {
       <AppBar
         position="static"
         color="transparent"
-        sx={{ width: "100%", height: "20%", boxShadow: "none" }}
+        sx={{
+          marginTop: "15px",
+          marginBottom: "15px",
+          width: "100%",
+          boxShadow: "none",
+        }}
       >
         <Toolbar style={{ padding: 0 }}>
           <Link to="/">

@@ -197,12 +197,15 @@ button span {
 }
 
 .main-content {
-  flex: 1;
-  overflow-y: auto; /* Allow vertical scrolling within main content */
-  min-height: 0; /* Reset min-height to ensure flex child behaves correctly */
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* This will allow the content to expand and push the footer down */
+  overflow-y: auto; /* Keep scrolling enabled for content */
+  min-height: 0; /* Important for flexbox to allow children to shrink correctly */
 }
 
 .footer-container {
+  margin-top: auto;
   width: 100%;
 }
 
