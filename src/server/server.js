@@ -1976,7 +1976,7 @@ const globalSearch = async ({
 }) => {
   // Initialize the client.
   let client;
-  if (entity === "Salivary Proteins") {
+  if (entity === "Salivary Proteins" || entity === "PubMed Citations") {
     client = await getClient1();
   } else {
     client = await getClient();
@@ -2003,6 +2003,8 @@ const globalSearch = async ({
     "experiment_id_key",
     "Name",
     "Date of Publication",
+    "PubMed_ID",
+    "PubDate",
     "salivary_proteins.protein_sequence_length",
     "salivary_proteins.mass",
   ];
