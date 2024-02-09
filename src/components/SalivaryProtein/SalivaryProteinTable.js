@@ -298,7 +298,7 @@ const recordsPerPageList = [
 
 const rowHeight = 80;
 
-const IHCValues = ["Medium", "ND", "Low", "NA", "High"];
+const IHCValues = ["", "Medium", "Low", "High"];
 
 /**
  * Escape all special characters for input string
@@ -311,12 +311,13 @@ const escapeSpecialCharacters = (inputVal) => {
 };
 
 const stringAttributes = [
-  "UniProt Accession",
+  "uniprot_accession",
   "Gene Symbol",
   "Protein Name",
   "IHC",
   "expert_opinion",
-  "Specificity_Score",
+  "specificity_score",
+  "specificity",
 ];
 
 const numberAttributes = [
@@ -338,7 +339,7 @@ const SalivaryProteinTable = () => {
   const [rowData, setRowData] = useState([]);
   const [opArr, setOpArr] = useState([false, false]);
   const [orFilterOn, setOrFilterOn] = useState(false);
-  const [IHCArr, setIHCArr] = useState([false, false, false, false, false]);
+  const [IHCArr, setIHCArr] = useState([false, false, false, false]);
   const [searchText, setSearchText] = useState("");
   const [msBExcludeOn, setMsBExcludeOn] = useState(false);
   const [facetFilter, setFacetFilters] = useState({});
@@ -746,7 +747,22 @@ const SalivaryProteinTable = () => {
    * @returns
    */
   const createStringQuery = ({ attrName, value }) => {
-    const escapedInput = escapeSpecialCharacters(value);
+    let escapedInput = escapeSpecialCharacters(value);
+
+    // Can't use regex query for empty strings
+    if (attrName === "IHC" && value === "NA") {
+      return {
+        bool: {
+          filter: [
+            {
+              term: {
+                "IHC.keyword": "",
+              },
+            },
+          ],
+        },
+      };
+    }
 
     return {
       bool: {
@@ -824,7 +840,7 @@ const SalivaryProteinTable = () => {
 
     setFacetFilters({
       ...facetFilter,
-      "UniProt Accession": value,
+      uniprot_accession: value,
     });
   };
 
@@ -1065,7 +1081,7 @@ const SalivaryProteinTable = () => {
     setOrFilterOn(false);
     setMsBExcludeOn(false);
     setOpArr([false, false]);
-    setIHCArr([false, false, false, false, false]);
+    setIHCArr([false, false, false, false]);
   };
 
   return (
@@ -1151,8 +1167,8 @@ const SalivaryProteinTable = () => {
                     },
                   }}
                   value={
-                    facetFilter["UniProt Accession"]
-                      ? facetFilter["UniProt Accession"]
+                    facetFilter["uniprot_accession"]
+                      ? facetFilter["uniprot_accession"]
                       : ""
                   }
                   onChange={handleAccessionChange}
@@ -1346,6 +1362,8 @@ const SalivaryProteinTable = () => {
                               onClick={(e) => {
                                 const { value, checked } = e.target;
 
+                                console.log("> Value", value);
+
                                 if (!checked) {
                                   delete facetFilter["IHC"];
                                 }
@@ -1353,13 +1371,18 @@ const SalivaryProteinTable = () => {
                                 setFacetFilters({
                                   ...facetFilter,
                                   ...(checked && {
-                                    IHC: value,
+                                    IHC: value === "" ? "NA" : value,
                                   }), // Only pass when checked
                                 });
                               }}
                             />
                           }
-                          label={child.key + " (" + child.doc_count + ")"}
+                          label={
+                            `${child.key === "" ? "NA" : child.key}` +
+                            " (" +
+                            child.doc_count +
+                            ")"
+                          }
                         />
                       </FormGroup>
                     ) : null
