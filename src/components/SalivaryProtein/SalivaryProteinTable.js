@@ -199,7 +199,7 @@ function proteinLinkComponent(props) {
 
 function GreenComponent(props) {
   const data = typeof props.value === "number" ? props.value : 0;
-  const dataMax = props.max;
+  const dataMax = props.max.value;
 
   // Interpolate between light red and dark red
   const interpolateColor = (start, end, percent) => {
@@ -215,10 +215,12 @@ function GreenComponent(props) {
 
   // Calculate color based on normalized value
   const percent =
-    props.normalizationSelected === true ? data / 100 : data / dataMax;
+    props.normalizationSelected === true
+      ? data / Math.log2(dataMax + 1)
+      : data / dataMax;
   const color =
     data === 0 ? "white" : interpolateColor(lightGreen, darkGreen, percent);
-  const textColor = percent > 0.8 ? "white" : "black";
+  const textColor = percent > 0.6 ? "white" : "black";
 
   return (
     <div
@@ -235,7 +237,7 @@ function GreenComponent(props) {
 
 function RedComponent(props) {
   const data = typeof props.value === "number" ? props.value : 0;
-  const dataMax = props.max;
+  const dataMax = props.max.value;
 
   // Interpolate between light red and dark red
   const interpolateColor = (start, end, percent) => {
@@ -251,10 +253,12 @@ function RedComponent(props) {
 
   // Calculate color based on normalized value
   const percent =
-    props.normalizationSelected === true ? data / 100 : data / dataMax;
+    props.normalizationSelected === true
+      ? data / Math.log2(dataMax + 1)
+      : data / dataMax;
   const color =
     data === 0 ? "white" : interpolateColor(lightRed, darkRed, percent);
-  const textColor = percent > 0.8 ? "white" : "black";
+  const textColor = percent > 0.6 ? "white" : "black";
 
   return (
     <div
@@ -343,16 +347,12 @@ const SalivaryProteinTable = () => {
   const [sortedColumn, setSortedColumn] = useState(null);
   const [openLegend, setOpenLegend] = useState(false);
   const [normalizationSelected, setNormalizationSelected] = useState(false);
-  const [wholeSalivaMax, setWholeSalivaMax] = useState(1);
-  const [parotidGlandsMax, setParotidGlandsMax] = useState(1);
-  const [smslGlandsMax, setSmslGlandsMax] = useState(1);
-  const [bloodMax, setBloodMax] = useState(1);
-  const [mRNAMax, setMRNAMax] = useState(1);
+  const [salivaryMaxAndSum, setSalivaryMaxAndSum] = useState({});
 
   const columns = [
     {
       headerName: "Accession",
-      field: "UniProt Accession",
+      field: "uniprot_accession",
       checkboxSelection: false,
       headerCheckboxSelection: false,
       wrapText: true,
@@ -396,7 +396,7 @@ const SalivaryProteinTable = () => {
           cellRenderer: "GreenComponent",
           cellRendererParams: {
             normalizationSelected,
-            max: wholeSalivaMax,
+            max: salivaryMaxAndSum.saliva_abundance_max,
           },
           cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
@@ -406,7 +406,7 @@ const SalivaryProteinTable = () => {
           cellRenderer: "GreenComponent",
           cellRendererParams: {
             normalizationSelected,
-            max: parotidGlandsMax,
+            max: salivaryMaxAndSum.parotid_gland_abundance_max,
           },
           cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
@@ -416,7 +416,7 @@ const SalivaryProteinTable = () => {
           cellRenderer: "GreenComponent",
           cellRendererParams: {
             normalizationSelected,
-            max: smslGlandsMax,
+            max: salivaryMaxAndSum.sm_sl_abundance_max,
           },
           cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
@@ -426,7 +426,7 @@ const SalivaryProteinTable = () => {
           cellRenderer: "RedComponent",
           cellRendererParams: {
             normalizationSelected,
-            max: bloodMax,
+            max: salivaryMaxAndSum.plasma_abundance_max,
           },
           cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
@@ -453,19 +453,19 @@ const SalivaryProteinTable = () => {
           cellRenderer: "GreenComponent",
           cellRendererParams: {
             normalizationSelected,
-            max: mRNAMax,
+            max: salivaryMaxAndSum.mRNA_max,
           },
           maxWidth: 170,
           cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
         {
           headerName: "Specificity",
-          field: "Specificity",
+          field: "specificity",
           cellClass: ["table-border", "salivary-protein-cell"],
         },
         {
           headerName: "Specificity Score",
-          field: "Specificity_Score",
+          field: "specificity_score",
           cellClass: ["table-border", "salivary-protein-cell"],
         },
       ],
@@ -548,34 +548,26 @@ const SalivaryProteinTable = () => {
 
   const normalizeData = (rowData, maxData) => {
     return rowData.map((item) => {
-      // Check for empty strings and use 0 if found, else use the item value, then normalize
+      // Helper function to check and normalize the value
+      const normalizeAbundance = (value) => {
+        // Check if value exists and is not an empty string; otherwise, return 0
+        if (value === "" || value === undefined || value === null) {
+          return 0;
+        }
+        // Apply Math.log2(value + 1) for normalization
+        return Math.log2(Number(value) + 1);
+      };
+
+      // Normalize the fields
       return {
         ...item,
-        saliva_abundance: item.saliva_abundance
-          ? ((item.saliva_abundance === "" ? 0 : item.saliva_abundance) /
-              maxData.saliva_abundance.value) *
-            100
-          : item.saliva_abundance,
-        parotid_gland_abundance: item.parotid_gland_abundance
-          ? ((item.parotid_gland_abundance === ""
-              ? 0
-              : item.parotid_gland_abundance) /
-              maxData.parotid_gland_abundance.value) *
-            100
-          : item.parotid_gland_abundance,
-        mRNA: item.mRNA
-          ? ((item.mRNA === "" ? 0 : item.mRNA) / maxData.mRNA.value) * 100
-          : item.mRNA,
-        plasma_abundance: item.plasma_abundance
-          ? ((item.plasma_abundance === "" ? 0 : item.plasma_abundance) /
-              maxData.plasma_abundance.value) *
-            100
-          : item.plasma_abundance,
-        "sm/sl_abundance": item["sm/sl_abundance"]
-          ? ((item["sm/sl_abundance"] === "" ? 0 : item["sm/sl_abundance"]) /
-              maxData.sm_sl_abundance.value) *
-            100
-          : item["sm/sl_abundance"],
+        saliva_abundance: normalizeAbundance(item.saliva_abundance),
+        parotid_gland_abundance: normalizeAbundance(
+          item.parotid_gland_abundance
+        ),
+        mRNA: normalizeAbundance(item.mRNA),
+        plasma_abundance: normalizeAbundance(item.plasma_abundance),
+        "sm/sl_abundance": normalizeAbundance(item["sm/sl_abundance"]),
       };
     });
   };
@@ -625,17 +617,14 @@ const SalivaryProteinTable = () => {
         return hits.hits.map((rec) => rec._source);
       });
 
-    const max = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/get-salivary-max`
+    const salivaryMaxAndSum = await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/get-salivary-max-and-sum`
     ).then((res) => res.json());
-    setWholeSalivaMax(max.saliva_abundance.value);
-    setParotidGlandsMax(max.parotid_gland_abundance.value);
-    setSmslGlandsMax(max.sm_sl_abundance.value);
-    setBloodMax(max.plasma_abundance.value);
-    setMRNAMax(max.mRNA.value);
+    setSalivaryMaxAndSum(salivaryMaxAndSum);
+
     if (normalizationSelected) {
       // Normalize the data with the sum values
-      data = normalizeData(data, max);
+      data = normalizeData(data, salivaryMaxAndSum);
     }
 
     setRowData(data);

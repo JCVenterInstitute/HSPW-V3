@@ -305,7 +305,7 @@ async function querySalivaryProtein(
   const client = await getClient();
 
   const payload = {
-    index: "salivary_summary",
+    index: "salivary_summary_020924",
     body: {
       track_total_hits: true,
       size: size,
@@ -627,7 +627,7 @@ async function getCount() {
   var client = await getClient();
 
   const response = await client.search({
-    index: "salivary_summary", // Replace with your index name
+    index: "salivary_summary_020924", // Replace with your index name
     body: {
       size: 0,
       aggs: {
@@ -2228,36 +2228,61 @@ app.get("/api/abundance-score/:id", (req, res) => {
  * Get Max of Whole Saliva, Parotid Glands, SM/SL Glands, Blood, and mRNA
  *********************************/
 
-const getSalivaryMax = async () => {
+const getSalivaryMaxAndSum = async () => {
   var client = await getClient();
 
   const response = await client.search({
-    index: "salivary_summary",
+    index: "salivary_summary_020924",
     body: {
       size: 0,
       aggs: {
-        sm_sl_abundance: {
+        sm_sl_abundance_max: {
           max: {
             field: "sm/sl_abundance",
           },
         },
-        plasma_abundance: {
+        sm_sl_abundance_sum: {
+          sum: {
+            field: "sm/sl_abundance",
+          },
+        },
+        plasma_abundance_max: {
           max: {
             field: "plasma_abundance",
           },
         },
-        mRNA: {
+        plasma_abundance_sum: {
+          sum: {
+            field: "plasma_abundance",
+          },
+        },
+        mRNA_max: {
           max: {
             field: "mRNA",
           },
         },
-        saliva_abundance: {
+        mRNA_sum: {
+          sum: {
+            field: "mRNA",
+          },
+        },
+        saliva_abundance_max: {
           max: {
             field: "saliva_abundance",
           },
         },
-        parotid_gland_abundance: {
+        saliva_abundance_sum: {
+          sum: {
+            field: "saliva_abundance",
+          },
+        },
+        parotid_gland_abundance_max: {
           max: {
+            field: "parotid_gland_abundance",
+          },
+        },
+        parotid_gland_abundance_sum: {
+          sum: {
             field: "parotid_gland_abundance",
           },
         },
@@ -2270,8 +2295,8 @@ const getSalivaryMax = async () => {
   return aggsResults;
 };
 
-app.get("/api/get-salivary-max", (req, res) => {
-  const data = getSalivaryMax();
+app.get("/api/get-salivary-max-and-sum", (req, res) => {
+  const data = getSalivaryMaxAndSum();
   data.then(function (result) {
     res.json(result);
   });
