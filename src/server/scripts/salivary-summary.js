@@ -214,11 +214,11 @@ const createSalivarySummary = async (uniprot_id, parsedProteinAtlasData) => {
     }
 
     const atlasSalivaryGland = atlas.filter(
-      (tissue) => tissue === "salivary gland"
+      (rec) => rec.tissue === "salivary gland"
     );
 
     summary["mRNA"] =
-      atlasSalivaryGland.length === 1 ? atlasSalivaryGland[0].nx : 0;
+      atlasSalivaryGland.length === 1 ? Number(atlasSalivaryGland[0].nx) : 0;
 
     for (const rec of abundanceData) {
       const { tissue_term, peptide_count, abundance_score } = rec._source;
