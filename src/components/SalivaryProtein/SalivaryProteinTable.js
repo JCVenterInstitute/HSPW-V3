@@ -3,7 +3,6 @@ import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { rgb } from "d3";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import FormGroup from "@mui/material/FormGroup";
@@ -36,14 +35,7 @@ import "../Filter.css";
 import "../Table.css";
 import Legend from "./Legend.js";
 import { Link } from "react-router-dom";
-
-const styles = {
-  transform: "translate(0, 0)",
-};
-
-const styles1 = {
-  transform: "translate(2, 0)",
-};
+import NormalizationSwitch from "./NormalizationSwitch.js";
 
 const Accordion = styled((props) => (
   <MuiAccordion
@@ -96,122 +88,17 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   fontFamily: "Montserrat",
 }));
 
-function WSComponent(props) {
-  const d = props.value;
-
-  if (d < 10 || d === "Low") {
-    return (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          backgroundColor: "rgb(180,250,180)",
-          color: "black",
-          fontFamily: "Lato",
-          fontSize: "16px",
-          lineHeight: "24px",
-          textAlign: "center",
-          paddingTop: "22%",
-        }}
-      >
-        {Number(d).toFixed(2)}
-      </div>
-    );
-  } else if (d < 100 || d === "Medium") {
-    return (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          backgroundColor: "rgb(70,170,70)",
-          color: "#FFF",
-          fontFamily: "Lato",
-          fontSize: "16px",
-          lineHeight: "24px",
-          textAlign: "center",
-          paddingTop: "22%",
-        }}
-      >
-        {Number(d).toFixed(2)}
-      </div>
-    );
-  } else if (d > 100 || d === "High") {
-    return (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          backgroundColor: "rgb(0,100,0)",
-          color: "#FFF",
-          fontFamily: "Lato",
-          fontSize: "16px",
-          lineHeight: "24px",
-          textAlign: "center",
-          paddingTop: "22%",
-        }}
-      >
-        {Number(d).toFixed(2)}
-      </div>
-    );
-  } else if (d === "ND" || d === 0) {
-    return (
-      <svg
-        width={18}
-        height={18}
-        style={{ stroke: "black", alignItems: "center" }}
-      >
-        <rect
-          width={18}
-          height={18}
-          fill="rgb(255,255,255)"
-        >
-          <title>Not uniquely observed</title>
-        </rect>
-      </svg>
-    );
-  } else {
-    return (
-      <svg
-        width={18}
-        height={18}
-        style={{ stroke: "black", alignItems: "center" }}
-      >
-        <defs>
-          <pattern
-            id="stripe2"
-            patternUnits="userSpaceOnUse"
-            patternTransform="rotate(45)"
-            x="0"
-            y="0"
-            width="4"
-            height="4"
-            viewBox="0 0 10 10"
-          >
-            <rect
-              width={2}
-              height={4}
-              fill={rgb(220, 220, 220)}
-              style={styles}
-            ></rect>
-            <rect
-              width={2}
-              height={4}
-              fill={rgb(255, 255, 255)}
-              style={styles1}
-            ></rect>
-          </pattern>
-        </defs>
-        <rect
-          width={18}
-          height={18}
-          style={{ fill: "url(#stripe2)" }}
-        >
-          <title>Data not available</title>
-        </rect>
-      </svg>
-    );
-  }
-}
+const commonStyles = {
+  display: "flex", // Enable flexbox
+  flexDirection: "column", // Stack children vertically
+  justifyContent: "center", // Center vertically in the container
+  width: "100%",
+  height: "100%",
+  fontFamily: "Lato",
+  fontSize: "16px",
+  lineHeight: "24px",
+  textAlign: "center",
+};
 
 function opinionComponent(props) {
   const { value } = props;
@@ -232,15 +119,9 @@ function IHCComponent(props) {
       <>
         <div
           style={{
-            width: "100%",
-            height: "100%",
+            ...commonStyles,
             backgroundColor: "rgb(180,250,180)",
             color: "black",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "22%",
           }}
         >
           <span style={{ textAlign: "center" }}>{d}</span>
@@ -252,15 +133,9 @@ function IHCComponent(props) {
       <>
         <div
           style={{
-            width: "100%",
-            height: "100%",
+            ...commonStyles,
             backgroundColor: "rgb(70,170,70)",
             color: "#FFF",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "22%",
           }}
         >
           <span style={{ textAlign: "center" }}>{d}</span>
@@ -272,15 +147,9 @@ function IHCComponent(props) {
       <>
         <div
           style={{
-            width: "100%",
-            height: "100%",
+            ...commonStyles,
             backgroundColor: "rgb(0,100,0)",
             color: "#FFF",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "22%",
           }}
         >
           <span style={{ textAlign: "center" }}>{d}</span>
@@ -292,14 +161,8 @@ function IHCComponent(props) {
       <>
         <div
           style={{
-            width: "100%",
-            height: "100%",
+            ...commonStyles,
             color: "black",
-            fontFamily: "Lato",
-            fontSize: "16px",
-            lineHeight: "24px",
-            textAlign: "center",
-            paddingTop: "22%",
           }}
         >
           <span style={{ textAlign: "center" }}>ND</span>
@@ -310,15 +173,9 @@ function IHCComponent(props) {
     return (
       <div
         style={{
-          width: "100%",
-          height: "100%",
+          ...commonStyles,
           backgroundColor: "rgb(250,250,250)",
           color: "black",
-          fontFamily: "Lato",
-          fontSize: "16px",
-          lineHeight: "24px",
-          textAlign: "center",
-          paddingTop: "25%",
         }}
       >
         NA
@@ -340,20 +197,47 @@ function proteinLinkComponent(props) {
   );
 }
 
-const commonStyles = {
-  width: "100%",
-  height: "100%",
-  fontFamily: "Lato",
-  fontSize: "16px",
-  lineHeight: "24px",
-  textAlign: "center",
-};
+function GreenComponent(props) {
+  const data = typeof props.value === "number" ? props.value : 0;
+  const dataMax = props.max.value;
 
-function LinkComponent(props) {
-  const d = props.value;
+  // Interpolate between light red and dark red
+  const interpolateColor = (start, end, percent) => {
+    const r = Math.round(start[0] + (end[0] - start[0]) * percent);
+    const g = Math.round(start[1] + (end[1] - start[1]) * percent);
+    const b = Math.round(start[2] + (end[2] - start[2]) * percent);
+    return `rgb(${r},${g},${b})`;
+  };
 
-  // Assuming value is a number
-  const normalizedValue = typeof d === "number" ? d : 0;
+  // Define light green and dark green
+  const lightGreen = [200, 255, 200]; // Light green color
+  const darkGreen = [0, 100, 0]; // Dark green color
+
+  // Calculate color based on normalized value
+  const percent =
+    props.normalizationSelected === true
+      ? data / Math.log2(dataMax + 1)
+      : data / dataMax;
+  const color =
+    data === 0 ? "white" : interpolateColor(lightGreen, darkGreen, percent);
+  const textColor = percent > 0.6 ? "white" : "black";
+
+  return (
+    <div
+      style={{
+        ...commonStyles,
+        backgroundColor: color,
+        color: textColor,
+      }}
+    >
+      {Number(data).toFixed(2)}
+    </div>
+  );
+}
+
+function RedComponent(props) {
+  const data = typeof props.value === "number" ? props.value : 0;
+  const dataMax = props.max.value;
 
   // Interpolate between light red and dark red
   const interpolateColor = (start, end, percent) => {
@@ -365,154 +249,29 @@ function LinkComponent(props) {
 
   // Define light red and dark red
   const lightRed = [255, 200, 200]; // Light red color
-  const darkRed = [255, 0, 0]; // Dark red color
+  const darkRed = [150, 0, 0]; // Dark red color
 
   // Calculate color based on normalized value
-  const percent = (normalizedValue - 0.8) / (4.3 - 0.8); // Adjust the range as needed
-  const color = interpolateColor(lightRed, darkRed, percent);
+  const percent =
+    props.normalizationSelected === true
+      ? data / Math.log2(dataMax + 1)
+      : data / dataMax;
+  const color =
+    data === 0 ? "white" : interpolateColor(lightRed, darkRed, percent);
+  const textColor = percent > 0.6 ? "white" : "black";
 
   return (
     <div
       style={{
         ...commonStyles,
         backgroundColor: color,
-        color: "black",
-        paddingTop: "22%",
+        color: textColor,
       }}
     >
-      {Number(d).toFixed(2)}
+      {Number(data).toFixed(2)}
     </div>
   );
 }
-
-const columns = [
-  {
-    headerName: "Accession",
-    field: "UniProt Accession",
-    checkboxSelection: false,
-    headerCheckboxSelection: false,
-    wrapText: true,
-    minWidth: 115,
-    cellStyle: { wordBreak: "break-word" },
-    cellClass: ["table-border", "salivary-protein-cell"],
-    cellRenderer: "proteinLinkComponent",
-  },
-  {
-    headerName: "Gene Symbol",
-    field: "Gene Symbol",
-    cellClass: ["table-border", "salivary-protein-cell"],
-    cellStyle: {
-      wordBreak: "break-word",
-    },
-  },
-  {
-    headerName: "Protein Name",
-    field: "Protein Name",
-    cellClass: ["table-border", "salivary-protein-cell"],
-    cellStyle: {
-      wordBreak: "break-word",
-      textWrap: "wrap",
-    },
-  },
-  {
-    headerName: "Expert Opinion",
-    field: "expert_opinion",
-    cellRenderer: "opinionComponent",
-    cellClass: ["table-border"],
-  },
-  {
-    headerName: "MS (obs.)",
-    headerGroupComponent: CustomHeaderGroup,
-    headerClass: ["header-border", "salivary-protein-header"],
-    cellClass: ["table-border"],
-    children: [
-      {
-        headerName: "Whole Saliva",
-        field: "saliva_abundance",
-        cellRenderer: "WSComponent",
-        cellClass: ["square_table", "salivary-proteins-colored-cell"],
-      },
-      {
-        headerName: "Parotid Glands",
-        field: "parotid_gland_abundance",
-        cellRenderer: "WSComponent",
-        cellClass: ["square_table", "salivary-proteins-colored-cell"],
-      },
-      {
-        headerName: "SM/SL Glands",
-        field: "sm/sl_abundance",
-        cellRenderer: "WSComponent",
-        cellClass: ["square_table", "salivary-proteins-colored-cell"],
-      },
-      {
-        headerName: "Blood",
-        field: "plasma_abundance",
-        cellRenderer: "LinkComponent",
-        cellClass: ["square_table", "salivary-proteins-colored-cell"],
-      },
-    ],
-    cellStyle: { textAlign: "center" },
-  },
-  {
-    headerName: "IHC",
-    field: "IHC",
-    wrapText: true,
-    cellRenderer: "IHCComponent",
-    cellClass: ["square_table", "salivary-proteins-colored-cell"],
-  },
-  {
-    headerName: "mRNA (NX)",
-    headerGroupComponent: CustomHeaderGroup,
-    headerClass: ["header-border", "salivary-protein-header"],
-    wrapText: true,
-    cellRenderer: "WSComponent",
-    cellClass: ["table-border"],
-    children: [
-      {
-        headerName: "Value",
-        field: "mRNA",
-        cellRenderer: "WSComponent",
-        maxWidth: 170,
-        cellClass: ["square_table", "salivary-proteins-colored-cell"],
-      },
-      {
-        headerName: "Specificity",
-        field: "Specificity",
-        cellClass: ["table-border", "salivary-protein-cell"],
-      },
-      {
-        headerName: "Specificity Score",
-        field: "Specificity_Score",
-        cellClass: ["table-border", "salivary-protein-cell"],
-      },
-    ],
-  },
-];
-
-const defColumnDefs = {
-  flex: 1,
-  filter: true,
-  resizable: true,
-  sortable: true,
-  wrapHeaderText: true,
-  wrapText: true,
-  autoHeaderHeight: true,
-  headerClass: ["header-border", "salivary-protein-header"],
-  headerComponentParams: {
-    template:
-      '<div class="ag-cell-label-container" role="presentation">' +
-      // '  <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button"></span>' +
-      '  <div ref="eLabel" class="ag-header-cell-label" role="presentation">' +
-      '    <span ref="eSortOrder" class="ag-header-icon ag-sort-order"></span>' +
-      '    <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon"></span>' +
-      '    <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon"></span>' +
-      '    <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon"></span>' +
-      '    <span ref="eText" class="ag-header-cell-text" role="columnheader" style="white-space: normal;"></span>' +
-      // '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
-      "  </div>" +
-      "</div>",
-  },
-};
 
 const customHeaders = {
   "Content-Type": "application/json",
@@ -587,6 +346,156 @@ const SalivaryProteinTable = () => {
   const [gridApi, setGridApi] = useState(null);
   const [sortedColumn, setSortedColumn] = useState(null);
   const [openLegend, setOpenLegend] = useState(false);
+  const [normalizationSelected, setNormalizationSelected] = useState(false);
+  const [salivaryMaxAndSum, setSalivaryMaxAndSum] = useState({});
+
+  const columns = [
+    {
+      headerName: "Accession",
+      field: "uniprot_accession",
+      checkboxSelection: false,
+      headerCheckboxSelection: false,
+      wrapText: true,
+      minWidth: 115,
+      cellStyle: { wordBreak: "break-word" },
+      cellClass: ["table-border", "salivary-protein-cell"],
+      cellRenderer: "proteinLinkComponent",
+    },
+    {
+      headerName: "Gene Symbol",
+      field: "Gene Symbol",
+      cellClass: ["table-border", "salivary-protein-cell"],
+      cellStyle: {
+        wordBreak: "break-word",
+      },
+    },
+    {
+      headerName: "Protein Name",
+      field: "Protein Name",
+      cellClass: ["table-border", "salivary-protein-protein-name-cell"],
+      cellStyle: {
+        wordBreak: "break-word",
+        textWrap: "wrap",
+      },
+    },
+    {
+      headerName: "Expert Opinion",
+      field: "expert_opinion",
+      cellRenderer: "opinionComponent",
+      cellClass: ["table-border"],
+    },
+    {
+      headerName: "MS (obs.)",
+      headerGroupComponent: CustomHeaderGroup,
+      headerClass: ["header-border", "salivary-protein-header"],
+      cellClass: ["table-border"],
+      children: [
+        {
+          headerName: "Whole Saliva",
+          field: "saliva_abundance",
+          cellRenderer: "GreenComponent",
+          cellRendererParams: {
+            normalizationSelected,
+            max: salivaryMaxAndSum.saliva_abundance_max,
+          },
+          cellClass: ["square_table", "salivary-proteins-colored-cell"],
+        },
+        {
+          headerName: "Parotid Glands",
+          field: "parotid_gland_abundance",
+          cellRenderer: "GreenComponent",
+          cellRendererParams: {
+            normalizationSelected,
+            max: salivaryMaxAndSum.parotid_gland_abundance_max,
+          },
+          cellClass: ["square_table", "salivary-proteins-colored-cell"],
+        },
+        {
+          headerName: "SM/SL Glands",
+          field: "sm/sl_abundance",
+          cellRenderer: "GreenComponent",
+          cellRendererParams: {
+            normalizationSelected,
+            max: salivaryMaxAndSum.sm_sl_abundance_max,
+          },
+          cellClass: ["square_table", "salivary-proteins-colored-cell"],
+        },
+        {
+          headerName: "Blood",
+          field: "plasma_abundance",
+          cellRenderer: "RedComponent",
+          cellRendererParams: {
+            normalizationSelected,
+            max: salivaryMaxAndSum.plasma_abundance_max,
+          },
+          cellClass: ["square_table", "salivary-proteins-colored-cell"],
+        },
+      ],
+      cellStyle: { textAlign: "center" },
+    },
+    {
+      headerName: "IHC",
+      field: "IHC",
+      wrapText: true,
+      cellRenderer: "IHCComponent",
+      cellClass: ["square_table", "salivary-proteins-colored-cell"],
+    },
+    {
+      headerName: "mRNA (NX)",
+      headerGroupComponent: CustomHeaderGroup,
+      headerClass: ["header-border", "salivary-protein-header"],
+      wrapText: true,
+      cellClass: ["table-border"],
+      children: [
+        {
+          headerName: "Value",
+          field: "mRNA",
+          cellRenderer: "GreenComponent",
+          cellRendererParams: {
+            normalizationSelected,
+            max: salivaryMaxAndSum.mRNA_max,
+          },
+          maxWidth: 170,
+          cellClass: ["square_table", "salivary-proteins-colored-cell"],
+        },
+        {
+          headerName: "Specificity",
+          field: "specificity",
+          cellClass: ["table-border", "salivary-protein-cell"],
+        },
+        {
+          headerName: "Specificity Score",
+          field: "specificity_score",
+          cellClass: ["table-border", "salivary-protein-cell"],
+        },
+      ],
+    },
+  ];
+
+  const defColumnDefs = {
+    flex: 1,
+    filter: true,
+    resizable: true,
+    sortable: true,
+    wrapHeaderText: true,
+    wrapText: true,
+    autoHeaderHeight: true,
+    headerClass: ["header-border", "salivary-protein-header"],
+    headerComponentParams: {
+      template:
+        '<div class="ag-cell-label-container" role="presentation">' +
+        // '  <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button"></span>' +
+        '  <div ref="eLabel" class="ag-header-cell-label" role="presentation">' +
+        '    <span ref="eSortOrder" class="ag-header-icon ag-sort-order"></span>' +
+        '    <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon"></span>' +
+        '    <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon"></span>' +
+        '    <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon"></span>' +
+        '    <span ref="eText" class="ag-header-cell-text" role="columnheader" style="white-space: normal;"></span>' +
+        // '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
+        "  </div>" +
+        "</div>",
+    },
+  };
 
   const handleOpenLegend = () => setOpenLegend(true);
   const handleCloseLegend = () => setOpenLegend(false);
@@ -637,6 +546,32 @@ const SalivaryProteinTable = () => {
     };
   };
 
+  const normalizeData = (rowData, maxData) => {
+    return rowData.map((item) => {
+      // Helper function to check and normalize the value
+      const normalizeAbundance = (value) => {
+        // Check if value exists and is not an empty string; otherwise, return 0
+        if (value === "" || value === undefined || value === null) {
+          return 0;
+        }
+        // Apply Math.log2(value + 1) for normalization
+        return Math.log2(Number(value) + 1);
+      };
+
+      // Normalize the fields
+      return {
+        ...item,
+        saliva_abundance: normalizeAbundance(item.saliva_abundance),
+        parotid_gland_abundance: normalizeAbundance(
+          item.parotid_gland_abundance
+        ),
+        mRNA: normalizeAbundance(item.mRNA),
+        plasma_abundance: normalizeAbundance(item.plasma_abundance),
+        "sm/sl_abundance": normalizeAbundance(item["sm/sl_abundance"]),
+      };
+    });
+  };
+
   // Handle fetching data for table
   const fetchData = async () => {
     const apiPayload = {
@@ -647,7 +582,7 @@ const SalivaryProteinTable = () => {
       ...(searchText && { keyword: createGlobalSearchQuery() }),
     };
 
-    const data = await fetch(
+    let data = await fetch(
       `${
         process.env.REACT_APP_API_ENDPOINT
       }/api/salivary-proteins/${pageSize}/${pageNum * pageSize}`,
@@ -682,7 +617,18 @@ const SalivaryProteinTable = () => {
         return hits.hits.map((rec) => rec._source);
       });
 
+    const salivaryMaxAndSum = await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/get-salivary-max-and-sum`
+    ).then((res) => res.json());
+    setSalivaryMaxAndSum(salivaryMaxAndSum);
+
+    if (normalizationSelected) {
+      // Normalize the data with the sum values
+      data = normalizeData(data, salivaryMaxAndSum);
+    }
+
     setRowData(data);
+    if (gridApi) gridApi.hideOverlay();
   };
 
   // Initial data fetch on page load
@@ -716,7 +662,12 @@ const SalivaryProteinTable = () => {
   useEffect(() => {
     if (gridApi) gridApi.showLoadingOverlay();
     fetchData();
-  }, [pageNum]);
+  }, [pageNum, normalizationSelected]);
+
+  // Function to toggle the normalizationSelected state
+  const handleToggleNormalization = (event) => {
+    setNormalizationSelected(event.target.checked); // Update based on the switch's checked state
+  };
 
   /**
    * Update search entered by user in search bar
@@ -1979,11 +1930,17 @@ const SalivaryProteinTable = () => {
               </button>
             </Box>
           </Box>
-          <Box
-            sx={{
-              marginTop: "20px",
-            }}
-          >
+          <FormControlLabel
+            control={
+              <NormalizationSwitch
+                checked={normalizationSelected}
+                onChange={handleToggleNormalization}
+              />
+            }
+            label="Raw/Normalized"
+            sx={{ marginLeft: "5px" }}
+          />
+          <Box>
             <div
               className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
               style={{ height: 3200 }}
@@ -1995,8 +1952,8 @@ const SalivaryProteinTable = () => {
                 ref={gridRef}
                 defaultColDef={defColumnDefs}
                 components={{
-                  LinkComponent,
-                  WSComponent,
+                  RedComponent,
+                  GreenComponent,
                   IHCComponent,
                   opinionComponent,
                   proteinLinkComponent,
@@ -2067,6 +2024,7 @@ const SalivaryProteinTable = () => {
                   p: 2,
                   width: "60vw",
                   overflow: "scroll",
+                  borderRadius: "16px",
                 }}
               >
                 <Typography

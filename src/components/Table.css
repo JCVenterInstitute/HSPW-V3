@@ -151,6 +151,23 @@
   padding-left: 24px !important;
 }
 
+.salivary-protein-protein-name-cell .ag-cell-value {
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  word-break: normal; /* prevent words from breaking */
+  color: #464646;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.34px;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+  padding-left: 12px !important;
+}
+
 .download-cell .ag-cell-value {
   --ag-header-column-separator-display: block;
   --ag-header-column-separator-width: 2px;
