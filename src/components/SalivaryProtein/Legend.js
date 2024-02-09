@@ -1,4 +1,3 @@
-import { rgb } from "d3";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -173,152 +172,92 @@ const Legend = () => {
                 <TableCell style={{ fontWeight: "bold" }}>Units</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell style={{ paddingRight: "5px", marginLeft: "35px" }}>
+                <TableCell
+                  rowSpan={3}
+                  style={{ paddingRight: "5px", marginLeft: "35px" }}
+                >
                   <svg
                     width={18}
-                    height={18}
+                    height={120}
                     className="table-cell"
                   >
+                    <defs>
+                      <linearGradient
+                        id="greenGradient"
+                        x1="0%"
+                        y1="0%"
+                        x2="0%"
+                        y2="100%"
+                      >
+                        <stop
+                          offset="0%"
+                          style={{ stopColor: "rgb(0,100,0)", stopOpacity: 1 }}
+                        />
+                        <stop
+                          offset="100%"
+                          style={{
+                            stopColor: "rgb(200,250,200)",
+                            stopOpacity: 1,
+                          }}
+                        />
+                      </linearGradient>
+                    </defs>
                     <rect
                       width={18}
-                      height={18}
-                      fill="rgb(0,100,0)"
+                      height={120}
+                      fill="url(#greenGradient)"
                     >
                       <title>High</title>
                     </rect>
                   </svg>
-                  <span
-                    className="svg-text"
-                    style={{
-                      color: "rgb(0,100,0)",
-                    }}
-                  >
-                    &gt; 100
-                  </span>
                 </TableCell>
-                <TableCell style={{ paddingRight: "5px", marginLeft: "35px" }}>
+                <TableCell
+                  rowSpan={3}
+                  style={{ paddingRight: "5px", marginLeft: "35px" }}
+                >
                   <svg
                     width={18}
-                    height={18}
+                    height={120}
                     className="table-cell"
                   >
+                    <defs>
+                      <linearGradient
+                        id="redGradient"
+                        x1="0%"
+                        y1="0%"
+                        x2="0%"
+                        y2="100%"
+                      >
+                        <stop
+                          offset="0%"
+                          style={{ stopColor: "rgb(150,0,0)", stopOpacity: 1 }}
+                        />
+                        <stop
+                          offset="100%"
+                          style={{
+                            stopColor: "rgb(255,200,200)",
+                            stopOpacity: 1,
+                          }}
+                        />
+                      </linearGradient>
+                    </defs>
                     <rect
                       width={18}
-                      height={18}
-                      fill="rgb(100,0,0)"
+                      height={120}
+                      fill="url(#redGradient)"
                     >
                       <title>High</title>
                     </rect>
                   </svg>
-                  <span
-                    className="svg-text"
-                    style={{
-                      color: "rgb(100,0,0)",
-                    }}
-                  >
-                    &gt; 2.1
-                  </span>
                 </TableCell>
                 <TableCell>High</TableCell>
                 <TableCell>obs</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell style={{ paddingRight: "5px", marginLeft: "35px" }}>
-                  <svg
-                    width={18}
-                    height={18}
-                    className="table-cell"
-                  >
-                    <rect
-                      width={18}
-                      height={18}
-                      fill="rgb(70,170,70)"
-                    >
-                      <title>Medium</title>
-                    </rect>
-                  </svg>
-                  <span
-                    className="svg-text"
-                    style={{
-                      color: "rgb(70,170,70)",
-                    }}
-                  >
-                    11 - 100
-                  </span>
-                </TableCell>
-                <TableCell style={{ paddingRight: "5px", marginLeft: "35px" }}>
-                  <svg
-                    width={18}
-                    height={18}
-                    className="table-cell"
-                  >
-                    <rect
-                      width={18}
-                      height={18}
-                      fill="rgb(190,70,70)"
-                    >
-                      <title>Medium</title>
-                    </rect>
-                  </svg>
-                  <span
-                    className="svg-text"
-                    style={{
-                      color: "rgb(190,70,70)",
-                    }}
-                  >
-                    0.8 - 2
-                  </span>
-                </TableCell>
                 <TableCell>Medium</TableCell>
                 <TableCell>obs</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell style={{ paddingRight: "5px", marginLeft: "35px" }}>
-                  <svg
-                    width={18}
-                    height={18}
-                    className="table-cell"
-                  >
-                    <rect
-                      width={18}
-                      height={18}
-                      fill="rgb(180,250,180)"
-                    >
-                      <title>Low</title>
-                    </rect>
-                  </svg>
-                  <span
-                    className="svg-text"
-                    style={{
-                      color: "rgb(180,250,180)",
-                    }}
-                  >
-                    &lt; 10
-                  </span>
-                </TableCell>
-                <TableCell style={{ paddingRight: "5px", marginLeft: "35px" }}>
-                  <svg
-                    width={18}
-                    height={18}
-                    className="table-cell"
-                  >
-                    <rect
-                      width={18}
-                      height={18}
-                      fill="rgb(250,180,180)"
-                    >
-                      <title>Low</title>
-                    </rect>
-                  </svg>
-                  <span
-                    className="svg-text"
-                    style={{
-                      color: "rgb(250,180,180)",
-                    }}
-                  >
-                    &lt; 0.79
-                  </span>
-                </TableCell>
                 <TableCell>Low</TableCell>
                 <TableCell>obs</TableCell>
               </TableRow>

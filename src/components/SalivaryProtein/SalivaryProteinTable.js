@@ -1937,8 +1937,12 @@ const SalivaryProteinTable = () => {
                 onChange={handleToggleNormalization}
               />
             }
-            label="Raw/Normalized"
-            sx={{ marginLeft: "5px" }}
+            label="Raw/Normalized ( log(x+1) )"
+            sx={{
+              marginLeft: "5px",
+              marginRight: "5px",
+              "& .MuiTypography-root": { fontFamily: "Lato" },
+            }}
           />
           <Box>
             <div
