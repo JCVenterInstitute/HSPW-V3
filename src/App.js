@@ -49,6 +49,7 @@ import NotFoundPage from "./pages/NotFoundPage.js";
 import UploadExperiment from "./pages/UploadExperiment.js";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import ScrollToTop from "./components/ScrollToTop.js";
+import ApiPage from "./pages/ApiPage.js";
 ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
 
 const theme = createTheme({
@@ -208,6 +209,10 @@ function App() {
               <Route
                 path="/upload-experiment"
                 element={<UploadExperiment />}
+              />
+              <Route
+                path="/api-description"
+                element={<ApiPage />}
               />
               <Route
                 path="/analysis"

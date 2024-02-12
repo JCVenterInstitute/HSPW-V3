@@ -4,7 +4,7 @@ import { Typography, Container } from "@mui/material";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
 
-const UploadExperiment = () => {
+const ApiPage = () => {
   return (
     <>
       <div
@@ -12,7 +12,7 @@ const UploadExperiment = () => {
         style={{ backgroundImage: `url(${main_feature})` }}
       >
         <Container maxWidth="xl">
-          <h1 className="head_title">Upload Experiment</h1>
+          <h1 className="head_title">API</h1>
           <p className="head_text">Up Coming Soon</p>
         </Container>
       </div>
@@ -134,4 +134,4 @@ const UploadExperiment = () => {
   );
 };
 
-export default UploadExperiment;
+export default ApiPage;

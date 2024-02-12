@@ -85,6 +85,7 @@ class Home extends React.Component {
               title: "API",
               blurb:
                 "Allows access to the datasets by retrieving requested data in JSON format.",
+              location: "/api-description",
             },
             {
               destination: false,
