@@ -112,6 +112,26 @@ function opinionComponent(props) {
   );
 }
 
+function specificityComponent(props) {
+  const { value } = props;
+
+  return (
+    <div
+      style={{
+        ...commonStyles,
+      }}
+    >
+      <span style={{ textAlign: "center" }}>
+        {value === "Tissue enriched"
+          ? "TE"
+          : value === "Low tissue specificity"
+          ? "LTS"
+          : ""}
+      </span>
+    </div>
+  );
+}
+
 function IHCComponent(props) {
   const d = props.value;
   if (d === "Low") {
@@ -467,7 +487,8 @@ const SalivaryProteinTable = () => {
         {
           headerName: "Specificity Score",
           field: "specificity_score",
-          cellClass: ["table-border", "salivary-protein-cell"],
+          cellRenderer: "specificityComponent",
+          cellClass: ["table-border", "salivary-proteins-colored-cell"],
         },
       ],
     },
@@ -1984,6 +2005,7 @@ const SalivaryProteinTable = () => {
                   IHCComponent,
                   opinionComponent,
                   proteinLinkComponent,
+                  specificityComponent,
                 }}
                 onSortChanged={onSortChanged}
                 onGridReady={onGridReady}

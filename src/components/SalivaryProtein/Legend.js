@@ -367,15 +367,16 @@ const Legend = () => {
                   Label
                 </TableCell>
                 <TableCell style={{ fontWeight: "bold" }}>
-                  Specificity Score
+                  Description
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell style={{ paddingRight: "5px", marginLeft: "35px" }}>
-                  Higher
+                  TE
                 </TableCell>
                 <TableCell style={{ paddingRight: "5px", marginLeft: "35px" }}>
-                  On average higher in salivary glands than in other tissues
+                  Tissue Enriched. On average higher in salivary glands than in
+                  other tissues
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -386,7 +387,7 @@ const Legend = () => {
                     borderBottom: "none",
                   }}
                 >
-                  Lower
+                  LTS
                 </TableCell>
                 <TableCell
                   style={{
@@ -395,7 +396,8 @@ const Legend = () => {
                     borderBottom: "none",
                   }}
                 >
-                  On average lower in salivary glands than in other tissues
+                  Low Tissue Specificity. On average lower in salivary glands
+                  than in other tissues
                 </TableCell>
               </TableRow>
             </TableBody>
