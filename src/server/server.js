@@ -1703,12 +1703,7 @@ app.get("/api/s3Download/:jobId/:fileName", async (req, res) => {
 
 const getProperties = async (index) => {
   // Initialize the client.
-  let client;
-  if (index === "citation") {
-    client = await getClient1();
-  } else {
-    client = await getClient();
-  }
+  const client = await getClient();
 
   try {
     // Get the mapping of the specified index.
@@ -1750,7 +1745,6 @@ app.get("/api/properties/:entity", async (req, res) => {
     "Protein Signatures": "protein_signature_013024",
     Proteins: "study_protein_012924",
     "PubMed Citations": "citation_021324",
-    // "Salivary Proteins": "protein",
     "Salivary Proteins": "salivary-proteins-013024",
     Annotations: "salivary-proteins-013024",
   };
@@ -1833,11 +1827,7 @@ const advancedSearch = async ({
 }) => {
   // Initialize the client.
   let client;
-  if (
-    entity === "Salivary Proteins" ||
-    entity === "Annotations" ||
-    entity === "PubMed Citations"
-  ) {
+  if (entity === "Salivary Proteins" || entity === "Annotations") {
     client = await getClient1();
   } else {
     client = await getClient();
@@ -1976,7 +1966,7 @@ const globalSearch = async ({
 }) => {
   // Initialize the client.
   let client;
-  if (entity === "Salivary Proteins" || entity === "PubMed Citations") {
+  if (entity === "Salivary Proteins") {
     client = await getClient1();
   } else {
     client = await getClient();
@@ -2003,7 +1993,6 @@ const globalSearch = async ({
     "experiment_id_key",
     "Name",
     "Date of Publication",
-    "PubMed_ID",
     "PubDate",
     "salivary_proteins.protein_sequence_length",
     "salivary_proteins.mass",

@@ -18,7 +18,6 @@ exports.formQuery = async (
       "experiment_id_key",
       "Name",
       "Gene Name",
-      "PubMed_ID",
       "Date of Publication",
       "PubDate",
     ];
