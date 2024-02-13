@@ -20,7 +20,6 @@
     "@aws-sdk/s3-request-presigner": "^3.451.0",
     "@opensearch-project/opensearch": "^2.2.0",
     "aws-opensearch-connector": "^1.1.0",
-    "body-parser": "^1.20.2",
     "csv-parser": "^3.0.0",
     "csv-write-stream": "^2.0.0",
     "csv-writer": "^1.6.0",
