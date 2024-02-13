@@ -547,14 +547,12 @@ app.post("/api/protein-signature/:size/:from/", (req, res) => {
  ********************/
 
 async function getCitationById(index, id) {
-  var client = await getClient1();
+  var client = await getClient();
 
   var query = {
     query: {
       match: {
-        _id: {
-          query: id,
-        },
+        "PubMed_ID.keyword": id,
       },
     },
   };
@@ -567,7 +565,7 @@ async function getCitationById(index, id) {
 }
 
 app.get("/api/citation/:id", (req, res) => {
-  let a = getCitationById("citation", req.params.id);
+  let a = getCitationById("citation_021324", req.params.id);
 
   a.then(function (result) {
     res.json(result);
@@ -581,12 +579,12 @@ async function queryCitationData(
   sort = null,
   keyword = null
 ) {
-  const client = await getClient1();
+  const client = await getClient();
 
   const returnFields = ["PubMed_ID", "PubDate", "Title", "journal_title"];
 
   const payload = {
-    index: "citation",
+    index: "citation_021324",
     body: {
       track_total_hits: true,
       size: size,
@@ -601,6 +599,8 @@ async function queryCitationData(
       _source: returnFields,
     },
   };
+
+  console.log("> payload", JSON.stringify(payload.body));
 
   const response = await client.search(payload);
 
@@ -1749,7 +1749,7 @@ app.get("/api/properties/:entity", async (req, res) => {
     "Protein Clusters": "protein_cluster_013024",
     "Protein Signatures": "protein_signature_013024",
     Proteins: "study_protein_012924",
-    "PubMed Citations": "citation",
+    "PubMed Citations": "citation_021324",
     // "Salivary Proteins": "protein",
     "Salivary Proteins": "salivary-proteins-013024",
     Annotations: "salivary-proteins-013024",
@@ -1848,7 +1848,7 @@ const advancedSearch = async ({
     "Protein Clusters": "protein_cluster_013024",
     "Protein Signatures": "protein_signature_013024",
     Proteins: "study_protein_012924",
-    "PubMed Citations": "citation",
+    "PubMed Citations": "citation_021324",
     // "Salivary Proteins": "protein",
     "Salivary Proteins": "salivary-proteins-013024",
     Annotations: "salivary-proteins-013024",
@@ -1987,7 +1987,7 @@ const globalSearch = async ({
     "Protein Clusters": "protein_cluster_013024",
     "Protein Signatures": "protein_signature_013024",
     Proteins: "study_protein_012924",
-    "PubMed Citations": "citation",
+    "PubMed Citations": "citation_021324",
     "Salivary Proteins": "salivary-proteins-013024",
   };
 

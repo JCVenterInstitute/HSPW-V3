@@ -194,12 +194,8 @@ const CitationTable = () => {
     autoHeaderHeight: true,
   };
 
-  const stringAttributes = ["Title", "journal_title"];
-
+  const stringAttributes = ["Title", "journal_title", "PubMed_ID"];
   const numberAttributes = ["PubDate"];
-
-  // Stored as number so we can only allow exact matches
-  const exactMatches = ["PubMed_ID"];
 
   const fetchCitationData = async () => {
     const filterQueries = queryBuilder(facetFilters);
@@ -342,9 +338,10 @@ const CitationTable = () => {
         );
       } else if (numberAttributes.includes(attr)) {
         queries.push(createRangeQuery({ attrName: attr, ...filters[attr] }));
-      } else if (exactMatches.includes(attr)) {
-        queries.push(createTermQuery({ attrName: attr, value: filters[attr] }));
       }
+      // else if (exactMatches.includes(attr)) {
+      // queries.push(createTermQuery({ attrName: attr, value: filters[attr] }));
+      // }
     }
 
     return queries;
@@ -558,7 +555,6 @@ const CitationTable = () => {
                   variant="outlined"
                   size="small"
                   label="Search..."
-                  helperText="Must be An Exact Id"
                   InputProps={{
                     style: {
                       borderRadius: "16px",
