@@ -1537,7 +1537,7 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
 
     // S3 upload parameters
     const params = {
-      bucketName: `${procee.env.DIFFERENTIAL_S3_BUCKET}`,
+      bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
       s3KeyPrefix: `jobs/${timestamp.year}-${timestamp.month}-${timestamp.day}/differential-expression-${formattedDate}`,
       contentType: "text/plain",
       directoryPath: workingDirectory,
@@ -1596,7 +1596,7 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
 
     // S3 upload parameters
     const params = {
-      bucketName: `${procee.env.DIFFERENTIAL_S3_BUCKET}`,
+      bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
       s3KeyPrefix: `jobs/${timestamp.year}-${timestamp.month}-${timestamp.day}/differential-expression-${formattedDate}`,
       contentType: "text/plain",
       directoryPath: workingDirectory,
@@ -1654,7 +1654,7 @@ app.post(
 app.get("/api/download-template-data", async (req, res) => {
   // S3 download parameters
   const params = {
-    bucketName: `${procee.env.DIFFERENTIAL_S3_BUCKET}`,
+    bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
     s3Key: "inputdata.csv",
   };
 
@@ -1665,7 +1665,7 @@ app.get("/api/download-template-data", async (req, res) => {
 app.get("/api/download-data-standard", async (req, res) => {
   // S3 download parameters
   const params = {
-    bucketName: `${procee.env.DIFFERENTIAL_S3_BUCKET}`,
+    bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
     s3Key: "example_inputdata_template.xlsx",
   };
 
