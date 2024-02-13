@@ -1507,7 +1507,7 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
       formattedDate,
       workingDirectory,
     } = req.body;
-    const scriptPath = "/home/ec2-user/r4test1/test";
+    const scriptPath = `${process.env.R_SCRIPT_PATH}`;
 
     // Create the working directory and copy the R script
     await fse.ensureDir(workingDirectory);
@@ -1537,8 +1537,8 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
 
     // S3 upload parameters
     const params = {
-      bucketName: "differential-expression-result-dev",
-      s3KeyPrefix: `${timestamp.year}-${timestamp.month}-${timestamp.day}/differential-expression-${formattedDate}`,
+      bucketName: `${procee.env.DIFFERENTIAL_S3_BUCKET}`,
+      s3KeyPrefix: `jobs/${timestamp.year}-${timestamp.month}-${timestamp.day}/differential-expression-${formattedDate}`,
       contentType: "text/plain",
       directoryPath: workingDirectory,
     };
@@ -1566,7 +1566,7 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
       formattedDate,
       workingDirectory,
     } = req.body;
-    const scriptPath = "/home/ec2-user/r4test1/test";
+    const scriptPath = `${process.env.R_SCRIPT_PATH}`;
 
     // Create the working directory and copy the R script
     await fse.ensureDir(workingDirectory);
@@ -1596,8 +1596,8 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
 
     // S3 upload parameters
     const params = {
-      bucketName: "differential-expression-result-dev",
-      s3KeyPrefix: `${timestamp.year}-${timestamp.month}-${timestamp.day}/differential-expression-${formattedDate}`,
+      bucketName: `${procee.env.DIFFERENTIAL_S3_BUCKET}`,
+      s3KeyPrefix: `jobs/${timestamp.year}-${timestamp.month}-${timestamp.day}/differential-expression-${formattedDate}`,
       contentType: "text/plain",
       directoryPath: workingDirectory,
     };
@@ -1654,7 +1654,7 @@ app.post(
 app.get("/api/download-template-data", async (req, res) => {
   // S3 download parameters
   const params = {
-    bucketName: "differential-expression-result-dev",
+    bucketName: `${procee.env.DIFFERENTIAL_S3_BUCKET}`,
     s3Key: "inputdata.csv",
   };
 
@@ -1665,8 +1665,8 @@ app.get("/api/download-template-data", async (req, res) => {
 app.get("/api/download-data-standard", async (req, res) => {
   // S3 download parameters
   const params = {
-    bucketName: "differential-expression-result-dev",
-    s3Key: "Example_inputdata_template.xlsx",
+    bucketName: `${procee.env.DIFFERENTIAL_S3_BUCKET}`,
+    s3Key: "example_inputdata_template.xlsx",
   };
 
   const presignedUrl = await s3Download(params);
