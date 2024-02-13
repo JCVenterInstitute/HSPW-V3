@@ -1688,8 +1688,8 @@ app.get("/api/s3Download/:jobId/:fileName", async (req, res) => {
 
   // S3 download parameters
   const params = {
-    bucketName: "differential-expression-result-dev",
-    s3Key: `${year}-${month}-${day}/${jobId}/${fileName}`,
+    bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
+    s3Key: `jobs/${year}-${month}-${day}/${jobId}/${fileName}`,
   };
 
   try {
