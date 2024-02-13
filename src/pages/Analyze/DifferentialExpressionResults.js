@@ -11,12 +11,13 @@ import {
   Grid,
 } from "@mui/material";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import CSVDataTable from "./CSVDataTable";
 import DownloadIcon from "@mui/icons-material/Download";
 import AnalysisDescription from "../../components/Analyze/DifferentialExpressionAnalysis/AnalysisDescription";
 
 const DifferentialExpressionResults = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { jobId } = useParams();
   const [selected, setSelected] = useState("Volcano Plot");
   const [alignment, setAlignment] = useState("left");
@@ -362,7 +363,9 @@ const DifferentialExpressionResults = () => {
                       },
                     }}
                   >
-                    <ToggleButton value="left">TOP 25 SAMPLES</ToggleButton>
+                    <ToggleButton value="left">{`TOP ${searchParams.get(
+                      "heatmap"
+                    )} SAMPLES`}</ToggleButton>
                     <ToggleButton value="right">ALL SAMPLES</ToggleButton>
                   </ToggleButtonGroup>
                 ) : (
@@ -425,7 +428,10 @@ const DifferentialExpressionResults = () => {
           <Typography sx={{ fontFamily: "Lato", mt: 2, ml: 1 }}>
             <span
               dangerouslySetInnerHTML={{
-                __html: AnalysisDescription[selected],
+                __html: AnalysisDescription[selected].replaceAll(
+                  "numberOfDifferentiallyAbundantProteinsInHeatmap",
+                  searchParams.get("heatmap")
+                ),
               }}
             ></span>
           </Typography>

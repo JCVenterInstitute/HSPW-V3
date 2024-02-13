@@ -178,6 +178,10 @@ const DifferentialExpression = () => {
   const [groupBRowData, setGroupBRowData] = useState([]);
   const [fileName, setFileName] = useState("");
   const [logNorm, setLogNorm] = useState("NULL");
+  const [
+    numberOfDifferentiallyAbundantProteinsInHeatmap,
+    setNumberOfDifferentiallyAbundantProteinsInHeatmap,
+  ] = useState("25");
   const [foldChangeThreshold, setFoldChangeThreshold] = useState("2.0");
   const [pValueThreshold, setPValueThreshold] = useState("0.05");
   const [pValueType, setPValueType] = useState("Raw");
@@ -784,6 +788,7 @@ const DifferentialExpression = () => {
             {
               inputData,
               logNorm,
+              numberOfDifferentiallyAbundantProteinsInHeatmap,
               foldChangeThreshold,
               pValueThreshold,
               pValueType,
@@ -803,7 +808,7 @@ const DifferentialExpression = () => {
           .then(() => {
             // Wait for 3 seconds before redirecting
             setTimeout(() => {
-              window.location.href = `/differential-expression/results/${jobId}`;
+              window.location.href = `/differential-expression/results/${jobId}?logNorm=${logNorm}&heatmap=${numberOfDifferentiallyAbundantProteinsInHeatmap}&foldChange=${foldChangeThreshold}&pValue=${pValueThreshold}&pType=${pValueType}&parametricTest=${parametricTest}`;
               Swal.close();
             }, 3000);
           });
@@ -815,6 +820,7 @@ const DifferentialExpression = () => {
               groupAData: groupARowData,
               groupBData: groupBRowData,
               logNorm,
+              numberOfDifferentiallyAbundantProteinsInHeatmap,
               foldChangeThreshold,
               pValueThreshold,
               pValueType,
@@ -834,7 +840,7 @@ const DifferentialExpression = () => {
           .then(() => {
             // Wait for 3 seconds before redirecting
             setTimeout(() => {
-              window.location.href = `/differential-expression/results/${jobId}`;
+              window.location.href = `/differential-expression/results/${jobId}?logNorm=${logNorm}&heatmap=${numberOfDifferentiallyAbundantProteinsInHeatmap}&foldChange=${foldChangeThreshold}&pValue=${pValueThreshold}&pType=${pValueType}&parametricTest=${parametricTest}`;
               Swal.close();
             }, 3000);
           });
@@ -1620,13 +1626,40 @@ const DifferentialExpression = () => {
                   mt: 3,
                 }}
               >
+                Number of differentially abundant proteins in heatmap:
+              </Typography>
+              <TextField
+                size="small"
+                value={numberOfDifferentiallyAbundantProteinsInHeatmap}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  // Allow only numeric input (including decimal points)
+                  if (/^\d*\.?\d*$/.test(value) || value === "") {
+                    setNumberOfDifferentiallyAbundantProteinsInHeatmap(value);
+                  }
+                }}
+                sx={{ width: "80px" }}
+              />
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  color: "#1463B9",
+                  fontFamily: "Montserrat",
+                  fontWeight: 600,
+                  mt: 3,
+                }}
+              >
                 Fold change threshold:
               </Typography>
               <TextField
                 size="small"
                 value={foldChangeThreshold}
                 onChange={(event) => {
-                  setFoldChangeThreshold(event.target.value);
+                  const value = event.target.value;
+                  // Allow only numeric input (including decimal points)
+                  if (/^\d*\.?\d*$/.test(value) || value === "") {
+                    setFoldChangeThreshold(value);
+                  }
                 }}
                 sx={{ width: "80px" }}
               />
@@ -1645,7 +1678,11 @@ const DifferentialExpression = () => {
                 size="small"
                 value={pValueThreshold}
                 onChange={(event) => {
-                  setPValueThreshold(event.target.value);
+                  const value = event.target.value;
+                  // Allow only numeric input (including decimal points)
+                  if (/^\d*\.?\d*$/.test(value) || value === "") {
+                    setPValueThreshold(value);
+                  }
                 }}
                 sx={{ width: "80px", mr: 3 }}
               />

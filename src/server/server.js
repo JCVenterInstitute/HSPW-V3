@@ -1500,6 +1500,7 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
   try {
     const {
       logNorm,
+      numberOfDifferentiallyAbundantProteinsInHeatmap,
       foldChangeThreshold,
       pValueThreshold,
       pValueType,
@@ -1514,11 +1515,11 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
     await fse.ensureDir(workingDirectory);
     await processGroupData(req.body, workingDirectory);
     await fse.copy(
-      path.join(scriptPath, "generate-data-new.R"),
-      path.join(workingDirectory, "generate-data-new.R")
+      path.join(scriptPath, "generate-data-new-heat.R"),
+      path.join(workingDirectory, "generate-data-new-heat.R")
     );
     // Execute the R script from the working directory
-    const command = `Rscript generate-data-new.R ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType} ${parametricTest}`;
+    const command = `Rscript generate-data-new-heat.R ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType} ${parametricTest} ${numberOfDifferentiallyAbundantProteinsInHeatmap}`;
     const { stdout } = await execPromise(command, {
       cwd: workingDirectory,
     });
@@ -1559,6 +1560,7 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
     const {
       inputData,
       logNorm,
+      numberOfDifferentiallyAbundantProteinsInHeatmap,
       foldChangeThreshold,
       pValueThreshold,
       pValueType,
@@ -1573,11 +1575,11 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
     await fse.ensureDir(workingDirectory);
     await processFile(inputData, workingDirectory);
     await fse.copy(
-      path.join(scriptPath, "generate-data-new.R"),
-      path.join(workingDirectory, "generate-data-new.R")
+      path.join(scriptPath, "generate-data-new-heat.R"),
+      path.join(workingDirectory, "generate-data-new-heat.R")
     );
     // Execute the R script from the working directory
-    const command = `Rscript generate-data-new.R ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType} ${parametricTest}`;
+    const command = `Rscript generate-data-new-heat.R ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType} ${parametricTest} ${numberOfDifferentiallyAbundantProteinsInHeatmap}`;
     const { stdout } = await execPromise(command, {
       cwd: workingDirectory,
     });
