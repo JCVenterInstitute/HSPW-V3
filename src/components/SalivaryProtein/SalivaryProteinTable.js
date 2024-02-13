@@ -104,8 +104,12 @@ function opinionComponent(props) {
   const { value } = props;
 
   return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
-      <span>
+    <div
+      style={{
+        ...commonStyles,
+      }}
+    >
+      <span style={{ textAlign: "center" }}>
         {value === "Confirmed" ? "C" : value === "Unsubstantiated" ? "US" : ""}
       </span>
     </div>
@@ -113,6 +117,20 @@ function opinionComponent(props) {
 }
 
 function specificityComponent(props) {
+  const { value } = props;
+
+  return (
+    <div
+      style={{
+        ...commonStyles,
+      }}
+    >
+      <span style={{ textAlign: "center" }}>{value}</span>
+    </div>
+  );
+}
+
+function specificityScoreComponent(props) {
   const { value } = props;
 
   return (
@@ -482,12 +500,13 @@ const SalivaryProteinTable = () => {
         {
           headerName: "Specificity",
           field: "specificity",
-          cellClass: ["table-border", "salivary-protein-cell"],
+          cellRenderer: "specificityComponent",
+          cellClass: ["table-border", "salivary-proteins-colored-cell"],
         },
         {
           headerName: "Specificity Score",
           field: "specificity_score",
-          cellRenderer: "specificityComponent",
+          cellRenderer: "specificityScoreComponent",
           cellClass: ["table-border", "salivary-proteins-colored-cell"],
         },
       ],
@@ -2006,6 +2025,7 @@ const SalivaryProteinTable = () => {
                   opinionComponent,
                   proteinLinkComponent,
                   specificityComponent,
+                  specificityScoreComponent,
                 }}
                 onSortChanged={onSortChanged}
                 onGridReady={onGridReady}
