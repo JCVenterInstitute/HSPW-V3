@@ -52,7 +52,7 @@ const UploadExperiment = () => {
         className="head_background"
       >
         <Container maxWidth="xl">
-          <h1 className="head_title">HSP Experiment Submission</h1>
+          <h1 className="head_title">Upload Experiment</h1>
         </Container>
       </div>
       <Container
@@ -70,10 +70,11 @@ const UploadExperiment = () => {
         >
           Contents
         </Typography>
-        <List>
+        <List component="nav">
           {sections.map((section) => (
             <ListItem
               key={section}
+              button
               component="a"
               href={`#${section}`}
               sx={{ color: "#266CB4", padding: 0 }}
