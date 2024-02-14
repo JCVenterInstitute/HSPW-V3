@@ -1,67 +1,91 @@
-import React from "react";
-import main_feature from "../assets/hero.jpeg";
-import { Typography, Container } from "@mui/material";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import {
+  Container,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Box,
+} from "@mui/material";
+import MainFeature from "../assets/hero.jpeg";
 import { Link } from "react-router-dom";
 
+const sections = ["Experiment Submission", "Data Format and Data Standards"];
+
 const UploadExperiment = () => {
+  const headers = ["Software", "Standard File Format Supported"];
+  const softwareStandards = [
+    { software: "Mascot", standards: "mzTab v1.0, mzIdentML v1.1 v1.2" },
+    { software: "MaxQuant", standards: "mzTab v1.0" },
+    { software: "OpenMS", standards: "mzTab v1.0, mzIdentML v1.1 v1.2" },
+    { software: "PEAKS", standards: "mzIdentML v1.1" },
+    { software: "MSGF+", standards: "mzIdentML v1.1" },
+    { software: "Byonic (Protein Metrics Inc.)", standards: "mzIdentML v1.1" },
+    { software: "Crux", standards: "mzIdentML v1.1" },
+    { software: "IDPicker", standards: "mzIdentML v1.1" },
+    { software: "IP2", standards: "mzIdentML v1.1" },
+    { software: "Iquant", standards: "mzIdentML v1.1" },
+    { software: "MyriMatch", standards: "mzIdentML v1.1" },
+    { software: "PeptideShaker", standards: "mzIdentML v1.1 v1.2" },
+    { software: "PGA", standards: "mzIdentML v1.1" },
+    { software: "PIA", standards: "mzIdentML v1.1." },
+    { software: "ProteinLynx", standards: "mzIdentML v1.1" },
+    { software: "Progenesis QI", standards: "mzIdentML v1.1" },
+    { software: "ProteinPilot", standards: "mzIdentML v1.1" },
+    { software: "ProteinScape", standards: "mzIdentML v1.1" },
+    { software: "ProteoWizard", standards: "mzIdentML v1.1" },
+    { software: "Scaffold", standards: "mzIdentML v1.1" },
+    { software: "PatternLab", standards: "mzIdentML v1.1" },
+    { software: "DTASelect2MzId", standards: "mzIdentML v1.1" },
+  ];
+
   return (
     <>
       <div
+        style={{
+          backgroundImage: `url(${MainFeature})`,
+        }}
         className="head_background"
-        style={{ backgroundImage: `url(${main_feature})` }}
       >
         <Container maxWidth="xl">
-          <h1 className="head_title">Upload Experiment</h1>
-          <p className="head_text">Up Coming Soon</p>
+          <h1 className="head_title">HSP Experiment Submission</h1>
         </Container>
       </div>
       <Container
         maxWidth="xl"
-        sx={{ mt: 4 }}
+        sx={{ my: 4 }}
       >
         <Typography
           variant="h5"
           sx={{
             fontFamily: "Montserrat",
             fontWeight: "bold",
-            mt: 4,
-            mb: 3,
+            mt: 3,
             color: "black",
           }}
         >
-          Up Coming Soon
+          Contents
         </Typography>
-        {/* <Typography sx={{ fontFamily: "Lato", fontSize: "18px" }}>
-          New evidence improved our understanding of salivary contributions to
-          human health. In March 2008, an NIDCR-supported team of biologists,
-          chemists, engineers and computer scientists at five research
-          institutions across the country mapped the salivary proteome, or
-          "dictionary," of proteins present in human saliva. Representing saliva
-          samples from two dozen women and men of various ethnic backgrounds,
-          the saliva catalog contains over a thousand proteins. Over half of the
-          proteins in saliva were also present in blood, and nearly one quarter
-          were the same as those in tears. To learn more about the project,
-          please read this{" "}
-          <a
-            href="https://pubmed.ncbi.nlm.nih.gov/18361515/"
-            title="PubMed:18361515"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ textDecoration: "none" }}
-          >
-            this seminal paper
-            <OpenInNewIcon sx={{ fontSize: "medium" }} />
-          </a>
-          .
-        </Typography>
-        <Typography sx={{ mt: 2, fontFamily: "Lato", fontSize: "18px" }}>
-          This work was supported mainly by U.S. Public Health Service Grants
-          R01 DE016937-16 (Parent Grant PI: Floyd Dewhirst, Forsyth; Supplement
-          Consortium PI: Marcelo Freire, JCVI) from the National Institutes of
-          Health/National Institute of Dental and Craniofacial Research.
-        </Typography>
+        <List>
+          {sections.map((section) => (
+            <ListItem
+              key={section}
+              component="a"
+              href={`#${section}`}
+              sx={{ color: "#266CB4", padding: 0 }}
+            >
+              <div style={{ padding: "5px", cursor: "pointer" }}>
+                <ListItemText primary={section} />
+              </div>
+            </ListItem>
+          ))}
+        </List>
         <Typography
+          id="Experiment Submission"
           variant="h5"
           sx={{
             fontFamily: "Montserrat",
@@ -71,64 +95,160 @@ const UploadExperiment = () => {
             color: "black",
           }}
         >
-          A Community-based Web Portal
+          Experiment Submission
+        </Typography>
+        <div
+          style={{
+            height: "3px",
+            background: "linear-gradient(to right, #1463B9, #ffffff)",
+            marginBottom: "30px",
+          }}
+        ></div>
+        <Typography sx={{ fontFamily: "Lato", fontSize: "18px" }}>
+          Human Salivary Proteome (HSP) supports submission of experiments
+          coming from all proteomics data workflows. Experiment data format and
+          details are listed below and for uploading the data please submit the
+          ticket through the <Link to="/contact">Contact us</Link> page.
+        </Typography>
+        <Typography
+          id="Data Format and Data Standards"
+          variant="h5"
+          sx={{
+            fontFamily: "Montserrat",
+            fontWeight: "bold",
+            mt: 4,
+            mb: 3,
+            color: "black",
+          }}
+        >
+          Data Format and Data Standards
+        </Typography>
+        <div
+          style={{
+            height: "3px",
+            background: "linear-gradient(to right, #1463B9, #ffffff)",
+            marginBottom: "30px",
+          }}
+        ></div>
+        <Typography sx={{ fontFamily: "Lato", fontSize: "18px" }}>
+          For data to be loaded in the HSP database, data should be a Proteomics
+          result file in mztab (version 1.0{" "}
+          <Link
+            to="http://www.psidev.info/mztab"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            www.psidev.info/mztab
+          </Link>
+          ). MzTab is a data standard also developed by members of the
+          Proteomics Informatics working group of the PSI to represent both
+          identification and quantification data. For PRIDE Archive the mzTab
+          file MUST contain the Protein and PSM tables and the Peptide section
+          is optional. We recommended this file format to report quantification
+          results.
+        </Typography>
+        <Typography sx={{ mt: 2, fontFamily: "Lato", fontSize: "18px" }}>
+          In future, we will support mzIdentML (version 1.1 and 1.2{" "}
+          <Link
+            to="http://www.psidev.info/mzidentml"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            www.psidev.info/mzidentml
+          </Link>
+          ): mzIdentML is a data standard developed by the Proteomics
+          Informatics working group of the PSI. The mzIdentML only contains the
+          peptide/protein identification information of a proteomics experiment,
+          not the quantitation related information.
+        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center", // Centers the table horizontally
+            alignItems: "center", // Centers the table vertically (optional, depending on your design)
+            width: "100%", // Ensures the Box takes the full width of its container
+          }}
+        >
+          <Table
+            sx={{ marginTop: 2, marginBottom: "20px", maxWidth: "1000px" }}
+          >
+            <TableHead>
+              <TableRow>
+                {headers.map((header, index) => (
+                  <TableCell
+                    key={index}
+                    sx={{
+                      backgroundColor: "#1463B9",
+                      color: "white",
+                      fontFamily: "Montserrat",
+                      fontSize: "14px",
+                      fontWeight: "bold",
+                      borderRight: "1px solid #3592E4",
+                      "&:first-of-type": {
+                        borderTopLeftRadius: "16px",
+                        borderLeft: "none",
+                        borderTop: "none",
+                      },
+                      "&:last-of-type": {
+                        borderTopRightRadius: "16px",
+                        borderRight: "none",
+                        borderTop: "none",
+                      },
+                    }}
+                  >
+                    {header}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {softwareStandards.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell
+                    sx={{ fontSize: "15px", border: "1px solid #CACACA" }}
+                  >
+                    {item.software}
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontSize: "15px", border: "1px solid #CACACA" }}
+                  >
+                    {item.standards}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Box>
+        <Typography sx={{ mt: 2, fontFamily: "Lato", fontSize: "18px" }}>
+          Most of softwares allows mzTab and mzIdentML export, and there are
+          many tools (Thermofisher Proteome Discoverer, PGConvertor, OpenMS)
+          which allow you to convert mzIdentML to mzTab format.
+        </Typography>
+        <Typography sx={{ mt: 2, fontFamily: "Lato", fontSize: "18px" }}>
+          It is important to highlight that mzIdentML/mzTab files do not contain
+          the mass spectra, and HSP does not store the RAW mass spectra data. We
+          recommend you to submit the raw data to PRIDE (
+          <Link
+            to="https://www.ebi.ac.uk/pride/markdownpage/pridesubmissiontool"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            https://www.ebi.ac.uk/pride/markdownpage/pridesubmissiontool
+          </Link>
+          ) or MassIVE (
+          <Link
+            to="https://massive.ucsd.edu/ProteoSAFe/static/massive.jsp"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            https://massive.ucsd.edu/ProteoSAFe/static/massive.jsp
+          </Link>
+          ).
         </Typography>
         <Typography sx={{ fontFamily: "Lato", fontSize: "18px" }}>
-          The experimental data from the project as well as information from
-          popular knowledge bases such as UniProt and PubMed are now available
-          online in the Human Salivary Proteome (HSP). A group of scientists
-          have evolved from one study to multi-center analysis of various
-          datasets to develop the{" "}
-          <a
-            href="https://journals.sagepub.com/doi/abs/10.1177/00220345211014432?journalCode=jdrb"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ textDecoration: "none" }}
-          >
-            HSP
-            <OpenInNewIcon sx={{ fontSize: "medium" }} />
-          </a>
-          . Saliva tests based on these biomarkers offer many advantages over
-          blood tests that require a needle stick and can pose contamination
-          risks from blood-borne diseases. However, much effort is still
-          required to enrich and refine the salivary ontology and functions.
+          For any further questions or comments, please contact us though{" "}
+          <Link to="/contact">Contact us</Link> page.
         </Typography>
-        <Typography sx={{ mt: 2, fontFamily: "Lato", fontSize: "18px" }}>
-          The HSP committee members are recognized researchers in the oral
-          biology community. They are tasked to develop curation guidelines,
-          review annotations submitted by the community, and promote the HSP.
-          Click{" "}
-          <Link
-            to="/team"
-            style={{ textDecoration: "none" }}
-          >
-            here
-            <OpenInNewIcon
-              sx={{ fontSize: "medium", verticalAlign: "middle" }}
-            />
-          </Link>{" "}
-          to see who they are.
-        </Typography>
-        <Typography sx={{ mt: 2, fontFamily: "Lato", fontSize: "18px" }}>
-          To improve our efforts to a functional era of big data, our team has
-          joined the team from{" "}
-          <a
-            href="http://www.homd.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ textDecoration: "none" }}
-          >
-            HOMD
-            <OpenInNewIcon sx={{ fontSize: "medium" }} />
-          </a>
-          . We aim to integrate our datasets and bring our human derived data
-          with microbial derived information. This will provide our teams with
-          new knowledge of how and why complex host-microbial interactions
-          govern health and disease.
-        </Typography>
-        <Typography sx={{ mt: 2, mb: 2, fontFamily: "Lato", fontSize: "18px" }}>
-          Thank you for your participation!
-        </Typography> */}
       </Container>
     </>
   );
