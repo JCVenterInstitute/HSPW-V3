@@ -39,10 +39,11 @@ const CopyrightPage = () => {
         >
           Contents
         </Typography>
-        <List>
+        <List component="nav">
           {sections.map((section) => (
             <ListItem
               key={section}
+              button
               component="a"
               href={`#${section}`}
               sx={{ color: "#266CB4", padding: 0 }}
