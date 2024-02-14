@@ -66,7 +66,7 @@ exports.createContact = async ({
   const contactId = `${topic}-${timestamp.year}${timestamp.month}${timestamp.day}-${timestamp.hours}${timestamp.minutes}${timestamp.seconds}`;
   const time = `${timestamp.year}${timestamp.month}${timestamp.day}-${timestamp.hours}${timestamp.minutes}${timestamp.seconds}`;
   const params = {
-    TableName: "Contact-Detail",
+    TableName: process.env.CONTACT_TABLE,
     Item: {
       contactId: contactId,
       name,
