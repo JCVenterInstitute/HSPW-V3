@@ -4,11 +4,12 @@ module.exports = {
       script: "./src/server/server.js",
       instances: "max",
       exec_mode: "cluster",
-      env_dev: {
-        NODE_ENV: "dev",
+      env_production: {
+        NODE_ENV: "production",
       },
-      env_prod: {
-        NODE_ENV: "prod",
+      env_development: {
+        NODE_ENV: "development",
+        NODE_HELLO: "This is dev",
       },
     },
   ],
