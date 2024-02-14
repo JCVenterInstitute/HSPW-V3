@@ -3,6 +3,8 @@ module.exports = {
     {
       name: "hspw",
       script: "./src/server/server.js",
+      instances: "max",
+      exec_mode: "cluster",
       env_production: {
         NODE_ENV: "prod",
       },
