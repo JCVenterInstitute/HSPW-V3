@@ -57,7 +57,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "BUILD_PATH='./src/server/build' react-scripts build"
+    "build": "BUILD_PATH='./src/server/build' sh -ac '. ./.env.${REACT_APP_ENV}; react-scripts build'",
+    "build:dev": "REACT_APP_ENV=development npm run build",
+    "build:prod": "REACT_APP_ENV=production npm run build"
   },
   "eslintConfig": {
     "extends": [
