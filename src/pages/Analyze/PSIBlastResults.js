@@ -205,10 +205,7 @@ const PsiBlastResults = () => {
         </Typography>
       </Container>
       {!isFinished ? (
-        <Container
-          maxWidth="xl"
-          sx={{ minHeight: "60vh" }}
-        >
+        <Container maxWidth="xl">
           <Typography
             variant="h5"
             sx={{ mt: 3, color: "#1463B9" }}

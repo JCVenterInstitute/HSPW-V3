@@ -189,10 +189,7 @@ const ClustalOmegaResults = () => {
           </Typography>
         </Container>
       ) : (
-        <Container
-          maxWidth="xl"
-          sx={{ minHeight: "60vh" }}
-        >
+        <Container maxWidth="xl">
           <Tabs>
             <TabList>
               <Tab>Alignments</Tab>
