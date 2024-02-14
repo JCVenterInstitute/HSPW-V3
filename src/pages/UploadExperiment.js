@@ -170,7 +170,7 @@ const UploadExperiment = () => {
           }}
         >
           <Table
-            sx={{ marginTop: 2, marginBottom: "20px", maxWidth: "1000px" }}
+            sx={{ marginTop: 3, marginBottom: "20px", maxWidth: "1000px" }}
           >
             <TableHead>
               <TableRow>
