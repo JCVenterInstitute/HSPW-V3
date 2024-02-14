@@ -11,6 +11,7 @@ const util = require("util");
 const execPromise = util.promisify(exec);
 const fse = require("fs-extra");
 const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 const { processGroupData } = require("./utils/processGroupData");
 const { processFile } = require("./utils/processFile");
 const { s3Upload } = require("./utils/s3Upload");
