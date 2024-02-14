@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "hspw",
-      script: "./src/server.js",
+      script: "./src/server/server.js",
       env_production: {
         NODE_ENV: "prod",
       },
