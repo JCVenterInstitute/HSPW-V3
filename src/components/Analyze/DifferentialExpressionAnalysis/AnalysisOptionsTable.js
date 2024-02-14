@@ -20,8 +20,10 @@ const AnalysisOptionsTable = ({ searchParams }) => {
     searchParams.get("heatmap"),
     searchParams.get("foldChange"),
     searchParams.get("pValue"),
-    searchParams.get("pType"),
-    searchParams.get("parametricTest"),
+    searchParams.get("pType") === "Raw" ? "RAW" : "FDR",
+    searchParams.get("parametricTest") === "F"
+      ? "T-Test"
+      : "Wilcoxon Signed-rank Test",
   ];
   return (
     <Table sx={{ marginTop: "15px", marginBottom: "20px" }}>
