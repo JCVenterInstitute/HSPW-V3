@@ -164,7 +164,6 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const DifferentialExpression = () => {
-  console.log(process.env.NODE_HELLO);
   const gridRef = useRef();
   const [gridApi, setGridApi] = useState();
   const [gridApiGroupA, setGridApiGroupA] = useState();
