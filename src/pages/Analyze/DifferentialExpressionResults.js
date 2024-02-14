@@ -426,14 +426,16 @@ const DifferentialExpressionResults = () => {
             </Box>
           </Box>
           <Typography sx={{ fontFamily: "Lato", mt: 2, ml: 1 }}>
-            <span
-              dangerouslySetInnerHTML={{
-                __html: AnalysisDescription[selected].replaceAll(
-                  "numberOfDifferentiallyAbundantProteinsInHeatmap",
-                  searchParams.get("heatmap")
-                ),
-              }}
-            ></span>
+            {AnalysisDescription[selected] && (
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: AnalysisDescription[selected].replaceAll(
+                    "numberOfDifferentiallyAbundantProteinsInHeatmap",
+                    searchParams.get("heatmap")
+                  ),
+                }}
+              ></span>
+            )}
           </Typography>
           <Box
             sx={{
