@@ -15,6 +15,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import CSVDataTable from "./CSVDataTable";
 import DownloadIcon from "@mui/icons-material/Download";
 import AnalysisDescription from "../../components/Analyze/DifferentialExpressionAnalysis/AnalysisDescription";
+import AnalysisOptionsTable from "../../components/Analyze/DifferentialExpressionAnalysis/AnalysisOptionsTable";
 
 const DifferentialExpressionResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -544,7 +545,7 @@ const DifferentialExpressionResults = () => {
                   </Grid>
                 </Box>
               </Box>
-            ) : selected === "Result Data" || selected === "Input Data" ? (
+            ) : selected === "Result Data" ? (
               <Container sx={{ margin: "0px" }}>
                 <Box
                   sx={{
@@ -555,6 +556,32 @@ const DifferentialExpressionResults = () => {
                   <CSVDataTable data={csvData} />
                 </Box>
               </Container>
+            ) : selected === "Input Data" ? (
+              <>
+                <Container sx={{ margin: "0px" }}>
+                  <Typography
+                    variant="h5"
+                    sx={{ fontFamily: "Lato" }}
+                  >
+                    Analysis Options:
+                  </Typography>
+                  <AnalysisOptionsTable searchParams={searchParams} />
+                  <Typography
+                    variant="h5"
+                    sx={{ fontFamily: "Lato", marginBottom: "15px" }}
+                  >
+                    Input Data:
+                  </Typography>
+                  <Box
+                    sx={{
+                      overflowX: "auto", // Enable horizontal scrolling
+                      width: "100%",
+                    }}
+                  >
+                    <CSVDataTable data={csvData} />
+                  </Box>
+                </Container>
+              </>
             ) : selected === "Heatmap" || alignment === "left" ? (
               imageUrl && (
                 <img
