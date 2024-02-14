@@ -181,7 +181,7 @@ const UploadExperiment = () => {
                       backgroundColor: "#1463B9",
                       color: "white",
                       fontFamily: "Montserrat",
-                      fontSize: "14px",
+                      fontSize: "18px",
                       fontWeight: "bold",
                       borderRight: "1px solid #3592E4",
                       "&:first-of-type": {
