@@ -16,6 +16,32 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import main_feature from "../assets/hero.jpeg";
 import FontAwesome from "react-fontawesome";
 
+import {
+  salivaryProtein,
+  salivaryProteinMapping,
+  salivarySummary,
+  citationMapping,
+  citationReqBody,
+  citation,
+  salivarySummaryReqBody,
+  salivarySummaryMapping,
+  proteinSignature,
+  proteinSignatureMapping,
+  proteinSignatureReqBody,
+  genes,
+  genesMapping,
+  geneReqBody,
+  studyProtein,
+  studyProteinMapping,
+  proteinClusterMapping,
+  proteinCluster,
+  proteinClusterReqBody,
+  study,
+  studyMapping,
+  studyAbundance,
+  studyAbundanceMapping,
+} from "../utils/ApiDocData";
+
 const sharedStyles = {
   padding: "20px",
   bgcolor: "#ededed",
@@ -27,7 +53,7 @@ const sharedStyles = {
 const ApiSection = ({
   name,
   schema,
-  requestBody,
+  requestBody = {},
   queryParamDescription,
   mapping,
   endpoint = "",
@@ -44,7 +70,8 @@ const ApiSection = ({
         xs={12}
       >
         <Typography>
-          <b>GET: </b> https://dev.salivaryproteome.org{endpoint}
+          <b>GET: </b> {process.env.REACT_APP_API_ENDPOINT}
+          {endpoint}
           <br />
           {queryParamDescription}
         </Typography>
@@ -75,7 +102,7 @@ const ApiSection = ({
         item
         lg={12}
       >
-        <Accordion>
+        <Accordion sx={{ boxShadow: 3 }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <h4>Data Structure</h4>
           </AccordionSummary>
@@ -90,7 +117,7 @@ const ApiSection = ({
           item
           lg={12}
         >
-          <Accordion>
+          <Accordion sx={{ boxShadow: 3 }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <h4>Request Body Example</h4>
             </AccordionSummary>
@@ -154,1337 +181,12 @@ const ApiPage = () => {
     "Study Proteins",
     "Protein Cluster",
     "Study",
+    "Abundance",
   ];
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
-  const salivaryProtein = {
-    id: "",
-    salivary_proteins: {
-      uniprot_accession: "",
-      uniprot_secondary_accession: [""],
-      status: "",
-      gene_symbol: "",
-      protein_name: "",
-      protein_alternate_names: [],
-      alternative_products_isoforms: [],
-      expert_opinion: "",
-      protein_sequence_length: 0,
-      protein_sequence: "",
-      reference_sequence: [""],
-      mass: 0,
-      primary_gene_names: [""],
-      protein_names: [],
-      p_db: [],
-      alpha_fold_db: [""],
-      intact: [""],
-      peptide_atlas: [""],
-      massive: [""],
-      pride: [],
-      ensembl: [""],
-      ensembl_g: "",
-      entrez_gene_id: [""],
-      kegg: [""],
-      gene_cards: [""],
-      glygen: "",
-      created_on: "",
-      last_modified: "",
-      uniparc_id: "",
-      plasma_abundance: "",
-      ev_abundance: "",
-      cites: [""],
-      keywords: [
-        {
-          id: "",
-          keyword: "",
-        },
-      ],
-      ihc: "",
-      atlas: [
-        {
-          tissue: "",
-          nx: "",
-          score: "",
-          enriched: "",
-        },
-      ],
-      annotations: [
-        {
-          annotation_type: "",
-          annotation_description: [
-            {
-              description: "",
-              evidences: [
-                {
-                  evidenceCode: "",
-                },
-              ],
-            },
-          ],
-          features: [],
-        },
-      ],
-      glycans: [],
-    },
-  };
-
-  const salivaryProteinReqBody = {};
-
-  const salivaryProteinMapping = {
-    salivary_proteins: {
-      mappings: {
-        properties: {
-          id: {
-            type: "text",
-          },
-          salivary_proteins: {
-            properties: {
-              alpha_fold_db: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              alternative_products_isoforms: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              annotations: {
-                properties: {
-                  annotation_description: {
-                    properties: {
-                      description: {
-                        type: "text",
-                        fields: {
-                          keyword: {
-                            type: "keyword",
-                            ignore_above: 256,
-                          },
-                        },
-                      },
-                      evidences: {
-                        properties: {
-                          evidenceCode: {
-                            type: "text",
-                            fields: {
-                              keyword: {
-                                type: "keyword",
-                                ignore_above: 256,
-                              },
-                            },
-                          },
-                          id: {
-                            type: "text",
-                            fields: {
-                              keyword: {
-                                type: "keyword",
-                                ignore_above: 256,
-                              },
-                            },
-                          },
-                          source: {
-                            type: "text",
-                            fields: {
-                              keyword: {
-                                type: "keyword",
-                                ignore_above: 256,
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                  annotation_type: {
-                    type: "text",
-                    fields: {
-                      keyword: {
-                        type: "keyword",
-                        ignore_above: 256,
-                      },
-                    },
-                  },
-                  features: {
-                    properties: {
-                      description: {
-                        type: "text",
-                        fields: {
-                          keyword: {
-                            type: "keyword",
-                            ignore_above: 256,
-                          },
-                        },
-                      },
-                      evidences: {
-                        properties: {
-                          evidenceCode: {
-                            type: "text",
-                            fields: {
-                              keyword: {
-                                type: "keyword",
-                                ignore_above: 256,
-                              },
-                            },
-                          },
-                          id: {
-                            type: "text",
-                            fields: {
-                              keyword: {
-                                type: "keyword",
-                                ignore_above: 256,
-                              },
-                            },
-                          },
-                          source: {
-                            type: "text",
-                            fields: {
-                              keyword: {
-                                type: "keyword",
-                                ignore_above: 256,
-                              },
-                            },
-                          },
-                        },
-                      },
-                      id: {
-                        type: "text",
-                        fields: {
-                          keyword: {
-                            type: "keyword",
-                            ignore_above: 256,
-                          },
-                        },
-                      },
-                      position: {
-                        type: "text",
-                        fields: {
-                          keyword: {
-                            type: "keyword",
-                            ignore_above: 256,
-                          },
-                        },
-                      },
-                      type: {
-                        type: "text",
-                        fields: {
-                          keyword: {
-                            type: "keyword",
-                            ignore_above: 256,
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              atlas: {
-                properties: {
-                  enriched: {
-                    type: "text",
-                    fields: {
-                      keyword: {
-                        type: "keyword",
-                        ignore_above: 256,
-                      },
-                    },
-                  },
-                  nx: {
-                    type: "text",
-                    fields: {
-                      keyword: {
-                        type: "keyword",
-                        ignore_above: 256,
-                      },
-                    },
-                  },
-                  score: {
-                    type: "text",
-                    fields: {
-                      keyword: {
-                        type: "keyword",
-                        ignore_above: 256,
-                      },
-                    },
-                  },
-                  tissue: {
-                    type: "text",
-                    fields: {
-                      keyword: {
-                        type: "keyword",
-                        ignore_above: 256,
-                      },
-                    },
-                  },
-                },
-              },
-              cites: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              created_on: {
-                type: "date",
-              },
-              ensembl: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              ensembl_g: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              entrez_gene_id: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              ev_abundance: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              expert_opinion: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              gene_cards: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              gene_symbol: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              glycans: {
-                properties: {
-                  glytoucan_accession: {
-                    type: "text",
-                    fields: {
-                      keyword: {
-                        type: "keyword",
-                        ignore_above: 256,
-                      },
-                    },
-                  },
-                  image: {
-                    type: "text",
-                    fields: {
-                      keyword: {
-                        type: "keyword",
-                        ignore_above: 256,
-                      },
-                    },
-                  },
-                  mass: {
-                    type: "float",
-                  },
-                  note: {
-                    type: "text",
-                    fields: {
-                      keyword: {
-                        type: "keyword",
-                        ignore_above: 256,
-                      },
-                    },
-                  },
-                  residue: {
-                    type: "text",
-                    fields: {
-                      keyword: {
-                        type: "keyword",
-                        ignore_above: 256,
-                      },
-                    },
-                  },
-                  source: {
-                    properties: {
-                      database: {
-                        type: "text",
-                        fields: {
-                          keyword: {
-                            type: "keyword",
-                            ignore_above: 256,
-                          },
-                        },
-                      },
-                      id: {
-                        type: "text",
-                        fields: {
-                          keyword: {
-                            type: "keyword",
-                            ignore_above: 256,
-                          },
-                        },
-                      },
-                      url: {
-                        type: "text",
-                        fields: {
-                          keyword: {
-                            type: "keyword",
-                            ignore_above: 256,
-                          },
-                        },
-                      },
-                    },
-                  },
-                  type: {
-                    type: "text",
-                    fields: {
-                      keyword: {
-                        type: "keyword",
-                        ignore_above: 256,
-                      },
-                    },
-                  },
-                },
-              },
-              glygen: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              ihc: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              intact: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              kegg: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              keywords: {
-                properties: {
-                  id: {
-                    type: "text",
-                    fields: {
-                      keyword: {
-                        type: "keyword",
-                        ignore_above: 256,
-                      },
-                    },
-                  },
-                  keyword: {
-                    type: "text",
-                    fields: {
-                      keyword: {
-                        type: "keyword",
-                        ignore_above: 256,
-                      },
-                    },
-                  },
-                },
-              },
-              last_modified: {
-                type: "date",
-              },
-              mass: {
-                type: "long",
-              },
-              massive: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              p_db: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              peptide_atlas: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              plasma_abundance: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              pride: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              primary_gene_names: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              protein_alternate_names: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              protein_name: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              protein_names: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              protein_sequence: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              protein_sequence_length: {
-                type: "long",
-              },
-              reference_sequence: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              status: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              uniparc_id: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              uniprot_accession: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-              uniprot_secondary_accession: {
-                type: "text",
-                fields: {
-                  keyword: {
-                    type: "keyword",
-                    ignore_above: 256,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  };
-
-  const salivarySummary = {
-    uniprot_accession: "",
-    "sm/sl_peptide_count": 0.0,
-    "sm/sl_abundance": 0.0,
-    saliva_peptide_count: 0,
-    saliva_abundance: 0.0,
-    parotid_gland_peptide_count: 0,
-    parotid_gland_abundance: 0.0,
-    EV_abundance: "",
-    mRNA: 0.0,
-    specificity: "",
-    specificity_score: "",
-    plasma_abundance: 0.0,
-    IHC: "",
-    "Protein Name": "",
-    expert_opinion: "",
-    "Gene Symbol": "",
-  };
-
-  const citationMapping = {
-    citation: {
-      mappings: {
-        properties: {
-          Abstract: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          PubDate: {
-            type: "date",
-            format: "yyyy/MM/dd HH:mm:ss||yyyy/MM/dd||epoch_millis",
-          },
-          PubMed_ID: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          PubYear: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          Title: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          affiliation: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          author_names: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          journal_title: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          keywords: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-        },
-      },
-    },
-  };
-
-  const citationReqBody = {
-    filters: [
-      {
-        bool: {
-          filter: [
-            {
-              regexp: {
-                "PubMed_ID.keyword": {
-                  value: "18849968.*",
-                  flags: "ALL",
-                  case_insensitive: true,
-                },
-              },
-            },
-          ],
-        },
-      },
-    ],
-  };
-
-  const citation = {
-    PubMed_ID: "",
-    PubDate: "",
-    author_names: [""],
-    journal_title: "Cell",
-    keywords: [],
-    affiliation: "",
-    Title: "",
-    Abstract: "",
-    PubYear: "",
-  };
-
-  const salivarySummaryReqBody = {
-    filters: [
-      {
-        bool: {
-          filter: [
-            {
-              regexp: {
-                "uniprot_accession.keyword": {
-                  value: "P0D.*",
-                  flags: "ALL",
-                  case_insensitive: true,
-                },
-              },
-            },
-          ],
-        },
-      },
-    ],
-    filterByOr: false,
-  };
-
-  const salivarySummaryMapping = {
-    salivary_summary: {
-      mappings: {
-        properties: {
-          EV_abundance: {
-            type: "float",
-          },
-          "Gene Symbol": {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          IHC: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          "Protein Name": {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          Specificity: {
-            type: "long",
-          },
-          Specificity_Score: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          "UniProt Accession": {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          expert_opinion: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          mRNA: {
-            type: "float",
-          },
-          parotid_gland_abundance: {
-            type: "float",
-          },
-          parotid_gland_peptide_count: {
-            type: "long",
-          },
-          plasma_abundance: {
-            type: "long",
-          },
-          saliva_abundance: {
-            type: "float",
-          },
-          saliva_peptide_count: {
-            type: "long",
-          },
-          "sm/sl_abundance": {
-            type: "long",
-          },
-          "sm/sl_peptide_count": {
-            type: "long",
-          },
-          specificity: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          specificity_score: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          uniprot_accession: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-        },
-      },
-    },
-  };
-
-  const proteinSignature = {
-    "InterPro ID": "",
-    Type: "",
-    Name: "",
-    "# of Members": [""],
-    ReferencesID: "",
-    Signature: "",
-    Abstract: "",
-    "GO Annotations": "",
-  };
-
-  const proteinSignatureMapping = {
-    protein_signature: {
-      mappings: {
-        properties: {
-          "# of Members": {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          Abstract: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          "GO Annotations": {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          "InterPro ID": {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          Name: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          ReferencesID: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          Signature: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          Type: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-        },
-      },
-    },
-  };
-
-  const proteinSignatureReqBody = {};
-
-  const requestBody = {};
-
-  const genes = {
-    GeneID: "",
-    "Gene Symbol": "",
-    "Gene Name": "",
-    Aliases: "",
-    Location: "",
-    Chromosome: "",
-    organism: "",
-    Summary: "",
-    "Gene Products": [""],
-  };
-
-  const genesMapping = {
-    gene: {
-      mappings: {
-        properties: {
-          Aliases: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          Chromosome: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          "Gene Name": {
-            type: "keyword",
-            fields: {
-              text: {
-                type: "text",
-              },
-            },
-          },
-          "Gene Products": {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          "Gene Symbol": {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          GeneID: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          Location: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          Summary: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          organism: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-        },
-      },
-    },
-  };
-
-  const geneReqBody = {};
-
-  const studyProtein = {
-    experiment_id_key: 0,
-    Uniprot_id: "",
-    submitted_protein_database: "",
-    submitted_protein_db_version: "",
-    protein_sequence_length: "",
-    abundance: "",
-    protein_name: "",
-    protein_score: "",
-    peptide_count: "",
-    experiment_protein_count: "0",
-    experiment_peptide_count: "0",
-    peptide_cleavages: "0",
-    abundance_cleavages: "0.0",
-    mz_number: "0",
-    protein_threshold: "0.0",
-    uparc: "",
-  };
-
-  const studyProteinMapping = {
-    study_protein: {
-      mappings: {
-        properties: {
-          Uniprot_id: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          abundance: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          abundance_cleavages: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          experiment_id_key: {
-            type: "long",
-          },
-          experiment_peptide_count: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          experiment_protein_count: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          mz_number: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          peptide_cleavages: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          peptide_count: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          protein_name: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          protein_score: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          protein_sequence_length: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          protein_threshold: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          submitted_protein_database: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          submitted_protein_db_version: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          uparc: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-        },
-      },
-    },
-  };
-
-  const studyProteinReqBody = {};
-
-  const proteinClusterMapping = {
-    protein_cluster: {
-      mappings: {
-        properties: {
-          cluster_members: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          number_of_members: {
-            type: "long",
-          },
-          protein_name: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-          uniprot_id: {
-            type: "text",
-            fields: {
-              keyword: {
-                type: "keyword",
-                ignore_above: 256,
-              },
-            },
-          },
-        },
-      },
-    },
-  };
-
-  const proteinCluster = {
-    uniprot_id: "",
-    cluster_members: [""],
-    number_of_members: 0,
-    protein_name: "",
-  };
-
-  const proteinClusterReqBody = {};
 
   return (
     <>
@@ -1500,6 +202,7 @@ const ApiPage = () => {
             <a
               href="https://opensearch.org/docs/latest/query-dsl/"
               target="_blank"
+              rel="noreferrer"
             >
               {"documentation "}
               <FontAwesome
@@ -1523,7 +226,7 @@ const ApiPage = () => {
             <Tabs
               value={value}
               onChange={handleChange}
-              aria-label="basic tabs example"
+              variant="scrollable"
             >
               {sections.map((sec, i) => (
                 <Tab
@@ -1544,7 +247,7 @@ const ApiPage = () => {
               requestBody={salivarySummaryReqBody}
               endpoint={"/api/salivary-proteins/:size/:from/"}
               queryParamDescription={
-                "Query params `:size` and `:from` used for pagination. Size is the number of records to return. From is where to start for the next set of records"
+                "Query params `:size` and `:from` used for pagination. Size is the number of records to return. From is where to start for the next set of records."
               }
               description={
                 "Api to Query data our salivary proteins summary data."
@@ -1562,12 +265,13 @@ const ApiPage = () => {
               name={"Salivary Proteins"}
               schema={salivaryProtein}
               mapping={salivaryProteinMapping}
-              requestBody={requestBody}
-              endpoint={"/api/salivary-proteins/:size/:from/"}
+              endpoint={"/api/salivary-protein/:uniprot-id"}
               queryParamDescription={
-                "Query params `:size` and `:from` used for pagination. Size is the number of records to return. From is where to start for the next set of records"
+                "Query params `:uniprot-id`. Uniprot id of salivary protein to fetch."
               }
-              description={"Api to query our salivary proteins data."}
+              description={
+                "Api to query a specific salivary protein record by uniprot id."
+              }
             />
           </CustomTabPanel>
           <CustomTabPanel
@@ -1581,9 +285,12 @@ const ApiPage = () => {
               mapping={citationMapping}
               requestBody={citationReqBody}
               queryParamDescription={
-                "Query params `:size` and `:from` used for pagination. Size is the number of records to return. From is where to start for the next set of records"
+                "Query params `:size` and `:from` used for pagination. Size is the number of records to return. From is where to start for the next set of records."
               }
               description={"Api to query our citations data."}
+              exampleExplanation={
+                "Query all citations records that have pubmed ids starting with 1884."
+              }
             />
           </CustomTabPanel>
           <CustomTabPanel
@@ -1597,9 +304,12 @@ const ApiPage = () => {
               mapping={proteinSignatureMapping}
               requestBody={proteinSignatureReqBody}
               queryParamDescription={
-                "Query params `:size` and `:from` used for pagination. Size is the number of records to return. From is where to start for the next set of records"
+                "Query params `:size` and `:from` used for pagination. Size is the number of records to return. From is where to start for the next set of records."
               }
               description={"Api to query our protein signature data."}
+              exampleExplanation={
+                "Query all citations records that have a name starting with NUDIX."
+              }
             />
           </CustomTabPanel>
           <CustomTabPanel
@@ -1613,9 +323,12 @@ const ApiPage = () => {
               mapping={genesMapping}
               requestBody={geneReqBody}
               queryParamDescription={
-                "Query params `:size` and `:from` used for pagination. Size is the number of records to return. From is where to start for the next set of records"
+                "Query params `:size` and `:from` used for pagination. Size is the number of records to return. From is where to start for the next set of records."
               }
               description={"Api to query our gene data."}
+              exampleExplanation={
+                "Query all citations records that have a name starting with ATP."
+              }
             />
           </CustomTabPanel>
           <CustomTabPanel
@@ -1625,13 +338,14 @@ const ApiPage = () => {
             <ApiSection
               name={"Study Protein"}
               schema={studyProtein}
-              endpoint={"/api/study-protein-uniprot/:id"}
+              endpoint={"/api/study-protein/:experiment-id-key"}
               mapping={studyProteinMapping}
-              requestBody={"N/A"}
               queryParamDescription={
-                "Query params `:id`. Used to fetch a specific study protein with the uniprot id"
+                "Query params `:experiment-id-key`. Used to fetch all study proteins with the given experiment id key."
               }
-              description={"Api to query a specific study protein record."}
+              description={
+                "Api to query a study proteins for a specific study."
+              }
             />
           </CustomTabPanel>
           <CustomTabPanel
@@ -1645,9 +359,44 @@ const ApiPage = () => {
               mapping={proteinClusterMapping}
               requestBody={proteinClusterReqBody}
               queryParamDescription={
-                "Query params `:size` and `:from` used for pagination. Size is the number of records to return. From is where to start for the next set of records"
+                "Query params `:size` and `:from` used for pagination. Size is the number of records to return. From is where to start for the next set of records."
               }
               description={"Api to query protein cluster data."}
+              exampleExplanation={
+                "Query all protein clusters that have a representative protein starting with Q10."
+              }
+            />
+          </CustomTabPanel>
+          <CustomTabPanel
+            value={value}
+            index={7}
+          >
+            <ApiSection
+              name={"Study"}
+              schema={study}
+              endpoint={"/api/study/:experiment-id-key"}
+              mapping={studyMapping}
+              queryParamDescription={
+                "Query params `:experiment-id-key`. Fetch data for a specific study using the experiment id key."
+              }
+              description={"Api to query a study record by experiment id key."}
+            />
+          </CustomTabPanel>
+          <CustomTabPanel
+            value={value}
+            index={8}
+          >
+            <ApiSection
+              name={"Abundance"}
+              schema={studyAbundance}
+              endpoint={"/api/abundance-score/:uniprot-id"}
+              mapping={studyAbundanceMapping}
+              queryParamDescription={
+                "Query params `:experiment-id-key`. Fetch abundance data for a specific salivary protein using a uniprot id."
+              }
+              description={
+                "Api to query the abundance data for a specific salivary protein."
+              }
             />
           </CustomTabPanel>
         </Box>
