@@ -1,71 +1,82 @@
-# Getting Started with Create React App
+# HSPW
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This repo contains all things QCMS related.
 
-## Available Scripts
+## Local Development
 
-In the project directory, you can run:
+### HSPW Frontend
 
-### `npm start`
+- Run `npm i` in HSPW-V3 root folder to install required packages
+- Run `npm run dev` in HSPW-V3 root folder to start the application on `localhost:3000`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### HSPW Backend
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Route to `./src/server` folder
+- Run `npm i` to install required packages
+- Run `npm run dev` to start the server on `localhost:8000`
 
-### `npm test`
+## Deployment
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- `ssh` to the ec2 instance
+- Make sure `node` is installed in the ec2 instance, substitute the command `nvm install 18.15.0` (Instruction: [here](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-up-node-on-ec2-instance.html))
+- Make sure `pm2` is installed in the ec2 instance (Instruction: [here](https://pm2.keymetrics.io/))
+- `cd` into `HSPW-V3` folder
+- Frontend
+  - Run `npm i` in HSPW-V3 root folder to install required packages
+- Backend
+  - `cd` into `./HSPW-V3/src/server`
+  - Run `npm i` to install required packages
+- `cd` back to HSPW-V3 root folder
+- Build the static frontend file by running
+  - DEV
+    - Run `npm run build:dev`
+    - Run `pm2 start ecosystem.config.js --env dev`
+  - PROD
+    - Run `npm run build:prod`
+    - Run `pm2 start ecosystem.config.js --env prod`
 
-### `npm run build`
+### To restart, reload, stop, or delete the server
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- `pm2 restart hspw`
+- `pm2 reload hspw`
+- `pm2 stop hspw`
+- `pm2 delete hspw`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Check log
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Run `pm2 logs`
 
-### `npm run eject`
+### To edit the environment
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+#### Frontend
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Local
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+  - Add `.env.local` in the root folder
+  - Add the following value:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+    ***
 
-## Learn More
+    SKIP_PREFLIGHT_CHECK=true
+    REACT_APP_GA_TRACKING_ID=G-E12YVBYR60
+    REACT_APP_API_ENDPOINT=http://localhost:8000
+    REACT_APP_RECAPTCHA_PUBLIC_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+    ***
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- DEV
+  - Edit `.env.development`
+- PROD
+  - Edit `.env.production`
 
-### Code Splitting
+#### Backend
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- Local
 
-### Analyzing the Bundle Size
+  - `cd` into `./src/server`
+  - Edit `.env`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# hspw_new
+- DEV
+  - Edit `env_dev` section in `ecosystem.config.js`
+- PROD
+  - Edit `end_prod` section in `ecosystem.config.js`
