@@ -5,7 +5,6 @@ const app = express();
 const { Client } = require("@opensearch-project/opensearch");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const createAwsOpensearchConnector = require("aws-opensearch-connector");
-const fs = require("fs");
 const { exec } = require("child_process");
 const util = require("util");
 const execPromise = util.promisify(exec);
@@ -27,11 +26,10 @@ app.use(express.urlencoded({ limit: "200mb", extended: true }));
 app.use(express.static("build"));
 app.use("/static", express.static(path.join(__dirname, "./build/static")));
 
-const host =
-  "https://search-hspw-dev2-dmdd32xae4fmxh7t4g6skv67aa.us-east-2.es.amazonaws.com";
+const host = process.env.OS_HOSTNAME;
 
-const host1 =
-  "https://search-hspw-dev-open-crluksvxj4mvcgl5nopcl6ykte.us-east-2.es.amazonaws.com";
+// const host1 =
+//   "https://search-hspw-dev-open-crluksvxj4mvcgl5nopcl6ykte.us-east-2.es.amazonaws.com";
 
 const getClient = async () => {
   const awsCredentials = await defaultProvider()();
@@ -45,21 +43,6 @@ const getClient = async () => {
   return new Client({
     ...connector,
     node: host,
-  });
-};
-
-const getClient1 = async () => {
-  const awsCredentials = await defaultProvider()();
-  const connector = createAwsOpensearchConnector({
-    credentials: awsCredentials,
-    region: process.env.AWS_REGION ?? "us-east-2",
-    getCredentials: function (cb) {
-      return cb();
-    },
-  });
-  return new Client({
-    ...connector,
-    node: host1,
   });
 };
 
@@ -259,7 +242,7 @@ app.post("/api/protein-cluster/:size/:from/", (req, res) => {
  *****************************/
 
 async function getSalivaryProteinById(id) {
-  var client = await getClient1();
+  var client = await getClient();
 
   var query = {
     query: {
@@ -358,7 +341,7 @@ app.post("/api/salivary-proteins/:size/:from/", (req, res) => {
 });
 
 async function queryProteins(size, from, filter, sort = null, keyword = null) {
-  const client = await getClient1();
+  const client = await getClient();
 
   const payload = {
     index: process.env.INDEX_SALIVARY_PROTEIN,
@@ -869,7 +852,7 @@ app.get("/api/go-edges/:id", (req, res) => {
 
 const searchGoNodesUsage = async (id) => {
   // Initialize the client.
-  var client = await getClient1();
+  var client = await getClient();
 
   var query = {
     size: 10000,
@@ -1721,7 +1704,7 @@ const getProperties = async (index) => {
 
 const getSalivaryProperties = async (index) => {
   // Initialize the client.
-  const client = await getClient1();
+  const client = await getClient();
 
   try {
     // Get the mapping of the specified index.
@@ -1829,12 +1812,7 @@ const advancedSearch = async ({
   sortedColumn,
 }) => {
   // Initialize the client.
-  let client;
-  if (entity === "Salivary Proteins" || entity === "Annotations") {
-    client = await getClient1();
-  } else {
-    client = await getClient();
-  }
+  const client = await getClient();
 
   const entityIndexMapping = {
     Genes: process.env.INDEX_GENE,
@@ -1967,12 +1945,7 @@ const globalSearch = async ({
   sortedColumn,
 }) => {
   // Initialize the client.
-  let client;
-  if (entity === "Salivary Proteins") {
-    client = await getClient1();
-  } else {
-    client = await getClient();
-  }
+  const client = await getClient();
 
   const entityIndexMapping = {
     Genes: process.env.INDEX_GENE,
