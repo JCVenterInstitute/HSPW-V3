@@ -51,19 +51,7 @@ This repo contains all things QCMS related.
 #### Frontend
 
 - Local
-
-  - Add `.env.local` in the root folder
-  - Add the following value:
-
-    ***
-
-    SKIP_PREFLIGHT_CHECK=true
-    REACT_APP_GA_TRACKING_ID=G-E12YVBYR60
-    REACT_APP_API_ENDPOINT=http://localhost:8000
-    REACT_APP_RECAPTCHA_PUBLIC_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
-
-    ***
-
+  - Edit `.env.local`
 - DEV
   - Edit `.env.development`
 - PROD
@@ -72,10 +60,8 @@ This repo contains all things QCMS related.
 #### Backend
 
 - Local
-
   - `cd` into `./src/server`
   - Edit `.env`
-
 - DEV
   - Edit `env_dev` section in `ecosystem.config.js`
 - PROD
