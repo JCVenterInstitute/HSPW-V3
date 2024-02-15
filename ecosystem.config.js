@@ -25,7 +25,7 @@ module.exports = {
         INDEX_STUDY: "study",
         INDEX_STUDY_PROTEIN: "study_protein_012924",
         INDEX_PEPTIDE: "peptide_013024",
-        INDEX_STUDY_PEPTIDE_ABUNDANCE: "study_peptide_abundance_012424",
+        INDEX_STUDY_PEPTIDE_ABUNDANCE: "study_peptide_abundance_020124",
       },
       env_prod: {
         SMTP_USER: "/CONTACT/USER",
@@ -47,7 +47,7 @@ module.exports = {
         INDEX_STUDY: "study",
         INDEX_STUDY_PROTEIN: "study_protein_012924",
         INDEX_PEPTIDE: "peptide_013024",
-        INDEX_STUDY_PEPTIDE_ABUNDANCE: "study_peptide_abundance_012424",
+        INDEX_STUDY_PEPTIDE_ABUNDANCE: "study_peptide_abundance_020124",
       },
     },
   ],
