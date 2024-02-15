@@ -72,7 +72,7 @@ async function getClusterMemberCount() {
   var client = await getClient();
 
   var response = await client.search({
-    index: "protein_cluster_013024",
+    index: process.env.INDEX_PROTEIN_CLUSTER,
     body: {
       size: 0,
       aggs: {
@@ -170,7 +170,7 @@ async function getAllProteinSearchClusterData() {
   };
 
   var response = await client.search({
-    index: "protein_cluster_013024",
+    index: process.env.INDEX_PROTEIN_CLUSTER,
     body: query,
   });
 
@@ -199,7 +199,7 @@ async function getProteinClusterById(id) {
   };
 
   var response = await client.search({
-    index: "protein_cluster_013024",
+    index: process.env.INDEX_PROTEIN_CLUSTER,
     body: query,
   });
 
@@ -224,7 +224,7 @@ async function queryProteinCluster(
   const client = await getClient();
 
   const payload = {
-    index: "protein_cluster_013024",
+    index: process.env.INDEX_PROTEIN_CLUSTER,
     body: {
       track_total_hits: true,
       size: size,
@@ -273,7 +273,7 @@ async function getSalivaryProteinById(id) {
   };
 
   var response = await client.search({
-    index: "salivary-proteins-013024",
+    index: process.env.INDEX_SALIVARY_PROTEIN,
     body: query,
   });
 
@@ -307,7 +307,7 @@ async function querySalivaryProtein(
   const client = await getClient();
 
   const payload = {
-    index: "salivary_summary_020924",
+    index: process.env.INDEX_SALIVARY_SUMMARY,
     body: {
       track_total_hits: true,
       size: size,
@@ -362,7 +362,7 @@ async function queryProteins(size, from, filter, sort = null, keyword = null) {
   const client = await getClient1();
 
   const payload = {
-    index: "salivary-proteins-013024",
+    index: process.env.INDEX_SALIVARY_PROTEIN,
     body: {
       track_total_hits: true,
       size: size,
@@ -411,7 +411,7 @@ async function getGeneById(id) {
   };
 
   var response = await client.search({
-    index: "genes",
+    index: process.env.INDEX_GENE,
     body: query,
   });
 
@@ -430,7 +430,7 @@ async function queryGenes(size, from, filter, sort = null, keyword = null) {
   const client = await getClient();
 
   const payload = {
-    index: "genes",
+    index: process.env.INDEX_GENE,
     body: {
       track_total_hits: true,
       size: size,
@@ -480,7 +480,7 @@ async function getProteinSignatureById(id) {
   };
 
   var response = await client.search({
-    index: "protein_signature_013024",
+    index: process.env.INDEX_PROTEIN_SIGNATURE,
     body: query,
   });
 
@@ -505,7 +505,7 @@ async function queryProteinSignature(
   const client = await getClient();
 
   const payload = {
-    index: "protein_signature_013024",
+    index: process.env.INDEX_PROTEIN_SIGNATURE,
     body: {
       track_total_hits: true,
       size: size,
@@ -567,7 +567,7 @@ async function getCitationById(index, id) {
 }
 
 app.get("/api/citation/:id", (req, res) => {
-  let a = getCitationById("citation_021324", req.params.id);
+  let a = getCitationById(process.env.INDEX_CITATION, req.params.id);
 
   a.then(function (result) {
     res.json(result);
@@ -586,7 +586,7 @@ async function queryCitationData(
   const returnFields = ["PubMed_ID", "PubDate", "Title", "journal_title"];
 
   const payload = {
-    index: "citation_021324",
+    index: process.env.INDEX_CITATION,
     body: {
       track_total_hits: true,
       size: size,
@@ -629,7 +629,7 @@ async function getCount() {
   var client = await getClient();
 
   const response = await client.search({
-    index: "salivary_summary_020924", // Replace with your index name
+    index: process.env.INDEX_SALIVARY_SUMMARY, // Replace with your index name
     body: {
       size: 0,
       aggs: {
@@ -799,7 +799,7 @@ const searchGoNodesType = async (type) => {
   };
 
   const response = await client.search({
-    index: "go_nodes",
+    index: process.env.INDEX_GO_NODES,
     body: query,
   });
   return response.body.hits.hits;
@@ -827,7 +827,7 @@ const searchGoNodes = async (id) => {
   };
 
   const response = await client.search({
-    index: "go_nodes",
+    index: process.env.INDEX_GO_NODES,
     body: query,
   });
   return response.body.hits.hits;
@@ -854,7 +854,7 @@ const searchGoEdges = async (id) => {
   };
 
   const response = await client.search({
-    index: "go_edges",
+    index: process.env.INDEX_GO_EDGES,
     body: query,
   });
 
@@ -884,7 +884,7 @@ const searchGoNodesUsage = async (id) => {
   };
 
   const response = await client.search({
-    index: "salivary-proteins-013024",
+    index: process.env.INDEX_SALIVARY_PROTEIN,
     body: query,
   });
   return response.body.hits.hits;
@@ -930,7 +930,7 @@ const searchAllStudy = async () => {
   };
 
   const response = await client.search({
-    index: "study",
+    index: process.env.INDEX_STUDY,
     body: query,
   });
 
@@ -975,7 +975,7 @@ const searchStudy = async (id) => {
   };
 
   const response = await client.search({
-    index: "study",
+    index: process.env.INDEX_STUDY,
     body: query,
   });
 
@@ -1003,7 +1003,7 @@ const bulkStudySearch = async (ids) => {
   };
 
   const response = await client.search({
-    index: "study",
+    index: process.env.INDEX_STUDY,
     body: query,
   });
 
@@ -1035,7 +1035,7 @@ const searchStudyProtein = async (experiment_id_key) => {
   };
 
   const response = await client.search({
-    index: "study_protein_012924",
+    index: process.env.INDEX_STUDY_PROTEIN,
     body: query,
   });
 
@@ -1063,7 +1063,7 @@ const searchStudyProteinUniprot = async (uniprot_id) => {
   };
 
   const response = await client.search({
-    index: "study_protein_012924",
+    index: process.env.INDEX_STUDY_PROTEIN,
     body: query,
   });
 
@@ -1091,7 +1091,7 @@ const bulkStudyProteins = async (ids) => {
   };
 
   const response = await client.search({
-    index: "study_protein_012924",
+    index: process.env.INDEX_STUDY_PROTEIN,
     body: query,
   });
 
@@ -1112,7 +1112,7 @@ async function getProteinSignatureTypeCounts() {
   var client = await getClient();
 
   const response = await client.search({
-    index: "protein_signature_013024",
+    index: process.env.INDEX_PROTEIN_SIGNATURE,
     body: {
       size: 0,
       aggs: {
@@ -1140,7 +1140,7 @@ async function getGeneLocationCounts() {
   var client = await getClient();
 
   const response = await client.search({
-    index: "genes",
+    index: process.env.INDEX_GENE,
     body: {
       size: 0,
       aggs: {
@@ -1516,11 +1516,11 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
     await fse.ensureDir(workingDirectory);
     await processGroupData(req.body, workingDirectory);
     await fse.copy(
-      path.join(scriptPath, "generate-data-new-heat.R"),
-      path.join(workingDirectory, "generate-data-new-heat.R")
+      path.join(scriptPath, process.env.R_SCRIPT_FILE_NAME),
+      path.join(workingDirectory, process.env.R_SCRIPT_FILE_NAME)
     );
     // Execute the R script from the working directory
-    const command = `Rscript generate-data-new-heat.R ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType} ${parametricTest} ${numberOfDifferentiallyAbundantProteinsInHeatmap}`;
+    const command = `Rscript ${process.env.R_SCRIPT_FILE_NAME} ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType} ${parametricTest} ${numberOfDifferentiallyAbundantProteinsInHeatmap}`;
     const { stdout } = await execPromise(command, {
       cwd: workingDirectory,
     });
@@ -1576,11 +1576,11 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
     await fse.ensureDir(workingDirectory);
     await processFile(inputData, workingDirectory);
     await fse.copy(
-      path.join(scriptPath, "generate-data-new-heat.R"),
-      path.join(workingDirectory, "generate-data-new-heat.R")
+      path.join(scriptPath, process.env.R_SCRIPT_FILE_NAME),
+      path.join(workingDirectory, process.env.R_SCRIPT_FILE_NAME)
     );
     // Execute the R script from the working directory
-    const command = `Rscript generate-data-new-heat.R ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType} ${parametricTest} ${numberOfDifferentiallyAbundantProteinsInHeatmap}`;
+    const command = `Rscript ${process.env.R_SCRIPT_FILE_NAME} ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType} ${parametricTest} ${numberOfDifferentiallyAbundantProteinsInHeatmap}`;
     const { stdout } = await execPromise(command, {
       cwd: workingDirectory,
     });
@@ -1744,13 +1744,13 @@ app.get("/api/properties/:entity", async (req, res) => {
   console.log(`Getting properties for entity: ${entity}`);
 
   const entityIndexMapping = {
-    Genes: "genes",
-    "Protein Clusters": "protein_cluster_013024",
-    "Protein Signatures": "protein_signature_013024",
-    Proteins: "study_protein_012924",
-    "PubMed Citations": "citation_021324",
-    "Salivary Proteins": "salivary-proteins-013024",
-    Annotations: "salivary-proteins-013024",
+    Genes: process.env.INDEX_GENE,
+    "Protein Clusters": process.env.INDEX_PROTEIN_CLUSTER,
+    "Protein Signatures": process.env.INDEX_PROTEIN_SIGNATURE,
+    Proteins: process.env.INDEX_STUDY_PROTEIN,
+    "PubMed Citations": process.env.INDEX_CITATION,
+    "Salivary Proteins": process.env.INDEX_SALIVARY_PROTEIN,
+    Annotations: process.env.INDEX_SALIVARY_PROTEIN,
   };
 
   if (entity === "Salivary Proteins") {
@@ -1838,14 +1838,13 @@ const advancedSearch = async ({
   }
 
   const entityIndexMapping = {
-    Genes: "genes",
-    "Protein Clusters": "protein_cluster_013024",
-    "Protein Signatures": "protein_signature_013024",
-    Proteins: "study_protein_012924",
-    "PubMed Citations": "citation_021324",
-    // "Salivary Proteins": "protein",
-    "Salivary Proteins": "salivary-proteins-013024",
-    Annotations: "salivary-proteins-013024",
+    Genes: process.env.INDEX_GENE,
+    "Protein Clusters": process.env.INDEX_PROTEIN_CLUSTER,
+    "Protein Signatures": process.env.INDEX_PROTEIN_SIGNATURE,
+    Proteins: process.env.INDEX_STUDY_PROTEIN,
+    "PubMed Citations": process.env.INDEX_CITATION,
+    "Salivary Proteins": process.env.INDEX_SALIVARY_PROTEIN,
+    Annotations: process.env.INDEX_SALIVARY_PROTEIN,
   };
 
   const query = await formQuery(
@@ -1880,7 +1879,7 @@ app.post("/api/advanced-search/build-query", async (req, res) => {
 
 app.post("/api/contact/generate-presigned-urls", async (req, res) => {
   const { fileNames, topic, timestamp } = req.body;
-  const bucketName = "contact-attachments-dev";
+  const bucketName = process.env.CONTACT_S3_BUCKET;
 
   try {
     const urls = await generatePresignedUrls(
@@ -1977,12 +1976,12 @@ const globalSearch = async ({
   }
 
   const entityIndexMapping = {
-    Genes: "genes",
-    "Protein Clusters": "protein_cluster_013024",
-    "Protein Signatures": "protein_signature_013024",
-    Proteins: "study_protein_012924",
-    "PubMed Citations": "citation_021324",
-    "Salivary Proteins": "salivary-proteins-013024",
+    Genes: process.env.INDEX_GENE,
+    "Protein Clusters": process.env.INDEX_PROTEIN_CLUSTER,
+    "Protein Signatures": process.env.INDEX_PROTEIN_SIGNATURE,
+    Proteins: process.env.INDEX_STUDY_PROTEIN,
+    "PubMed Citations": process.env.INDEX_CITATION,
+    "Salivary Proteins": process.env.INDEX_SALIVARY_PROTEIN,
   };
 
   const escapeSpecialCharacters = (inputVal) => {
@@ -2102,7 +2101,7 @@ const experimentProtein = async ({
   };
 
   const response = await client.search({
-    index: "study_protein_012924",
+    index: process.env.INDEX_STUDY_PROTEIN,
     body: query,
   });
 
@@ -2173,7 +2172,7 @@ const experimentPeptide = async (
   };
 
   const response = await client.search({
-    index: "peptide_013024",
+    index: process.env.INDEX_PEPTIDE,
     body: query,
   });
 
@@ -2200,7 +2199,7 @@ const getAbundanceData = async (proteinId) => {
   var client = await getClient();
 
   const response = await client.search({
-    index: "study_peptide_abundance_012424",
+    index: process.env.INDEX_STUDY_PEPTIDE_ABUNDANCE,
     body: {
       query: {
         bool: {
@@ -2236,7 +2235,7 @@ const getSalivaryMaxAndSum = async () => {
   var client = await getClient();
 
   const response = await client.search({
-    index: "salivary_summary_020924",
+    index: process.env.INDEX_SALIVARY_SUMMARY,
     body: {
       size: 0,
       aggs: {
