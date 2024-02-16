@@ -173,7 +173,7 @@ const About = () => {
                   color: "black",
                 }}
               >
-                HSP 2.0 Highlight
+                HSP 2.0 Highlights
               </Typography>
               <div
                 style={{
