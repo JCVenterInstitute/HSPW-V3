@@ -161,6 +161,37 @@ class Home extends React.Component {
             id="application"
             data-layout={page.layout}
           >
+            <section style={{ backgroundColor: "#e6eeaf" }}>
+              <Container
+                maxWidth="xl"
+                sx={{
+                  fontSize: "18px",
+                  paddingY: "12px",
+                  borderRadius: "16px",
+                }}
+              >
+                Our team is excited to release version 2.0 with a redesigned
+                website for harnessing the Human Salivary Proteome for
+                Breakthrough Biomarker Discovery, Collaborative Research, and
+                Precision Medicine. Please see our flyer located{" "}
+                <a
+                  href={`${process.env.REACT_APP_PUBLIC_STATIC_S3_HOST}/web-static/hspw-flyer.pdf`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  here
+                </a>{" "}
+                for a quick snapshot. Our legacy website is available at{" "}
+                <a
+                  href="https://legacy.salivaryproteome.org/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  https://legacy.salivaryproteome.org/
+                </a>
+                , and will be removed in near future.
+              </Container>
+            </section>
             <Banner />
             <Container
               maxWidth="xl"
