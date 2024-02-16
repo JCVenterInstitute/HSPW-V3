@@ -217,7 +217,7 @@ const About = () => {
                   color: "black",
                 }}
               >
-                HSP 1.0 Highlights
+                HSP Wiki 1.0 Highlights
               </Typography>
               <div
                 style={{
