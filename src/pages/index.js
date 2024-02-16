@@ -181,7 +181,7 @@ class Home extends React.Component {
                 >
                   here
                 </a>
-                {` for a quick snapshot. Our HP Wiki legacy website is available `}
+                {` for a quick snapshot. Our HSP Wiki legacy website is available `}
                 <a
                   href="https://legacy.salivaryproteome.org/"
                   target="_blank"
