@@ -124,6 +124,7 @@ class Home extends React.Component {
               blurb:
                 "The new HSP is built on the AWS system. Data and analysis tools and services from HSP have now been integrated into the resource.",
               destination: false,
+              location: "/about",
             },
             {
               size: "2",
