@@ -1,8 +1,13 @@
 import React from "react";
 import main_feature from "../../assets/hero.jpeg";
-import { Typography, Container } from "@mui/material";
+import { Typography, Container, Grid } from "@mui/material";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
+
+import FlyerFront from "../../assets/hspw-flyer-front.png";
+import FlyerBack from "../../assets/hspw-flyer-back.png";
+import LegacyFlyerBack from "../../assets/2022-HSP-Wiki-flyer-back.png";
+import LegacyFlyerFront from "../../assets/2022-HSP-Wiki-flyer-front.png";
 
 const About = () => {
   return (
@@ -38,6 +43,13 @@ const About = () => {
         >
           Human Salivary Proteome Project
         </Typography>
+        <div
+          style={{
+            height: "3px",
+            background: "linear-gradient(to right, #1463B9, #ffffff)",
+            marginBottom: "30px",
+          }}
+        ></div>
         <Typography sx={{ fontFamily: "Lato", fontSize: "18px" }}>
           New evidence improved our understanding of salivary contributions to
           human health. In March 2008, an NIDCR-supported team of biologists,
@@ -79,6 +91,13 @@ const About = () => {
         >
           A Community-based Web Portal
         </Typography>
+        <div
+          style={{
+            height: "3px",
+            background: "linear-gradient(to right, #1463B9, #ffffff)",
+            marginBottom: "30px",
+          }}
+        ></div>
         <Typography sx={{ fontFamily: "Lato", fontSize: "18px" }}>
           The experimental data from the project as well as information from
           popular knowledge bases such as UniProt and PubMed are now available
@@ -134,6 +153,101 @@ const About = () => {
         </Typography>
         <Typography sx={{ mt: 2, mb: 2, fontFamily: "Lato", fontSize: "18px" }}>
           Thank you for your participation!
+        </Typography>
+        <Typography>
+          <Grid
+            container
+            spacing={0}
+          >
+            <Grid
+              item
+              xs={12}
+            >
+              <Typography
+                variant="h5"
+                sx={{
+                  fontFamily: "Montserrat",
+                  fontWeight: "bold",
+                  mt: 4,
+                  mb: 3,
+                  color: "black",
+                }}
+              >
+                HSP 2.0 Highlight
+              </Typography>
+              <div
+                style={{
+                  height: "3px",
+                  background: "linear-gradient(to right, #1463B9, #ffffff)",
+                  marginBottom: "30px",
+                }}
+              ></div>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+            >
+              <img
+                src={FlyerFront}
+                style={{ maxWidth: "100%", height: "auto" }}
+                alt="Flyer Front"
+              />
+            </Grid>
+            <Grid
+              item
+              xs={6}
+            >
+              <img
+                src={FlyerBack}
+                style={{ maxWidth: "100%", height: "auto" }}
+                alt="Flyer Back"
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+            >
+              <Typography
+                variant="h5"
+                sx={{
+                  fontFamily: "Montserrat",
+                  fontWeight: "bold",
+                  mt: 4,
+                  mb: 3,
+                  color: "black",
+                }}
+              >
+                HSP 1.0 Highlights
+              </Typography>
+              <div
+                style={{
+                  height: "3px",
+                  background: "linear-gradient(to right, #1463B9, #ffffff)",
+                  marginBottom: "30px",
+                }}
+              ></div>
+            </Grid>
+            <Grid
+              item
+              xs={6}
+            >
+              <img
+                src={LegacyFlyerFront}
+                style={{ maxWidth: "100%", height: "auto" }}
+                alt="Legacy Flyer Front"
+              />
+            </Grid>
+            <Grid
+              item
+              xs={6}
+            >
+              <img
+                src={LegacyFlyerBack}
+                style={{ maxWidth: "100%", height: "auto" }}
+                alt="Legacy Flyer Back"
+              />
+            </Grid>
+          </Grid>
         </Typography>
       </Container>
     </>

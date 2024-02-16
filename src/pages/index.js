@@ -170,26 +170,26 @@ class Home extends React.Component {
                   borderRadius: "16px",
                 }}
               >
-                Our team is excited to release version 2.0 with a redesigned
-                website for harnessing the Human Salivary Proteome for
-                Breakthrough Biomarker Discovery, Collaborative Research, and
-                Precision Medicine. Please see our flyer located{" "}
+                {`Our team is thrilled to release the Human Salivary Proteome
+                (HSP) version 2.0 with our goal to accelerate breakthroughs in
+                biomarker discovery, foster collaborative research, and impact
+                precision medicine. More information can be found `}
                 <a
                   href={`${process.env.REACT_APP_PUBLIC_STATIC_S3_HOST}/web-static/hspw-flyer.pdf`}
                   target="_blank"
                   rel="noreferrer"
                 >
                   here
-                </a>{" "}
-                for a quick snapshot. Our legacy website is available at{" "}
+                </a>
+                {` for a quick snapshot. Our HP Wiki legacy website is available `}
                 <a
                   href="https://legacy.salivaryproteome.org/"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  https://legacy.salivaryproteome.org/
+                  here
                 </a>
-                , and will be removed in near future.
+                {`, and will be replaced in the near future.`}
               </Container>
             </section>
             <Banner />
