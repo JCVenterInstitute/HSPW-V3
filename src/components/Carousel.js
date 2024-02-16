@@ -8,7 +8,7 @@ import Carousel from "react-material-ui-carousel";
 function Banner() {
   return (
     <Carousel
-      interval={5000}
+      interval={10000}
       duration={2000}
     >
       {contents.map((content, index) => (
