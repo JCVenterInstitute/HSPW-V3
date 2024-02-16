@@ -244,12 +244,16 @@ app.post("/api/protein-cluster/:size/:from/", (req, res) => {
 async function getSalivaryProteinById(id) {
   var client = await getClient();
 
-  var query = {
+  const query = {
     query: {
-      match: {
-        _id: {
-          query: id,
-        },
+      bool: {
+        filter: [
+          {
+            term: {
+              "salivary_proteins.uniprot_accession.keyword": id,
+            },
+          },
+        ],
       },
     },
   };
