@@ -172,10 +172,14 @@ async function getProteinClusterById(id) {
 
   var query = {
     query: {
-      match: {
-        _id: {
-          query: id,
-        },
+      bool: {
+        filter: [
+          {
+            term: {
+              "uniprot_id.keyword": id,
+            },
+          },
+        ],
       },
     },
   };
@@ -388,10 +392,14 @@ async function getGeneById(id) {
 
   var query = {
     query: {
-      match: {
-        _id: {
-          query: id,
-        },
+      bool: {
+        filter: [
+          {
+            term: {
+              "GeneID.keyword": id,
+            },
+          },
+        ],
       },
     },
   };
@@ -457,10 +465,14 @@ async function getProteinSignatureById(id) {
 
   var query = {
     query: {
-      match: {
-        _id: {
-          query: id,
-        },
+      bool: {
+        filter: [
+          {
+            term: {
+              "InterPro ID.keyword": id,
+            },
+          },
+        ],
       },
     },
   };
