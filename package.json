@@ -59,7 +59,10 @@
     "dev": "react-scripts start",
     "build": "BUILD_PATH='./src/server/build' sh -ac '. ./.env.${REACT_APP_ENV}; react-scripts build'",
     "build:dev": "REACT_APP_ENV=development npm run build",
-    "build:prod": "REACT_APP_ENV=production npm run build"
+    "build:prod": "REACT_APP_ENV=production npm run build",
+    "local:frontend": "npm run dev",
+    "local:backend": "npm run dev --prefix src/server",
+    "local": "concurrently \"npm run local:frontend\" \"npm run local:backend\""
   },
   "eslintConfig": {
     "extends": [
@@ -80,6 +83,7 @@
     ]
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "eslint": "^8.56.0",
     "eslint-config-react-app": "^7.0.1"
   }
