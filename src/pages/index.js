@@ -176,7 +176,7 @@ class Home extends React.Component {
                 biomarker discovery, foster collaborative research, and impact
                 precision medicine. More information can be found `}
                 <a
-                  href={`${process.env.REACT_APP_PUBLIC_STATIC_S3_HOST}/web-static/hspw-flyer.pdf`}
+                  href={`${process.env.REACT_APP_PUBLIC_STATIC_S3_HOST}/web-static/HSP2.0_Flyer.pdf`}
                   target="_blank"
                   rel="noreferrer"
                 >
