@@ -214,10 +214,10 @@ function App() {
                 path="/api-description"
                 element={<ApiPage />}
               />
-              <Route
+              {/* <Route
                 path="/analysis"
                 element={<Analysis />}
-              />
+              /> */}
               <Route
                 path="/privacy-policy"
                 element={<PrivacyPolicyPage />}

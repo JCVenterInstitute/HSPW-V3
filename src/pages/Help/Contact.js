@@ -32,6 +32,8 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import axios from "axios";
 import Swal from "sweetalert2";
 import ReCAPTCHA from "react-google-recaptcha";
+import BreadCrumb from "../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 const Contact = () => {
   const RECAPTCHA_PUBLIC_KEY = process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY;
@@ -229,8 +231,17 @@ const Contact = () => {
     });
   };
 
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Help" },
+    { path: "Contact Us" },
+  ];
+
   return (
     <>
+      <Helmet>
+        <title>HSP | Contact</title>
+      </Helmet>
       <div
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}

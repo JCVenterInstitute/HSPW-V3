@@ -16,6 +16,7 @@ import CSVDataTable from "./CSVDataTable";
 import DownloadIcon from "@mui/icons-material/Download";
 import AnalysisDescription from "../../components/Analyze/DifferentialExpressionAnalysis/AnalysisDescription";
 import AnalysisOptionsTable from "../../components/Analyze/DifferentialExpressionAnalysis/AnalysisOptionsTable";
+import { Helmet } from "react-helmet";
 
 const DifferentialExpressionResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -268,6 +269,9 @@ const DifferentialExpressionResults = () => {
 
   return (
     <>
+      <Helmet>
+        <title>HSP | Differential Expression Results</title>
+      </Helmet>
       <div
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}

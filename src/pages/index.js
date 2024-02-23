@@ -1,11 +1,13 @@
 import * as React from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
+import { Helmet } from "react-helmet";
+
 import Banner from "../components/Carousel.js";
 import salivary_protein from "../assets/icon-salivary-protein.png";
 import analysis from "../assets/icon-analyze.png";
 import download from "../assets/icon-download.png";
 import upload from "../assets/icon-upload.png";
-import pubmed from "../assets/icon-pubmed.png";
+import publications from "../assets/icon-publications.png";
 import gene from "../assets/icon-gene.png";
 import protein_cluster from "../assets/icon-clustering.png";
 import api from "../assets/icon-api.png";
@@ -60,8 +62,8 @@ class Home extends React.Component {
               location: "/download",
             },
             {
-              imageSrc: pubmed,
-              title: "PubMed",
+              imageSrc: publications,
+              title: "Publications",
               blurb:
                 "Includes links to full text articles and other related resources.",
               location: "/citation",
@@ -156,129 +158,134 @@ class Home extends React.Component {
     let page = this.state.pages[this.state.activePage];
 
     return (
-      <React.StrictMode>
-        <StyledEngineProvider injectFirst>
-          <div
-            id="application"
-            data-layout={page.layout}
-          >
-            <section style={{ backgroundColor: "#e6eeaf" }}>
-              <Container
-                maxWidth="xl"
-                sx={{
-                  fontSize: "18px",
-                  paddingY: "12px",
-                  borderRadius: "16px",
-                }}
-              >
-                {`Our team is thrilled to release the Human Salivary Proteome
+      <>
+        <React.StrictMode>
+          <Helmet>
+            <title>HSP | Home</title>
+          </Helmet>
+          <StyledEngineProvider injectFirst>
+            <div
+              id="application"
+              data-layout={page.layout}
+            >
+              <section style={{ backgroundColor: "#e6eeaf" }}>
+                <Container
+                  maxWidth="xl"
+                  sx={{
+                    fontSize: "18px",
+                    paddingY: "12px",
+                    borderRadius: "16px",
+                  }}
+                >
+                  {`Our team is thrilled to release the Human Salivary Proteome
                 (HSP) version 2.0 with our goal to accelerate breakthroughs in
                 biomarker discovery, foster collaborative research, and impact
                 precision medicine. More information can be found `}
-                <a
-                  href={`${process.env.REACT_APP_PUBLIC_STATIC_S3_HOST}/web-static/HSP2.0_Flyer.pdf`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  here
-                </a>
-                {` for a quick snapshot. Our HSP Wiki legacy website is available `}
-                <a
-                  href="https://legacy.salivaryproteome.org/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  here
-                </a>
-                {`, and will be replaced in the near future.`}
-              </Container>
-            </section>
-            <Banner />
-            <Container
-              maxWidth="xl"
-              sx={{
-                backgroundColor: "#f9f8f7",
-                paddingBottom: "12px",
-                borderRadius: "16px",
-              }}
-            >
-              <Grid
-                container
-                spacing={2}
-                sx={{ marginY: "12px" }}
+                  <a
+                    href={`${process.env.REACT_APP_PUBLIC_STATIC_S3_HOST}/web-static/HSP2.0_Flyer.pdf`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    here
+                  </a>
+                  {` for a quick snapshot. Our HSP Wiki legacy website is available `}
+                  <a
+                    href="https://legacy.salivaryproteome.org/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    here
+                  </a>
+                  {`, and will be replaced in the near future.`}
+                </Container>
+              </section>
+              <Banner />
+              <Container
+                maxWidth="xl"
+                sx={{
+                  backgroundColor: "#f9f8f7",
+                  paddingBottom: "12px",
+                  borderRadius: "16px",
+                }}
               >
-                {page.basicCards.map((props, i) => {
-                  return (
-                    <Grid
-                      key={i}
-                      item
-                      xs={12}
-                      sm={props.size ? 12 : 6}
-                      md={props.size ? 8 : 4}
-                      lg={props.size ? 6 : 3}
-                    >
-                      <Link
-                        href={props.location}
-                        sx={{ textDecoration: "none" }}
+                <Grid
+                  container
+                  spacing={2}
+                  sx={{ marginY: "12px" }}
+                >
+                  {page.basicCards.map((props, i) => {
+                    return (
+                      <Grid
+                        key={i}
+                        item
+                        xs={12}
+                        sm={props.size ? 12 : 6}
+                        md={props.size ? 8 : 4}
+                        lg={props.size ? 6 : 3}
                       >
-                        <Card
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            height: "100%",
-                            borderRadius: "16px",
-                            minHeight: "400px",
-                          }}
+                        <Link
+                          href={props.location}
+                          sx={{ textDecoration: "none" }}
                         >
-                          {props.rawContent ? (
-                            props.rawContent
-                          ) : (
-                            <>
-                              <CardContent className="card-content">
-                                {props.rawContent ? (
-                                  props.rawContent
-                                ) : (
-                                  <>
-                                    <Typography
-                                      component="div"
-                                      sx={{
-                                        fontFamily: "Lato",
-                                        fontSize: "18px",
-                                        fontWeight: "600",
-                                        textTransform: "uppercase",
-                                      }}
-                                    >
-                                      {props.title}
-                                    </Typography>
-                                    <Typography
-                                      color="text.secondary"
-                                      sx={{
-                                        fontFamily: "Lato",
-                                        fontSize: "16px",
-                                      }}
-                                    >
-                                      {props.blurb}
-                                    </Typography>
-                                  </>
-                                )}
-                              </CardContent>
-                              <CardMedia
-                                component={"img"}
-                                image={props.imageSrc}
-                                sx={{ marginY: "30px" }}
-                              />
-                            </>
-                          )}
-                        </Card>
-                      </Link>
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </Container>
-          </div>
-        </StyledEngineProvider>
-      </React.StrictMode>
+                          <Card
+                            sx={{
+                              display: "flex",
+                              flexDirection: "column",
+                              height: "100%",
+                              borderRadius: "16px",
+                              minHeight: "400px",
+                            }}
+                          >
+                            {props.rawContent ? (
+                              props.rawContent
+                            ) : (
+                              <>
+                                <CardContent className="card-content">
+                                  {props.rawContent ? (
+                                    props.rawContent
+                                  ) : (
+                                    <>
+                                      <Typography
+                                        component="div"
+                                        sx={{
+                                          fontFamily: "Lato",
+                                          fontSize: "18px",
+                                          fontWeight: "600",
+                                          textTransform: "uppercase",
+                                        }}
+                                      >
+                                        {props.title}
+                                      </Typography>
+                                      <Typography
+                                        color="text.secondary"
+                                        sx={{
+                                          fontFamily: "Lato",
+                                          fontSize: "16px",
+                                        }}
+                                      >
+                                        {props.blurb}
+                                      </Typography>
+                                    </>
+                                  )}
+                                </CardContent>
+                                <CardMedia
+                                  component={"img"}
+                                  image={props.imageSrc}
+                                  sx={{ marginY: "30px" }}
+                                />
+                              </>
+                            )}
+                          </Card>
+                        </Link>
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+              </Container>
+            </div>
+          </StyledEngineProvider>
+        </React.StrictMode>
+      </>
     );
   }
 }

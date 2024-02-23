@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import MainFeature from "../assets/hero.jpeg";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 const sections = ["Experiment Submission", "Data Format and Data Standards"];
 
@@ -45,6 +46,9 @@ const UploadExperiment = () => {
 
   return (
     <>
+      <Helmet>
+        <title>HSP | Upload Experiment</title>
+      </Helmet>
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

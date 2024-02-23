@@ -4,10 +4,21 @@ import CitationTable from "../../../components/CitationTable";
 import MainFeature from "../../../assets/hero.jpeg";
 import "../../style.css";
 import { Container } from "@mui/material";
+import BreadCrumb from "../../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 const CitationPage = () => {
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Browse" },
+    { path: "Salivary Protein" },
+  ];
+
   return (
     <>
+      <Helmet>
+        <title>HSP | Publications</title>
+      </Helmet>
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,
@@ -15,12 +26,10 @@ const CitationPage = () => {
         className="head_background"
       >
         <Container maxWidth="xl">
-          <h1 className="head_title">Citation</h1>
+          <h1 className="head_title">Publication</h1>
           <p className="head_text">
-            PubMed is a service of the U.S. National Library of Medicine that
-            includes over 17 million citations from MEDLINE and other life
-            science journals for biomedical articles back to the 1950s. PubMed
-            includes links to full text articles and other related resources.
+            Publications page includes id, authors and links to full text
+            articles.
           </p>
         </Container>
       </div>

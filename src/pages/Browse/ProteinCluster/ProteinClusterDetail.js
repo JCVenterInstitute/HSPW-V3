@@ -9,11 +9,20 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 
 import MainFeature from "../../../assets/hero.jpeg";
+import BreadCrumb from "../../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 const Cluster_Detail = (props) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");
   const params = useParams();
+
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Browse" },
+    { path: "Protein Cluster", link: "/protein-cluster" },
+    { path: params.clusterid },
+  ];
 
   const fetchProteinData = async (memberId) => {
     try {
@@ -187,6 +196,9 @@ const Cluster_Detail = (props) => {
 
   return (
     <>
+      <Helmet>
+        <title>HSP | Protein Cluster Detail</title>
+      </Helmet>
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

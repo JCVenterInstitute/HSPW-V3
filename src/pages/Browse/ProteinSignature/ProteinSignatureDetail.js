@@ -16,6 +16,8 @@ import { Link } from "react-router-dom";
 import MainFeature from "../../../assets/hero.jpeg";
 import "../../style.css";
 import { Container } from "@mui/material";
+import BreadCrumb from "../../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 const th = {
   background: "#f2f2f2",
@@ -50,6 +52,13 @@ const SignatureDetail = (props) => {
   const [authorName, setauthorName] = useState("");
   const [year, setYear] = useState("");
   const [journal, setJournal] = useState("");
+
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Browse" },
+    { path: "Salivary Signature", link: "/protein-signature" },
+    { path: params["interproid"] },
+  ];
 
   let interpro_link = "https://www.ebi.ac.uk/interpro/entry/InterPro/";
 
@@ -143,6 +152,9 @@ const SignatureDetail = (props) => {
 
   return (
     <>
+      <Helmet>
+        <title>HSP | Protein Signature Detail</title>
+      </Helmet>
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

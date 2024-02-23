@@ -19,6 +19,7 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import CustomLoadingOverlay from "./CustomLoadingOverlay";
 import MainFeature from "../../../assets/hero.jpeg";
 import { useParams } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 const generateColumnDefs = (data) => {
   if (!data || data.length === 0) return [];
@@ -215,8 +216,17 @@ const ExperimentProteinDetail = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortedColumn]);
 
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Analyze" },
+    { path: "Protein Similarity Search" },
+  ];
+
   return (
     <>
+      <Helmet>
+        <title>HSP | Experiment Protein Detail</title>
+      </Helmet>
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

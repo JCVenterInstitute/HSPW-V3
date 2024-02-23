@@ -12,6 +12,8 @@ import Box from "@mui/material/Box";
 import MainFeature from "../../../assets/hero.jpeg";
 import "../../style.css";
 import { Container } from "@mui/material";
+import BreadCrumb from "../../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 const ProteinDetailSequence = (props) => {
   const params = useParams();
@@ -26,6 +28,14 @@ const ProteinDetailSequence = (props) => {
     padding: "0.2em",
     maxWidth: "1000px",
   };
+
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Browse" },
+    { path: "Salivary Protein", link: "/salivary-protein" },
+    { path: params["proteinid"] },
+  ];
+
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");
 
@@ -65,6 +75,9 @@ const ProteinDetailSequence = (props) => {
 
   return (
     <>
+      <Helmet>
+        <title>HSP | Protein Sequence Detail</title>
+      </Helmet>
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

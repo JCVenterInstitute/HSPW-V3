@@ -30,6 +30,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Link } from "react-router-dom";
+import BreadCrumb from "../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 const generateColumnDefs = (entity, data) => {
   if (!data || data.length === 0) return [];
@@ -499,8 +501,17 @@ const AdvancedSearch = () => {
     setSearchStarted(false);
   };
 
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Search" },
+    { path: "Advanced Search" },
+  ];
+
   return (
     <>
+      <Helmet>
+        <title>HSP | Advanced Search</title>
+      </Helmet>
       <div
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}

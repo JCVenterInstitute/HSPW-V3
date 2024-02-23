@@ -4,10 +4,21 @@ import "../style.css";
 
 import MainFeature from "../../assets/hero.jpeg";
 import { Container } from "@mui/material";
+import BreadCrumb from "../../components/Breadcrumbs.js";
+import { Helmet } from "react-helmet";
 
 const Download = () => {
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Help" },
+    { path: "Download" },
+  ];
+
   return (
     <>
+      <Helmet>
+        <title>HSP | Download</title>
+      </Helmet>
       <div
         className="head_background"
         style={{ backgroundImage: `url(${MainFeature})` }}

@@ -35,6 +35,8 @@ import CircleUnchecked from "@mui/icons-material/RadioButtonUnchecked";
 import Swal from "sweetalert2";
 import ClearIcon from "@mui/icons-material/Clear";
 import Papa from "papaparse";
+import BreadCrumb from "../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 const toExcelColumn = (colIndex) => {
   let column = "";
@@ -876,8 +878,17 @@ const DifferentialExpression = () => {
     }
   };
 
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Analyze" },
+    { path: "Differential Expression" },
+  ];
+
   return (
     <>
+      <Helmet>
+        <title>HSP | Differential Expression</title>
+      </Helmet>
       <div
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}
@@ -1663,6 +1674,45 @@ const DifferentialExpression = () => {
                 }}
                 sx={{ width: "80px" }}
               />
+              {/* <Typography
+                variant="subtitle1"
+                sx={{
+                  color: "#1463B9",
+                  fontFamily: "Montserrat",
+                  fontWeight: 600,
+                  mt: 3,
+                }}
+              >
+                Cluster Samples:
+              </Typography>
+              <Checkbox
+                icon={<CircleUnchecked />}
+                checkedIcon={<CircleCheckedFilled />}
+                checked={clusterSamples === "T"}
+                onChange={() => setClusterSamples("T")}
+                sx={{ paddingLeft: 0 }}
+              />
+              <Typography
+                display="inline"
+                variant="body2"
+                sx={{ fontFamily: "Lato", color: "#464646", mr: 2 }}
+              >
+                Yes
+              </Typography>
+              <Checkbox
+                icon={<CircleUnchecked />}
+                checkedIcon={<CircleCheckedFilled />}
+                checked={clusterSamples === "F"}
+                onChange={() => setClusterSamples("F")}
+                sx={{ paddingLeft: 0 }}
+              />
+              <Typography
+                display="inline"
+                variant="body2"
+                sx={{ fontFamily: "Lato", color: "#464646", mr: 2 }}
+              >
+                No
+              </Typography> */}
               <Typography
                 variant="subtitle1"
                 sx={{

@@ -13,6 +13,8 @@ import Box from "@mui/material/Box";
 
 import MainFeature from "../../../assets/hero.jpeg";
 import { Container } from "@mui/material";
+import BreadCrumb from "../../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 const th = {
   background: "#f2f2f2",
@@ -36,6 +38,13 @@ const GeneDetail = (props) => {
   const [proteinNameMap, setProteinNameMap] = useState({});
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");
+
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Browse" },
+    { path: "Gene", link: "/gene" },
+    { path: params["geneid"] },
+  ];
 
   const gene_link = "https://www.ncbi.nlm.nih.gov/gene/";
 
@@ -102,6 +111,9 @@ const GeneDetail = (props) => {
 
   return (
     <>
+      <Helmet>
+        <title>HSP | Gene Detail</title>
+      </Helmet>
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,
@@ -110,7 +122,7 @@ const GeneDetail = (props) => {
       >
         <Container maxWidth="xl">
           <h1 className="head_title">
-            Gene: EntrezGene:{data[0]["_source"]["GeneID"]}
+            Gene: EntrezGene: {data[0]["_source"]["GeneID"]}
           </h1>
           <p className="head_text">Name: {data[0]["_source"]["Gene Name"]}</p>
           <p className="head_text">

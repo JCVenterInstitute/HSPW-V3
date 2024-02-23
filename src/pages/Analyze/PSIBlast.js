@@ -2,10 +2,21 @@ import React from "react";
 import main_feature from "../../assets/hero.jpeg";
 import { Typography, Container } from "@mui/material";
 import PsiBlastSequenceParameters from "../../components/MultipleSequenceAlignment/PsiBlastSequenceParameters";
+import BreadCrumb from "../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 const PSIBlast = () => {
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Analyze" },
+    { path: "Protein Similarity Search" },
+  ];
+
   return (
     <>
+      <Helmet>
+        <title>HSP | Protein Similarity Search</title>
+      </Helmet>
       <div
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}

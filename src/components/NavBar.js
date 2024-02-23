@@ -122,7 +122,7 @@ export const NavBar = () => {
                           component={Link}
                           to="/citation"
                         >
-                          Citations
+                          Publications
                         </MenuItem>
                       </HoverMenu>
                     </React.Fragment>

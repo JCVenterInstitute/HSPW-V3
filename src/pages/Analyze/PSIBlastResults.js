@@ -16,6 +16,7 @@ import axios from "axios";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import XMLParser from "react-xml-parser";
+import { Helmet } from "react-helmet";
 
 const PsiBlastResults = () => {
   const { jobId } = useParams();
@@ -175,6 +176,9 @@ const PsiBlastResults = () => {
 
   return (
     <>
+      <Helmet>
+        <title>HSP | Protein Similarity Search Results</title>
+      </Helmet>
       <div
         style={{ backgroundImage: `url(${main_feature})` }}
         className="head_background"

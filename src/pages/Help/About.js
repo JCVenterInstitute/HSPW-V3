@@ -8,10 +8,21 @@ import FlyerFront from "../../assets/hspw-flyer-front.png";
 import FlyerBack from "../../assets/hspw-flyer-back.png";
 import LegacyFlyerBack from "../../assets/2022-HSP-Wiki-flyer-back.png";
 import LegacyFlyerFront from "../../assets/2022-HSP-Wiki-flyer-front.png";
+import BreadCrumb from "../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 const About = () => {
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Help" },
+    { path: "About" },
+  ];
+
   return (
     <>
+      <Helmet>
+        <title>HSP | About</title>
+      </Helmet>
       <div
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}

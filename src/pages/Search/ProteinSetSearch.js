@@ -14,6 +14,8 @@ import {
 import { AgGridReact } from "ag-grid-react";
 import { Link } from "react-router-dom";
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
+import BreadCrumb from "../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 function ProteinLinkComponent(props) {
   return (
@@ -196,8 +198,17 @@ const ProteinSetSearch = () => {
     setRowData(data);
   };
 
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Search" },
+    { path: "Protein Set Search" },
+  ];
+
   return (
     <>
+      <Helmet>
+        <title>HSP | Protein Set Search</title>
+      </Helmet>
       <div
         style={{
           backgroundImage: `url(${main_feature})`,

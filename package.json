@@ -37,6 +37,7 @@
     "react-ga4": "^2.1.0",
     "react-google-charts": "^4.0.0",
     "react-google-recaptcha": "^3.1.0",
+    "react-helmet": "^6.1.0",
     "react-icons": "^4.7.1",
     "react-material-ui-carousel": "^3.4.2",
     "react-msaview": "^2.1.5",

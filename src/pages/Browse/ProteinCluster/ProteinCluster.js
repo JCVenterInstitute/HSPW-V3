@@ -7,6 +7,8 @@ import main_feature from "../../../assets/hero.jpeg";
 import Cluster from "../../../components/ProteinClusterTable";
 import "../../style.css";
 import { Container } from "@mui/material";
+import BreadCrumb from "../../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 export const options = {
   legend: { position: "none" },
@@ -38,6 +40,12 @@ const ProteinCluster = () => {
   const [message, setMessage] = useState("");
   const [number, setNumber] = useState({});
   const [isLoading, setLoading] = useState(true);
+
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Browse" },
+    { path: "Protein Cluster" },
+  ];
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/protein-cluster`)
@@ -94,6 +102,9 @@ const ProteinCluster = () => {
 
   return (
     <>
+      <Helmet>
+        <title>HSP | Protein Clusters</title>
+      </Helmet>
       <div
         style={{
           backgroundImage: `url(${main_feature})`,

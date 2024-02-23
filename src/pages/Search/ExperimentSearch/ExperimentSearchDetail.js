@@ -16,6 +16,8 @@ import LaunchIcon from "@mui/icons-material/Launch";
 import ExperimentProteinTable from "../../../components/Search/ExperimentSearch/ExperimentProteinTable";
 import { Container } from "@mui/material";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
+import BreadCrumb from "../../../components/Breadcrumbs";
 
 const th = {
   background: "#f2f2f2",
@@ -65,6 +67,9 @@ const ExperimentSearchDetail = (props) => {
 
   return (
     <>
+      <Helmet>
+        <title>HSP | Experiment Detail</title>
+      </Helmet>
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

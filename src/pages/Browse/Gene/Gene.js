@@ -6,6 +6,8 @@ import Box from "@mui/material/Box";
 import GeneTable from "../../../components/GeneTable";
 import MainFeature from "../../../assets/hero.jpeg";
 import { Container } from "@mui/material";
+import BreadCrumb from "../../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 export const options = {
   vAxis: { title: "Count" },
@@ -15,6 +17,13 @@ export const options = {
 const Gene = () => {
   const [message, setMessage] = useState(["Chromosome", "count"]);
   const [isLoading, setLoading] = useState(true);
+
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Browse" },
+    { path: "Gene" },
+  ];
+
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/gene-location-counts`)
       .then((res) => res.json())
@@ -44,6 +53,9 @@ const Gene = () => {
 
   return (
     <>
+      <Helmet>
+        <title>HSP | Genes</title>
+      </Helmet>
       <div
         className="head_background"
         style={{ backgroundImage: `url(${MainFeature})` }}

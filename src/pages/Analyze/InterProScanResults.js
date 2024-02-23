@@ -16,6 +16,7 @@ import axios from "axios";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import XMLParser from "react-xml-parser";
+import { Helmet } from "react-helmet";
 
 const InterProScanResults = () => {
   const { jobId } = useParams();
@@ -167,6 +168,9 @@ const InterProScanResults = () => {
 
   return (
     <>
+      <Helmet>
+        <title>HSP | Protein Signature Search Results</title>
+      </Helmet>
       <div
         style={{ backgroundImage: `url(${main_feature})` }}
         className="head_background"

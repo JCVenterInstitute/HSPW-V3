@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, Box } from "@mui/material";
+import { Helmet } from "react-helmet";
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
@@ -14,28 +15,33 @@ const NotFoundPage = () => {
   }, [navigate]);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "45vh",
-      }}
-    >
-      <Alert
+    <>
+      <Helmet>
+        <title>HSP | Not Found</title>
+      </Helmet>
+      <Box
         sx={{
-          fontSize: "30px",
-          "& .MuiAlert-icon": {
-            fontSize: 40,
-          },
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "45vh",
         }}
-        severity="error"
       >
-        <strong>404 - Not Found</strong>
-        <br />
-        Sorry, the page you are looking for does not exist.
-      </Alert>
-    </Box>
+        <Alert
+          sx={{
+            fontSize: "30px",
+            "& .MuiAlert-icon": {
+              fontSize: 40,
+            },
+          }}
+          severity="error"
+        >
+          <strong>404 - Not Found</strong>
+          <br />
+          Sorry, the page you are looking for does not exist.
+        </Alert>
+      </Box>
+    </>
   );
 };
 

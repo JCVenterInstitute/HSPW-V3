@@ -18,6 +18,7 @@ import "react-tabs/style/react-tabs.css";
 import XMLParser from "react-xml-parser";
 import { MSAView, MSAModel } from "react-msaview";
 import "./alignmentTool.css";
+import { Helmet } from "react-helmet";
 
 const ClustalOmegaResults = () => {
   const { jobId } = useParams();
@@ -148,6 +149,9 @@ const ClustalOmegaResults = () => {
 
   return (
     <>
+      <Helmet>
+        <title>HSP | Multiple Sequence Alignment Results</title>
+      </Helmet>
       <div
         style={{ backgroundImage: `url(${main_feature})` }}
         className="head_background"

@@ -41,6 +41,8 @@ import {
   studyAbundance,
   studyAbundanceMapping,
 } from "../utils/ApiDocData";
+import BreadCrumb from "../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 const sharedStyles = {
   padding: "20px",
@@ -172,6 +174,8 @@ function a11yProps(index) {
 const ApiPage = () => {
   const [value, setValue] = React.useState(0);
 
+  const breadcrumbPath = [{ path: "Home", link: "/" }, { path: "API" }];
+
   const sections = [
     "Salivary Summary",
     "Salivary Proteins",
@@ -190,6 +194,9 @@ const ApiPage = () => {
 
   return (
     <>
+      <Helmet>
+        <title>HSP | API Docs</title>
+      </Helmet>
       <div
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}

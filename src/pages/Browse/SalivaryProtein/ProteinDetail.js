@@ -21,6 +21,8 @@ import GlycanTable from "../../../components/SalivaryProtein/GlycanTable";
 import main_feature from "../../../assets/hero.jpeg";
 import "../../style.css";
 import { Link as ReactLink } from "react-router-dom";
+import BreadCrumb from "../../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 window.customElements.define("protvista-uniprot", ProtvistaUniprot);
 
@@ -44,6 +46,13 @@ const ProteinDetail = (props) => {
   const [year, setYear] = useState("");
   const [journal, setJournal] = useState("");
   const [abundanceData, setAbundanceData] = useState([]);
+
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Browse" },
+    { path: "Salivary Protein", link: "/salivary-protein" },
+    { path: params["proteinid"] },
+  ];
 
   const fetchProtein = async () => {
     const response = await axios.get(url);
@@ -131,6 +140,9 @@ const ProteinDetail = (props) => {
 
   return (
     <>
+      <Helmet>
+        <title>HSP | Salivary Protein Detail</title>
+      </Helmet>
       <script
         src="https://d3js.org/d3.v4.min.js"
         charSet="utf-8"

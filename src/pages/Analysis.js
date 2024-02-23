@@ -8,6 +8,8 @@ import AnalysisFilter from "../components/AnalysisFilter.js";
 import Table from "../components/CsvToJsonTable.js";
 import heatmap from "../assets/top100var_heatmap_626170.png";
 import "./style.css";
+import BreadCrumb from "../components/Breadcrumbs.js";
+import { Helmet } from "react-helmet";
 
 const Option = (props) => {
   return (
@@ -59,8 +61,13 @@ const downloadImage = () => {
 };
 
 const Analysis = () => {
+  const breadcrumbPath = [{ path: "Home", link: "/" }, { path: "Analysis" }];
+
   return (
     <>
+      <Helmet>
+        <title>HSP | Analysis</title>
+      </Helmet>
       <div className="rowC">
         <div className="sidebar">
           <div style={{ backgroundColor: "#254A61" }}>

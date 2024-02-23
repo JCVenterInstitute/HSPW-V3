@@ -14,12 +14,15 @@ import {
   Link,
   Typography,
 } from "@mui/material";
+import BreadCrumb from "../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 class analysisHome extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       activePage: "/",
+      breadcrumbPath: [{ path: "Home", link: "/" }, { path: "Analysis" }],
       pages: {
         "/": {
           layout: "fixed",
@@ -68,6 +71,9 @@ class analysisHome extends React.Component {
     let page = this.state.pages[this.state.activePage];
     return (
       <React.StrictMode>
+        <Helmet>
+          <title>HSP | Analysis</title>
+        </Helmet>
         <StyledEngineProvider injectFirst>
           <div
             style={{

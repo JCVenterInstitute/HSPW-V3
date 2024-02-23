@@ -8,10 +8,21 @@ import {
 } from "@mui/material";
 import main_feature from "../../assets/hero.jpeg";
 import memberInfo from "../../components/Help/Team/memberInfo";
+import BreadCrumb from "../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 const Team = () => {
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Help" },
+    { path: "Team" },
+  ];
+
   return (
     <>
+      <Helmet>
+        <title>HSP | Team</title>
+      </Helmet>
       <div
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}

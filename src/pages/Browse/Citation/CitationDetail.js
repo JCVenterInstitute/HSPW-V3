@@ -7,6 +7,8 @@ import FontAwesome from "react-fontawesome";
 import { Box, Container, LinearProgress } from "@mui/material";
 
 import MainFeature from "../../../assets/hero.jpeg";
+import BreadCrumb from "../../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 const th = {
   background: "#f2f2f2",
@@ -37,6 +39,19 @@ const Citation_detail = (props) => {
   const [pgn, setPGN] = useState();
   const [journal, setJournal] = useState();
   const [isLoadingT, setLoadingT] = useState(true);
+  const [message, setMessage] = useState("");
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState("");
+  const params = useParams();
+
+  const url = `${process.env.REACT_APP_API_ENDPOINT}/api/citation/${params["citationid"]}`;
+
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Browse" },
+    { path: "Citation", link: "/citation" },
+    { path: params["citationid"] },
+  ];
 
   const fetchAbstract = async () => {
     const response = await fetch(
@@ -193,12 +208,6 @@ const Citation_detail = (props) => {
     }
   };
 
-  const [message, setMessage] = useState("");
-  const params = useParams();
-  const url = `${process.env.REACT_APP_API_ENDPOINT}/api/citation/${params["citationid"]}`;
-
-  const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState("");
   let interpro_link = "https://pubmed.ncbi.nlm.nih.gov/";
 
   const fetchSignature = async () => {
@@ -214,8 +223,6 @@ const Citation_detail = (props) => {
   };
 
   useEffect(() => {
-    console.log("41" + params["citationid"]);
-
     fetchAbstract();
     fetchSignature();
   }, []);
@@ -243,6 +250,9 @@ const Citation_detail = (props) => {
   };
   return (
     <>
+      <Helmet>
+        <title>HSP | Publication Detail</title>
+      </Helmet>
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

@@ -2,10 +2,21 @@ import React from "react";
 import main_feature from "../../assets/hero.jpeg";
 import { Typography, Container } from "@mui/material";
 import ClustalOmegaSequenceParameters from "../../components/MultipleSequenceAlignment/ClustalOmegaSequenceParameters";
+import { Helmet } from "react-helmet";
+import BreadCrumb from "../../components/Breadcrumbs";
 
 const ClustalOmega = () => {
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Analyze" },
+    { path: "Multiple Sequence Alignment" },
+  ];
+
   return (
     <>
+      <Helmet>
+        <title>HSP | Multiple Sequence Alignment</title>
+      </Helmet>
       <div
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}

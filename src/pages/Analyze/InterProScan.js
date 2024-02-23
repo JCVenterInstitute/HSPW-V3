@@ -2,10 +2,21 @@ import React from "react";
 import main_feature from "../../assets/hero.jpeg";
 import { Typography, Container } from "@mui/material";
 import InterProScanSequenceParameters from "../../components/MultipleSequenceAlignment/InterProScanSequenceParameters";
+import { Helmet } from "react-helmet";
+import BreadCrumb from "../../components/Breadcrumbs";
 
 const InterProScan = () => {
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Analyze" },
+    { path: "Protein Signature Search" },
+  ];
+
   return (
     <>
+      <Helmet>
+        <title>HSP | Protein Signature Search</title>
+      </Helmet>
       <div
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}

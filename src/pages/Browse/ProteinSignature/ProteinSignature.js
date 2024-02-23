@@ -7,6 +7,8 @@ import MainFeature from "../../../assets/hero.jpeg";
 import ProteinSignatureTable from "../../../components/ProteinSignatureTable";
 import "../../style.css";
 import { Container } from "@mui/material";
+import BreadCrumb from "../../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 export const data = [
   [
@@ -42,6 +44,12 @@ const ProteinSignature = () => {
   const [message, setMessage] = useState([]);
   const [isLoading, setLoading] = useState(true);
 
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Browse" },
+    { path: "Protein Signature" },
+  ];
+
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/signature-type-counts`)
       .then((res) => res.json())
@@ -72,6 +80,9 @@ const ProteinSignature = () => {
 
   return (
     <>
+      <Helmet>
+        <title>HSP | Protein Signature</title>
+      </Helmet>
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

@@ -8,6 +8,8 @@ import ProteinSignatures from "../../components/Search/GlobalSearch/ProteinSigna
 import Proteins from "../../components/Search/GlobalSearch/Proteins";
 import PubMedCitations from "../../components/Search/GlobalSearch/PubMedCitations";
 import SalivaryProteins from "../../components/Search/GlobalSearch/SalivaryProteins";
+import BreadCrumb from "../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 const GlobalSearch = () => {
   const [searchText, setSearchText] = useState("");
@@ -46,8 +48,17 @@ const GlobalSearch = () => {
     console.log("Searching for:", searchText);
   };
 
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Search" },
+    { path: "Global Search" },
+  ];
+
   return (
     <>
+      <Helmet>
+        <title>HSP | Global Search</title>
+      </Helmet>
       <div
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}
