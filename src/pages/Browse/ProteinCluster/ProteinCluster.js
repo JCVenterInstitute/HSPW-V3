@@ -105,6 +105,7 @@ const ProteinCluster = () => {
       <Helmet>
         <title>HSP | Protein Clusters</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{
           backgroundImage: `url(${main_feature})`,

@@ -59,6 +59,7 @@ const GlobalSearch = () => {
       <Helmet>
         <title>HSP | Global Search</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}

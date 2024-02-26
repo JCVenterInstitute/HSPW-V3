@@ -74,6 +74,7 @@ class analysisHome extends React.Component {
         <Helmet>
           <title>HSP | Analysis</title>
         </Helmet>
+        <BreadCrumb path={this.state.breadcrumbPath} />
         <StyledEngineProvider injectFirst>
           <div
             style={{

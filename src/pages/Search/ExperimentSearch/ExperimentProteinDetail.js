@@ -20,6 +20,7 @@ import CustomLoadingOverlay from "./CustomLoadingOverlay";
 import MainFeature from "../../../assets/hero.jpeg";
 import { useParams } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import BreadCrumb from "../../../components/Breadcrumbs";
 
 const generateColumnDefs = (data) => {
   if (!data || data.length === 0) return [];
@@ -218,8 +219,10 @@ const ExperimentProteinDetail = () => {
 
   const breadcrumbPath = [
     { path: "Home", link: "/" },
-    { path: "Analyze" },
-    { path: "Protein Similarity Search" },
+    { path: "Search" },
+    { path: "Experiment Search", link: "/experiment-search" },
+    { path: "Experiment Protein" },
+    { path: uniprotid },
   ];
 
   return (
@@ -227,6 +230,7 @@ const ExperimentProteinDetail = () => {
       <Helmet>
         <title>HSP | Experiment Protein Detail</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

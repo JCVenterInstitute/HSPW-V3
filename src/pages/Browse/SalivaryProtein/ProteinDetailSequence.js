@@ -32,7 +32,11 @@ const ProteinDetailSequence = (props) => {
   const breadcrumbPath = [
     { path: "Home", link: "/" },
     { path: "Browse" },
-    { path: "Salivary Protein", link: "/salivary-protein" },
+    { path: "Salivary Proteins", link: "/salivary-protein" },
+    {
+      path: "Salivary Protein Detail",
+      link: `/protein/${params["proteinid"]}`,
+    },
     { path: params["proteinid"] },
   ];
 
@@ -78,6 +82,7 @@ const ProteinDetailSequence = (props) => {
       <Helmet>
         <title>HSP | Protein Sequence Detail</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

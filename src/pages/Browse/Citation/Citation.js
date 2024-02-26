@@ -11,7 +11,7 @@ const CitationPage = () => {
   const breadcrumbPath = [
     { path: "Home", link: "/" },
     { path: "Browse" },
-    { path: "Salivary Protein" },
+    { path: "Publication" },
   ];
 
   return (
@@ -19,6 +19,7 @@ const CitationPage = () => {
       <Helmet>
         <title>HSP | Publications</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

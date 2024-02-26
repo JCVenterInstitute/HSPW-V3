@@ -19,6 +19,7 @@ const Download = () => {
       <Helmet>
         <title>HSP | Download</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         className="head_background"
         style={{ backgroundImage: `url(${MainFeature})` }}

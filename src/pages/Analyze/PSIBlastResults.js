@@ -17,6 +17,7 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import XMLParser from "react-xml-parser";
 import { Helmet } from "react-helmet";
+import BreadCrumb from "../../components/Breadcrumbs";
 
 const PsiBlastResults = () => {
   const { jobId } = useParams();
@@ -174,11 +175,19 @@ const PsiBlastResults = () => {
     window.URL.revokeObjectURL(url);
   };
 
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Analyze" },
+    { path: "Protein Similarity Search", link: "/psiblast" },
+    { path: "Search Results" },
+  ];
+
   return (
     <>
       <Helmet>
         <title>HSP | Protein Similarity Search Results</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{ backgroundImage: `url(${main_feature})` }}
         className="head_background"

@@ -17,6 +17,7 @@ const InterProScan = () => {
       <Helmet>
         <title>HSP | Protein Signature Search</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}

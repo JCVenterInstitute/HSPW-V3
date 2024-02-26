@@ -56,6 +56,7 @@ const Gene = () => {
       <Helmet>
         <title>HSP | Genes</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         className="head_background"
         style={{ backgroundImage: `url(${MainFeature})` }}

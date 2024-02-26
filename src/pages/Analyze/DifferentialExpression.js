@@ -881,7 +881,7 @@ const DifferentialExpression = () => {
   const breadcrumbPath = [
     { path: "Home", link: "/" },
     { path: "Analyze" },
-    { path: "Differential Expression" },
+    { path: "Differential Expression Analysis" },
   ];
 
   return (
@@ -889,6 +889,7 @@ const DifferentialExpression = () => {
       <Helmet>
         <title>HSP | Differential Expression</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}

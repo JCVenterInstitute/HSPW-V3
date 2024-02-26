@@ -50,7 +50,7 @@ const ProteinDetail = (props) => {
   const breadcrumbPath = [
     { path: "Home", link: "/" },
     { path: "Browse" },
-    { path: "Salivary Protein", link: "/salivary-protein" },
+    { path: "Salivary Proteins", link: "/salivary-protein" },
     { path: params["proteinid"] },
   ];
 
@@ -143,13 +143,13 @@ const ProteinDetail = (props) => {
       <Helmet>
         <title>HSP | Salivary Protein Detail</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <script
         src="https://d3js.org/d3.v4.min.js"
         charSet="utf-8"
         defer
       ></script>
       <script src="https://cdn.jsdelivr.net/npm/protvista-uniprot@latest/dist/protvista-uniprot.js"></script>
-
       <div
         style={{
           backgroundImage: `url(${main_feature})`,

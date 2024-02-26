@@ -49,7 +49,7 @@ const Citation_detail = (props) => {
   const breadcrumbPath = [
     { path: "Home", link: "/" },
     { path: "Browse" },
-    { path: "Citation", link: "/citation" },
+    { path: "Publication", link: "/citation" },
     { path: params["citationid"] },
   ];
 
@@ -253,6 +253,7 @@ const Citation_detail = (props) => {
       <Helmet>
         <title>HSP | Publication Detail</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

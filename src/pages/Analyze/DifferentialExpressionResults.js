@@ -17,6 +17,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import AnalysisDescription from "../../components/Analyze/DifferentialExpressionAnalysis/AnalysisDescription";
 import AnalysisOptionsTable from "../../components/Analyze/DifferentialExpressionAnalysis/AnalysisOptionsTable";
 import { Helmet } from "react-helmet";
+import BreadCrumb from "../../components/Breadcrumbs";
 
 const DifferentialExpressionResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -267,11 +268,22 @@ const DifferentialExpressionResults = () => {
     fetchImage(jobId, optionFile[selected]); // Fetch the image on component mount
   }, [jobId, selected]); // Add 'selected' as a dependency
 
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Analyze" },
+    {
+      path: "Differential Expression Analysis",
+      link: "/differential-expression",
+    },
+    { path: "Analysis Results" },
+  ];
+
   return (
     <>
       <Helmet>
         <title>HSP | Differential Expression Results</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}

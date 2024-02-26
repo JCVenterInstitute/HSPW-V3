@@ -16,6 +16,7 @@ const ExperimentSearch = () => {
       <Helmet>
         <title>HSP | Experiment Search</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

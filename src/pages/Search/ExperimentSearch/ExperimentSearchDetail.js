@@ -65,11 +65,19 @@ const ExperimentSearchDetail = (props) => {
     );
   }
 
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Search" },
+    { path: "Experiment Search", link: "/experiment-search" },
+    { path: id },
+  ];
+
   return (
     <>
       <Helmet>
         <title>HSP | Experiment Detail</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

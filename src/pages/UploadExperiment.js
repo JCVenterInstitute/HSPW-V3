@@ -14,6 +14,7 @@ import {
 import MainFeature from "../assets/hero.jpeg";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import BreadCrumb from "../components/Breadcrumbs";
 
 const sections = ["Experiment Submission", "Data Format and Data Standards"];
 
@@ -44,11 +45,17 @@ const UploadExperiment = () => {
     { software: "DTASelect2MzId", standards: "mzIdentML v1.1" },
   ];
 
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Upload Experiment" },
+  ];
+
   return (
     <>
       <Helmet>
         <title>HSP | Upload Experiment</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

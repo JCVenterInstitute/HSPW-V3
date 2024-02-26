@@ -19,6 +19,7 @@ const SalivaryProtein = () => {
       <Helmet>
         <title>HSP | Salivary Proteins</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

@@ -83,6 +83,7 @@ const ProteinSignature = () => {
       <Helmet>
         <title>HSP | Protein Signature</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

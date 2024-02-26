@@ -512,6 +512,7 @@ const AdvancedSearch = () => {
       <Helmet>
         <title>HSP | Advanced Search</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}

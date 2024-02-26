@@ -199,6 +199,7 @@ const Cluster_Detail = (props) => {
       <Helmet>
         <title>HSP | Protein Cluster Detail</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

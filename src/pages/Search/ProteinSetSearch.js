@@ -209,6 +209,7 @@ const ProteinSetSearch = () => {
       <Helmet>
         <title>HSP | Protein Set Search</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{
           backgroundImage: `url(${main_feature})`,

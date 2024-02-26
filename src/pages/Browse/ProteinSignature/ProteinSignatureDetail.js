@@ -155,6 +155,7 @@ const SignatureDetail = (props) => {
       <Helmet>
         <title>HSP | Protein Signature Detail</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

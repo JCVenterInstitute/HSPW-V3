@@ -23,6 +23,7 @@ const Team = () => {
       <Helmet>
         <title>HSP | Team</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         className="head_background"
         style={{ backgroundImage: `url(${main_feature})` }}

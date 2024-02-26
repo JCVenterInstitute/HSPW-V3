@@ -114,6 +114,7 @@ const GeneDetail = (props) => {
       <Helmet>
         <title>HSP | Gene Detail</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

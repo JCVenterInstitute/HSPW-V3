@@ -19,6 +19,7 @@ import XMLParser from "react-xml-parser";
 import { MSAView, MSAModel } from "react-msaview";
 import "./alignmentTool.css";
 import { Helmet } from "react-helmet";
+import BreadCrumb from "../../components/Breadcrumbs";
 
 const ClustalOmegaResults = () => {
   const { jobId } = useParams();
@@ -147,11 +148,19 @@ const ClustalOmegaResults = () => {
     window.URL.revokeObjectURL(url);
   };
 
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Analyze" },
+    { path: "Multiple Sequence Alignment", link: "/clustalo" },
+    { path: "Alignment Results" },
+  ];
+
   return (
     <>
       <Helmet>
         <title>HSP | Multiple Sequence Alignment Results</title>
       </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{ backgroundImage: `url(${main_feature})` }}
         className="head_background"
