@@ -39,7 +39,7 @@ The table in this section is generated dynamically using semantic queries (**Fig
 You can see the actual sequence by following the link in the Sequence column.
 
 ![Protein Sequence](./img/salivary-proteins/protein-sequence.png)
-**Figure 5** A sequence page showing parts of the protein sequence.
+**Figure 5:** A sequence page showing parts of the protein sequence.
 
 ### Comments and Features
 
