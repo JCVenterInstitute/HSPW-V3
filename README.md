@@ -18,8 +18,10 @@ This repo contains all things QCMS related.
 ## Deployment
 
 - `ssh` to the ec2 instance
+- Install git on ec2 instance using command `sudo yum install git -y`
 - Make sure `node` is installed in the ec2 instance, substitute the command `nvm install 18.15.0` (Instruction: [here](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-up-node-on-ec2-instance.html))
 - Make sure `pm2` is installed in the ec2 instance (Instruction: [here](https://pm2.keymetrics.io/))
+- Clone the repo
 - `cd` into `HSPW-V3` folder
 - Frontend
   - Run `npm i` in HSPW-V3 root folder to install required packages
@@ -66,3 +68,11 @@ This repo contains all things QCMS related.
   - Edit `env_dev` section in `ecosystem.config.js`
 - PROD
   - Edit `end_prod` section in `ecosystem.config.js`
+
+### Documentation Deployment
+
+In documentation directory:
+
+- Navigate to `./documentation`
+- Run `mkdocs build`
+  - This will create a static build for the documentation in `./src/server/site`
