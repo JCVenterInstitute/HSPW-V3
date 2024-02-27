@@ -36,10 +36,10 @@ The table in this section is generated dynamically using semantic queries (**Fig
 ![Sequence Attributes](./img/salivary-proteins/sequence-attributes.png)
 **Figure 4:** The sequence attribute table is created using semantic queries.
 
-You can see the actual sequence by following the link in the Sequence column. Parts of the sequence may be highlighted to indicate peptides found in MS experiments that map to the protein sequence (**Figure 5**). Peptides that are in blue and decorated with a solid line underneath are unique peptides that mapped to this protein only during the database search, and provide more confidence that the protein is actually present in saliva. The other highlighted peptides can be mapped to multiple proteins and thus have higher uncertainty. The mapping facilitates the calculation of the Sequence Coverage value shown below the sequence. You can limit the coverage calculation to peptides from a specific source by using the drop-down menus below the sequence.
+You can see the actual sequence by following the link in the Sequence column.
 
 ![Protein Sequence](./img/salivary-proteins/protein-sequence.png)
-**Figure 5** A sequence page showing parts of the protein sequence highlighted to indicate peptides identified in MS experiments that map to the protein.
+**Figure 5** A sequence page showing parts of the protein sequence.
 
 ### Comments and Features
 
