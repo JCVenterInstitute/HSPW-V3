@@ -268,7 +268,12 @@ export const NavBar = () => {
                         </MenuItem>
                         <MenuItem
                           component={Link}
-                          to="/doc/"
+                          onClick={() => {
+                            window.location.href =
+                              process.env.REACT_APP_DEPLOY_ENV === "prod"
+                                ? "https://salivaryproteome.org/doc/"
+                                : "https://dev.salivaryproteome.org/doc/";
+                          }}
                         >
                           Documentation
                         </MenuItem>

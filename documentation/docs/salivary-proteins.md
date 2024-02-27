@@ -39,7 +39,7 @@ The table in this section is generated dynamically using semantic queries (**Fig
 You can see the actual sequence by following the link in the Sequence column. Parts of the sequence may be highlighted to indicate peptides found in MS experiments that map to the protein sequence (**Figure 5**). Peptides that are in blue and decorated with a solid line underneath are unique peptides that mapped to this protein only during the database search, and provide more confidence that the protein is actually present in saliva. The other highlighted peptides can be mapped to multiple proteins and thus have higher uncertainty. The mapping facilitates the calculation of the Sequence Coverage value shown below the sequence. You can limit the coverage calculation to peptides from a specific source by using the drop-down menus below the sequence.
 
 ![Protein Sequence](./img/salivary-proteins/protein-sequence.png)
-**Figure 5:** A sequence page showing parts of the protein sequence highlighted to indicate peptides identified in MS experiments that map to the protein.
+**Figure 5** A sequence page showing parts of the protein sequence highlighted to indicate peptides identified in MS experiments that map to the protein.
 
 ### Comments and Features
 
@@ -90,3 +90,13 @@ This is a list of UniProt terms used to summarize the content of the protein ent
 ### References
 
 This section contains PubMed citations that describe the protein (**Figure 12**). These citations are sources for which properties of the protein are extracted. When a new annotation is added, the associated reference, if available, is automatically inserted into the list. Click on the PubMed identifier (PMID) link if you'd like to see the abstract and other details of the citation.
+
+![References](./img/salivary-proteins/references.png)
+**Figure 12:** Citations that are used to extract information about the protein.
+
+### Entry Information
+
+Majority of the protein records come from the UniProt database. UniProt is composed of 2 sections: Swiss-Prot and TrEMBL. Swiss-Prot contains proteins that are reviewed and manually annotated whereas TrEMBL contains proteins whose sequences are computationally characterized and annotated. Depending on the source database that the protein entry is retrieved from, this section shows the metadata of the entry, including basic info of time and status (Figure. 13).
+
+![Entry Information](./img/salivary-proteins/entry-information.png)
+**Figure 13:** Information about the protein entry.
