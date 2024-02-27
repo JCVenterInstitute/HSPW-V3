@@ -19,6 +19,11 @@ This repo contains all things QCMS related.
 
 - `ssh` to the ec2 instance
 - Install git on ec2 instance using command `sudo yum install git -y`
+- Install pip & mkdocs for documentation using command:
+  - `sudo yum install python3-pip -y`
+  - `pip install mkdocs`
+  - `pip install markupsafe==2.0.1`
+    - Needed to fix an import issue when running `mkdocs build`
 - Make sure `node` is installed in the ec2 instance, substitute the command `nvm install 18.15.0` (Instruction: [here](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-up-node-on-ec2-instance.html))
 - Make sure `pm2` is installed in the ec2 instance (Instruction: [here](https://pm2.keymetrics.io/))
 - Clone the repo
@@ -36,6 +41,9 @@ This repo contains all things QCMS related.
   - PROD
     - Run `npm run build:prod`
     - Run `pm2 start ecosystem.config.js --env prod`
+- Build static documentation site
+  - Navigate to documentation directory
+    - Run: `npm run build`
 
 ### To restart, reload, stop, or delete the server
 
