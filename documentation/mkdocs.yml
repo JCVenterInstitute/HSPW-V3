@@ -1,2 +1,13 @@
 site_name: Human Salivary Proteome Docs
 theme: readthedocs
+nav:
+  - Home: "index.md"
+  - Salivary Proteins: salivary-proteins.md
+  - Protein Cluster: protein-cluster.md
+  - Publications: publications.md
+  - Genes: genes.md
+  - Multiple Sequence Alignment: multiple-sequence-alignment.md
+  - Protein Signature Search: protein-signature-search.md
+  - Protein Similarity Search: protein-similarity-search.md
+  - Searching: searching.md
+  - Help: help.md
