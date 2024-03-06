@@ -121,7 +121,7 @@ const Cluster_Detail = (props) => {
         const studyData = await fetchStudyDetails(allMemberIds);
 
         for (const study of studyData) {
-          studyMap[study._id] = study;
+          studyMap[study._source.experiment_id_key] = study;
         }
 
         for (let memberId of cluster_members) {
