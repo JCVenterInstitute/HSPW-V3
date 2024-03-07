@@ -24,6 +24,10 @@ import {
 
 import "../components/BasicCard.css";
 
+const liStyle = {
+  padding: "5px 15px",
+};
+
 class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -121,12 +125,65 @@ class Home extends React.Component {
               ),
             },
             {
-              imageSrc: help,
-              title: "Information for HSP Users",
-              blurb:
-                "The new HSP is built on the AWS system. Data and analysis tools and services from HSP have now been integrated into the resource.",
+              blurb: "Overview of the proteomics data stored:",
               destination: false,
               location: "/about",
+              rawContent: (
+                <Container className="basic-card-content basic-card-content-centered">
+                  <Typography
+                    component="div"
+                    sx={{
+                      fontFamily: "Lato",
+                      fontSize: "18px",
+                      fontWeight: "600",
+                      textTransform: "uppercase",
+                      margin: "10px",
+                    }}
+                  >
+                    HSP Statistics
+                  </Typography>
+                  <span
+                    style={{
+                      fontSize: "16px",
+                      fontFamily: "Lato",
+                      color: "rgba(0, 0, 0, 0.6)",
+                      paddingLeft: "10px",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    Overview of the proteomics data stored:
+                  </span>
+                  <div
+                    style={{
+                      marginLeft: "24px",
+                      fontSize: "16px",
+                      fontFamily: "Lato",
+                      color: "rgba(0, 0, 0, 0.6)",
+                      letterSpacing: ".9px",
+                    }}
+                  >
+                    <ul>
+                      <li style={liStyle}>7 Contributing Institutions</li>
+                      <li style={liStyle}>7 Studies</li>
+                      <li style={liStyle}>1246 Datasets</li>
+                      <li style={liStyle}>5 Tissue Types</li>
+                      <li style={liStyle}>4 Diseases + Healthy Controls</li>
+                    </ul>
+                  </div>
+                  <div
+                    style={{
+                      width: "100%",
+                      margin: "auto",
+                      textAlign: "center",
+                    }}
+                  >
+                    <img
+                      src={help}
+                      width={"50%"}
+                    />
+                  </div>
+                </Container>
+              ),
             },
             {
               size: "2",
