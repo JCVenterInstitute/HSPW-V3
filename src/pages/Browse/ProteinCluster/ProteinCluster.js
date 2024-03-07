@@ -127,7 +127,7 @@ const ProteinCluster = () => {
             identity. Only the representative protein was included in the table.
             To access a comprehensive view of all the proteins in the cluster,
             along with their respective abundance values, we must access the "#
-            of members" option
+            of members" option.
           </p>
         </Container>
       </div>
