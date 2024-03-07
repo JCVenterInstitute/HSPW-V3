@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import axios from "axios";
-import main_feature from "../../assets/hero.jpeg";
+import MainFeature from "../../assets/hero.jpeg";
+import { Container } from "@mui/material";
 
 const GoTable = () => {
   const [isLoading, setLoading] = useState(true);
@@ -23,33 +24,23 @@ const GoTable = () => {
     <>
       <div
         style={{
-          backgroundImage: `url(${main_feature})`,
+          backgroundImage: `url(${MainFeature})`,
         }}
         className="head_background"
       >
-        <h1
-          className="head_title"
-          align="left"
-        >
-          Annotation Report for Salivary Proteins
-        </h1>
-        <p
-          style={{
-            textAlign: "left",
-            color: "white",
-            paddingBottom: "15px",
-            marginLeft: "20px",
-            marginRight: "20px",
-          }}
-          className="head_text"
-        >
-          Many semantic properties are annotated using controlled vocabulary
-          terms, such as those in the Gene Ontology. This page allows you to
-          retrieve all the values that have been used to annotate such
-          properties in the salivary proteome catalog. The number of occurrence
-          for each value will also be computed. Click on the counts to view the
-          list of proteins with the associated annotations.
-        </p>
+        <Container maxWidth="xl">
+          <h1 className="head_title">
+            Annotation Report for Salivary Proteins
+          </h1>
+          <p className="head_text">
+            Many semantic properties are annotated using controlled vocabulary
+            terms, such as those in the Gene Ontology. This page allows you to
+            retrieve all the values that have been used to annotate such
+            properties in the salivary proteome catalog. The number of
+            occurrence for each value will also be computed. Click on the counts
+            to view the list of proteins with the associated annotations.
+          </p>
+        </Container>
       </div>
     </>
   );

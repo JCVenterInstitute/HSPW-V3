@@ -9,6 +9,7 @@ import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import main_feature from "../../assets/hero.jpeg";
 import FontAwesome from "react-fontawesome";
+import { Container, List, ListItem } from "@mui/material";
 
 const th = {
   backgroundColor: "#1463B9",
@@ -23,6 +24,7 @@ const td = {
   fontFamily: "Lato",
   fontSize: "14px",
   border: "1px solid #CACACA",
+  padding: "10px",
 };
 
 const td_first_row = {
@@ -47,15 +49,16 @@ const GoNode = () => {
   const params = useParams();
   const [usageData, setUsageData] = useState([]);
   const [parentData, setParentData] = useState([]);
-  const [siblingData, setSibilingData] = useState([]);
+  const [siblingData, setSiblingData] = useState([]);
   const [childrenData, setChildrenData] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
           `${process.env.REACT_APP_API_ENDPOINT}/api/go-nodes/${params.id}`
         );
-        console.log("75", response.data);
+
         setData(response.data);
       } catch (error) {
         console.error(error);
@@ -69,6 +72,9 @@ const GoNode = () => {
             params.id.split("_")[1]
           }`
         );
+
+        console.log("> Usage", response.data);
+
         setUsageData(response.data);
       } catch (error) {
         console.error(error);
@@ -83,24 +89,35 @@ const GoNode = () => {
           }`
         );
         const edgeResult = response.data;
+
         const parentEdges = edgeResult.filter(
           (edge) =>
             edge["_source"].pred.includes("is_a") &&
             edge["_source"].sub.includes(params.id)
         );
+
         setParentData(parentEdges.map((edge) => edge["_source"]));
-        const sibilingEdges = edgeResult.filter(
+
+        const siblingEdges = edgeResult.filter(
           (edge) =>
             edge["_source"].pred.includes("BFO_0000050") ||
             edge["_source"].pred.includes("BFO_0000051") ||
             edge["_source"].pred.includes("BFO_0000066")
         );
-        setSibilingData(sibilingEdges.map((edge) => edge["_source"]));
+
+        setSiblingData(siblingEdges.map((edge) => edge["_source"]));
+
         const childrenEdges = edgeResult.filter(
           (edge) =>
             edge["_source"].pred.includes("is_a") &&
             edge["_source"].obj.includes(params.id)
         );
+
+        console.log("> Edge Result", edgeResult);
+        console.log("> Parent", parentEdges);
+        console.log("> Siblings", siblingEdges);
+        console.log("> Children", childrenEdges);
+
         setChildrenData(childrenEdges.map((edge) => edge["_source"]));
         setLoading(false);
       } catch (error) {
@@ -129,221 +146,230 @@ const GoNode = () => {
         }}
         className="head_background"
       >
-        <h1
-          className="head_title"
-          align="left"
-        >
-          Go Terms: {data[0]["_source"]["id"]}
-        </h1>
-        <p
-          style={{
-            textAlign: "left",
-            color: "white",
-            paddingBottom: "15px",
-            marginLeft: "20px",
-            marginRight: "20px",
-          }}
-          className="head_text"
-        >
-          Source Ontology: Gene Ontology
-        </p>
+        <Container maxWidth={"xl"}>
+          <h1 className="head_title">Go Terms: {data[0]["_source"]["id"]}</h1>
+          <p className="head_text">Source Ontology: Gene Ontology</p>
+        </Container>
       </div>
-
-      <Table
-        style={{
-          width: "80%",
-          marginLeft: "10%",
-          borderTopLeftRadius: "10px",
-          marginTop: "3%",
-        }}
-      >
-        <TableBody>
-          <TableRow>
-            <TableCell
-              variant="head"
-              sx={th_first_row}
-            >
-              Term Name
-            </TableCell>
-            <TableCell
-              variant="head"
-              sx={td_first_row}
-            >
-              {data[0]["_source"]["lbl"]}
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell
-              variant="head"
-              sx={th}
-            >
-              Description
-            </TableCell>
-            <TableCell sx={td}>
-              {data[0]["_source"]["meta"]["definition"]["val"]}
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell
-              variant="head"
-              sx={th}
-            >
-              Has Obo Namespace
-            </TableCell>
-            <TableCell sx={td}>
-              {data[0]["_source"]["meta"]["basicPropertyValues"][0]["val"]}
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell
-              variant="head"
-              sx={th}
-            >
-              Synonyms
-            </TableCell>
-            <TableCell sx={td}>
-              {data[0]["_source"]["meta"]["synonyms"] !== undefined ? (
-                <ul style={{ marginLeft: "2%" }}>
-                  {data[0]["_source"]["meta"]["synonyms"].map((obj, index) => (
-                    <li key={index}>{obj.val}</li>
-                  ))}
-                </ul>
-              ) : null}
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell
-              variant="head"
-              sx={th}
-            >
-              Link
-            </TableCell>
-            <TableCell sx={td}>
-              <a
-                href={
-                  "http://amigo.geneontology.org/cgi-bin/amigo/go.cgi?view=details&query=GO:" +
-                  data[0]["_source"]["id"].split("_")[1]
-                }
-              >
-                Go Term{" "}
-                <FontAwesome
-                  className="super-crazy-colors"
-                  name="external-link"
-                  style={{
-                    textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
-                  }}
-                />
-              </a>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell
-              variant="head"
-              sx={th}
-            >
-              Usage
-            </TableCell>
-            <TableCell sx={td}>
-              {data[0]["_source"]["meta"]["synonyms"] !== undefined ? (
-                <ul style={{ marginLeft: "2%" }}>
-                  {usageData.map((obj, index) => (
-                    <li key={index}>
-                      <a href={`/protein/${obj["_id"]}`}>{obj["_id"]}</a>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-
-      <Table
-        style={{
-          marginLeft: "10%",
-          marginTop: "3%",
-          marginBottom: "5%",
-          width: "80%",
-          borderTopLeftRadius: "10px",
-          borderTopRightRadius: "10px",
-        }}
-      >
-        <TableBody>
-          <TableRow>
-            {parentData.length !== 0 ? (
+      <Container maxWidth={"xl"}>
+        <Table
+          style={{
+            borderTopLeftRadius: "10px",
+            marginTop: "3%",
+          }}
+        >
+          <TableBody>
+            <TableRow>
               <TableCell
                 variant="head"
                 sx={th_first_row}
-                align="center"
               >
-                Parents ({parentData.length})
+                Term Name
               </TableCell>
-            ) : null}
-            {siblingData.length !== 0 ? (
+              <TableCell
+                variant="head"
+                sx={{ ...td_first_row, padding: "10px" }}
+              >
+                {data[0]["_source"]["lbl"]}
+              </TableCell>
+            </TableRow>
+            <TableRow>
               <TableCell
                 variant="head"
                 sx={th}
-                align="center"
               >
-                Siblings ({siblingData.length})
+                Description
               </TableCell>
+              <TableCell sx={td}>
+                {data[0]["_source"]["meta"]["definition"]["val"]}
+              </TableCell>
+            </TableRow>
+
+            {data[0]["_source"]["meta"]["xrefs"] ? (
+              <TableRow>
+                <TableCell
+                  variant="head"
+                  sx={th}
+                >
+                  Has Dbxref
+                </TableCell>
+                <TableCell sx={td}>
+                  {data[0]["_source"]["meta"]["xrefs"][0]["val"]}
+                </TableCell>
+              </TableRow>
             ) : null}
-            {childrenData.length !== 0 ? (
+            <TableRow>
               <TableCell
                 variant="head"
                 sx={th}
-                align="center"
               >
-                Children ({childrenData.length})
+                Has Obo Namespace
               </TableCell>
-            ) : null}
-          </TableRow>
-          <TableRow sx={td}>
-            {parentData.length !== 0 ? (
               <TableCell sx={td}>
-                <ul style={{ marginLeft: "40px" }}>
-                  {parentData.map((val, index) => (
-                    <li
-                      key={index}
-                      style={{ margin: "5px" }}
-                    >
-                      <a href={`/GoNodes/${val.obj}`}>{val.obj}</a>
-                    </li>
-                  ))}
-                </ul>
+                {data[0]["_source"]["meta"]["basicPropertyValues"][0]["val"]}
               </TableCell>
-            ) : null}
-            {siblingData.length !== 0 ? (
+            </TableRow>
+            <TableRow>
+              <TableCell
+                variant="head"
+                sx={th}
+              >
+                Synonyms
+              </TableCell>
               <TableCell sx={td}>
-                <ul style={{ marginLeft: "40px" }}>
-                  {siblingData.map((val, index) => (
-                    <li
-                      key={index}
-                      style={{ margin: "5px" }}
-                    >
-                      <a href={`/GoNodes/${val.obj}`}>{val.obj}</a>
-                    </li>
-                  ))}
-                </ul>
+                {data[0]["_source"]["meta"]["synonyms"] !== undefined ? (
+                  <ul style={{ marginLeft: "2%" }}>
+                    {data[0]["_source"]["meta"]["synonyms"].map(
+                      (obj, index) => (
+                        <li key={index}>{obj.val}</li>
+                      )
+                    )}
+                  </ul>
+                ) : null}
               </TableCell>
-            ) : null}
-            {childrenData.length !== 0 ? (
+            </TableRow>
+            <TableRow>
+              <TableCell
+                variant="head"
+                sx={th}
+              >
+                Link
+              </TableCell>
               <TableCell sx={td}>
-                <ul style={{ marginLeft: "40px" }}>
-                  {childrenData.map((val, index) => (
-                    <li
-                      key={index}
-                      style={{ margin: "5px" }}
-                    >
-                      <a href={`/GoNodes/${val.sub}`}>{val.sub}</a>
-                    </li>
-                  ))}
-                </ul>
+                <a
+                  href={
+                    "http://amigo.geneontology.org/cgi-bin/amigo/go.cgi?view=details&query=GO:" +
+                    data[0]["_source"]["id"].split("_")[1]
+                  }
+                >
+                  Go Term{" "}
+                  <FontAwesome
+                    className="super-crazy-colors"
+                    name="external-link"
+                    style={{
+                      textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)",
+                    }}
+                  />
+                </a>
               </TableCell>
-            ) : null}
-          </TableRow>
-        </TableBody>
-      </Table>
+            </TableRow>
+            <TableRow>
+              <TableCell
+                variant="head"
+                sx={th}
+              >
+                Usage
+              </TableCell>
+              <TableCell sx={td}>
+                {data[0]["_source"]["meta"]["synonyms"] !== undefined ? (
+                  <List
+                    sx={{
+                      listStyleType: "disc",
+                      display: "flex",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    {usageData.map((obj, index) => (
+                      <ListItem
+                        key={index}
+                        sx={{ width: "90px", padding: "4px" }}
+                      >
+                        <a href={`/protein/${obj["_source"]["id"]}`}>
+                          {obj["_source"]["id"]}
+                        </a>
+                      </ListItem>
+                    ))}
+                  </List>
+                ) : null}
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+        <Table
+          style={{
+            marginTop: "3%",
+            marginBottom: "5%",
+            borderTopLeftRadius: "10px",
+            borderTopRightRadius: "10px",
+          }}
+        >
+          <TableBody>
+            <TableRow>
+              {parentData.length !== 0 ? (
+                <TableCell
+                  variant="head"
+                  sx={th_first_row}
+                  align="center"
+                >
+                  Parents ({parentData.length})
+                </TableCell>
+              ) : null}
+              {siblingData.length !== 0 ? (
+                <TableCell
+                  variant="head"
+                  sx={th}
+                  align="center"
+                >
+                  Siblings ({siblingData.length})
+                </TableCell>
+              ) : null}
+              {childrenData.length !== 0 ? (
+                <TableCell
+                  variant="head"
+                  sx={th}
+                  align="center"
+                >
+                  Children ({childrenData.length})
+                </TableCell>
+              ) : null}
+            </TableRow>
+            <TableRow sx={td}>
+              {parentData.length !== 0 ? (
+                <TableCell sx={td}>
+                  <ul style={{ marginLeft: "40px" }}>
+                    {parentData.map((val, index) => (
+                      <li
+                        key={index}
+                        style={{ margin: "5px" }}
+                      >
+                        <a href={`/GoNodes/${val.obj}`}>{val.obj}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </TableCell>
+              ) : null}
+              {siblingData.length !== 0 ? (
+                <TableCell sx={td}>
+                  <ul style={{ marginLeft: "40px" }}>
+                    {siblingData.map((val, index) => (
+                      <li
+                        key={index}
+                        style={{ margin: "5px" }}
+                      >
+                        <a href={`/GoNodes/${val.obj}`}>{val.obj}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </TableCell>
+              ) : null}
+              {childrenData.length !== 0 ? (
+                <TableCell sx={td}>
+                  <ul style={{ marginLeft: "40px" }}>
+                    {childrenData.map((val, index) => (
+                      <li
+                        key={index}
+                        style={{ margin: "5px" }}
+                      >
+                        <a href={`/GoNodes/${val.sub}`}>{val.sub}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </TableCell>
+              ) : null}
+            </TableRow>
+          </TableBody>
+        </Table>
+      </Container>
     </>
   );
 };
