@@ -129,7 +129,7 @@ class Home extends React.Component {
               destination: false,
               location: "/experiment-search",
               rawContent: (
-                <Container className="basic-card-content basic-card-content-centered">
+                <Container style={{ padding: "10px" }}>
                   <Typography
                     component="div"
                     sx={{
@@ -155,11 +155,13 @@ class Home extends React.Component {
                   </span>
                   <div
                     style={{
-                      marginLeft: "24px",
+                      marginLeft: "30px",
                       fontSize: "16px",
                       fontFamily: "Lato",
                       color: "rgba(0, 0, 0, 0.6)",
                       letterSpacing: ".9px",
+                      paddingBottom: "90px",
+                      paddingTop: "30px",
                     }}
                   >
                     <ul>
@@ -169,18 +171,6 @@ class Home extends React.Component {
                       <li style={liStyle}>5 Tissue Types</li>
                       <li style={liStyle}>4 Diseases + Healthy Controls</li>
                     </ul>
-                  </div>
-                  <div
-                    style={{
-                      width: "100%",
-                      margin: "auto",
-                      textAlign: "center",
-                    }}
-                  >
-                    <img
-                      src={help}
-                      width={"50%"}
-                    />
                   </div>
                 </Container>
               ),
