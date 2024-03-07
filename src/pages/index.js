@@ -127,7 +127,7 @@ class Home extends React.Component {
             {
               blurb: "Overview of the proteomics data stored:",
               destination: false,
-              location: "/about",
+              location: "/experiment-search",
               rawContent: (
                 <Container className="basic-card-content basic-card-content-centered">
                   <Typography
