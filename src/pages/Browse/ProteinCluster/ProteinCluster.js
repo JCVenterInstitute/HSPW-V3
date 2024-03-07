@@ -121,12 +121,13 @@ const ProteinCluster = () => {
           </h1>
           <p className="head_text">
             A protein cluster in the Human Salivary Proteome Project consists of
-            protein identifications. We utilized MMseqs2 to cluster the protein
-            sequences at a 95% identity threshold, and only the representative
-            protein was included in the table. In order to access a
-            comprehensive view of all the proteins in the cluster, along with
-            their respective abundance values, we must access the "# of members"
-            option.
+            protein identifications. To cluster all proteins at a 95% identity
+            level, we used mmseq2 with the easy-cluster option. We ensured that
+            only those members' proteins with coverage above 50% sequence
+            identity. Only the representative protein was included in the table.
+            To access a comprehensive view of all the proteins in the cluster,
+            along with their respective abundance values, we must access the "#
+            of members" option
           </p>
         </Container>
       </div>
