@@ -810,6 +810,38 @@ app.get("/api/go-nodes-type/:type", (req, res) => {
   });
 });
 
+const bulkGoNodeSearchById = async (ids) => {
+  var client = await getClient();
+
+  var query = {
+    size: 10000,
+    query: {
+      bool: {
+        filter: [
+          {
+            terms: {
+              "id.keyword": ids,
+            },
+          },
+        ],
+      },
+    },
+  };
+
+  const response = await client.search({
+    index: process.env.INDEX_GO_NODES,
+    body: query,
+  });
+  return response.body.hits.hits;
+};
+
+app.post("/api/go-node-ids/", (req, res) => {
+  let a = bulkGoNodeSearchById(req.body.ids);
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
 const searchGoNodes = async (id) => {
   // Initialize the client.
   var client = await getClient();

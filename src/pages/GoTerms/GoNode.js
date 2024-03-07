@@ -51,6 +51,7 @@ const GoNode = () => {
   const [parentData, setParentData] = useState([]);
   const [siblingData, setSiblingData] = useState([]);
   const [childrenData, setChildrenData] = useState([]);
+  const [relationNames, setRelationNames] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -113,10 +114,33 @@ const GoNode = () => {
             edge["_source"].obj.includes(params.id)
         );
 
+        const goNodes = [];
+
+        siblingEdges.map((edge) => goNodes.push(edge._source.obj));
+        parentEdges.map((edge) => goNodes.push(edge._source.obj));
+        childrenEdges.map((edge) => goNodes.push(edge._source.obj));
+
         console.log("> Edge Result", edgeResult);
         console.log("> Parent", parentEdges);
         console.log("> Siblings", siblingEdges);
         console.log("> Children", childrenEdges);
+
+        console.log("> Go Nodes", goNodes);
+
+        const goNodeNames = await fetch(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/go-node-ids/`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ids: goNodes,
+            }),
+          }
+        );
+
+        console.log("> Go Node Names", goNodeNames);
 
         setChildrenData(childrenEdges.map((edge) => edge["_source"]));
         setLoading(false);
