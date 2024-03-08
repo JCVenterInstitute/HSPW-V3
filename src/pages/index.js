@@ -111,6 +111,14 @@ class Home extends React.Component {
                       }}
                     >
                       <iframe
+                        src="https://www.linkedin.com/embed/feed/update/urn:li:share:7171986524798984192"
+                        height="780"
+                        width="340"
+                        frameborder="0"
+                        allowfullscreen=""
+                        title="Embedded post"
+                      ></iframe>
+                      <iframe
                         src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7171010609839370240"
                         height="1560"
                         width="340"
