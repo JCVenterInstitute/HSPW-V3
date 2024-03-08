@@ -11,7 +11,8 @@ import publications from "../assets/icon-publications.png";
 import gene from "../assets/icon-gene.png";
 import protein_cluster from "../assets/icon-clustering.png";
 import api from "../assets/icon-api.png";
-import help from "../assets/icon-help.png";
+import "../components/BasicCard.css";
+
 import {
   Card,
   CardContent,
@@ -21,8 +22,6 @@ import {
   Link,
   Typography,
 } from "@mui/material";
-
-import "../components/BasicCard.css";
 
 const liStyle = {
   padding: "5px 15px",
@@ -112,8 +111,24 @@ class Home extends React.Component {
                       }}
                     >
                       <iframe
+                        src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7171010609839370240"
+                        height="1560"
+                        width="340"
+                        frameborder="0"
+                        allowfullscreen=""
+                        title="Embedded post"
+                      ></iframe>
+                      <iframe
+                        src="https://www.linkedin.com/embed/feed/update/urn:li:share:7166890619200598016"
+                        height="460"
+                        width="340"
+                        frameborder="0"
+                        allowfullscreen=""
+                        title="Embedded post"
+                      ></iframe>
+                      <iframe
                         src="https://www.linkedin.com/embed/feed/update/urn:li:share:7150141766891892736"
-                        height="400"
+                        height="520"
                         width="340"
                         frameBorder="0"
                         allowFullScreen=""
