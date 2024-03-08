@@ -828,6 +828,8 @@ const bulkGoNodeSearchById = async (ids) => {
     },
   };
 
+  console.log(JSON.stringify(query));
+
   const response = await client.search({
     index: process.env.INDEX_GO_NODES,
     body: query,

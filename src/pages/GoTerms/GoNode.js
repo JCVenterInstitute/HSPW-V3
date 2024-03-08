@@ -127,7 +127,7 @@ const GoNode = () => {
 
         console.log("> Go Nodes", goNodes);
 
-        const goNodeNames = await fetch(
+        const res = await fetch(
           `${process.env.REACT_APP_API_ENDPOINT}/api/go-node-ids/`,
           {
             method: "POST",
@@ -139,6 +139,7 @@ const GoNode = () => {
             }),
           }
         );
+        const goNodeNames = await res.json();
 
         console.log("> Go Node Names", goNodeNames);
 
