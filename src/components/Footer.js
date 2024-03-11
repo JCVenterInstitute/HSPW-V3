@@ -87,6 +87,9 @@ const Footer = () => {
                   <img
                     src={logo.image}
                     alt={logo.altText}
+                    style={{
+                      maxWidth: "250px",
+                    }}
                   />
                 </Link>
               </Grid>
@@ -111,7 +114,10 @@ const Footer = () => {
               >
                 <Link
                   to={link.href}
-                  style={{ fontSize: "16px", textDecoration: "none" }}
+                  style={{
+                    fontSize: "16px",
+                    textDecoration: "none",
+                  }}
                 >
                   {link.text}
                 </Link>
