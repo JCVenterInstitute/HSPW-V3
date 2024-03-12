@@ -121,30 +121,14 @@ const ProteinCluster = () => {
           </h1>
           <p className="head_text">
             A protein cluster in the Human Salivary Proteome Project consists of
-            protein identifications matching identical peptide lists. Each
-            cluster contains at least one unique peptide not found in the other
-            clusters.
+            protein identifications. To cluster all proteins at a 95% identity
+            level, we used mmseq2 with the easy-cluster option. We ensured that
+            only those members' proteins with coverage above 50% sequence
+            identity. Only the representative protein was included in the table.
+            To access a comprehensive view of all the proteins in the cluster,
+            along with their respective abundance values, we must access the "#
+            of members" option.
           </p>
-          <p className="head_text">
-            The representative protein within a cluster is chosen by applying
-            the following steps sequentially:
-          </p>
-          <ol
-            className="head_text"
-            style={{ paddingLeft: "30px" }}
-          >
-            <li>
-              The protein reported by the maximum number of research groups.
-            </li>
-            <li>
-              The protein with the highest number of distinct peptide hits.
-            </li>
-            <li>
-              The protein with a well-defined description in the IPI database or
-              is cross-referenced to the Swiss-Prot database.
-            </li>
-            <li>The protein with the lowest IPI accession number.</li>
-          </ol>
         </Container>
       </div>
       <Container maxWidth="xl">

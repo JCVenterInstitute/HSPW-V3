@@ -11,7 +11,8 @@ import publications from "../assets/icon-publications.png";
 import gene from "../assets/icon-gene.png";
 import protein_cluster from "../assets/icon-clustering.png";
 import api from "../assets/icon-api.png";
-import help from "../assets/icon-help.png";
+import "../components/BasicCard.css";
+
 import {
   Card,
   CardContent,
@@ -22,7 +23,9 @@ import {
   Typography,
 } from "@mui/material";
 
-import "../components/BasicCard.css";
+const liStyle = {
+  padding: "5px 15px",
+};
 
 class Home extends React.Component {
   constructor(props) {
@@ -108,8 +111,24 @@ class Home extends React.Component {
                       }}
                     >
                       <iframe
+                        src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7171010609839370240"
+                        height="1560"
+                        width="340"
+                        frameborder="0"
+                        allowfullscreen=""
+                        title="Embedded post"
+                      ></iframe>
+                      <iframe
+                        src="https://www.linkedin.com/embed/feed/update/urn:li:share:7166890619200598016"
+                        height="460"
+                        width="340"
+                        frameborder="0"
+                        allowfullscreen=""
+                        title="Embedded post"
+                      ></iframe>
+                      <iframe
                         src="https://www.linkedin.com/embed/feed/update/urn:li:share:7150141766891892736"
-                        height="400"
+                        height="520"
                         width="340"
                         frameBorder="0"
                         allowFullScreen=""
@@ -121,12 +140,55 @@ class Home extends React.Component {
               ),
             },
             {
-              imageSrc: help,
-              title: "Information for HSP Users",
-              blurb:
-                "The new HSP is built on the AWS system. Data and analysis tools and services from HSP have now been integrated into the resource.",
+              blurb: "Overview of the proteomics data stored:",
               destination: false,
-              location: "/about",
+              location: "/experiment-search",
+              rawContent: (
+                <Container style={{ padding: "10px" }}>
+                  <Typography
+                    component="div"
+                    sx={{
+                      fontFamily: "Lato",
+                      fontSize: "18px",
+                      fontWeight: "600",
+                      textTransform: "uppercase",
+                      margin: "10px",
+                    }}
+                  >
+                    HSP Statistics
+                  </Typography>
+                  <span
+                    style={{
+                      fontSize: "16px",
+                      fontFamily: "Lato",
+                      color: "rgba(0, 0, 0, 0.6)",
+                      paddingLeft: "10px",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    Overview of the proteomics data stored:
+                  </span>
+                  <div
+                    style={{
+                      marginLeft: "30px",
+                      fontSize: "16px",
+                      fontFamily: "Lato",
+                      color: "rgba(0, 0, 0, 0.6)",
+                      letterSpacing: ".9px",
+                      paddingBottom: "90px",
+                      paddingTop: "30px",
+                    }}
+                  >
+                    <ul>
+                      <li style={liStyle}>7 Contributing Institutions</li>
+                      <li style={liStyle}>7 Studies</li>
+                      <li style={liStyle}>1246 Datasets</li>
+                      <li style={liStyle}>5 Tissue Types</li>
+                      <li style={liStyle}>4 Diseases + Healthy Controls</li>
+                    </ul>
+                  </div>
+                </Container>
+              ),
             },
             {
               size: "2",
@@ -188,15 +250,7 @@ class Home extends React.Component {
                   >
                     here
                   </a>
-                  {` for a quick snapshot. Our HSP Wiki legacy website is available `}
-                  <a
-                    href="https://legacy.salivaryproteome.org/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    here
-                  </a>
-                  {`, and will be replaced in the near future.`}
+                  {` for a quick snapshot.`}
                 </Container>
               </section>
               <Banner />
