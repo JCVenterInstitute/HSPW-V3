@@ -1,0 +1,133 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Express Api
+
+Parameters:
+  DeployEnv:
+    Type: String
+    Default: DEV
+    AllowedValues:
+      - DEV
+      - STAG
+      - PROD
+  ApiStage:
+    Type: String
+    Description: The APIGateway stage name.
+    Default: v1
+  SmtpUser:
+    Type: String
+  SmtpPassword:
+    Type: String
+  RecaptchaSecretKey:
+    Type: String
+  DifferentialS3Bucket:
+    Type: String
+  RScriptPath:
+    Type: String
+  RScriptFileName:
+    Type: String
+  ContactTable:
+    Type: String
+  ContactS3Bucket:
+    Type: String
+  IndexProteinCluster:
+    Type: String
+  IndexSalivaryProtein:
+    Type: String
+  IndexGene:
+    Type: String
+  IndexProteinSignature:
+    Type: String
+  IndexCitation:
+    Type: String
+  IndexSalivarySummary:
+    Type: String
+  IndexGoNodes:
+    Type: String
+  IndexGoEdges:
+    Type: String
+  IndexStudy:
+    Type: String
+  IndexStudyProtein:
+    Type: String
+  IndexPeptide:
+    Type: String
+  IndexStudyPeptideAbundance:
+    Type: String
+  OsHostname:
+    Type: String
+
+Resources:
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub "HSP-Api"
+      StageName: !Ref ApiStage
+      EndpointConfiguration: REGIONAL
+      BinaryMediaTypes:
+        - "*/*"
+
+  # create permission for API Gateway to execute Lambda function
+  ApiGatewayExecutionPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt ApiFunction.Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Join
+        - ""
+        - - "arn:aws:execute-api:"
+          - !Ref AWS::Region
+          - ":"
+          - !Ref AWS::AccountId
+          - ":"
+          - !Ref ApiGateway
+          - "/*/*"
+
+  ApiFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      FunctionName: !Sub "HSP-Api"
+      Description: Express API
+      CodeUri: api/
+      Handler: lambda.handler
+      Runtime: nodejs16.x
+      MemorySize: 512
+      Timeout: 30
+      Environment:
+        Variables:
+          DEPLOY_ENV: !Ref DeployEnv
+          SMTP_USER: !Ref SmtpUser
+          SMTP_PASSWORD: !Ref SmtpPassword
+          RECAPTCHA_SECRET_KEY: !Ref RecaptchaSecretKey
+          DIFFERENTIAL_S3_BUCKET: !Ref DifferentialS3Bucket
+          R_SCRIPT_PATH: !Ref RScriptPath
+          R_SCRIPT_FILE_NAME: !Ref RScriptFileName
+          CONTACT_TABLE: !Ref ContactTable
+          CONTACT_S3_BUCKET: !Ref ContactS3Bucket
+          INDEX_PROTEIN_CLUSTER: !Ref IndexProteinCluster
+          INDEX_SALIVARY_PROTEIN: !Ref IndexSalivaryProtein
+          INDEX_GENE: !Ref IndexGene
+          INDEX_PROTEIN_SIGNATURE: !Ref IndexProteinSignature
+          INDEX_CITATION: !Ref IndexCitation
+          INDEX_SALIVARY_SUMMARY: !Ref IndexSalivarySummary
+          INDEX_GO_NODES: !Ref IndexGoNodes
+          INDEX_GO_EDGES: !Ref IndexGoEdges
+          INDEX_STUDY: !Ref IndexStudy
+          INDEX_STUDY_PROTEIN: !Ref IndexStudyProtein
+          INDEX_PEPTIDE: !Ref IndexPeptide
+          INDEX_STUDY_PEPTIDE_ABUNDANCE: !Ref IndexStudyPeptideAbundance
+          OS_HOSTNAME: !Ref OsHostname
+      Events:
+        ProxyApiRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /
+            Method: ANY
+        ProxyApiGreedy:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /{proxy+} # direct pass through of any route after /
+            Method: ANY

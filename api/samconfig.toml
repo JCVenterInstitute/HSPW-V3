@@ -1,0 +1,40 @@
+version = 0.1
+
+[core.build.parameters]
+template_file = "template.yaml"
+manifest = "package.json"
+
+[app-core-dev.deploy.parameters] # Used by pipeline for DEV deployment
+profile = "default"
+region = "us-east-2"
+stack_name = "HSPApiStack"
+capabilities = "CAPABILITY_NAMED_IAM"
+s3_bucket = "hsp-dev-deployments"
+s3_prefix = "hsp-api"
+parameter_overrides = [
+  "DeployEnv=DEV",
+  "SmtpUser=/CONTACT/USER",
+  "SmtpPassword=/CONTACT/PASSWORD",
+  "RecaptchaSecretKey=/RECAPTCHA/SECRET_KEY",
+  "DifferentialS3Bucket=hspw-data-dev-v2",
+  "RScriptPath=/home/ec2-user/r4test1/test",
+  "RScriptFileName=generate-data-new-heat.R",
+  "ContactTable=hspw-dev-contact-detail",
+  "ContactS3Bucket=hspw-dev-contact-attachments",
+  "IndexProteinCluster=protein_cluster_013024",
+  'IndexSalivaryProtein=salivary-proteins-013024',
+  "IndexGene=genes",
+  "IndexProteinSignature=protein_signature_013024",
+  'IndexCitation=citation_021324',
+  "IndexSalivarySummary=salivary_summary_020924",
+  "IndexGoNodes=go_nodes",
+  "IndexGoEdges=go_edges",
+  "IndexStudy=study",
+  "IndexStudyProtein=study_protein_012924",
+  "IndexPeptide=peptide_013024",
+  "IndexStudyPeptideAbundance=study_peptide_abundance_020124",
+  "OsHostname=https://search-hspw-dev2-dmdd32xae4fmxh7t4g6skv67aa.us-east-2.es.amazonaws.com"
+]
+
+
+

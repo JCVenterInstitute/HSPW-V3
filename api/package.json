@@ -1,0 +1,42 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start:local": "NODE_TLS_REJECT_UNAUTHORIZED=0 DEPLOY_ENV=LOCAL nodemon -r dotenv/config server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy:stackrequest:core:dev": "sam deploy --config-env stack-request-core-dev",
+    "sam:build:core": "rm -rf .aws-sam && sam build --config-env core",
+    "deploy:app:core:dev": "sam deploy --config-env app-core-dev",
+    "complete:app:core:dev": "npm run sam:build:core && npm run deploy:app:core:dev"
+  },
+  "dependencies": {
+    "@opensearch-project/opensearch": "^2.2.0",
+    "@turinggroup/serverless-express-custom-domain-middleware": "^1.1.0",
+    "@vendia/serverless-express": "^4.10.1",
+    "aws-sdk": "^2.1291.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "@aws-sdk/client-dynamodb": "^3.477.0",
+    "@aws-sdk/client-s3": "^3.451.0",
+    "@aws-sdk/client-ssm": "^3.481.0",
+    "@aws-sdk/credential-provider-node": "^3.298.0",
+    "@aws-sdk/lib-dynamodb": "^3.477.0",
+    "@aws-sdk/s3-request-presigner": "^3.451.0",
+    "aws-opensearch-connector": "^1.1.0",
+    "axios": "^1.6.7",
+    "child_process": "^1.0.2",
+    "fs-extra": "^11.2.0",
+    "nodemailer": "^6.9.7",
+    "path": "^0.12.7",
+    "util": "^0.12.5"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.3",
+    "nodemon": "^2.0.20"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
