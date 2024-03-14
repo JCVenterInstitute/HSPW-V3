@@ -199,7 +199,7 @@ function App() {
                 element={<GoNodes />}
               />
               <Route
-                path="/go-table"
+                path="/go-nodes"
                 element={<GoTable />}
               />
               <Route

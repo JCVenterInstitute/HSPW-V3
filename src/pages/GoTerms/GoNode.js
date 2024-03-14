@@ -357,7 +357,7 @@ const GoNode = () => {
                         key={index}
                         style={{ margin: "5px" }}
                       >
-                        <a href={`/GoNodes/${val.obj}`}>{val.obj}</a>
+                        <a href={`/go-nodes/${val.obj}`}>{val.obj}</a>
                       </li>
                     ))}
                   </ul>
@@ -371,7 +371,7 @@ const GoNode = () => {
                         key={index}
                         style={{ margin: "5px" }}
                       >
-                        <a href={`/GoNodes/${val.obj}`}>{val.obj}</a>
+                        <a href={`/go-nodes/${val.obj}`}>{val.obj}</a>
                       </li>
                     ))}
                   </ul>
@@ -385,7 +385,7 @@ const GoNode = () => {
                         key={index}
                         style={{ margin: "5px" }}
                       >
-                        <a href={`/GoNodes/${val.sub}`}>{val.sub}</a>
+                        <a href={`/go-nodes/${val.sub}`}>{val.sub}</a>
                       </li>
                     ))}
                   </ul>
