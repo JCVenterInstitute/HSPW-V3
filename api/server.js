@@ -2319,7 +2319,7 @@ const createServer = () => {
 
 const serverInstance = createServer();
 
-if (!process.env.AWS_EXECUTION_ENV) {
+if (process.env.DEPLOY_ENV === "LOCAL") {
   serverInstance.listen(port, (err) => {
     if (err) throw err;
     // eslint-disable-next-line
