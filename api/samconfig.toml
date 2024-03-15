@@ -7,7 +7,7 @@ manifest = "package.json"
 [app-core-dev.deploy.parameters] # Used by pipeline for DEV deployment
 profile = "default"
 region = "us-east-2"
-stack_name = "HSPApiStack"
+stack_name = "HSPApiDevStack"
 capabilities = "CAPABILITY_NAMED_IAM"
 s3_bucket = "hsp-dev-deployments"
 s3_prefix = "hsp-api"
@@ -34,6 +34,38 @@ parameter_overrides = [
   "IndexPeptide=peptide_013024",
   "IndexStudyPeptideAbundance=study_peptide_abundance_020124",
   "OsHostname=https://search-hspw-dev2-dmdd32xae4fmxh7t4g6skv67aa.us-east-2.es.amazonaws.com"
+]
+
+[app-core-prod.deploy.parameters] # Used by pipeline for DEV deployment
+profile = "default"
+region = "us-east-2"
+stack_name = "HSPApiProdStack"
+capabilities = "CAPABILITY_NAMED_IAM"
+s3_bucket = "hsp-prod-deployments"
+s3_prefix = "hsp-api"
+parameter_overrides = [
+  "DeployEnv=PROD",
+  "SmtpUser=/CONTACT/USER",
+  "SmtpPassword=/CONTACT/PASSWORD",
+  "RecaptchaSecretKey=/RECAPTCHA/SECRET_KEY",
+  "DifferentialS3Bucket=hspw-data-prod-v2",
+  "RScriptPath=/home/ec2-user/r4test1/test",
+  "RScriptFileName=generate-data-new-heat.R",
+  "ContactTable=hspw-prod-contact-detail",
+  "ContactS3Bucket=hspw-prod-contact-attachments",
+  "IndexProteinCluster=protein_cluster",
+  'IndexSalivaryProtein=salivary_proteins',
+  "IndexGene=genes",
+  "IndexProteinSignature=protein_signature",
+  'IndexCitation=citation',
+  "IndexSalivarySummary=salivary_summary",
+  "IndexGoNodes=go_nodes",
+  "IndexGoEdges=go_edges",
+  "IndexStudy=study",
+  "IndexStudyProtein=study_protein",
+  "IndexPeptide=peptide",
+  "IndexStudyPeptideAbundance=study_peptide_abundance",
+  "OsHostname=https://search-hspw-prod-y77jqnl5zklvuwu3k66anbowhi.us-east-2.es.amazonaws.com"
 ]
 
 

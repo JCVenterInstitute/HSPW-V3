@@ -7,9 +7,12 @@
     "start:local": "NODE_TLS_REJECT_UNAUTHORIZED=0 DEPLOY_ENV=LOCAL nodemon -r dotenv/config server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy:stackrequest:core:dev": "sam deploy --config-env stack-request-core-dev",
+    "deploy:stackrequest:core:prod": "sam deploy --config-env stack-request-core-prod",
     "sam:build:core": "rm -rf .aws-sam && sam build --config-env core",
     "deploy:app:core:dev": "sam deploy --config-env app-core-dev",
-    "complete:app:core:dev": "npm run sam:build:core && npm run deploy:app:core:dev"
+    "deploy:app:core:prod": "sam deploy --config-env app-core-prod",
+    "complete:app:core:dev": "npm run sam:build:core && npm run deploy:app:core:dev",
+    "complete:app:core:prod": "npm run sam:build:core && npm run deploy:app:core:prod"
   },
   "dependencies": {
     "@opensearch-project/opensearch": "^2.2.0",
