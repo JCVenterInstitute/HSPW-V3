@@ -7,6 +7,7 @@ manifest = "package.json"
 [app-core-dev.deploy.parameters] # Used by pipeline for DEV deployment
 profile = "default"
 region = "us-east-2"
+image_repository = "552623730819.dkr.ecr.us-east-2.amazonaws.com/hsp-api-dev"
 stack_name = "HSPApiDevStack"
 capabilities = "CAPABILITY_NAMED_IAM"
 s3_bucket = "hsp-dev-deployments"
