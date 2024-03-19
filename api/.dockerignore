@@ -1,0 +1,5 @@
+# Exclude Development Artifacts
+.git/
+.aws-sam/
+.vscode/
+node_modules/
