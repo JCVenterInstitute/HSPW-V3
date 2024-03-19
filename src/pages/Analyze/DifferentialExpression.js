@@ -805,7 +805,8 @@ const DifferentialExpression = () => {
               },
               formattedDate,
               workingDirectory,
-            }
+            },
+            { timeout: 600000 }
           )
           .then(() => {
             // Wait for 3 seconds before redirecting
@@ -837,7 +838,8 @@ const DifferentialExpression = () => {
               },
               formattedDate,
               workingDirectory,
-            }
+            },
+            { timeout: 600000 }
           )
           .then(() => {
             // Wait for 3 seconds before redirecting
