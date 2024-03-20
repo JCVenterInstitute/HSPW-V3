@@ -209,6 +209,12 @@ export const NavBar = () => {
                       >
                         <MenuItem
                           component={Link}
+                          to="/go-nodes"
+                        >
+                          Annotation Report
+                        </MenuItem>
+                        <MenuItem
+                          component={Link}
                           to="/clustalo"
                         >
                           Multiple Sequence Alignment
