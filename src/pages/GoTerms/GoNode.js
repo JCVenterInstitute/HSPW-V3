@@ -91,10 +91,20 @@ const GoNode = () => {
         );
         const edgeResult = response.data;
 
+        console.log(
+          "> Edges",
+          edgeResult.map((rec) => rec._source)
+        );
+
         const parentEdges = edgeResult.filter(
           (edge) =>
             edge["_source"].pred.includes("is_a") &&
             edge["_source"].sub.includes(params.id)
+        );
+
+        console.log(
+          "> Parent:",
+          parentEdges.map((edge) => edge["_source"])
         );
 
         setParentData(parentEdges.map((edge) => edge["_source"]));
@@ -114,17 +124,20 @@ const GoNode = () => {
             edge["_source"].obj.includes(params.id)
         );
 
-        const goNodes = [];
+        const goNodes = new Set();
 
-        siblingEdges.map((edge) => goNodes.push(edge._source.obj));
-        parentEdges.map((edge) => goNodes.push(edge._source.obj));
-        childrenEdges.map((edge) => goNodes.push(edge._source.obj));
+        edgeResult.map((edge) => {
+          const { obj, sub } = edge._source;
+          goNodes.add(obj);
+          goNodes.add(sub);
+        });
+
+        console.log(goNodes);
 
         console.log("> Edge Result", edgeResult);
         console.log("> Parent", parentEdges);
         console.log("> Siblings", siblingEdges);
         console.log("> Children", childrenEdges);
-
         console.log("> Go Nodes", goNodes);
 
         const res = await fetch(
@@ -135,15 +148,32 @@ const GoNode = () => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              ids: goNodes,
+              ids: Array.from(goNodes),
             }),
           }
         );
         const goNodeNames = await res.json();
 
+        const goTermToNameMapping = {};
+
+        goNodeNames.map((rec) => {
+          const { id, lbl } = rec._source;
+          goTermToNameMapping[id] = lbl;
+        });
+
+        setRelationNames(goTermToNameMapping);
+
+        console.log(goTermToNameMapping);
+
         console.log("> Go Node Names", goNodeNames);
 
         setChildrenData(childrenEdges.map((edge) => edge["_source"]));
+
+        console.log(
+          "> Children",
+          childrenEdges.map((edge) => edge["_source"])
+        );
+
         setLoading(false);
       } catch (error) {
         console.error(error);
@@ -262,9 +292,14 @@ const GoNode = () => {
               </TableCell>
               <TableCell sx={td}>
                 <a
+                  rel="noreferrer"
+                  target="_blank"
                   href={
-                    "http://amigo.geneontology.org/cgi-bin/amigo/go.cgi?view=details&query=GO:" +
-                    data[0]["_source"]["id"].split("_")[1]
+                    `https://amigo.geneontology.org/amigo/term/GO:${
+                      data[0]["_source"]["id"].split("_")[1]
+                    }`
+                    // "http://amigo.geneontology.org/cgi-bin/amigo/go.cgi?view=details&query=GO:" +
+                    // data[0]["_source"]["id"].split("_")[1]
                   }
                 >
                   Go Term{" "}
@@ -316,6 +351,7 @@ const GoNode = () => {
             marginBottom: "5%",
             borderTopLeftRadius: "10px",
             borderTopRightRadius: "10px",
+            tableLayout: "fixed",
           }}
         >
           <TableBody>
@@ -350,45 +386,42 @@ const GoNode = () => {
             </TableRow>
             <TableRow sx={td}>
               {parentData.length !== 0 ? (
-                <TableCell sx={td}>
-                  <ul style={{ marginLeft: "40px" }}>
-                    {parentData.map((val, index) => (
-                      <li
-                        key={index}
-                        style={{ margin: "5px" }}
-                      >
-                        <a href={`/go-nodes/${val.obj}`}>{val.obj}</a>
-                      </li>
-                    ))}
-                  </ul>
+                <TableCell sx={{ verticalAlign: "top", ...td }}>
+                  {parentData.map((val, index) => (
+                    <>
+                      <a
+                        key={`parent-${index}`}
+                        href={`/go-nodes/${val.obj}`}
+                      >{`${val.obj}: ${relationNames[val.obj]}`}</a>
+                      {index !== siblingData.length - 1 ? <br /> : ""}
+                    </>
+                  ))}
                 </TableCell>
               ) : null}
               {siblingData.length !== 0 ? (
-                <TableCell sx={td}>
-                  <ul style={{ marginLeft: "40px" }}>
-                    {siblingData.map((val, index) => (
-                      <li
-                        key={index}
-                        style={{ margin: "5px" }}
-                      >
-                        <a href={`/go-nodes/${val.obj}`}>{val.obj}</a>
-                      </li>
-                    ))}
-                  </ul>
+                <TableCell sx={{ verticalAlign: "top", ...td }}>
+                  {siblingData.map((val, index) => (
+                    <>
+                      <a
+                        key={`sibling-${index}`}
+                        href={`/go-nodes/${val.obj}`}
+                      >{`${val.obj}: ${relationNames[val.obj]}`}</a>
+                      {index !== siblingData.length - 1 ? <br /> : ""}
+                    </>
+                  ))}
                 </TableCell>
               ) : null}
               {childrenData.length !== 0 ? (
-                <TableCell sx={td}>
-                  <ul style={{ marginLeft: "40px" }}>
-                    {childrenData.map((val, index) => (
-                      <li
-                        key={index}
-                        style={{ margin: "5px" }}
-                      >
-                        <a href={`/go-nodes/${val.sub}`}>{val.sub}</a>
-                      </li>
-                    ))}
-                  </ul>
+                <TableCell sx={{ verticalAlign: "top", ...td }}>
+                  {childrenData.map((val, index) => (
+                    <>
+                      <a
+                        key={`children-${index}`}
+                        href={`/go-nodes/${val.sub}`}
+                      >{`${val.sub}: ${relationNames[val.sub]}`}</a>
+                      {index !== childrenData.length - 1 ? <br /> : ""}
+                    </>
+                  ))}
                 </TableCell>
               ) : null}
             </TableRow>

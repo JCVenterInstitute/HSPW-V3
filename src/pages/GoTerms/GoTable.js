@@ -16,6 +16,7 @@ import {
   RadioGroup,
   Select,
   Stack,
+  TextField,
 } from "@mui/material";
 import { Helmet } from "react-helmet";
 import BreadCrumb from "../../components/Breadcrumbs";
@@ -48,7 +49,7 @@ const GoTable = () => {
   const [sortBy, setSortBy] = useState([]);
   const [pageSize, setPageSize] = useState(10);
   const [pageNumber, setPageNumber] = useState(0);
-  const [recordCount, setRecordCount] = useState(0);
+  const [recordCount, setRecordCount] = useState(10);
 
   const params = useParams();
 
@@ -98,6 +99,10 @@ const GoTable = () => {
   const handlePageChange = (e) => {
     setPageNumber(e.target.value);
   };
+
+  const handleNextPage = (e) => {};
+
+  const handlePrevPage = (e) => {};
 
   const columns = [
     {
@@ -242,60 +247,68 @@ const GoTable = () => {
           </ListItem>
         </Stack>
       </Container>
-      {/* {rowData.length !== 0 ? ( */}
       <Container maxWidth="xl">
-        <Box sx={{ marginBottom: "80px" }}>
+        <Box sx={{ marginBottom: "40px" }}>
           <Stack
             direction={"row"}
             spacing={1}
           >
             <ListItem>
               <FormControl>
-                <FormLabel>Sort By:</FormLabel>
-                <Select
-                  labelId="property-select-label"
-                  id="property-select"
+                <TextField
+                  select
+                  id="sort-by-select"
                   onChange={handleSortBy}
-                  autoWidth
-                  label="Property"
-                  value={selectedProperty}
+                  label="Sort By"
+                  value={sortBy}
+                  sx={{ width: "240px", marginRight: "20px" }}
                 >
                   <MenuItem value={selectedProperty}>
                     {selectedProperty}
                   </MenuItem>
                   <MenuItem value={"Protein Count"}>Protein Count</MenuItem>
-                </Select>
+                </TextField>
               </FormControl>
-            </ListItem>
-            <ListItem>
               <FormControl onChange={handlePageSize}>
-                <FormLabel>Records Per Page:</FormLabel>
-                <Select
+                <TextField
+                  select
                   labelId="page-size-label"
                   id="page-size-select"
                   onChange={handlePageSize}
                   label="Page Size"
                   value={pageSize}
+                  sx={{ width: "120px", marginRight: "20px" }}
                 >
                   {[10, 20, 50, 100, 200, 500].map((size) => (
-                    <MenuItem value={size}>{size}</MenuItem>
+                    <MenuItem
+                      key={`page-size-${size}`}
+                      value={size}
+                    >
+                      {size}
+                    </MenuItem>
                   ))}
-                </Select>
+                </TextField>
               </FormControl>
             </ListItem>
             <ListItem>
-              Page{" "}
-              <Select
-                labelId="page-number-label"
-                id="page-number-select"
-                onChange={handlePageChange}
-                label="Page Size"
-                value={pageSize}
+              <FormControl
+                variant="outlined"
+                sx={{ flexDirection: "row", alignItems: "center" }}
               >
-                <MenuItem>{pageNumber + 1}</MenuItem>
-              </Select>
-              of
-              {recordCount / pageSize}
+                Page
+                <TextField
+                  select
+                  id="page-number-select"
+                  value={pageNumber + 1}
+                  onChange={handlePageChange}
+                  sx={{ marginX: "10px" }}
+                >
+                  <MenuItem value={pageNumber + 1}>{pageNumber + 1}</MenuItem>
+                </TextField>
+                <span sx={{ marginLeft: "10px" }}>{` of ${Math.ceil(
+                  recordCount / pageSize
+                )}`}</span>
+              </FormControl>
             </ListItem>
           </Stack>
         </Box>
@@ -312,7 +325,6 @@ const GoTable = () => {
           />
         </div>
       </Container>
-      {/* ) : null} */}
     </>
   );
 };
