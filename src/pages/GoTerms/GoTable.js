@@ -24,10 +24,12 @@ import { AgGridReact } from "ag-grid-react";
 import { Link } from "react-router-dom";
 
 function LinkComponent(props) {
+  const goNodeLink = props.value.split(":");
+
   return (
-    <div>
+    <div style={{ paddingLeft: "20px" }}>
       <Link
-        to={`/go-nodes/${props.value}`}
+        to={`/go-nodes/${goNodeLink[0]}`}
         rel="noopener noreferrer"
       >
         {props.value}
@@ -39,8 +41,10 @@ function LinkComponent(props) {
 const GoTable = () => {
   const gridRef = useRef();
   const [rowData, setRowData] = useState([]);
-  const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState(null);
+
+  // const [isLoading, setLoading] = useState(true);
+  // const [data, setData] = useState(null);
+
   const [selectedProperty, setSelectedProperty] =
     useState("Biological Process");
 
@@ -59,45 +63,111 @@ const GoTable = () => {
     { path: "Annotation Reports" },
   ];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/go-nodes/${params.id}`
-        );
-        setData(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-  });
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${process.env.REACT_APP_API_ENDPOINT}/api/go-nodes/${params.id}`
+  //       );
+  //       setData(response.data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+  // });
+
+  const [search, setSearch] = useState(false);
 
   const handlePropertyChange = (e) => {
     setSelectedProperty(e.target.value);
+    setSearch(true);
   };
 
   const handleElevateChange = (e) => {
     setElevatedOnly(e.target.value);
+    setSearch(true);
   };
 
   const handleSalivaryChange = (e) => {
     setSalivaryOnly(e.target.value);
+    setSearch(true);
   };
+
+  useEffect(() => {
+    if (search) handleSearch();
+  }, [search, selectedProperty, pageSize]);
+
+  // useEffect(() => {
+  //   if (search) handleSearch();
+  // }, [pageSize]);
 
   const handleSearch = async () => {
     console.log("> Search called");
+
+    const query = {
+      bool: {
+        filter: [
+          {
+            term: {
+              "meta.basicPropertyValues.val.keyword": selectedProperty
+                .toLowerCase()
+                .replace(" ", "_"),
+            },
+          },
+          {
+            term: {
+              "meta.basicPropertyValues.pred.keyword": "hasOBONamespace",
+            },
+          },
+        ],
+      },
+    };
+
+    const res = await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/go-nodes/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: query,
+          _source: ["id", "lbl"],
+          size: pageSize,
+        }),
+      }
+    ).then((res) => res.json());
+
+    const { hits, total } = res;
+
+    const tableData = hits.map((rec) => {
+      const { id, lbl } = rec._source;
+
+      return {
+        goNode: `${id}: ${lbl}`,
+      };
+    });
+
+    console.log("> Res", res);
+
+    setRecordCount(total.value);
+    setRowData(tableData);
+    setSearch(false);
   };
 
   const handlePageSize = (e) => {
+    setSearch(true);
     setPageSize(e.target.value);
   };
 
   const handleSortBy = (e) => {
+    setSearch(true);
     setSortBy(e.target.value);
   };
 
   const handlePageChange = (e) => {
     setPageNumber(e.target.value);
+    setSearch(true);
   };
 
   const handleNextPage = (e) => {};
@@ -107,8 +177,9 @@ const GoTable = () => {
   const columns = [
     {
       headerName: selectedProperty,
-      field: "meta.basicPropertyValues.val",
+      field: "goNode",
       cellRenderer: "LinkComponent",
+      width: 1000,
     },
     {
       headerName: "Protein Count",
@@ -118,12 +189,12 @@ const GoTable = () => {
 
   const properties = [
     "Biological Process",
-    "Biomarker",
     "Cellular Component",
     "Molecular Function",
-    "Pathway",
-    "Subcellular Location",
-    "Disease",
+    "Biomarker", // no data
+    "Pathway", // no data
+    "Subcellular Location", // no data
+    "Disease", // no data
   ];
 
   return (
@@ -164,9 +235,8 @@ const GoTable = () => {
             >
               <InputLabel id="property-select-label">Property:</InputLabel>
               <Select
-                labelId="property-select-label"
                 id="property-select"
-                onChange={handlePropertyChange}
+                onChange={(e) => handlePropertyChange(e)}
                 autoWidth
                 label="Property"
                 value={selectedProperty}
@@ -240,7 +310,7 @@ const GoTable = () => {
           <ListItem>
             <Button
               variant="contained"
-              onClick={handleSearch}
+              onClick={() => setSearch(true)}
             >
               Search
             </Button>
@@ -269,10 +339,9 @@ const GoTable = () => {
                   <MenuItem value={"Protein Count"}>Protein Count</MenuItem>
                 </TextField>
               </FormControl>
-              <FormControl onChange={handlePageSize}>
+              <FormControl>
                 <TextField
                   select
-                  labelId="page-size-label"
                   id="page-size-select"
                   onChange={handlePageSize}
                   label="Page Size"
@@ -303,7 +372,17 @@ const GoTable = () => {
                   onChange={handlePageChange}
                   sx={{ marginX: "10px" }}
                 >
-                  <MenuItem value={pageNumber + 1}>{pageNumber + 1}</MenuItem>
+                  {Array.from(
+                    { length: Math.ceil(recordCount / pageSize) },
+                    (_, index) => (
+                      <MenuItem
+                        key={index + 1}
+                        value={index + 1}
+                      >
+                        {index + 1}
+                      </MenuItem>
+                    )
+                  )}
                 </TextField>
                 <span sx={{ marginLeft: "10px" }}>{` of ${Math.ceil(
                   recordCount / pageSize
@@ -314,7 +393,7 @@ const GoTable = () => {
         </Box>
         <div
           className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
-          style={{ height: 3200 }}
+          style={{ height: 500 }}
         >
           <AgGridReact
             ref={gridRef}
