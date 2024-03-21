@@ -828,8 +828,6 @@ const bulkGoNodeSearchById = async (ids) => {
     },
   };
 
-  console.log(JSON.stringify(query));
-
   const response = await client.search({
     index: process.env.INDEX_GO_NODES,
     body: query,
@@ -839,6 +837,36 @@ const bulkGoNodeSearchById = async (ids) => {
 
 app.post("/api/go-node-ids/", (req, res) => {
   let a = bulkGoNodeSearchById(req.body.ids);
+  a.then(function (result) {
+    res.json(result);
+  });
+});
+
+const queryGoNodes = async (query, _source = null, size = 10) => {
+  var client = await getClient();
+
+  var query = {
+    track_total_hits: true,
+    size,
+    query,
+    _source,
+  };
+
+  console.log("> Query", JSON.stringify(query));
+
+  const response = await client.search({
+    index: process.env.INDEX_GO_NODES,
+    body: query,
+  });
+
+  return response.body.hits;
+};
+
+app.post("/api/go-nodes/", (req, res) => {
+  const { query, _source, size } = req.body;
+
+  let a = queryGoNodes(query, _source, size);
+
   a.then(function (result) {
     res.json(result);
   });
