@@ -18,7 +18,7 @@ import "resize-observer-polyfill";
 import BChart from "../../../components/SalivaryProtein/TwoSidedBarChart";
 import CommentTable from "../../../components/SalivaryProtein/CommentTable";
 import GlycanTable from "../../../components/SalivaryProtein/GlycanTable";
-import main_feature from "../../../assets/hero.jpeg";
+import main_feature from "../../../assets/hero.png";
 import "../../style.css";
 import { Link as ReactLink } from "react-router-dom";
 import BreadCrumb from "../../../components/Breadcrumbs";

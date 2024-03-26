@@ -1,7 +1,7 @@
 import FontAwesome from "react-fontawesome";
 
 import Protein from "../../../components/SalivaryProtein/SalivaryProteinTable.js";
-import MainFeature from "../../../assets/hero.jpeg";
+import MainFeature from "../../../assets/hero.png";
 import "../../style.css";
 import { Container } from "@mui/material";
 import BreadCrumb from "../../../components/Breadcrumbs.js";

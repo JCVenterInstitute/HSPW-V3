@@ -1,6 +1,6 @@
 import { Container, Typography } from "@mui/material";
 
-import MainFeature from "../../assets/hero.jpeg";
+import MainFeature from "../../assets/hero.png";
 
 const AccessibilityPage = () => {
   return (

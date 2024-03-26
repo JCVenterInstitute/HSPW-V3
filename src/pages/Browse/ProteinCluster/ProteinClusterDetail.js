@@ -8,7 +8,7 @@ import { useParams } from "react-router";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 
-import MainFeature from "../../../assets/hero.jpeg";
+import MainFeature from "../../../assets/hero.png";
 import BreadCrumb from "../../../components/Breadcrumbs";
 import { Helmet } from "react-helmet";
 

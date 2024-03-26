@@ -6,7 +6,7 @@ import {
   ListItemText,
 } from "@mui/material";
 
-import MainFeature from "../../assets/hero.jpeg";
+import MainFeature from "../../assets/hero.png";
 
 const sections = [
   "User Accounts and Authorship",

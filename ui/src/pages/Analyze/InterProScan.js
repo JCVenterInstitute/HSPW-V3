@@ -1,5 +1,5 @@
 import React from "react";
-import main_feature from "../../assets/hero.jpeg";
+import main_feature from "../../assets/hero.png";
 import { Typography, Container } from "@mui/material";
 import InterProScanSequenceParameters from "../../components/MultipleSequenceAlignment/InterProScanSequenceParameters";
 import { Helmet } from "react-helmet";

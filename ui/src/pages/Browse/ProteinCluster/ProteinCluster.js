@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import Chart from "react-google-charts";
 import Box from "@mui/material/Box";
 
-import main_feature from "../../../assets/hero.jpeg";
+import main_feature from "../../../assets/hero.png";
 import Cluster from "../../../components/ProteinClusterTable";
 import "../../style.css";
 import { Container } from "@mui/material";

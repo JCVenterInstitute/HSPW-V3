@@ -1,5 +1,5 @@
 import React from "react";
-import main_feature from "../../assets/hero.jpeg";
+import main_feature from "../../assets/hero.png";
 import { Typography, Container } from "@mui/material";
 import PsiBlastSequenceParameters from "../../components/MultipleSequenceAlignment/PsiBlastSequenceParameters";
 import BreadCrumb from "../../components/Breadcrumbs";

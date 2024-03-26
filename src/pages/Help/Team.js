@@ -6,7 +6,7 @@ import {
   ListItem,
   ListItemText,
 } from "@mui/material";
-import main_feature from "../../assets/hero.jpeg";
+import main_feature from "../../assets/hero.png";
 import memberInfo from "../../components/Help/Team/memberInfo";
 import BreadCrumb from "../../components/Breadcrumbs";
 import { Helmet } from "react-helmet";

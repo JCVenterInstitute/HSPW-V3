@@ -1,5 +1,5 @@
 import React from "react";
-import main_feature from "../../assets/hero.jpeg";
+import main_feature from "../../assets/hero.png";
 import { Typography, Container, Grid } from "@mui/material";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";

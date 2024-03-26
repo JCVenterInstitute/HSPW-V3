@@ -6,7 +6,7 @@ import { useParams } from "react-router";
 import FontAwesome from "react-fontawesome";
 import { Box, Container, LinearProgress } from "@mui/material";
 
-import MainFeature from "../../../assets/hero.jpeg";
+import MainFeature from "../../../assets/hero.png";
 import BreadCrumb from "../../../components/Breadcrumbs";
 import { Helmet } from "react-helmet";
 

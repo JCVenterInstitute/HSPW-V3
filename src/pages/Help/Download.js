@@ -2,7 +2,7 @@ import React from "react";
 import DownloadTable from "../../components/Download/DownloadTable.js";
 import "../style.css";
 
-import MainFeature from "../../assets/hero.jpeg";
+import MainFeature from "../../assets/hero.png";
 import { Container } from "@mui/material";
 import BreadCrumb from "../../components/Breadcrumbs.js";
 import { Helmet } from "react-helmet";

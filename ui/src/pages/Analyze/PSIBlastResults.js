@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import main_feature from "../../assets/hero.jpeg";
+import main_feature from "../../assets/hero.png";
 import {
   Typography,
   Container,

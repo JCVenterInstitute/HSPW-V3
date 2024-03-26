@@ -1,7 +1,7 @@
 import React from "react";
 
 import CitationTable from "../../../components/CitationTable";
-import MainFeature from "../../../assets/hero.jpeg";
+import MainFeature from "../../../assets/hero.png";
 import "../../style.css";
 import { Container } from "@mui/material";
 import BreadCrumb from "../../../components/Breadcrumbs";

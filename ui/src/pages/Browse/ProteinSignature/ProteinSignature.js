@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 
-import MainFeature from "../../../assets/hero.jpeg";
+import MainFeature from "../../../assets/hero.png";
 import ProteinSignatureTable from "../../../components/ProteinSignatureTable";
 import "../../style.css";
 import { Container } from "@mui/material";

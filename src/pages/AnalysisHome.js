@@ -1,5 +1,5 @@
 import React from "react";
-import main_feature from "../assets/hero.jpeg";
+import main_feature from "../assets/hero.png";
 import differential from "../assets/icon-heatmap.png";
 import msa from "../assets/icon-msa-alignment.png";
 import blast from "../assets/icon-protein-blast.png";

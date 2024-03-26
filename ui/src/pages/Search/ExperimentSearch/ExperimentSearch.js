@@ -1,5 +1,5 @@
 import { Container } from "@mui/material";
-import MainFeature from "../../../assets/hero.jpeg";
+import MainFeature from "../../../assets/hero.png";
 import ExperimentSearchTable from "../../../components/Search/ExperimentSearch/ExperimentSearchTable";
 import { Helmet } from "react-helmet";
 import BreadCrumb from "../../../components/Breadcrumbs";

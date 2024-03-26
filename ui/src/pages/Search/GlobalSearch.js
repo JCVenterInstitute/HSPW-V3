@@ -1,5 +1,5 @@
 import { useState } from "react";
-import main_feature from "../../assets/hero.jpeg";
+import main_feature from "../../assets/hero.png";
 import { Container, TextField, Button, Box, Typography } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import Genes from "../../components/Search/GlobalSearch/Genes";

@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import FontAwesome from "react-fontawesome";
 
-import MainFeature from "../../assets/hero.jpeg";
+import MainFeature from "../../assets/hero.png";
 
 const sections = ["Citation Guidelines", "Contacting Us"];
 

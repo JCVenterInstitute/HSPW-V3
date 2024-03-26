@@ -10,7 +10,7 @@ import axios from "axios";
 import { useParams } from "react-router";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
-import MainFeature from "../../../assets/hero.jpeg";
+import MainFeature from "../../../assets/hero.png";
 import "../../style.css";
 import LaunchIcon from "@mui/icons-material/Launch";
 import ExperimentProteinTable from "../../../components/Search/ExperimentSearch/ExperimentProteinTable";

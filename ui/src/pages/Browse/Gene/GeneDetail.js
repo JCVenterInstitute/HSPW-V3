@@ -11,7 +11,7 @@ import FontAwesome from "react-fontawesome";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 
-import MainFeature from "../../../assets/hero.jpeg";
+import MainFeature from "../../../assets/hero.png";
 import { Container } from "@mui/material";
 import BreadCrumb from "../../../components/Breadcrumbs";
 import { Helmet } from "react-helmet";
