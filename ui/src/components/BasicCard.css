@@ -1,0 +1,124 @@
+:root {
+  --basic-card-spacing: 15px;
+  --basic-card-width: 25%;
+}
+
+.basic-card-container {
+  display: flex;
+  flex-flow: row wrap;
+  margin: calc(-1 * var(--basic-card-spacing));
+}
+
+.basic-card {
+  display: flex;
+  margin: var(--basic-card-spacing);
+  width: calc(var(--basic-card-width) - 2 * var(--basic-card-spacing));
+  padding: var(--basic-card-spacing);
+  text-align: center;
+  border-radius: 16px;
+  background: #fff;
+  background-color: #ffffff;
+}
+.basic-card[data-destination="true"] {
+  cursor: pointer;
+  background-color: #ffffff;
+  transition: 0.33s;
+}
+.basic-card[data-destination="true"]:hover {
+  background-color: #ffffff;
+}
+.basic-card[data-size="1"] {
+  width: calc(var(--basic-card-width) - var(--basic-card-spacing));
+  --basic-card-width: 31%;
+}
+.basic-card[data-size="2"] {
+  width: calc(2 * var(--basic-card-width) - 2 * var(--basic-card-spacing));
+}
+.basic-card[data-size="3"] {
+  width: calc(3 * var(--basic-card-width) - 2 * var(--basic-card-spacing));
+}
+.basic-card[data-size="4"] {
+  width: calc(4 * var(--basic-card-width) - 2 * var(--basic-card-spacing));
+}
+
+.basic-card-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  justify-content: space-between;
+}
+.basic-card-content.basic-card-content-centered {
+  justify-content: center;
+}
+
+.basic-card .basic-card-image-wrapper {
+  /* border: 1px solid #bbb; */
+  margin: 10px;
+  margin-bottom: calc(10px + var(--basic-card-spacing));
+}
+.basic-card .basic-card-image-wrapper img {
+  width: 100%;
+}
+
+.basic-card h4 {
+  font-size: 18px;
+  padding-bottom: 10px;
+  text-align: left;
+  font-family: Lato;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  text-transform: uppercase;
+}
+
+.basic-card .basic-card-image-wrapper + h4 {
+  margin: 0px calc(-1 * var(--basic-card-spacing));
+  border-top: 1px solid #bbb;
+  padding-top: var(--basic-card-spacing);
+}
+
+.basic-card p {
+  font-size: 16px;
+  color: #5a5a5a;
+  font-family: Lato;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-align: left;
+  padding: 0px;
+  margin-bottom: 0px;
+}
+
+.basic-card ul.bulletless {
+  list-style-type: none;
+}
+.basic-card ul li {
+  line-height: 22px;
+}
+
+.embed-responsive {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+}
+
+.embed-responsive-item {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.basic-card a,
+.basic-card a:hover,
+.basic-card a:visited,
+.basic-card a:active {
+  text-decoration: none;
+  color: inherit; /* Optional: Keeps the link color consistent with the rest of the text */
+}

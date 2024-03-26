@@ -1,0 +1,214 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lato&family=Montserrat:wght@800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@700&family=Public+Sans:wght@100;200;300;400;500;600;700;800&display=swap");
+
+.carousel {
+  width: 100%;
+  min-height: 280px;
+  height: 420px;
+  background-color: white;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  display: flex;
+  justify-content: center;
+}
+
+.carouselInner {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+}
+
+.carouselInner .left {
+  height: 50px;
+  background-color: rgb(215, 221, 222, 0.6);
+  display: grid;
+  place-items: center;
+  color: black;
+  cursor: pointer;
+  margin-top: 200px;
+}
+
+.carouselInner .center {
+  flex: 80%;
+  height: 50%;
+  display: grid;
+  place-items: center;
+  font-family: Arial, Helvetica, sans-serif;
+  margin-top: 10px;
+}
+
+h1 {
+  color: #feffff;
+  font-family: Montserrat;
+  font-size: 36px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 100%; /* 36px */
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.first_paragraph {
+  color: #fff;
+  font-family: Lato;
+  font-size: 21px;
+  font-weight: 400;
+  @media (max-width: 768px) {
+    font-size: 18px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 480px) {
+    font-size: 14px; /* Even smaller font size for very small screens */
+  }
+}
+
+.second_title {
+  width: 20%;
+  color: white;
+  text-align: left;
+  font-size: 2.5rem;
+  /* Media query for smaller screens */
+  @media (max-width: 1150px) {
+    font-size: 2.1rem; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 768px) {
+    font-size: 2rem; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 480px) {
+    font-size: 1.5rem; /* Even smaller font size for very small screens */
+  }
+}
+
+.second_paragraph {
+  color: #fff;
+  font-family: Lato;
+  font-weight: 500;
+  font-size: 1.5rem;
+  width: 40%; /* Adjust the width as necessary */
+  /* Media query for smaller screens */
+  @media (max-width: 768px) {
+    font-size: 1.2rem; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 480px) {
+    font-size: 1rem; /* Even smaller font size for very small screens */
+  }
+}
+
+.third_title {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 36px;
+  font-style: normal;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding-bottom: 15px;
+  @media (max-width: 1100px) {
+    font-size: 32px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 1000px) {
+    font-size: 30px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 800px) {
+    font-size: 26px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 750px) {
+    font-size: 22px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 730px) {
+    display: none; /* Smaller font size on smaller screens */
+  }
+}
+
+.third_paragraph {
+  color: #fff;
+  font-family: Lato;
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  padding-bottom: 15px;
+  @media (max-width: 1230px) {
+    font-size: 20px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 1100px) {
+    font-size: 18px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 1000px) {
+    font-size: 16px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 870px) {
+    font-size: 14px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 830px) {
+    font-size: 12px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 750px) {
+    font-size: 10px; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 730px) {
+    display: none; /* Smaller font size on smaller screens */
+  }
+}
+
+.chord {
+  display: flex;
+  justify-content: center; /* Horizontally center the children */
+  width: 40%;
+  @media (max-width: 1360px) {
+    width: 50%; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 1100px) {
+    width: 55%; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 1000px) {
+    width: 60%; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 920px) {
+    width: 65%; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 860px) {
+    width: 70%; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 800px) {
+    width: 75%; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 750px) {
+    width: 80%; /* Smaller font size on smaller screens */
+  }
+  @media (max-width: 730px) {
+    width: 100%; /* Smaller font size on smaller screens */
+  }
+}
+
+p {
+  color: #fff;
+  font-family: Lato;
+  font-size: 22px;
+  font-style: normal;
+  line-height: normal;
+}
+
+h1,
+p {
+  position: relative;
+  z-index: 5;
+  color: white;
+  padding: 0px;
+}
+
+.carouselInner .right {
+  position: absolute;
+  height: 50px;
+  background-color: rgb(215, 221, 222, 0.6);
+  display: grid;
+  place-items: center;
+  color: black;
+  cursor: pointer;
+  margin-top: 200px;
+  right: 0;
+}

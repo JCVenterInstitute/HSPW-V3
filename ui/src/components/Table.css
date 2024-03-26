@@ -1,0 +1,313 @@
+.ag-theme-alpine {
+  --ag-header-height: 30px;
+  --ag-header-foreground-color: white;
+  --ag-header-background-color: #1463b9;
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-height: 100%;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  --ag-header-cell-hover-background-color: #177be9;
+  --ag-header-cell-moving-background-color: #177be9;
+  line-height: 20px !important;
+  word-break: normal; /* prevent words from breaking */
+  --ag-grid-size: 3px;
+  --ag-list-item-height: 20px;
+}
+.ag-theme-alpine .ag-header {
+  color: #fff;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  --ag-header-column-separator-color: #3592e4;
+  --ag-header-cell-hover-background-color: #177be9;
+  --ag-header-cell-moving-background-color: #177be9;
+  border-radius: 10px 10px 0 0;
+  justify-content: center !important;
+  text-align: center !important;
+}
+.ag-theme-alpine .ag-header-group-cell {
+  font-weight: normal;
+  font-size: 16px;
+  --ag-grid-size: 3px;
+  justify-content: center !important;
+  text-align: center !important;
+  --ag-list-item-height: 20px;
+}
+.ag-theme-alpine .ag-header-cell {
+  font-size: 16px;
+  --ag-grid-size: 3px;
+  --ag-list-item-height: 20px;
+  display: flex;
+  justify-content: center; /* align horizontal */
+  align-items: center;
+  /* white-space: pre-wrap; */
+  word-break: break-word;
+}
+.ag-theme-material .ag-row {
+  padding: 0 !important;
+  box-sizing: border-box;
+}
+.ag-theme-material .ag-center-cols-container,
+.ag-theme-material .ag-body-viewport {
+  height: 100% !important;
+}
+
+.ag-theme-material .ag-cell {
+  padding: 0px !important;
+}
+
+.ag-theme-material .ag-checkbox-input-wrapper.ag-checked::after {
+  color: #55aaff !important;
+  /* background-color: black; */
+}
+
+.ag-cell-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.salivary-proteins-colored-cell .ag-cell-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.salivary-protein-header {
+  font-size: 12px !important;
+}
+
+.differential-expression-header {
+  font-size: 12px !important;
+}
+
+.comment_table_description {
+  height: auto !important;
+  padding: 5px !important;
+}
+
+.ag-theme-material .ag-cell-value {
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  line-height: 24px !important;
+  word-break: normal; /* prevent words from breaking */
+  color: #464646;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.34px;
+  text-align: left;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+  padding-left: 5px;
+  padding: 0px !important;
+}
+
+.differential-expression .ag-selection-checkbox {
+  padding: 0 0 0 24px;
+}
+
+.differential-expression-cell .ag-cell-value {
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  line-height: unset !important;
+  word-break: normal; /* prevent words from breaking */
+  color: #464646;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.34px;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+  padding-left: 24px !important;
+}
+
+.citation-header .ag-header-cell-text {
+  text-align: left;
+}
+
+.protein-cluster-header .ag-header-cell-text {
+  text-align: left;
+}
+
+.salivary-protein-cell .ag-cell-value {
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  word-break: normal; /* prevent words from breaking */
+  color: #464646;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.34px;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+  padding-left: 24px !important;
+}
+
+.salivary-protein-protein-name-cell .ag-cell-value {
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  word-break: normal; /* prevent words from breaking */
+  color: #464646;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.34px;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+  padding-left: 12px !important;
+}
+
+.download-cell .ag-cell-value {
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  line-height: unset !important;
+  word-break: normal; /* prevent words from breaking */
+  color: #464646;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.34px;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+  padding-left: 24px !important;
+}
+
+.protein-set-search-cell .ag-cell-value {
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  line-height: unset !important;
+  word-break: normal; /* prevent words from breaking */
+  color: #464646;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.34px;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+  padding-left: 24px !important;
+}
+
+.global-search-cell .ag-cell-value {
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  line-height: unset !important;
+  word-break: normal; /* prevent words from breaking */
+  color: #464646;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.34px;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+  padding-left: 24px !important;
+}
+
+.citation-cell .ag-cell-value {
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  line-height: unset !important;
+  word-break: normal; /* prevent words from breaking */
+  color: #464646;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.34px;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+  padding-left: 24px !important;
+}
+
+.gene-cell .ag-cell-value {
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  line-height: unset !important;
+  word-break: normal; /* prevent words from breaking */
+  color: #464646;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.34px;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+  padding-left: 24px !important;
+}
+
+.protein-signature-cell .ag-cell-value {
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  line-height: unset !important;
+  word-break: normal; /* prevent words from breaking */
+  color: #464646;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.34px;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+  padding-left: 24px !important;
+}
+
+.protein-cluster-cell .ag-cell-value {
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-width: 2px;
+  --ag-header-column-separator-color: #3592e4;
+  line-height: unset !important;
+  word-break: normal; /* prevent words from breaking */
+  color: #464646;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.34px;
+  vertical-align: middle;
+  width: 100%;
+  height: 100%;
+  padding-left: 24px !important;
+}
+
+.header-border {
+  border: 1px solid #3592e4;
+  --ag-header-size: 3px;
+  --ag-list-item-height: 20px;
+}
+
+.table-border {
+  border: 1px solid #f9f8f7 !important;
+  background: #fff;
+  padding-left: 10px;
+}
+
+.square_table {
+  border: 1px solid #f9f8f7 !important;
+  background: #fff;
+  padding: 0px !important;
+}
