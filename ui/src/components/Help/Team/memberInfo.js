@@ -1,15 +1,15 @@
 import Stefan from "../../../assets/team-members/Stefan-Ruhl.jpg";
 import Kathryn from "../../../assets/team-members/Kathryn-Kauffman.jpg";
 import Marcelo from "../../../assets/team-members/Marcelo-Freire.jpg";
-import Indresh from "../../../assets/team-members/Indresh-Singh.jpeg";
-import Harinder from "../../../assets/team-members/Harinder-Singh.jpeg";
+import Indresh from "../../../assets/team-members/Indresh-Singh.jpg";
+import Harinder from "../../../assets/team-members/Harinder-Singh.jpg";
 import Max from "../../../assets/team-members/Max-Qian.jpg";
 import Mickey from "../../../assets/team-members/Mickey-Zheng.jpg";
 import Link from "../../../assets/team-members/Link-Wu.jpg";
 import Floyd from "../../../assets/team-members/Floyd-Dewhirst.jpg";
 import Tsute from "../../../assets/team-members/Tsute-Chen.jpg";
 import Jessica from "../../../assets/team-members/Jessica-Welch.jpg";
-import Markus from "../../../assets/team-members/Markus-Hardt.jpeg";
+import Markus from "../../../assets/team-members/Markus-Hardt.jpg";
 import Yanhui from "../../../assets/team-members/Yanhui-Zhang.jpg";
 import William from "../../../assets/team-members/William-Lau.jpg";
 
@@ -42,13 +42,13 @@ const memberInfo = [
           "<b>Marcelo Freire, DDS, Ph.D., DMSc</b> Marcelo is an Associate Professor in the Genomic Medicine and Infectious Disease Department at the J. Craig Venter Institute (JCVI). His laboratory is focused on investigating oral host-microbial interactions impacting health and disease.",
       },
       {
-        imageName: "Indresh-Singh.jpeg",
+        imageName: "Indresh-Singh.jpg",
         image: Indresh,
         description:
           "<b>Indresh Singh, MSc</b> Indresh is a Sr. Software Engineer, leading Informatics Core Services (ICS) at the J. Craig Venter Institute (JCVI). His expertise is; high-thoughput computing, genomic data analysis, data visualization, software development, and scalable infrastructure development and deployment in local and cloud environment.",
       },
       {
-        imageName: "Harinder-Singh.jpeg",
+        imageName: "Harinder-Singh.jpg",
         image: Harinder,
         description:
           "<b>Harinder Singh, Ph.D.</b> Harinder is a Staff Scientist in the Infectious Disease Department at the J. Craig Venter Institute (JCVI). Dr. Singh's area of research is mostly focused on various data analysis, data mining, development of prediction algorithms and databases and bioinformatics pipelines for the scientific community.",
@@ -87,7 +87,7 @@ const memberInfo = [
           "<b>Jessica Mark Welch, Ph.D.</b> Jessica studies the spatial organization and community composition of the oral microbiota. She is a contributor to the Human Oral Microbiome Database (HOMD) and is interested in integration of the Human Salivary Proteome with the HOMD. She is an Associate Scientist at the Marine Biological Laboratory in Woods Hole, Massachusetts.",
       },
       {
-        imageName: "Markus-Hardt.jpeg",
+        imageName: "Markus-Hardt.jpg",
         image: Markus,
         description:
           "<b>Markus Hardt, Ph.D.</b> Markus studies the molecular mechanisms underlying physiological and pathological processes through the lens of mass spectrometry. Through global analyses of proteomes, peptidomes and metabolomes in conjunction with functional studies, his laboratory is investigating the modulation of the immune response by post-translational modifications and proteolytic processing. The highly interdisciplinary and collaborative research includes projects on the oral microbiome, salivary proteome, cancer pain, Sjögren’s syndrome, periodontitis, obesity and COVID19 with the overall goal to foster the translation of biochemical understanding into improved diagnostics and therapeutics.",
