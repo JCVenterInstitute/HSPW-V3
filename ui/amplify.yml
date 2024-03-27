@@ -1,0 +1,18 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - cd ui
+        - npm install
+    build:
+      commands:
+        - if [ "${AWS_BRANCH}" = "dev" ]; then npm run build:dev; fi
+        - if [ "${AWS_BRANCH}" = "main" ]; then npm run build:prod; fi
+  artifacts:
+    baseDirectory: ui/build
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
