@@ -1,7 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router";
-import axios from "axios";
-import MainFeature from "../../assets/hero.jpeg";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -19,9 +16,12 @@ import {
   TextField,
 } from "@mui/material";
 import { Helmet } from "react-helmet";
-import BreadCrumb from "../../components/Breadcrumbs";
 import { AgGridReact } from "ag-grid-react";
 import { Link } from "react-router-dom";
+import DownloadIcon from "@mui/icons-material/Download";
+
+import MainFeature from "../../assets/hero.jpeg";
+import BreadCrumb from "../../components/Breadcrumbs";
 
 function LinkComponent(props) {
   const goNodeLink = props.value.split(":");
@@ -41,21 +41,17 @@ function LinkComponent(props) {
 const GoTable = () => {
   const gridRef = useRef();
   const [rowData, setRowData] = useState([]);
-
-  // const [isLoading, setLoading] = useState(true);
-  // const [data, setData] = useState(null);
-
   const [selectedProperty, setSelectedProperty] =
     useState("Biological Process");
-
   const [elevatedOnly, setElevatedOnly] = useState("yes");
   const [salivaryOnly, setSalivaryOnly] = useState("yes");
-  const [sortBy, setSortBy] = useState([]);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(100);
   const [pageNumber, setPageNumber] = useState(0);
   const [recordCount, setRecordCount] = useState(10);
-
-  const params = useParams();
+  const [columnApi, setColumnApi] = useState(null);
+  const [search, setSearch] = useState(false);
+  const [sortedColumn, setSortedColumn] = useState(null);
+  const [gridApi, setGridApi] = useState(null);
 
   const breadcrumbPath = [
     { path: "Home", link: "/" },
@@ -63,47 +59,48 @@ const GoTable = () => {
     { path: "Annotation Reports" },
   ];
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${process.env.REACT_APP_API_ENDPOINT}/api/go-nodes/${params.id}`
-  //       );
-  //       setData(response.data);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
-  // });
-
-  const [search, setSearch] = useState(false);
+  const onGridReady = (params) => {
+    setGridApi(params.api);
+    setColumnApi(params.columnApi);
+  };
 
   const handlePropertyChange = (e) => {
     setSelectedProperty(e.target.value);
-    setSearch(true);
   };
 
   const handleElevateChange = (e) => {
     setElevatedOnly(e.target.value);
-    setSearch(true);
   };
 
   const handleSalivaryChange = (e) => {
     setSalivaryOnly(e.target.value);
-    setSearch(true);
   };
 
   useEffect(() => {
-    if (search) handleSearch();
+    if (search) {
+      handleSearch();
+    }
   }, [search, selectedProperty, pageSize]);
 
-  // useEffect(() => {
-  //   if (search) handleSearch();
-  // }, [pageSize]);
+  useEffect(() => {
+    if (gridApi) {
+      gridApi.showLoadingOverlay();
+      setPageNumber(0);
+      setSearch(true);
+    }
+  }, [sortedColumn]);
+
+  useEffect(() => {
+    if (gridApi) {
+      gridApi.showLoadingOverlay();
+    }
+
+    if (pageNumber !== 0 && !search) {
+      handleSearch();
+    }
+  }, [pageNumber]);
 
   const handleSearch = async () => {
-    console.log("> Search called");
-
     const query = {
       bool: {
         filter: [
@@ -124,7 +121,9 @@ const GoTable = () => {
     };
 
     const res = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/go-nodes/`,
+      `${process.env.REACT_APP_API_ENDPOINT}/api/go-nodes/${pageSize}/${
+        pageNumber * pageSize
+      }`,
       {
         method: "POST",
         headers: {
@@ -134,58 +133,106 @@ const GoTable = () => {
           query: query,
           _source: ["id", "lbl"],
           size: pageSize,
+          ...(sortedColumn && createSortQuery()),
         }),
       }
     ).then((res) => res.json());
 
     const { hits, total } = res;
+    const tableData = hits.map((rec) => rec._source);
 
-    const tableData = hits.map((rec) => {
-      const { id, lbl } = rec._source;
-
-      return {
-        goNode: `${id}: ${lbl}`,
-      };
-    });
-
-    console.log("> Res", res);
-
-    setRecordCount(total.value);
+    setRecordCount(total.value > 10000 ? 10000 : total.value);
     setRowData(tableData);
     setSearch(false);
+    if (gridApi) gridApi.hideOverlay();
   };
 
   const handlePageSize = (e) => {
     setSearch(true);
     setPageSize(e.target.value);
-  };
-
-  const handleSortBy = (e) => {
-    setSearch(true);
-    setSortBy(e.target.value);
+    setPageNumber(0);
   };
 
   const handlePageChange = (e) => {
-    setPageNumber(e.target.value);
+    setPageNumber(e.target.value - 1);
     setSearch(true);
   };
 
-  const handleNextPage = (e) => {};
+  const onBtPrevious = () => {
+    if (pageNumber !== 0) {
+      setPageNumber(pageNumber - 1);
+      setSearch(true);
+    }
+  };
 
-  const handlePrevPage = (e) => {};
+  const onBtNext = () => {
+    if (pageNumber < recordCount / pageSize - 1) {
+      setPageNumber(pageNumber + 1);
+      setSearch(true);
+    }
+  };
+
+  /**
+   * Create a proper sort query for whichever sort attribute is selected
+   */
+  const createSortQuery = () => {
+    const { attribute, order } = sortedColumn;
+
+    // Have to include .keyword when sorting string attributes
+    const sortAttrKey = `${attribute}.keyword`;
+
+    return {
+      sort: [
+        {
+          [sortAttrKey]: {
+            order,
+          },
+        },
+      ],
+    };
+  };
 
   const columns = [
     {
-      headerName: selectedProperty,
-      field: "goNode",
+      headerName: "Id",
+      field: "id",
       cellRenderer: "LinkComponent",
+      width: 150,
+    },
+    {
+      headerName: "Label",
+      field: "lbl",
       width: 1000,
+      cellClass: ["table-border"],
+      cellStyle: {
+        wordBreak: "break-word",
+      },
     },
     {
       headerName: "Protein Count",
       field: "",
     },
   ];
+
+  /**
+   * Track which column is selected for sort by user
+   */
+  const onSortChanged = () => {
+    const columnState = columnApi.getColumnState();
+    const sortedColumn = columnState.filter((col) => col.sort !== null);
+
+    if (sortedColumn.length !== 0) {
+      const { sort, colId } = sortedColumn[0];
+      setSortedColumn({ attribute: colId, order: sort });
+    } else {
+      setSortedColumn(null);
+    }
+  };
+
+  // Export current page as CSV file
+  const onBtExport = useCallback(() => {
+    gridRef.current.api.exportDataAsCsv();
+  }, []);
 
   const properties = [
     "Biological Process",
@@ -317,93 +364,176 @@ const GoTable = () => {
           </ListItem>
         </Stack>
       </Container>
-      <Container maxWidth="xl">
-        <Box sx={{ marginBottom: "40px" }}>
-          <Stack
-            direction={"row"}
-            spacing={1}
-          >
-            <ListItem>
-              <FormControl>
-                <TextField
-                  select
-                  id="sort-by-select"
-                  onChange={handleSortBy}
-                  label="Sort By"
-                  value={sortBy}
-                  sx={{ width: "240px", marginRight: "20px" }}
-                >
-                  <MenuItem value={selectedProperty}>
-                    {selectedProperty}
-                  </MenuItem>
-                  <MenuItem value={"Protein Count"}>Protein Count</MenuItem>
-                </TextField>
-              </FormControl>
-              <FormControl>
-                <TextField
-                  select
-                  id="page-size-select"
-                  onChange={handlePageSize}
-                  label="Page Size"
-                  value={pageSize}
-                  sx={{ width: "120px", marginRight: "20px" }}
-                >
-                  {[10, 20, 50, 100, 200, 500].map((size) => (
-                    <MenuItem
-                      key={`page-size-${size}`}
-                      value={size}
-                    >
-                      {size}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </FormControl>
-            </ListItem>
-            <ListItem>
-              <FormControl
-                variant="outlined"
-                sx={{ flexDirection: "row", alignItems: "center" }}
+      {
+        rowData.length !== 0 ? (
+          <Container maxWidth="xl">
+            <Box sx={{ marginBottom: "40px" }}>
+              <Stack
+                direction={"row"}
+                spacing={1}
               >
-                Page
-                <TextField
-                  select
-                  id="page-number-select"
-                  value={pageNumber + 1}
-                  onChange={handlePageChange}
-                  sx={{ marginX: "10px" }}
-                >
-                  {Array.from(
-                    { length: Math.ceil(recordCount / pageSize) },
-                    (_, index) => (
-                      <MenuItem
-                        key={index + 1}
-                        value={index + 1}
-                      >
-                        {index + 1}
-                      </MenuItem>
-                    )
-                  )}
-                </TextField>
-                <span sx={{ marginLeft: "10px" }}>{` of ${Math.ceil(
-                  recordCount / pageSize
-                )}`}</span>
-              </FormControl>
-            </ListItem>
-          </Stack>
-        </Box>
-        <div
-          className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
-          style={{ height: 500 }}
-        >
-          <AgGridReact
-            ref={gridRef}
-            columnDefs={columns}
-            defaultColDef={{ resizable: true }}
-            rowData={rowData}
-            components={{ LinkComponent }}
-          />
-        </div>
-      </Container>
+                <ListItem>
+                  <FormControl>
+                    <TextField
+                      select
+                      id="page-size-select"
+                      onChange={handlePageSize}
+                      label="Page Size"
+                      value={pageSize}
+                      sx={{ width: "120px", marginRight: "20px" }}
+                    >
+                      {[100, 200, 500, 1000].map((size) => (
+                        <MenuItem
+                          key={`page-size-${size}`}
+                          value={size}
+                        >
+                          {size}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </FormControl>
+                </ListItem>
+                <ListItem sx={{ justifyContent: "end" }}>
+                  <FormControl
+                    variant="outlined"
+                    sx={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginRight: "15px",
+                    }}
+                  >
+                    Page
+                    <TextField
+                      select
+                      id="page-number-select"
+                      value={pageNumber + 1}
+                      onChange={handlePageChange}
+                      sx={{ marginX: "10px" }}
+                    >
+                      {Array.from(
+                        { length: Math.ceil(recordCount / pageSize) },
+                        (_, index) => (
+                          <MenuItem
+                            key={index + 1}
+                            value={index + 1}
+                          >
+                            {index + 1}
+                          </MenuItem>
+                        )
+                      )}
+                    </TextField>
+                    <span sx={{ marginLeft: "10px" }}>{` of ${Math.ceil(
+                      recordCount / pageSize
+                    )}`}</span>
+                  </FormControl>
+                  <button
+                    onClick={onBtPrevious}
+                    disabled={pageNumber === 0}
+                    style={{
+                      color: pageNumber === 0 ? "#D3D3D3" : "#F6921E",
+                      background: "white",
+                      fontSize: "20px",
+                      border: "none",
+                      cursor: pageNumber === 0 ? "default" : "pointer",
+                      transition: pageNumber === 0 ? "none" : "background 0.3s",
+                      borderRadius: "5px",
+                      marginRight: "15px",
+                      pointerEvents: pageNumber === 0 ? "none" : "auto",
+                      paddingBottom: "5px",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.background =
+                        "rgba(246, 146, 30, 0.2)")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = "white")
+                    }
+                  >
+                    prev
+                  </button>
+                  <button
+                    onClick={onBtNext}
+                    disabled={
+                      pageNumber === Math.ceil(recordCount / pageSize - 1)
+                    }
+                    style={{
+                      color:
+                        pageNumber === Math.ceil(recordCount / pageSize - 1)
+                          ? "#D3D3D3"
+                          : "#F6921E",
+                      background: "white",
+                      fontSize: "20px",
+                      border: "none",
+                      cursor:
+                        pageNumber === Math.ceil(recordCount / pageSize)
+                          ? "default"
+                          : "pointer",
+                      transition:
+                        pageNumber === Math.ceil(recordCount / pageSize)
+                          ? "none"
+                          : "background 0.3s",
+                      borderRadius: "5px",
+                      pointerEvents:
+                        pageNumber === Math.ceil(recordCount / pageSize)
+                          ? "none"
+                          : "auto",
+                      paddingBottom: "5px",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background =
+                        "rgba(246, 146, 30, 0.2)";
+                    }}
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = "white")
+                    }
+                  >
+                    next
+                  </button>
+                </ListItem>
+              </Stack>
+            </Box>
+            <div
+              className="ag-theme-material ag-cell-wrap-text ag-theme-alpine saliva_table"
+              style={{ height: 500 }}
+            >
+              <AgGridReact
+                ref={gridRef}
+                columnDefs={columns}
+                defaultColDef={{ resizable: true, sortable: true }}
+                rowData={rowData}
+                onSortChanged={onSortChanged}
+                components={{ LinkComponent }}
+                onGridReady={onGridReady}
+                suppressDragLeaveHidesColumns
+                suppressMovable
+                enableCellTextSelection={true}
+              />
+            </div>
+            <div style={{ display: "flex" }}>
+              <Button
+                onClick={onBtExport}
+                sx={{
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  marginTop: "10px",
+                  textTransform: "unset",
+                  color: "#F6921E",
+                  fontSize: "20",
+                  "&:hover": {
+                    backgroundColor: "inherit",
+                  },
+                }}
+              >
+                <DownloadIcon />
+                Download Spreadsheet
+              </Button>
+            </div>
+          </Container>
+        ) : null
+        // <Container maxWidth="xl">
+        //   <Box sx={{ marginLeft: "10px" }}>No data found</Box>
+        // </Container>
+      }
     </>
   );
 };
