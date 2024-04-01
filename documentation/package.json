@@ -8,7 +8,10 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "mkdocs build -d ../src/server/documentation"
+    "build": "mkdocs build -d ../src/server/documentation",
+    "build:local": "mkdocs build",
+    "sync:s3": "aws s3 sync ./site s3://hsp-documentation",
+    "deploy": "npm run build:local && npm run sync:s3"
   },
   "keywords": [],
   "author": "",
