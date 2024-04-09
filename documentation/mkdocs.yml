@@ -5,9 +5,9 @@ nav:
   - Salivary Proteins: salivary-proteins.md
   - Protein Cluster: protein-cluster.md
   - Genes: genes.md
-  # - Publications: publications.md
-  # - Multiple Sequence Alignment: multiple-sequence-alignment.md
+  - Publications: publications.md
+  - Multiple Sequence Alignment: multiple-sequence-alignment.md
+  - Searching: searching.md
   # - Protein Signature Search: protein-signature-search.md
   # - Protein Similarity Search: protein-similarity-search.md
-  # - Searching: searching.md
   # - Help: help.md
