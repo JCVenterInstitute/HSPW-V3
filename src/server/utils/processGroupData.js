@@ -1,11 +1,10 @@
 const axios = require("axios");
-const fs = require("fs");
-const path = require("path");
+const { getPresignUrl } = require("./s3Upload");
 
 const fetchProteinData = async (experimentIdKey) => {
   try {
     const response = await axios(
-      `http://localhost:8000/api/study-protein/${experimentIdKey}`
+      `${process.env.API_ENDPOINT}/api/study-protein/${experimentIdKey}`
     );
     return response.data.map((item) => item._source);
   } catch (error) {
@@ -66,32 +65,44 @@ const createCsvString = (data) => {
 
 exports.processGroupData = async (
   { groupAData, groupBData },
-  workingDirectory
+  timestamp,
+  formattedDate
 ) => {
   console.log("> Processing Group Data");
 
-  const { processedSamples: processedGroupA, proteinIds: proteinIdsA } =
-    await processSamples(groupAData, "A");
-  const { processedSamples: processedGroupB, proteinIds: proteinIdsB } =
-    await processSamples(groupBData, "B");
+  const { processedSamples: processedGroupA } = await processSamples(
+    groupAData,
+    "A"
+  );
+  const { processedSamples: processedGroupB } = await processSamples(
+    groupBData,
+    "B"
+  );
 
   const combinedData = [...processedGroupA, ...processedGroupB];
 
   // Create CSV string
   const csvString = createCsvString(combinedData);
 
-  // Save to file
-  const csvFilePath = path.join(workingDirectory, "inputdata.txt");
-  fs.writeFileSync(csvFilePath, csvString);
-  console.log(`Data saved to ${csvFilePath}`);
+  const contentType = "text/csv";
 
-  // Save protein lists
-  const list1FilePath = path.join(workingDirectory, "list1");
-  const list2FilePath = path.join(workingDirectory, "list2");
+  const { year, month, day } = timestamp;
 
-  fs.writeFileSync(list1FilePath, Array.from(proteinIdsA).sort().join("\n"));
-  fs.writeFileSync(list2FilePath, Array.from(proteinIdsB).sort().join("\n"));
+  const s3FileLocation = `jobs/${year}-${month}-${day}/differential-expression-${formattedDate}`;
 
-  console.log(`Protein list for Group A saved to ${list1FilePath}`);
-  console.log(`Protein list for Group B saved to ${list2FilePath}`);
+  const presignedUrl = await getPresignUrl({
+    bucketName: process.env.DIFFERENTIAL_S3_BUCKET,
+    s3Key: s3FileLocation,
+    contentType,
+  });
+
+  console.log("> Presigned URL", presignedUrl);
+
+  const response = await axios.put(presignedUrl, csvString, {
+    headers: {
+      "Content-Type": contentType,
+    },
+  });
+
+  return s3FileLocation;
 };

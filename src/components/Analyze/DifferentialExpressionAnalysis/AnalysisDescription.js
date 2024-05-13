@@ -15,6 +15,7 @@ const description = {
     "The data is stored as a table with one sample per row and one protein per column. The normalization consists of the following options:<br/>1. Row-wise procedures: Normalization by the sum<br/>2. Data transformation: Log transformation (base 10)<br/>3. Data scaling: Autoscaling (mean-centered and divided by standard deviation of each variable)<br/>The normalization page figure shows the effects before and after normalization.",
   "Result Data":
     "The result data page displays the merged output of the Statistical Parametric Test, Fold Change Analysis, and Volcano Plot into a single table file for a better understanding of the underlying results.",
+  "Random Forest": "Place Holder Text",
 };
 
 export default description;

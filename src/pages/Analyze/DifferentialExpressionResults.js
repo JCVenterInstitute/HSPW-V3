@@ -36,6 +36,7 @@ const DifferentialExpressionResults = () => {
     "Principal Component Analysis",
     "Venn-Diagram",
     "Normalization",
+    "Random Forest",
     "Input Data",
     "Result Data",
     "Download",
@@ -58,6 +59,12 @@ const DifferentialExpressionResults = () => {
     "Normalization-Data": "data_normalized.csv",
     "Input Data": "data_original.csv",
     "Result Data": "all_data.tsv",
+    "Random Forest": [
+      "rf_cls_0_dpi72.png",
+      "rf_imp_0_dpi72.png",
+      "rf_outlier_0_dpi72.png",
+    ],
+    "Random-Forest-Data": "randomforests_sigfeatures.csv",
   };
 
   const fileDownloadOption = {
@@ -76,59 +83,69 @@ const DifferentialExpressionResults = () => {
     "Normalization Plot": "norm_0_dpi72.png",
     "Normalization Data": "data_normalized.csv",
     "Input Data": "data_original.csv",
+    "Random Forest CLS": "rf_cls_0_dpi72.png",
+    "Random Forest IMP": "rf_imp_0_dpi72.png",
+    "Random Forest Outlier": "rf_outlier_0_dpi72.png",
     "Result Data": "all_data.tsv",
     "All Data Set": "data_set.zip",
   };
 
-  const handleAlignment = (event, newAlignment) => {
+  const handleAlignment = async (event, newAlignment) => {
     if (newAlignment !== null) {
       setAlignment(newAlignment);
       let fileName;
+
       if (selected === "Heatmap") {
         fileName =
           newAlignment === "left"
             ? optionFile["Heatmap"]
             : optionFile["HeatmapAll"];
-        fetchImage(jobId, fileName);
+        await fetchImage(jobId, fileName);
       } else if (selected === "Volcano Plot") {
         fileName =
           newAlignment === "left"
             ? optionFile["Volcano Plot"]
             : optionFile["Volcano-Data"];
-        fetchImage(jobId, fileName);
+        await fetchImage(jobId, fileName);
       } else if (selected === "Statistical Parametric Test") {
         fileName =
           newAlignment === "left"
             ? optionFile["Statistical Parametric Test"]
             : optionFile["Statistical-Parametric-Test-Data"];
-        fetchImage(jobId, fileName);
+        await fetchImage(jobId, fileName);
       } else if (selected === "Fold Change Analysis") {
         fileName =
           newAlignment === "left"
             ? optionFile["Fold Change Analysis"]
             : optionFile["FC-Data"];
-        fetchImage(jobId, fileName);
+        await fetchImage(jobId, fileName);
       } else if (selected === "Principal Component Analysis") {
         fileName =
           newAlignment === "left"
             ? optionFile["Principal Component Analysis"]
             : optionFile["PCA-Data"];
-        fetchImage(jobId, fileName);
+        await fetchImage(jobId, fileName);
       } else if (selected === "Venn-Diagram") {
         fileName =
           newAlignment === "left"
             ? optionFile["Venn-Diagram"]
             : optionFile["Venn-Diagram-Data"];
-        fetchImage(jobId, fileName);
+        await fetchImage(jobId, fileName);
       } else if (selected === "Normalization") {
         fileName =
           newAlignment === "left"
             ? optionFile["Normalization"]
             : optionFile["Normalization-Data"];
-        fetchImage(jobId, fileName);
+        await fetchImage(jobId, fileName);
+      } else if (selected === "Random Forest") {
+        fileName =
+          newAlignment === "left"
+            ? optionFile["Random Forest"]
+            : optionFile["Random-Forest-Data"];
+        await fetchImage(jobId, fileName);
       } else {
         fileName = null;
-        fetchImage(jobId, fileName);
+        await fetchImage(jobId, fileName);
       }
     }
   };
@@ -136,46 +153,74 @@ const DifferentialExpressionResults = () => {
   const handleSelect = (item) => {
     setAlignment("left"); // Reset the alignment
     setSelected(item);
-    fetchImage(jobId, optionFile[item]); // Fetch the image for the selected item
+    // fetchImage(jobId, optionFile[item]); // Fetch the image for the selected item
   };
 
-  const handleDataDownload = () => {
-    // Create a new anchor element
-    const link = document.createElement("a");
-    link.href = imageUrl;
+  const downloadImage = (url, index) => {
+    return new Promise((resolve, reject) => {
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `image_${index}`);
 
-    // Append the link to the body
-    document.body.appendChild(link);
+      link.addEventListener("click", () => {
+        document.body.removeChild(link);
+        resolve();
+      });
 
-    // Trigger a click event on the link
-    link.click();
+      document.body.appendChild(link);
+      link.click();
+    });
+  };
 
-    // Remove the link from the body
-    document.body.removeChild(link);
+  const handleDataDownload = async () => {
+    if (Array.isArray(imageUrl)) {
+      for (let i = 0; i < imageUrl.length; i++) {
+        await downloadImage(imageUrl[i], i);
+      }
+    } else {
+      const link = document.createElement("a");
+      link.href = imageUrl;
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   const handleDownload = async (jobId, fileName) => {
     try {
-      await axios
-        .get(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
-        )
-        .then((res) => {
-          const link = document.createElement("a");
-          link.href = res.data.url;
+      let index = 0;
+      let file = null;
 
-          // Set the download attribute to a default filename or based on the URL
-          link.download = fileName; // This will take the last part of the URL as a filename
+      do {
+        if (typeof fileName === Object) {
+          file = fileName[index];
+        } else {
+          file = fileName;
+        }
 
-          // Append the link to the body
-          document.body.appendChild(link);
+        await axios
+          .get(
+            `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${file}`
+          )
+          .then((res) => {
+            const link = document.createElement("a");
+            link.href = res.data.url;
 
-          // Trigger a click event on the link
-          link.click();
+            // Set the download attribute to a default filename or based on the URL
+            link.download = fileName; // This will take the last part of the URL as a filename
 
-          // Remove the link from the body
-          document.body.removeChild(link);
-        });
+            // Append the link to the body
+            document.body.appendChild(link);
+
+            // Trigger a click event on the link
+            link.click();
+
+            // Remove the link from the body
+            document.body.removeChild(link);
+          });
+        index++;
+      } while (typeof fileName === Object && fileName.length < index);
     } catch (error) {
       console.error("Error downloading file:", error);
     }
@@ -194,15 +239,31 @@ const DifferentialExpressionResults = () => {
   };
 
   const fetchImage = async (jobId, fileName) => {
+    let response = null;
     setIsLoading(true); // Start loading
+
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
-      );
+      if (typeof fileName === "string") {
+        response = await axios.get(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
+        );
+      } else {
+        response = await Promise.all(
+          fileName.map(async (file) => {
+            return await axios
+              .get(
+                `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${file}`
+              )
+              .then((res) => res.data.url);
+          })
+        );
+      }
+
       if (fileName === null) {
         setCsvData([]);
       } else if (
         fileName &&
+        typeof fileName === "string" &&
         (fileName.endsWith("csv") ||
           fileName.endsWith("tsv") ||
           fileName.endsWith("txt"))
@@ -210,10 +271,16 @@ const DifferentialExpressionResults = () => {
         const csvText = await axios
           .get(response.data.url)
           .then((res) => res.data);
+
         parseCSV(csvText);
         setImageUrl(response.data.url);
       } else {
-        setImageUrl(response.data.url); // Set the image URL
+        if (typeof fileName === "string") {
+          setImageUrl(response.data.url); // Set the image URL
+        } else {
+          const images = response;
+          setImageUrl(images); // Set the image URL
+        }
       }
     } catch (error) {
       console.error("Error downloading image:", error);
@@ -599,12 +666,28 @@ const DifferentialExpressionResults = () => {
                 </Container>
               </>
             ) : selected === "Heatmap" || alignment === "left" ? (
-              imageUrl && (
-                <img
-                  src={imageUrl}
-                  alt={selected}
-                  style={getImageStyle(selected)}
-                />
+              imageUrl && typeof imageUrl === "string" ? (
+                <>
+                  <img
+                    src={imageUrl}
+                    alt={selected}
+                    style={getImageStyle(selected)}
+                  />
+                </>
+              ) : (
+                <div style={{ display: "grid" }}>
+                  {imageUrl &&
+                    imageUrl.map((url, i) => {
+                      return (
+                        <img
+                          key={`random-forest-${i}`}
+                          src={url}
+                          alt={`${selected}-${i}`}
+                          style={getImageStyle(selected)}
+                        />
+                      );
+                    })}
+                </div>
               )
             ) : (
               (selected === "Volcano Plot" ||
@@ -612,7 +695,8 @@ const DifferentialExpressionResults = () => {
                 selected === "Fold Change Analysis" ||
                 selected === "Principal Component Analysis" ||
                 selected === "Venn-Diagram" ||
-                selected === "Normalization") &&
+                selected === "Normalization" ||
+                selected === "Random Forest") &&
               alignment === "right" && (
                 <Container sx={{ margin: "0px" }}>
                   <Box

@@ -1508,50 +1508,45 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
       formattedDate,
       workingDirectory,
     } = req.body;
-    const scriptPath = `${process.env.R_SCRIPT_PATH}`;
 
-    // Create the working directory and copy the R script
-    await fse.ensureDir(workingDirectory);
-    await processGroupData(req.body, workingDirectory);
-    await fse.copy(
-      path.join(scriptPath, process.env.R_SCRIPT_FILE_NAME),
-      path.join(workingDirectory, process.env.R_SCRIPT_FILE_NAME)
+    console.log(
+      `> Log Norm: ${logNorm}, Heatmap #: ${numberOfDifferentiallyAbundantProteinsInHeatmap}, Fold Threshold: ${foldChangeThreshold}, P Val Threshold: ${pValueThreshold}, P Value Type: ${pValueType}, Parametric Test: ${parametricTest}`
     );
-    // Execute the R script from the working directory
-    const command = `Rscript ${process.env.R_SCRIPT_FILE_NAME} ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType} ${parametricTest} ${numberOfDifferentiallyAbundantProteinsInHeatmap}`;
-    const { stdout } = await execPromise(command, {
-      cwd: workingDirectory,
+
+    const inputFile = await processGroupData(
+      req.body,
+      timestamp,
+      formattedDate
+    );
+
+    console.log("> Input file location", inputFile);
+
+    const command = `docker run --rm -v ~/.aws:/root/.aws diff_exp_local -i ${inputFile} -l ${logNorm} -f ${foldChangeThreshold} -p ${pValueThreshold} -r ${pValueType} -t ${parametricTest} -n ${numberOfDifferentiallyAbundantProteinsInHeatmap}`;
+
+    console.log("> Command", command);
+
+    const childProcess = exec(command, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.error(`stderr: ${stderr}`);
+        return;
+      }
+      console.log(`Output: ${stdout}`);
     });
 
-    if (parametricTest === "F") {
-      const renameCommand = "mv t_test.csv statistical_parametric_test.csv";
-      await execPromise(renameCommand, { cwd: workingDirectory });
-    } else {
-      const renameCommand =
-        "mv wilcox_rank.csv statistical_parametric_test.csv";
-      await execPromise(renameCommand, { cwd: workingDirectory });
-    }
-    // Compress the contents of the working directory
-    const compressCommand =
-      "zip -r data_set.zip volcano_0_dpi72.png volcano.csv heatmap_1_dpi72.png heatmap_0_dpi72.png tt_0_dpi72.png statistical_parametric_test.csv fc_0_dpi72.png fold_change.csv pca_score2d_0_dpi72.png pca_score.csv venn-dimensions.png venn_out_data.txt norm_0_dpi72.png data_normalized.csv data_original.csv all_data.tsv";
-    await execPromise(compressCommand, { cwd: workingDirectory });
-
-    // S3 upload parameters
-    const params = {
-      bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
-      s3KeyPrefix: `jobs/${timestamp.year}-${timestamp.month}-${timestamp.day}/differential-expression-${formattedDate}`,
-      contentType: "text/plain",
-      directoryPath: workingDirectory,
-    };
-    // Perform the s3 upload
-    await s3Upload(params);
-    console.log(`stdout:\n${stdout}`);
-    res.status(200).send(`Output: ${stdout}`);
+    childProcess.on("exit", (code, signal) => {
+      console.log(
+        `Child process exited with code ${code} and signal ${signal}`
+      );
+      res.status(200).send("Docker run complete");
+    });
   } catch (error) {
     console.error(`Error during file operations: ${error.message}`);
     res.status(500).send(`Server Error: ${error.message}`);
   }
-  // res.status(200).send("Good");
 });
 
 app.post("/api/differential-expression/analyze-file", async (req, res) => {
