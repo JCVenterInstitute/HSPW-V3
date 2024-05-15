@@ -15,7 +15,12 @@ const description = {
     "The data is stored as a table with one sample per row and one protein per column. The normalization consists of the following options:<br/>1. Row-wise procedures: Normalization by the sum<br/>2. Data transformation: Log transformation (base 10)<br/>3. Data scaling: Autoscaling (mean-centered and divided by standard deviation of each variable)<br/>The normalization page figure shows the effects before and after normalization.",
   "Result Data":
     "The result data page displays the merged output of the Statistical Parametric Test, Fold Change Analysis, and Volcano Plot into a single table file for a better understanding of the underlying results.",
-  "Random Forest": "Place Holder Text",
+  "Random Forest Class":
+    "The classification analysis using the random forest method indicated the presence of classification errors when employing up to 500 trees. The ultimate classification confusion matrix was derived from the utilization of 500 trees.",
+  "Random Forest Sig":
+    "Feature selection is based on the mean decrease in accuracy. The figure displays the top 15 proteins with the highest mean decrease in accuracy, along with a heatmap showing their abundance in both groups. Additionally, a table presents the mean decrease in accuracy for all proteins in a sorted format.",
+  "Random Forest Outlier":
+    "Outliers are depicted in the plot based on the outlying measures derived from the Random Forest classification model.",
 };
 
 export default description;

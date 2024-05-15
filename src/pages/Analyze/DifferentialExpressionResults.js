@@ -43,28 +43,29 @@ const DifferentialExpressionResults = () => {
   ];
 
   const optionFile = {
-    "Volcano Plot": "volcano_0_dpi72.png",
+    "Volcano Plot": "volcano_0_dpi150.png",
     "Volcano-Data": "volcano.csv",
-    Heatmap: "heatmap_1_dpi72.png",
-    HeatmapAll: "heatmap_0_dpi72.png",
-    "Statistical Parametric Test": "tt_0_dpi72.png",
+    Heatmap: "heatmap_1_dpi150.png",
+    HeatmapAll: "heatmap_0_dpi150.png",
+    "Statistical Parametric Test": "tt_0_dpi150.png",
     "Statistical-Parametric-Test-Data": "statistical_parametric_test.csv",
-    "Fold Change Analysis": "fc_0_dpi72.png",
+    "Fold Change Analysis": "fc_0_dpi150.png",
     "FC-Data": "fold_change.csv",
-    "Principal Component Analysis": "pca_score2d_0_dpi72.png",
+    "Principal Component Analysis": "pca_score2d_0_dpi150.png",
     "PCA-Data": "pca_score.csv",
     "Venn-Diagram": "venn-dimensions.png",
     "Venn-Diagram-Data": "venn_out_data.txt",
-    Normalization: "norm_0_dpi72.png",
+    Normalization: "norm_0_dpi150.png",
     "Normalization-Data": "data_normalized.csv",
     "Input Data": "data_original.csv",
     "Result Data": "all_data.tsv",
     "Random Forest": [
-      "rf_cls_0_dpi72.png",
-      "rf_imp_0_dpi72.png",
-      "rf_outlier_0_dpi72.png",
+      "rf_cls_0_dpi150.png",
+      "rf_imp_0_dpi150.png",
+      "rf_outlier_0_dpi150.png",
     ],
-    "Random-Forest-Data": "randomforests_sigfeatures.csv",
+    "Random-Forest-Sig": "randomforests_sigfeatures.csv",
+    "Random-Forest-Confusion": "randomforest_confusion.csv",
   };
 
   const fileDownloadOption = {
@@ -92,68 +93,62 @@ const DifferentialExpressionResults = () => {
 
   const handleAlignment = async (event, newAlignment) => {
     if (newAlignment !== null) {
+      const isAlignmentLeft = newAlignment === "left";
       setAlignment(newAlignment);
+      setCsvData([]);
       let fileName;
 
       if (selected === "Heatmap") {
-        fileName =
-          newAlignment === "left"
-            ? optionFile["Heatmap"]
-            : optionFile["HeatmapAll"];
-        await fetchImage(jobId, fileName);
+        fileName = isAlignmentLeft
+          ? optionFile["Heatmap"]
+          : optionFile["HeatmapAll"];
       } else if (selected === "Volcano Plot") {
-        fileName =
-          newAlignment === "left"
-            ? optionFile["Volcano Plot"]
-            : optionFile["Volcano-Data"];
-        await fetchImage(jobId, fileName);
+        fileName = isAlignmentLeft
+          ? optionFile["Volcano Plot"]
+          : optionFile["Volcano-Data"];
       } else if (selected === "Statistical Parametric Test") {
-        fileName =
-          newAlignment === "left"
-            ? optionFile["Statistical Parametric Test"]
-            : optionFile["Statistical-Parametric-Test-Data"];
-        await fetchImage(jobId, fileName);
+        fileName = isAlignmentLeft
+          ? optionFile["Statistical Parametric Test"]
+          : optionFile["Statistical-Parametric-Test-Data"];
       } else if (selected === "Fold Change Analysis") {
-        fileName =
-          newAlignment === "left"
-            ? optionFile["Fold Change Analysis"]
-            : optionFile["FC-Data"];
-        await fetchImage(jobId, fileName);
+        fileName = isAlignmentLeft
+          ? optionFile["Fold Change Analysis"]
+          : optionFile["FC-Data"];
       } else if (selected === "Principal Component Analysis") {
-        fileName =
-          newAlignment === "left"
-            ? optionFile["Principal Component Analysis"]
-            : optionFile["PCA-Data"];
-        await fetchImage(jobId, fileName);
+        fileName = isAlignmentLeft
+          ? optionFile["Principal Component Analysis"]
+          : optionFile["PCA-Data"];
       } else if (selected === "Venn-Diagram") {
-        fileName =
-          newAlignment === "left"
-            ? optionFile["Venn-Diagram"]
-            : optionFile["Venn-Diagram-Data"];
-        await fetchImage(jobId, fileName);
+        fileName = isAlignmentLeft
+          ? optionFile["Venn-Diagram"]
+          : optionFile["Venn-Diagram-Data"];
       } else if (selected === "Normalization") {
-        fileName =
-          newAlignment === "left"
-            ? optionFile["Normalization"]
-            : optionFile["Normalization-Data"];
-        await fetchImage(jobId, fileName);
+        fileName = isAlignmentLeft
+          ? optionFile["Normalization"]
+          : optionFile["Normalization-Data"];
       } else if (selected === "Random Forest") {
-        fileName =
-          newAlignment === "left"
-            ? optionFile["Random Forest"]
-            : optionFile["Random-Forest-Data"];
-        await fetchImage(jobId, fileName);
+        if (isAlignmentLeft) {
+          fileName = optionFile["Random Forest"][0];
+          await fetchCSV(jobId, "randomforest_confusion.csv");
+        } else if (newAlignment === "middle") {
+          fileName = optionFile["Random Forest"][1];
+          await fetchCSV(jobId, "randomforests_sigfeatures.csv");
+        } else if (newAlignment === "right") {
+          fileName = optionFile["Random Forest"][2];
+        }
       } else {
         fileName = null;
-        await fetchImage(jobId, fileName);
       }
+
+      await fetchImage(jobId, fileName);
     }
   };
 
   const handleSelect = (item) => {
     setAlignment("left"); // Reset the alignment
     setSelected(item);
-    // fetchImage(jobId, optionFile[item]); // Fetch the image for the selected item
+    // Fetch CSV data for first tab for random forest on first load
+    if (item === "Random Forest") fetchCSV(jobId, "randomforest_confusion.csv");
   };
 
   const downloadImage = (url, index) => {
@@ -173,18 +168,23 @@ const DifferentialExpressionResults = () => {
   };
 
   const handleDataDownload = async () => {
-    if (Array.isArray(imageUrl)) {
-      for (let i = 0; i < imageUrl.length; i++) {
-        await downloadImage(imageUrl[i], i);
+    const link = document.createElement("a");
+
+    if (selected === "Random Forest" && Array.isArray(imageUrl)) {
+      if (alignment === "right") {
+        link.href = imageUrl[2];
+      } else if (alignment === "left") {
+        link.href = imageUrl[0];
+      } else if (alignment === "middle") {
+        link.href = imageUrl[1];
       }
     } else {
-      const link = document.createElement("a");
       link.href = imageUrl;
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
     }
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleDownload = async (jobId, fileName) => {
@@ -238,6 +238,38 @@ const DifferentialExpressionResults = () => {
     return { maxWidth: "100%", maxHeight: "100%", height: "auto" };
   };
 
+  const fetchCSV = async (jobId, fileName) => {
+    let response = null;
+    setIsLoading(true); // Start loading
+
+    try {
+      response = await axios.get(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
+      );
+
+      if (fileName === null) {
+        setCsvData([]);
+      } else if (
+        fileName &&
+        typeof fileName === "string" &&
+        (fileName.endsWith("csv") ||
+          fileName.endsWith("tsv") ||
+          fileName.endsWith("txt"))
+      ) {
+        const csvText = await axios
+          .get(response.data.url)
+          .then((res) => res.data);
+
+        parseCSV(csvText);
+      }
+    } catch (error) {
+      console.error("Error downloading image:", error);
+      setImageUrl(""); // Reset the image URL on error
+    } finally {
+      setIsLoading(false); // Stop loading regardless of the outcome
+    }
+  };
+
   const fetchImage = async (jobId, fileName) => {
     let response = null;
     setIsLoading(true); // Start loading
@@ -279,7 +311,7 @@ const DifferentialExpressionResults = () => {
           setImageUrl(response.data.url); // Set the image URL
         } else {
           const images = response;
-          setImageUrl(images); // Set the image URL
+          setImageUrl([...images]); // Set the image URL
         }
       }
     } catch (error) {
@@ -333,7 +365,7 @@ const DifferentialExpressionResults = () => {
 
   useEffect(() => {
     fetchImage(jobId, optionFile[selected]); // Fetch the image on component mount
-  }, [jobId, selected]); // Add 'selected' as a dependency
+  }, [jobId, selected, alignment]); // Add 'selected' as a dependency
 
   const breadcrumbPath = [
     { path: "Home", link: "/" },
@@ -452,6 +484,40 @@ const DifferentialExpressionResults = () => {
                     )} SAMPLES`}</ToggleButton>
                     <ToggleButton value="right">ALL SAMPLES</ToggleButton>
                   </ToggleButtonGroup>
+                ) : selected === "Random Forest" ? (
+                  <ToggleButtonGroup
+                    value={alignment}
+                    exclusive
+                    onChange={handleAlignment}
+                    sx={{
+                      backgroundColor: "#EBEBEB",
+                      borderRadius: "16px",
+                      "& .MuiToggleButtonGroup-grouped": {
+                        margin: "7px 5px",
+                        border: "none",
+                        padding: "8px 12px",
+                        fontFamily: "Montserrat",
+                        borderRadius: "16px !important",
+                        "&.Mui-selected": {
+                          backgroundColor: "#1463B9",
+                          color: "white",
+                          "&:hover": {
+                            backgroundColor: "#6B9AC4",
+                          },
+                        },
+                        "&:not(.Mui-selected)": {
+                          color: "#1463B9",
+                          "&:hover": {
+                            backgroundColor: "#BBD1E9",
+                          },
+                        },
+                      },
+                    }}
+                  >
+                    <ToggleButton value="left">Classification</ToggleButton>
+                    <ToggleButton value="middle">Feature</ToggleButton>
+                    <ToggleButton value="right">Outlier</ToggleButton>
+                  </ToggleButtonGroup>
                 ) : (
                   selected !== "Result Data" &&
                   selected !== "Input Data" &&
@@ -510,7 +576,7 @@ const DifferentialExpressionResults = () => {
             </Box>
           </Box>
           <Typography sx={{ fontFamily: "Lato", mt: 2, ml: 1 }}>
-            {AnalysisDescription[selected] && (
+            {selected !== "Random Forest" && AnalysisDescription[selected] && (
               <span
                 dangerouslySetInnerHTML={{
                   __html: AnalysisDescription[selected].replaceAll(
@@ -520,6 +586,13 @@ const DifferentialExpressionResults = () => {
                 }}
               ></span>
             )}
+            {selected === "Random Forest"
+              ? alignment === "right"
+                ? AnalysisDescription["Random Forest Outlier"]
+                : alignment === "left"
+                ? AnalysisDescription["Random Forest Class"]
+                : AnalysisDescription["Random Forest Sig"]
+              : null}
           </Typography>
           <Box
             sx={{
@@ -665,7 +738,8 @@ const DifferentialExpressionResults = () => {
                   </Box>
                 </Container>
               </>
-            ) : selected === "Heatmap" || alignment === "left" ? (
+            ) : selected === "Heatmap" ||
+              (selected !== "Random Forest" && alignment === "left") ? (
               imageUrl && typeof imageUrl === "string" ? (
                 <>
                   <img
@@ -674,29 +748,45 @@ const DifferentialExpressionResults = () => {
                     style={getImageStyle(selected)}
                   />
                 </>
-              ) : (
-                <div style={{ display: "grid" }}>
-                  {imageUrl &&
-                    imageUrl.map((url, i) => {
-                      return (
-                        <img
-                          key={`random-forest-${i}`}
-                          src={url}
-                          alt={`${selected}-${i}`}
-                          style={getImageStyle(selected)}
-                        />
-                      );
-                    })}
-                </div>
-              )
+              ) : null
+            ) : selected === "Random Forest" ? (
+              <Box sx={{ display: "grid" }}>
+                <img
+                  src={
+                    Array.isArray(imageUrl)
+                      ? imageUrl[
+                          alignment === "left"
+                            ? 0
+                            : alignment === "right"
+                            ? 2
+                            : 1
+                        ]
+                      : imageUrl
+                  }
+                  alt={`${selected}-${alignment}`}
+                  style={getImageStyle(selected)}
+                />
+                {alignment === "left" ||
+                (alignment === "middle" && csvData.length !== 0) ? (
+                  // Display CSV Data for first to Random Forest Tabs
+                  <Box
+                    sx={{
+                      overflowX: "auto", // Enable horizontal scrolling
+                      width: "100%",
+                      paddingTop: "25px",
+                    }}
+                  >
+                    <CSVDataTable data={csvData} />
+                  </Box>
+                ) : null}
+              </Box>
             ) : (
               (selected === "Volcano Plot" ||
                 selected === "Statistical Parametric Test" ||
                 selected === "Fold Change Analysis" ||
                 selected === "Principal Component Analysis" ||
                 selected === "Venn-Diagram" ||
-                selected === "Normalization" ||
-                selected === "Random Forest") &&
+                selected === "Normalization") &&
               alignment === "right" && (
                 <Container sx={{ margin: "0px" }}>
                   <Box
