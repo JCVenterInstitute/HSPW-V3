@@ -151,22 +151,6 @@ const DifferentialExpressionResults = () => {
     if (item === "Random Forest") fetchCSV(jobId, "randomforest_confusion.csv");
   };
 
-  const downloadImage = (url, index) => {
-    return new Promise((resolve, reject) => {
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `image_${index}`);
-
-      link.addEventListener("click", () => {
-        document.body.removeChild(link);
-        resolve();
-      });
-
-      document.body.appendChild(link);
-      link.click();
-    });
-  };
-
   const handleDataDownload = async () => {
     const link = document.createElement("a");
 
@@ -795,7 +779,10 @@ const DifferentialExpressionResults = () => {
                       width: "100%",
                     }}
                   >
-                    <CSVDataTable data={csvData} />
+                    <CSVDataTable
+                      data={csvData}
+                      selected={selected}
+                    />
                   </Box>
                 </Container>
               )
