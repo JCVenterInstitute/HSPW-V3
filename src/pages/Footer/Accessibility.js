@@ -1,10 +1,21 @@
 import { Container, Typography } from "@mui/material";
 
 import MainFeature from "../../assets/hero.jpeg";
+import { Helmet } from "react-helmet";
+import BreadCrumb from "../../components/Breadcrumbs";
 
 const AccessibilityPage = () => {
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Accessibility" },
+  ];
+
   return (
     <>
+      <Helmet>
+        <title>HSP | Accessibility</title>
+      </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

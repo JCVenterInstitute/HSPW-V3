@@ -8,6 +8,8 @@ import {
 import FontAwesome from "react-fontawesome";
 
 import MainFeature from "../../assets/hero.jpeg";
+import BreadCrumb from "../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 const sections = [
   "Notice",
@@ -18,8 +20,14 @@ const sections = [
 ];
 
 const DisclaimerPage = () => {
+  const breadcrumbPath = [{ path: "Home", link: "/" }, { path: "Disclaimer" }];
+
   return (
     <>
+      <Helmet>
+        <title>HSP | Disclaimer</title>
+      </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

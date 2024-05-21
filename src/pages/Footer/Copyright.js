@@ -8,12 +8,20 @@ import {
 import FontAwesome from "react-fontawesome";
 
 import MainFeature from "../../assets/hero.jpeg";
+import BreadCrumb from "../../components/Breadcrumbs";
+import { Helmet } from "react-helmet";
 
 const sections = ["Citation Guidelines", "Contacting Us"];
 
 const CopyrightPage = () => {
+  const breadcrumbPath = [{ path: "Home", link: "/" }, { path: "Copyright" }];
+
   return (
     <>
+      <Helmet>
+        <title>HSP | Copyright</title>
+      </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,
