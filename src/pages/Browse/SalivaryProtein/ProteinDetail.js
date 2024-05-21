@@ -161,12 +161,11 @@ const ProteinDetail = (props) => {
             Protein: {data[0]["_source"]["salivary_proteins"]["protein_name"]}
           </h1>
           <p className="head_text">
-            Altername Names:{" "}
-            {
-              data[0]["_source"]["salivary_proteins"][
-                "protein_alternate_names"
-              ][0]
-            }
+            {data[0]["_source"]["salivary_proteins"][
+              "protein_alternate_names"
+            ][0]
+              ? `Alternate Names: ${data[0]["_source"]["salivary_proteins"]["protein_alternate_names"]}`
+              : ""}
           </p>
         </Container>
       </div>
@@ -355,14 +354,18 @@ const ProteinDetail = (props) => {
                   >
                     {data[0]["_source"]["salivary_proteins"][
                       "primary_gene_names"
-                    ].map((child, i) => (
-                      <React.Fragment key={i}>
-                        <span style={{ color: "black" }}>
-                          {i + 1}. {child}
-                        </span>
-                        <br></br>
-                      </React.Fragment>
-                    ))}
+                    ].length !== 0
+                      ? data[0]["_source"]["salivary_proteins"][
+                          "primary_gene_names"
+                        ].map((child, i) => (
+                          <React.Fragment key={i}>
+                            <span style={{ color: "black" }}>
+                              {i + 1}. {child}
+                            </span>
+                            <br></br>
+                          </React.Fragment>
+                        ))
+                      : "Not data"}
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -592,21 +595,29 @@ const ProteinDetail = (props) => {
               margin: "40px 0",
             }}
           ></div>
-          <h2
-            style={{
-              color: "black",
-              marginBottom: "24px",
-              fontWeight: "bold",
-              fontFamily: "Lato",
-              marginTop: "10px",
-            }}
-            id="comments"
-          >
-            Comments
-          </h2>
-          <CommentTable
-            data={data[0]["_source"]["salivary_proteins"]["annotations"]}
-          />
+
+          {data[0]["_source"]["salivary_proteins"]["annotations"] &&
+          data[0]["_source"]["salivary_proteins"]["annotations"][0]
+            .annotation_description.length !== 0 ? (
+            <>
+              <h2
+                style={{
+                  color: "black",
+                  marginBottom: "24px",
+                  fontWeight: "bold",
+                  fontFamily: "Lato",
+                  marginTop: "10px",
+                }}
+                id="comments"
+              >
+                Comments
+              </h2>
+              <CommentTable
+                data={data[0]["_source"]["salivary_proteins"]["annotations"]}
+              />
+            </>
+          ) : null}
+
           <div
             style={{
               height: "3px",
