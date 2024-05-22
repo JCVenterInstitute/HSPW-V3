@@ -70,6 +70,9 @@ exports.processGroupData = async (
 ) => {
   console.log("> Processing Group Data");
 
+  console.log("> Group A", groupAData);
+  console.log("> Group B", groupBData);
+
   const { processedSamples: processedGroupA } = await processSamples(
     groupAData,
     "A"
@@ -83,6 +86,8 @@ exports.processGroupData = async (
 
   // Create CSV string
   const csvString = createCsvString(combinedData);
+
+  console.log("> CSV String", csvString);
 
   const contentType = "text/csv";
 

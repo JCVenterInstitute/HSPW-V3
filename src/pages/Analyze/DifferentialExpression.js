@@ -815,6 +815,9 @@ const DifferentialExpression = () => {
             }, 3000);
           });
       } else {
+        console.log("> Group A", groupARowData);
+        console.log("> Group B", groupBRowData);
+
         await axios
           .post(
             `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze`,
