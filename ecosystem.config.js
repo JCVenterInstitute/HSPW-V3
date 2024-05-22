@@ -29,6 +29,7 @@ module.exports = {
         INDEX_STUDY_PEPTIDE_ABUNDANCE: "study_peptide_abundance_020124",
         OS_HOSTNAME:
           "https://search-hspw-dev2-dmdd32xae4fmxh7t4g6skv67aa.us-east-2.es.amazonaws.com",
+        API_ENDPOINT: "http://localhost:8000",
       },
       env_prod: {
         DEPLOY_ENV: "prod",
@@ -54,6 +55,7 @@ module.exports = {
         INDEX_STUDY_PEPTIDE_ABUNDANCE: "study_peptide_abundance",
         OS_HOSTNAME:
           "https://search-hspw-prod-y77jqnl5zklvuwu3k66anbowhi.us-east-2.es.amazonaws.com",
+        API_ENDPOINT: "http://localhost:8000",
       },
     },
   ],
