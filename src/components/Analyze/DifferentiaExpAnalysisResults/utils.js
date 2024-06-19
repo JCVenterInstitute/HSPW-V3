@@ -87,9 +87,9 @@ export const getImageStyle = (selectedItem) => {
 };
 
 /**
- *
- * @param {*} jobId
- * @param {*} fileName
+ * Returns the csv data & the download link for the file
+ * @param {*} jobId Id of analysis submission job, used to help locate s3 file
+ * @param {*} fileName Name of the s3 file
  */
 export const fetchCSV = async (jobId, fileName) => {
   try {
@@ -99,7 +99,7 @@ export const fetchCSV = async (jobId, fileName) => {
 
     const csvText = await axios.get(response.data.url).then((res) => res.data);
 
-    return parseCSV(csvText);
+    return { data: parseCSV(csvText), downloadUrl: response.data.url };
   } catch (error) {
     console.error("Error fetching csv:", error);
   }

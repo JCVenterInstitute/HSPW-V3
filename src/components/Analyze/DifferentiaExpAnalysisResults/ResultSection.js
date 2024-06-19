@@ -19,6 +19,7 @@ const DataSection = ({
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [csvData, setCsvData] = useState(null);
+  const [image, setImage] = useState(null);
 
   const style = {
     dataBox: {
@@ -58,9 +59,18 @@ const DataSection = ({
   // Get CSV data for Data Matrix Tabs
   useEffect(() => {
     const getCsvData = async () => {
+      console.log("> Get CSV Data");
+      console.log("> selectedSection", selectedSection);
+      console.log("> Tab", tab);
+
       if (tab === "Data Matrix") {
-        const data = await fetchCSV(jobId, fileMapping[selectedSection][tab]);
+        const { data, downloadUrl } = await fetchCSV(
+          jobId,
+          fileMapping[selectedSection][tab]
+        );
+
         setCsvData(data);
+        setImageUrl(downloadUrl);
       }
     };
 
@@ -82,13 +92,8 @@ const DataSection = ({
       let response = await axios.get(
         `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
       );
-
-      if (typeof fileName === "string") {
-        setImageUrl(response.data.url); // Set the image URL
-      } else {
-        const images = response;
-        setImageUrl([...images]); // Set the image URL
-      }
+      setImageUrl(response.data.url); // Set the image URL
+      setImage(response.data.url);
     } catch (error) {
       console.error("Error downloading image:", error);
       setImageUrl(""); // Reset the image URL on error
@@ -180,7 +185,7 @@ const DataSection = ({
   if (displayResult === null) {
     displayResult = (
       <img
-        src={imageUrl}
+        src={image}
         alt={selectedSection}
         style={getImageStyle(selectedSection)}
       />

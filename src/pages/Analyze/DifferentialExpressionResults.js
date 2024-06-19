@@ -9,7 +9,7 @@ import ResultSection from "../../components/Analyze/DifferentiaExpAnalysisResult
 import { option } from "../../components/Analyze/DifferentiaExpAnalysisResults/Constants";
 
 const DifferentialExpressionResults = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const { jobId } = useParams();
   const [selectedSection, setSelectedSection] = useState("Volcano Plot");
   const [tab, setTab] = useState("Visualization");
@@ -26,7 +26,6 @@ const DifferentialExpressionResults = () => {
   ];
 
   const handleTabChange = async (event, newTab) => {
-    console.log("> Setting new tab", newTab);
     setTab(newTab);
   };
 
