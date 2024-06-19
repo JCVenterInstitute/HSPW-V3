@@ -1,5 +1,6 @@
 import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useEffect } from "react";
+import { getTabOptions } from "./utils";
 
 const TabOptions = ({
   tab,
@@ -43,80 +44,15 @@ const TabOptions = ({
 
   // When selecting a new section, go back to first tab of that section
   useEffect(() => {
-    const tabOptions = getTabOptions(selectedSection);
+    const tabOptions = getTabOptions(selectedSection, numbOfTopVolcanoSamples);
     setTab(tabOptions ? tabOptions[0] : null);
   }, [selectedSection]);
 
-  /**
-   * Get the list of tabs for the selected section result section
-   * @returns String array of tabs for the current selected section
-   */
-  const getTabOptions = () => {
-    let tabOptions;
-
-    switch (selectedSection) {
-      case "Heatmap":
-        tabOptions = [`Top ${numbOfTopVolcanoSamples} Samples`, "All Samples"];
-        break;
-      case "Random Forest":
-        tabOptions = ["Classification", "Feature", "Outlier"];
-        break;
-      case "Volcano Plot":
-      case "Statistical Parametric Test":
-      case "Fold Change Analysis":
-      case "Principal Component Analysis":
-      case "Venn-Diagram":
-      case "Normalization":
-        tabOptions = ["Visualization", "Data Matrix"];
-        break;
-      case "GO Biological Process":
-        tabOptions = [
-          "placeholder1",
-          "placeholder2",
-          "placeholder3",
-          "placeholder4",
-          "placeholder5",
-        ];
-        break;
-      case "GO Molecular Function":
-        tabOptions = [
-          "placeholder1",
-          "placeholder2",
-          "placeholder3",
-          "placeholder4",
-          "placeholder5",
-        ];
-        break;
-      case "GO Cellular Component":
-        tabOptions = [
-          "placeholder1",
-          "placeholder2",
-          "placeholder3",
-          "placeholder4",
-          "placeholder5",
-        ];
-        break;
-      case "KEGG Pathway/Module":
-        tabOptions = [
-          "placeholder1",
-          "placeholder2",
-          "placeholder3",
-          "placeholder4",
-          "placeholder5",
-        ];
-        break;
-      default:
-        tabOptions = null;
-    }
-
-    return tabOptions;
-  };
-
   const createTabGroup = (selectedSection) => {
-    let tabOptions = getTabOptions(selectedSection);
+    let tabOptions = getTabOptions(selectedSection, numbOfTopVolcanoSamples);
 
     // No tab options for this menu item
-    if (tabOptions === null) return null;
+    if (!tabOptions) return null;
 
     const tabButtons = tabOptions.map((tab, i) => {
       return (

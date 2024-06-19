@@ -1,0 +1,84 @@
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from "@mui/material";
+
+const CsvTable = ({ data, selected }) => {
+  const style = {
+    cellStyle: {
+      backgroundColor: "#1463B9",
+      color: "white",
+      fontFamily: "Montserrat",
+      fontSize: "17px",
+      fontWeight: "bold",
+      borderRight: "1px solid #3592E4",
+      "&:first-of-type": {
+        borderTopLeftRadius: "16px",
+        borderLeft: "none",
+        borderTop: "none",
+      },
+      "&:last-of-type": {
+        borderTopRightRadius: "16px",
+        borderRight: "none",
+        borderTop: "none",
+      },
+    },
+  };
+
+  const headers = data.length > 0 ? Object.keys(data[0]) : [];
+
+  return (
+    <>
+      {data.length === 0 ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "40vh",
+          }}
+        >
+          <p style={{ fontSize: "25px" }}>
+            {selected === "Statistical Parametric Test"
+              ? "0 significant features were found."
+              : "No data available."}
+          </p>
+        </div>
+      ) : (
+        <Table>
+          <TableHead>
+            <TableRow>
+              {headers.map((header, index) => (
+                <TableCell
+                  key={index}
+                  sx={style.cellStyle}
+                >
+                  {header}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.map((row, index) => (
+              <TableRow key={index}>
+                {headers.map((header, columnIndex) => (
+                  <TableCell
+                    key={columnIndex}
+                    sx={{ fontSize: "15px", border: "1px solid #CACACA" }}
+                  >
+                    {row[header]}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+    </>
+  );
+};
+
+export default CsvTable;
