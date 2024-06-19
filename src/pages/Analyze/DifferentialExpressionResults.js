@@ -18,6 +18,7 @@ import AnalysisDescription from "../../components/Analyze/DifferentialExpression
 import AnalysisOptionsTable from "../../components/Analyze/DifferentialExpressionAnalysis/AnalysisOptionsTable";
 import { Helmet } from "react-helmet";
 import BreadCrumb from "../../components/Breadcrumbs";
+import VolcanoPlot from "../../components/VolcanoPlot/VolcanoPlot";
 
 const DifferentialExpressionResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -27,6 +28,7 @@ const DifferentialExpressionResults = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [csvData, setCsvData] = useState([]);
+  const [csvUrl, setCsvUrl] = useState("");
 
   const option = [
     "Volcano Plot",
@@ -43,7 +45,7 @@ const DifferentialExpressionResults = () => {
   ];
 
   const optionFile = {
-    "Volcano Plot": "volcano_0_dpi150.png",
+    "Volcano Plot": "volcano.csv",
     "Volcano-Data": "volcano.csv",
     Heatmap: "heatmap_1_dpi150.png",
     HeatmapAll: "heatmap_0_dpi150.png",
@@ -103,9 +105,7 @@ const DifferentialExpressionResults = () => {
           ? optionFile["Heatmap"]
           : optionFile["HeatmapAll"];
       } else if (selected === "Volcano Plot") {
-        fileName = isAlignmentLeft
-          ? optionFile["Volcano Plot"]
-          : optionFile["Volcano-Data"];
+        fileName = optionFile["Volcano-Data"];
       } else if (selected === "Statistical Parametric Test") {
         fileName = isAlignmentLeft
           ? optionFile["Statistical Parametric Test"]
@@ -230,7 +230,6 @@ const DifferentialExpressionResults = () => {
       response = await axios.get(
         `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
       );
-
       if (fileName === null) {
         setCsvData([]);
       } else if (
@@ -287,7 +286,10 @@ const DifferentialExpressionResults = () => {
         const csvText = await axios
           .get(response.data.url)
           .then((res) => res.data);
-
+        setCsvUrl(
+          URL.createObjectURL(new Blob([csvText], { type: "text/csv" }))
+        );
+        console.log("URL = " + csvUrl);
         parseCSV(csvText);
         setImageUrl(response.data.url);
       } else {
@@ -426,10 +428,7 @@ const DifferentialExpressionResults = () => {
             ))}
           </Box>
         </Box>
-        <Container
-          maxWidth="xl"
-          sx={{ margin: "30px 0 30px 20px" }}
-        >
+        <Container maxWidth="xl" sx={{ margin: "30px 0 30px 20px" }}>
           <Box sx={{ display: "flex" }}>
             <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
               <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -550,10 +549,7 @@ const DifferentialExpressionResults = () => {
               }}
             >
               {selected !== "Download" && (
-                <Button
-                  variant="contained"
-                  onClick={handleDataDownload}
-                >
+                <Button variant="contained" onClick={handleDataDownload}>
                   Download
                 </Button>
               )}
@@ -618,15 +614,8 @@ const DifferentialExpressionResults = () => {
                     padding: "25px",
                   }}
                 >
-                  <Grid
-                    container
-                    spacing={2}
-                  >
-                    <Grid
-                      item
-                      xs={12}
-                      key="downloadAll"
-                    >
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} key="downloadAll">
                       <Box sx={{ ml: 3 }}>
                         <Button
                           onClick={() => handleDownload(jobId, "data_set.zip")}
@@ -651,11 +640,7 @@ const DifferentialExpressionResults = () => {
                     {Object.entries(fileDownloadOption).map(
                       ([key, fileName]) => {
                         return fileName !== "data_set.zip" ? (
-                          <Grid
-                            item
-                            xs={6}
-                            key={key}
-                          >
+                          <Grid item xs={6} key={key}>
                             <Box sx={{ ml: 3 }}>
                               <Button
                                 onClick={() => handleDownload(jobId, fileName)}
@@ -699,10 +684,7 @@ const DifferentialExpressionResults = () => {
             ) : selected === "Input Data" ? (
               <>
                 <Container sx={{ margin: "0px" }}>
-                  <Typography
-                    variant="h5"
-                    sx={{ fontFamily: "Lato" }}
-                  >
+                  <Typography variant="h5" sx={{ fontFamily: "Lato" }}>
                     Analysis Options:
                   </Typography>
                   <AnalysisOptionsTable searchParams={searchParams} />
@@ -725,13 +707,23 @@ const DifferentialExpressionResults = () => {
             ) : selected === "Heatmap" ||
               (selected !== "Random Forest" && alignment === "left") ? (
               imageUrl && typeof imageUrl === "string" ? (
-                <>
-                  <img
+                <div>
+                  {/* <img
                     src={imageUrl}
                     alt={selected}
                     style={getImageStyle(selected)}
+                  /> */}
+                  <VolcanoPlot
+                    data={csvUrl}
+                    pval={0.05}
+                    foldChange={2}
+                    xCol={2}
+                    yCol={4}
+                    details={["p.value", "Fold.Change"]}
+                    xlabel="Log2(FC)"
+                    ylabel="-Log10(p)"
                   />
-                </>
+                </div>
               ) : null
             ) : selected === "Random Forest" ? (
               <Box sx={{ display: "grid" }}>
@@ -779,10 +771,7 @@ const DifferentialExpressionResults = () => {
                       width: "100%",
                     }}
                   >
-                    <CSVDataTable
-                      data={csvData}
-                      selected={selected}
-                    />
+                    <CSVDataTable data={csvData} selected={selected} />
                   </Box>
                 </Container>
               )
