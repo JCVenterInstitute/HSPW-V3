@@ -36,6 +36,7 @@ const VolcanoPlot = ({
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
+    svg.node().addEventListener("wheel", (event) => event.preventDefault());
     // Defining the clip path to restrict drawing within the chart area
     svg
       .append("defs")
