@@ -5,6 +5,7 @@ import TabDescription from "./TabDescription";
 import TabOptions from "./TabOptions";
 import ResultDownload from "./ResultDownload";
 import CSVDataTable from "../../../pages/Analyze/CSVDataTable";
+import VolcanoPlot from "../VolcanoPlot/VolcanoPlot";
 import axios from "axios";
 import { fetchCSV, getImageStyle } from "./utils";
 import { fileMapping } from "./Constants";
@@ -20,7 +21,7 @@ const DataSection = ({
   const [isLoading, setIsLoading] = useState(true);
   const [csvData, setCsvData] = useState(null);
   const [image, setImage] = useState(null);
-  const [csvUrl, setCsvUrl] = useState("");
+  const [tsvUrl, setTsvUrl] = useState("");
 
   const style = {
     dataBox: {
@@ -58,6 +59,24 @@ const DataSection = ({
     );
   }, [selectedSection, tab]);
 
+  // Get all_data.tsv for d3 plots
+  useEffect(() => {
+    const getTsvData = async () => {
+      const { data, downloadUrl, textUrl } = await fetchCSV(
+        jobId,
+        "all_data.tsv"
+      );
+
+      setTsvUrl(textUrl);
+    };
+
+    try {
+      getTsvData();
+    } catch (err) {
+      console.log("> TSV Data Load Error", err);
+    }
+  }, []);
+
   // Get CSV data for Data Matrix Tabs
   useEffect(() => {
     const getCsvData = async () => {
@@ -69,7 +88,6 @@ const DataSection = ({
 
         setCsvData(data);
         setImageUrl(downloadUrl);
-        setCsvUrl(textUrl);
       }
     };
 
@@ -120,7 +138,18 @@ const DataSection = ({
 
   switch (selectedSection) {
     case "Volcano Plot":
-      displayResult = null;
+      displayResult = (
+        <VolcanoPlot
+          data={tsvUrl}
+          pval={0.05}
+          foldChange={2}
+          xCol={1}
+          yCol={2}
+          details={["raw.pval", "FC"]}
+          xlabel="Log2(FC)"
+          ylabel="-Log10(p)"
+        />
+      );
       break;
     case "Heatmap":
       displayResult = null;

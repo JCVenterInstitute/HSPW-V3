@@ -1,7 +1,8 @@
 // File mapping of sections > tab > file to display
 export const fileMapping = {
   "Volcano Plot": {
-    Visualization: "volcano_0_dpi150.png",
+    // Visualization: "volcano_0_dpi150.png",
+    Visualization: "volcano.csv",
     "Data Matrix": "volcano.csv",
   },
   Heatmap: {
