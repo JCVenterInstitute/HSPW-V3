@@ -719,7 +719,7 @@ const DifferentialExpressionResults = () => {
                     foldChange={2}
                     xCol={2}
                     yCol={4}
-                    details={["p.value", "Fold.Change"]}
+                    details={["raw.pval", "FC"]}
                     xlabel="Log2(FC)"
                     ylabel="-Log10(p)"
                   />
