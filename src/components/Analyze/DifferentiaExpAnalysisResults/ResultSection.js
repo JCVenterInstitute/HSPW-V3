@@ -37,6 +37,7 @@ const DataSection = ({
 
     setIsLoading(true);
     setImageUrl(null);
+    setImage(null);
 
     // No file to display
     if (fileMapping[selectedSection] === undefined) return;
@@ -59,10 +60,6 @@ const DataSection = ({
   // Get CSV data for Data Matrix Tabs
   useEffect(() => {
     const getCsvData = async () => {
-      console.log("> Get CSV Data");
-      console.log("> selectedSection", selectedSection);
-      console.log("> Tab", tab);
-
       if (tab === "Data Matrix") {
         const { data, downloadUrl } = await fetchCSV(
           jobId,
