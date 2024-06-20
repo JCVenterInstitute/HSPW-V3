@@ -4,6 +4,7 @@ import * as d3 from "d3";
 
 const VolcanoPlot = ({
   data = "",
+  extension = "csv",
   foldChange = 2,
   pval = 0.05,
   xCol = 3,
@@ -14,8 +15,8 @@ const VolcanoPlot = ({
 }) => {
   let event;
   console.log(data);
-  pval = -Math.log(10) / Math.log(pval);
-  foldChange = Math.log(2) / Math.log(foldChange);
+  pval = -Math.log10(pval);
+  foldChange = Math.log2(foldChange);
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -50,7 +51,6 @@ const VolcanoPlot = ({
     const tooltip = d3.select("body").append("div").attr("class", "tooltip");
 
     const loadData = () => {
-      const extension = data.split(".").pop().toLowerCase();
       if (extension === "tsv") {
         return d3.tsv(data, parser);
       }

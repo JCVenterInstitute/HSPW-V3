@@ -141,11 +141,12 @@ const DataSection = ({
       displayResult = (
         <VolcanoPlot
           data={tsvUrl}
-          pval={0.05}
-          foldChange={2}
-          xCol={1}
-          yCol={2}
-          details={["raw.pval", "FC"]}
+          extension={"tsv"}
+          pval={1}
+          foldChange={1}
+          xCol={8}
+          yCol={5}
+          details={["p.value", "Fold.Change"]}
           xlabel="Log2(FC)"
           ylabel="-Log10(p)"
         />
