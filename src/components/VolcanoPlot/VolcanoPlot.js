@@ -328,7 +328,7 @@ const VolcanoPlot = ({
     <div
       ref={chartRef}
       id="chart"
-      style={{ width: "1400px", height: "800px" }}
+      style={{ width: "1000px", height: "800px" }}
     ></div>
   );
 };
