@@ -20,6 +20,7 @@ const DataSection = ({
   const [isLoading, setIsLoading] = useState(true);
   const [csvData, setCsvData] = useState(null);
   const [image, setImage] = useState(null);
+  const [csvUrl, setCsvUrl] = useState("");
 
   const style = {
     dataBox: {
@@ -61,13 +62,14 @@ const DataSection = ({
   useEffect(() => {
     const getCsvData = async () => {
       if (tab === "Data Matrix") {
-        const { data, downloadUrl } = await fetchCSV(
+        const { data, downloadUrl, textUrl } = await fetchCSV(
           jobId,
           fileMapping[selectedSection][tab]
         );
 
         setCsvData(data);
         setImageUrl(downloadUrl);
+        setCsvUrl(textUrl);
       }
     };
 
@@ -170,10 +172,7 @@ const DataSection = ({
             width: "100%",
           }}
         >
-          <CSVDataTable
-            data={csvData}
-            selectedSection={selectedSection}
-          />
+          <CSVDataTable data={csvData} selectedSection={selectedSection} />
         </Box>
       </Container>
     );
