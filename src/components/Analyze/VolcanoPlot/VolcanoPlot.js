@@ -14,6 +14,7 @@ const VolcanoPlot = ({
   ylabel = "",
 }) => {
   let event;
+  let handleKeyDown;
   console.log(data);
   pval = -Math.log10(pval);
   foldChange = Math.log2(foldChange);
@@ -243,6 +244,17 @@ const VolcanoPlot = ({
           );
       }
 
+      function handleKeyDown(event) {
+        if (event.key === "ArrowUp") {
+          svg.call(zoom.scaleBy, 1.1);
+        }
+        if (event.key === "ArrowDown") {
+          svg.call(zoom.scaleBy, 0.9);
+        }
+      }
+
+      window.addEventListener("keydown", handleKeyDown);
+
       // Function that dynamically creates a tooltip for a circle
       function tooltipDetails(d) {
         var output = `<strong>Primary Accession</strong>: ${d[datakeys[0]]}`;
@@ -321,6 +333,7 @@ const VolcanoPlot = ({
     return () => {
       d3.select(chartRef.current).selectAll("*").remove();
       tooltip.remove();
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
 
