@@ -45,13 +45,10 @@ const DifferentialExpressionResults = () => {
           option={option}
           setSelectedSection={setSelectedSection}
         />
-        <Container
-          maxWidth="xl"
-          sx={{ margin: "30px 0 30px 20px" }}
-        >
+        <Container maxWidth="xl" sx={{ margin: "30px 0 30px 20px" }}>
           <ResultSection
             selectedSection={selectedSection}
-            numbOfTopVolcanoSamples={searchParams.get("heatmap")}
+            searchParams={searchParams}
             jobId={jobId}
           />
         </Container>

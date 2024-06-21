@@ -101,6 +101,7 @@ export const fetchCSV = async (jobId, fileName) => {
     return {
       data: parseCSV(csvText),
       downloadUrl: response.data.url,
+      textUrl: URL.createObjectURL(new Blob([csvText], { type: "text/csv" })),
     };
   } catch (error) {
     console.error("Error fetching csv:", error);

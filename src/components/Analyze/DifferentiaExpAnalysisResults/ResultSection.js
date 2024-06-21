@@ -8,7 +8,7 @@ import { getFileUrl } from "./utils";
 import DataSection from "./DataSection";
 import { Box, CircularProgress } from "@mui/material";
 
-const ResultSection = ({ selectedSection, numbOfTopVolcanoSamples, jobId }) => {
+const ResultSection = ({ selectedSection, searchParams, jobId }) => {
   const [tab, setTab] = useState("Visualization");
   const [files, setFiles] = useState({});
   const [allData, setAllData] = useState(null);
@@ -71,11 +71,11 @@ const ResultSection = ({ selectedSection, numbOfTopVolcanoSamples, jobId }) => {
   useEffect(() => {
     fetchFiles(selectedSection, jobId);
   }, [selectedSection]);
-
+  console.log(searchParams.get("heatmap"));
   return (
     <>
       <TabOptions
-        numbOfTopVolcanoSamples={numbOfTopVolcanoSamples}
+        numbOfTopVolcanoSamples={searchParams.get("heatmap")}
         selectedSection={selectedSection}
         setTab={setTab}
         jobId={jobId}
@@ -84,7 +84,7 @@ const ResultSection = ({ selectedSection, numbOfTopVolcanoSamples, jobId }) => {
       <TabDescription
         tab={tab}
         selectedSection={selectedSection}
-        numbOfTopVolcanoSamples={numbOfTopVolcanoSamples}
+        numbOfTopVolcanoSamples={searchParams.get("heatmap")}
       />
       {isLoading ? (
         <Box
@@ -104,6 +104,7 @@ const ResultSection = ({ selectedSection, numbOfTopVolcanoSamples, jobId }) => {
           files={files}
           jobId={jobId}
           tab={tab}
+          searchParams={searchParams}
         />
       )}
     </>
