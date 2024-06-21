@@ -1,14 +1,14 @@
 import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useEffect } from "react";
-import { getTabOptions } from "./utils";
+import { getTabOptions, handleDownload } from "./utils";
+import { fileMapping } from "./Constants";
 
 const TabOptions = ({
   tab,
   selectedSection,
-  handleTabChange,
-  handleDataDownload,
-  numbOfTopVolcanoSamples,
   setTab,
+  numbOfTopVolcanoSamples,
+  jobId,
 }) => {
   const style = {
     tabStyle: {
@@ -69,7 +69,7 @@ const TabOptions = ({
       <ToggleButtonGroup
         value={tab}
         exclusive
-        onChange={handleTabChange}
+        onChange={(e) => setTab(e.target.value)}
         sx={{ ...style.tabStyle, marginTop: "10px" }}
       >
         {tabButtons}
@@ -91,7 +91,9 @@ const TabOptions = ({
         <Box sx={style.downloadButton}>
           <Button
             variant="contained"
-            onClick={handleDataDownload}
+            onClick={() =>
+              handleDownload(jobId, fileMapping[selectedSection][tab])
+            }
           >
             Download
           </Button>

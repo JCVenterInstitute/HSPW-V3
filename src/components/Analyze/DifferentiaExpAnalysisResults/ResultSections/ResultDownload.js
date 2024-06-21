@@ -1,6 +1,7 @@
 import { Box, Button, Grid, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
-import { downloadMapping } from "./Constants";
+
+import { downloadMapping } from "../Constants";
 
 const ResultDownload = ({ handleDownload, jobId }) => {
   const style = {

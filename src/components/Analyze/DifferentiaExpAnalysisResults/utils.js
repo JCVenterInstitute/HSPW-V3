@@ -1,5 +1,5 @@
 import axios from "axios";
-import { sectionToTabs } from "./Constants";
+import { fileMapping, sectionToTabs } from "./Constants";
 
 /**
  * Get the list of tabs for the selected section result section
@@ -22,9 +22,9 @@ export const getTabOptions = (selectedSection, numbOfTopVolcanoSamples) => {
 };
 
 /**
- *
- * @param {*} csvText
- * @param {*} selectedSection
+ * Parses the csv string
+ * @param {string} csvText CSV String
+ * @param {string} selectedSection Current section selected by user
  * @returns
  */
 export const parseCSV = (csvText, selectedSection) => {
@@ -69,9 +69,8 @@ export const parseCSV = (csvText, selectedSection) => {
 };
 
 /**
- *
- * @param {*} selectedItem
- * @returns
+ * Fet the relevant style needed for the image depending on selected section
+ * @param {string} selectedItem Current section selected by user
  */
 export const getImageStyle = (selectedItem) => {
   if (selectedItem === "Venn-Diagram") {
@@ -102,9 +101,57 @@ export const fetchCSV = async (jobId, fileName) => {
     return {
       data: parseCSV(csvText),
       downloadUrl: response.data.url,
-      textUrl: URL.createObjectURL(new Blob([csvText], { type: "text/csv" })),
     };
   } catch (error) {
     console.error("Error fetching csv:", error);
+  }
+};
+
+export const fetchData = async (url) => {
+  try {
+    let csv = await axios.get(url).then((res) => res.data);
+
+    return {
+      data: parseCSV(csv),
+    };
+  } catch (error) {
+    console.error("Error fetching csv:", error);
+  }
+};
+
+/**
+ * Download the specified file from the submission
+ * @param {string} jobId Id of analysis submission job
+ * @param {string} fileName Name of file from the submission to download
+ */
+export const handleDownload = async (jobId, fileName) => {
+  try {
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
+    );
+    const link = document.createElement("a");
+    link.href = res.data.url;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error("Error downloading file:", error);
+  }
+};
+
+/**
+ * Get s3 link for a file from the submission
+ * @param {string} jobId Id of analysis submission job
+ * @param {string} fileName Name of file to get file url
+ * @returns
+ */
+export const getFileUrl = async (jobId, fileName) => {
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
+    );
+    return response.data.url;
+  } catch (error) {
+    console.error("Error getting file url:", error);
   }
 };
