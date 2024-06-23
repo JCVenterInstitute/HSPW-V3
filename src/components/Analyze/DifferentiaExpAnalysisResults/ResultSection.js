@@ -8,7 +8,7 @@ import { getFileUrl } from "./utils";
 import DataSection from "./DataSection";
 import { Box, CircularProgress } from "@mui/material";
 
-const ResultSection = ({ selectedSection, numbOfTopVolcanoSamples, jobId }) => {
+const ResultSection = ({ selectedSection, jobId, numbOfTopVolcanoSamples }) => {
   const [tab, setTab] = useState("Visualization");
   const [files, setFiles] = useState({});
   const [allData, setAllData] = useState(null);

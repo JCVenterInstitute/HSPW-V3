@@ -1,7 +1,7 @@
 import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useEffect } from "react";
-import { getTabOptions, handleDownload } from "./utils";
-import { fileMapping } from "./Constants";
+import { handleDownload } from "./utils";
+import { fileMapping, sectionToTabs } from "./Constants";
 
 const TabOptions = ({
   tab,
@@ -44,23 +44,31 @@ const TabOptions = ({
 
   // When selecting a new section, go back to first tab of that section
   useEffect(() => {
-    const tabOptions = getTabOptions(selectedSection, numbOfTopVolcanoSamples);
+    const tabOptions = sectionToTabs[selectedSection];
     setTab(tabOptions ? tabOptions[0] : null);
   }, [selectedSection]);
 
   const createTabGroup = (selectedSection) => {
-    let tabOptions = getTabOptions(selectedSection, numbOfTopVolcanoSamples);
+    let tabOptions = sectionToTabs[selectedSection];
 
     // No tab options for this menu item
     if (!tabOptions) return null;
 
     const tabButtons = tabOptions.map((tab, i) => {
+      let label = tab;
+
+      // For Heatmap, update tab based on user input param for top samples
+      if (tab === "Top Samples") {
+        const tok = tab.split(" ");
+        label = `${tok[0]} ${numbOfTopVolcanoSamples} ${tok[1]}`;
+      }
+
       return (
         <ToggleButton
           key={`${selectedSection}-tab-${i}`}
           value={tab}
         >
-          {tab}
+          {label}
         </ToggleButton>
       );
     });

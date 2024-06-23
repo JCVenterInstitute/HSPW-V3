@@ -52,6 +52,7 @@ const DifferentialExpressionResults = () => {
           <ResultSection
             selectedSection={selectedSection}
             numbOfTopVolcanoSamples={searchParams.get("heatmap")}
+            searchParams={searchParams}
             jobId={jobId}
           />
         </Container>

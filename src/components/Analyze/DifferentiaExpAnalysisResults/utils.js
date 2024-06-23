@@ -1,25 +1,4 @@
 import axios from "axios";
-import { fileMapping, sectionToTabs } from "./Constants";
-
-/**
- * Get the list of tabs for the selected section result section
- * @returns String array of tabs for the current selected section
- */
-export const getTabOptions = (selectedSection, numbOfTopVolcanoSamples) => {
-  let options = sectionToTabs[selectedSection];
-
-  // Heatmap's first tab depends on param user enters so update placeholder text
-  if (selectedSection === "Heatmap") {
-    const topX = options[0].replace(
-      "<-numbOfTopVolcanoSamples->",
-      numbOfTopVolcanoSamples
-    );
-
-    options[0] = topX;
-  }
-
-  return options;
-};
 
 /**
  * Parses the csv string

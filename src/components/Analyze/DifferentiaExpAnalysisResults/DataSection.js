@@ -2,23 +2,22 @@ import { Box, Container } from "@mui/material";
 import { useEffect, useState } from "react";
 
 import ResultDownload from "./ResultSections/ResultDownload";
-
 import { fetchData, getImageStyle, handleDownload } from "./utils";
 import CsvTable from "./CsvTable";
+
+const style = {
+  dataBox: {
+    marginTop: "40px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "auto",
+  },
+};
 
 const DataSection = ({ selectedSection, tab, files, allData, jobId }) => {
   const [image, setImage] = useState(null);
   const [data, setData] = useState(null);
-
-  const style = {
-    dataBox: {
-      marginTop: "40px",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      height: "auto",
-    },
-  };
 
   const getDataFile = async () => {
     const { data } = await fetchData(files["Data Matrix"]);
@@ -26,11 +25,23 @@ const DataSection = ({ selectedSection, tab, files, allData, jobId }) => {
   };
 
   useEffect(() => {
-    if (tab === "Data Matrix") {
+    if (tab === null) return;
+
+    if (tab && tab === "Data Matrix") {
       getDataFile(null);
-    } else {
+    } else if (
+      (tab && tab === "Visualization") ||
+      tab.includes("Top") ||
+      tab.includes("All")
+    ) {
+      let imageLink = files["Visualization"];
+
+      // Handle Heatmap tabs
+      if (tab.startsWith("Top")) imageLink = files["Top Samples"];
+      if (tab.startsWith("All")) imageLink = files["All Samples"];
+
       setData(null);
-      setImage(files["Visualization"]);
+      setImage(imageLink);
     }
   }, [tab]);
 
@@ -73,6 +84,23 @@ const DataSection = ({ selectedSection, tab, files, allData, jobId }) => {
         break;
       case "KEGG Pathway/Module":
         displayResult = null;
+        break;
+      case "Input Data":
+        displayResult = (
+          <Container sx={{ margin: "0px" }}>
+            <Box
+              sx={{
+                overflowX: "auto", // Enable horizontal scrolling
+                width: "100%",
+              }}
+            >
+              <CsvTable
+                data={data}
+                selectedSection={selectedSection}
+              />
+            </Box>
+          </Container>
+        );
         break;
       case "Download":
         displayResult = (

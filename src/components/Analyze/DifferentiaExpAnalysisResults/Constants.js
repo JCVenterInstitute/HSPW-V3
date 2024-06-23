@@ -43,7 +43,7 @@ export const fileMapping = {
 
 // Mapping of tabs for each section of results page
 export const sectionToTabs = {
-  Heatmap: [`Top <-numbOfTopVolcanoSamples-> Samples`, "All Samples"],
+  Heatmap: [`Top Samples`, "All Samples"],
   "Random Forest": ["Classification", "Feature", "Outlier"],
   "Volcano Plot": ["Visualization", "Data Matrix"],
   "Statistical Parametric Test": ["Visualization", "Data Matrix"],
