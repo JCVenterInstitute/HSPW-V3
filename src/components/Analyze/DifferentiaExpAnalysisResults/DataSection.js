@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ResultDownload from "./ResultSections/ResultDownload";
 import { fetchData, getImageStyle, handleDownload } from "./utils";
 import CsvTable from "./CsvTable";
+import VolcanoPlot from "../VolcanoPlot/VolcanoPlot";
 
 const style = {
   dataBox: {
@@ -15,7 +16,14 @@ const style = {
   },
 };
 
-const DataSection = ({ selectedSection, tab, files, allData, jobId }) => {
+const DataSection = ({
+  selectedSection,
+  tab,
+  files,
+  allData,
+  jobId,
+  searchParams,
+}) => {
   const [image, setImage] = useState(null);
   const [data, setData] = useState(null);
 
@@ -47,10 +55,25 @@ const DataSection = ({ selectedSection, tab, files, allData, jobId }) => {
 
   const getSection = () => {
     let displayResult = null;
-
+    console.log(searchParams);
     switch (selectedSection) {
       case "Volcano Plot":
-        displayResult = null;
+        if (allData) {
+          displayResult = (
+            <VolcanoPlot
+              data={allData["textUrl"]}
+              extension="tsv"
+              pval={searchParams.get("pValue")}
+              foldChange={searchParams.get("foldChange")}
+              xCol={8}
+              yCol={5}
+              details={["p.value", "Fold.Change"]}
+              xlabel="Log2(FC)"
+              ylabel="Log10(p)"
+            />
+          );
+        }
+
         break;
       case "Heatmap":
         displayResult = null;

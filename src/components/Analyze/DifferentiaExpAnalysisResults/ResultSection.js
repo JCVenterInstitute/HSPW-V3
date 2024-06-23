@@ -71,11 +71,11 @@ const ResultSection = ({ selectedSection, jobId, numbOfTopVolcanoSamples }) => {
   useEffect(() => {
     fetchFiles(selectedSection, jobId);
   }, [selectedSection]);
-
+  console.log(searchParams.get("heatmap"));
   return (
     <>
       <TabOptions
-        numbOfTopVolcanoSamples={numbOfTopVolcanoSamples}
+        numbOfTopVolcanoSamples={searchParams.get("heatmap")}
         selectedSection={selectedSection}
         setTab={setTab}
         jobId={jobId}
@@ -84,7 +84,7 @@ const ResultSection = ({ selectedSection, jobId, numbOfTopVolcanoSamples }) => {
       <TabDescription
         tab={tab}
         selectedSection={selectedSection}
-        numbOfTopVolcanoSamples={numbOfTopVolcanoSamples}
+        numbOfTopVolcanoSamples={searchParams.get("heatmap")}
       />
       {isLoading ? (
         <Box
@@ -104,6 +104,7 @@ const ResultSection = ({ selectedSection, jobId, numbOfTopVolcanoSamples }) => {
           files={files}
           jobId={jobId}
           tab={tab}
+          searchParams={searchParams}
         />
       )}
     </>
