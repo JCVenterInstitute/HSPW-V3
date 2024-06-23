@@ -8,12 +8,7 @@ import { getFileUrl } from "./utils";
 import DataSection from "./DataSection";
 import { Box, CircularProgress } from "@mui/material";
 
-const ResultSection = ({
-  selectedSection,
-  jobId,
-  numbOfTopVolcanoSamples,
-  searchParams,
-}) => {
+const ResultSection = ({ selectedSection, jobId, searchParams }) => {
   const [tab, setTab] = useState("Visualization");
   const [files, setFiles] = useState({});
   const [allData, setAllData] = useState(null);
@@ -52,16 +47,23 @@ const ResultSection = ({
    * @param {string} jobId Id of analysis submission job
    */
   const fetchFiles = async (selectedSection, jobId) => {
+    const mappedSectionFiles = fileMapping[selectedSection];
+
+    // No files to fetch
+    if (mappedSectionFiles === undefined || mappedSectionFiles === null) return;
+
     try {
       setIsLoading(true);
-      const files = {};
+      let files = {};
 
-      for (const [tabName, fileName] of Object.entries(
-        fileMapping[selectedSection]
-      )) {
-        const fileUrl = await getFileUrl(jobId, fileName);
+      if (typeof mappedSectionFiles === "string") {
+        files = await getFileUrl(jobId, mappedSectionFiles);
+      } else {
+        for (const [tabName, fileName] of Object.entries(mappedSectionFiles)) {
+          const fileUrl = await getFileUrl(jobId, fileName);
 
-        files[tabName] = fileUrl;
+          files[tabName] = fileUrl;
+        }
       }
 
       setFiles(files);
@@ -76,7 +78,7 @@ const ResultSection = ({
   useEffect(() => {
     fetchFiles(selectedSection, jobId);
   }, [selectedSection]);
-  console.log(searchParams.get("heatmap"));
+
   return (
     <>
       <TabOptions

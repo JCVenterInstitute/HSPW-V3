@@ -55,7 +55,7 @@ const DataSection = ({
 
   const getSection = () => {
     let displayResult = null;
-    console.log(searchParams);
+
     switch (selectedSection) {
       case "Volcano Plot":
         if (allData) {
@@ -108,7 +108,7 @@ const DataSection = ({
       case "KEGG Pathway/Module":
         displayResult = null;
         break;
-      case "Input Data":
+      case "Result Data":
         displayResult = (
           <Container sx={{ margin: "0px" }}>
             <Box
@@ -118,7 +118,7 @@ const DataSection = ({
               }}
             >
               <CsvTable
-                data={data}
+                data={allData.data}
                 selectedSection={selectedSection}
               />
             </Box>

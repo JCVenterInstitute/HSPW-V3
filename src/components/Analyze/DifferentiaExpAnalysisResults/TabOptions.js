@@ -100,7 +100,12 @@ const TabOptions = ({
           <Button
             variant="contained"
             onClick={() =>
-              handleDownload(jobId, fileMapping[selectedSection][tab])
+              handleDownload(
+                jobId,
+                tab !== null
+                  ? fileMapping[selectedSection][tab]
+                  : fileMapping[selectedSection]
+              )
             }
           >
             Download
