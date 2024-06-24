@@ -1,6 +1,7 @@
 import "./volcanoplot.css";
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
+import { ThreeMpTwoTone } from "@mui/icons-material";
 
 const VolcanoPlot = ({
   data = "",
@@ -145,24 +146,25 @@ const VolcanoPlot = ({
       const thresholdLines = svg.append("g").attr("class", "thresholdLines");
 
       // add horizontal lines at y= pval
-      thresholdLines
-        .append("svg:line")
-        .attr("class", "threshold")
-        .attr("x1", 0)
-        .attr("x2", innerWidth)
-        .attr("y1", yScale(pval))
-        .attr("y2", yScale(pval));
-
-      // add vertical lines at x = -foldChange, foldChange
-      [-foldChange, foldChange].forEach(function (threshold) {
+      [pval, 0].forEach(function (threshold) {
         thresholdLines
           .append("svg:line")
-          .attr("class", "threshold")
+          .attr("class", threshold === 0 ? "threshold bold" : "threshold")
+          .attr("x1", 0)
+          .attr("x2", innerWidth)
+          .attr("y1", yScale(threshold))
+          .attr("y2", yScale(threshold));
+      });
+
+      // add vertical lines at x = -foldChange, foldChange
+      [-foldChange, foldChange, 0].forEach(function (threshold) {
+        thresholdLines
+          .append("svg:line")
+          .attr("class", threshold === 0 ? "threshold bold" : "threshold")
           .attr("x1", xScale(threshold))
           .attr("x2", xScale(threshold))
           .attr("y1", 0)
           .attr("y2", innerHeight);
-        console.log(threshold);
       });
 
       // bounds points to clip path
@@ -217,16 +219,24 @@ const VolcanoPlot = ({
 
       function zoomFunction(event) {
         const transform = event.transform;
+
         svg
           .selectAll(".dot")
           .attr("transform", transform)
           .attr("r", 4 / Math.sqrt(transform.k));
+
         gX.call(xAxis.scale(transform.rescaleX(xScale)));
         gY.call(yAxis.scale(transform.rescaleY(yScale)));
+
         svg
           .selectAll(".threshold")
           .attr("transform", transform)
-          .attr("stroke-width", 1 / transform.k);
+          .attr("stroke-width", 1 / transform.k)
+          .attr("stroke-dasharray", function () {
+            const length = 5 / transform.k;
+            return `${length},${length}`;
+          });
+
         svg
           .select(".x.grid")
           .call(
@@ -237,6 +247,7 @@ const VolcanoPlot = ({
               .tickFormat("")
               .scale(transform.rescaleX(xScale))
           );
+
         svg
           .select(".y.grid")
           .call(
@@ -250,6 +261,9 @@ const VolcanoPlot = ({
       }
 
       function handleKeyDown(event) {
+        if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+          event.preventDefault();
+        }
         if (event.key === "ArrowUp") {
           svg.call(zoom.scaleBy, 1.1);
         }
@@ -305,7 +319,7 @@ const VolcanoPlot = ({
       const legend = selection
         .append("g")
         .attr("class", "legend")
-        .attr("transform", "translate(20, 20)");
+        .attr("transform", "translate(20, 40)");
 
       const legendItems = Object.keys(legendDict).map((key) => ({
         key,
@@ -351,8 +365,10 @@ const VolcanoPlot = ({
   };
 
   return (
-    <div ref={chartRef} id="chart" style={{ width: "100%", height: "100%" }}>
-      <button onClick={resetZoom}>Reset Zoom</button>
+    <div ref={chartRef} id="chart" className="volcano">
+      <button onClick={resetZoom} className="reset-button">
+        Reset Zoom
+      </button>
     </div>
   );
 };
