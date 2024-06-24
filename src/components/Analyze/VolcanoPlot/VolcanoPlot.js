@@ -18,7 +18,9 @@ const VolcanoPlot = ({
   console.log(data);
   pval = -Math.log10(pval);
   foldChange = Math.log2(foldChange);
-  const chartRef = useRef(null);
+  const chartRef = useRef(null),
+    svgRef = useRef(null),
+    zoomRef = useRef(null);
 
   useEffect(() => {
     const SVGwidth = chartRef.current.offsetWidth * 0.8;
@@ -37,6 +39,8 @@ const VolcanoPlot = ({
       .attr("height", SVGheight)
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    svgRef.current = svg;
 
     svg.node().addEventListener("wheel", (event) => event.preventDefault());
     // Defining the clip path to restrict drawing within the chart area
@@ -209,6 +213,7 @@ const VolcanoPlot = ({
         .on("zoom", zoomFunction);
 
       svg.call(zoom);
+      zoomRef.current = zoom;
 
       function zoomFunction(event) {
         const transform = event.transform;
@@ -337,12 +342,18 @@ const VolcanoPlot = ({
     };
   }, []);
 
+  const resetZoom = () => {
+    if (svgRef.current && zoomRef.current) {
+      const svg = svgRef.current,
+        zoom = zoomRef.current;
+      svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+    }
+  };
+
   return (
-    <div
-      ref={chartRef}
-      id="chart"
-      style={{ width: "1000px", height: "800px" }}
-    ></div>
+    <div ref={chartRef} id="chart" style={{ width: "100%", height: "100%" }}>
+      <button onClick={resetZoom}>Reset Zoom</button>
+    </div>
   );
 };
 
