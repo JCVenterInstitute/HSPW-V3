@@ -153,7 +153,8 @@ const VolcanoPlot = ({
           .attr("x1", 0)
           .attr("x2", innerWidth)
           .attr("y1", yScale(threshold))
-          .attr("y2", yScale(threshold));
+          .attr("y2", yScale(threshold))
+          .attr("stroke-dasharray", threshold === 0 ? "none" : "5, 5");
       });
 
       // add vertical lines at x = -foldChange, foldChange
@@ -164,7 +165,8 @@ const VolcanoPlot = ({
           .attr("x1", xScale(threshold))
           .attr("x2", xScale(threshold))
           .attr("y1", 0)
-          .attr("y2", innerHeight);
+          .attr("y2", innerHeight)
+          .attr("stroke-dasharray", threshold === 0 ? "none" : "5, 5");
       });
 
       // bounds points to clip path
