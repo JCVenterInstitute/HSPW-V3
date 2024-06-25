@@ -1,6 +1,6 @@
 import "./volcanoplot.css";
 import React, { useEffect, useRef } from "react";
-import * as d3 from "d3";
+import * as d3 from "d3v7";
 import { ThreeMpTwoTone } from "@mui/icons-material";
 
 const VolcanoPlot = ({
