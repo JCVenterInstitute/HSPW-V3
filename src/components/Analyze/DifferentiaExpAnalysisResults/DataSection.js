@@ -36,7 +36,7 @@ const DataSection = ({
     if (tab === null) return;
 
     if (tab && tab === "Data Matrix") {
-      getDataFile(null);
+      getDataFile();
     } else if (
       (tab && tab === "Visualization") ||
       tab.includes("Top") ||
@@ -55,10 +55,11 @@ const DataSection = ({
 
   const getSection = () => {
     let displayResult = null;
+    let isPngTab = true;
 
     switch (selectedSection) {
       case "Volcano Plot":
-        if (allData) {
+        if (allData && tab !== "Data Matrix") {
           displayResult = (
             <VolcanoPlot
               data={allData["textUrl"]}
@@ -72,6 +73,9 @@ const DataSection = ({
               ylabel="Log10(p)"
             />
           );
+        } else {
+          displayResult = null;
+          isPngTab = false;
         }
 
         break;
@@ -117,20 +121,14 @@ const DataSection = ({
                 width: "100%",
               }}
             >
-              <CsvTable
-                data={allData.data}
-                selectedSection={selectedSection}
-              />
+              <CsvTable data={allData.data} selectedSection={selectedSection} />
             </Box>
           </Container>
         );
         break;
       case "Download":
         displayResult = (
-          <ResultDownload
-            jobId={jobId}
-            handleDownload={handleDownload}
-          />
+          <ResultDownload jobId={jobId} handleDownload={handleDownload} />
         );
         break;
       default:
@@ -138,7 +136,7 @@ const DataSection = ({
     }
 
     if (displayResult === null) {
-      if (data === null) {
+      if (data === null && isPngTab === true) {
         displayResult = (
           <img
             src={image}
@@ -146,7 +144,7 @@ const DataSection = ({
             style={getImageStyle(selectedSection)}
           />
         );
-      } else {
+      } else if (data) {
         displayResult = (
           <Container sx={{ margin: "0px" }}>
             <Box
@@ -155,10 +153,7 @@ const DataSection = ({
                 width: "100%",
               }}
             >
-              <CsvTable
-                data={data}
-                selectedSection={selectedSection}
-              />
+              <CsvTable data={data} selectedSection={selectedSection} />
             </Box>
           </Container>
         );
