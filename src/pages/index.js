@@ -114,24 +114,24 @@ class Home extends React.Component {
                         src="https://www.linkedin.com/embed/feed/update/urn:li:share:7171986524798984192"
                         height="780"
                         width="340"
-                        frameborder="0"
-                        allowfullscreen=""
+                        frameBorder="0"
+                        allowFullScreen=""
                         title="Embedded post"
                       ></iframe>
                       <iframe
                         src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7171010609839370240"
                         height="1560"
                         width="340"
-                        frameborder="0"
-                        allowfullscreen=""
+                        frameBorder="0"
+                        allowFullScreen=""
                         title="Embedded post"
                       ></iframe>
                       <iframe
                         src="https://www.linkedin.com/embed/feed/update/urn:li:share:7166890619200598016"
                         height="460"
                         width="340"
-                        frameborder="0"
-                        allowfullscreen=""
+                        frameBorder="0"
+                        allowFullScreen=""
                         title="Embedded post"
                       ></iframe>
                       <iframe
@@ -234,10 +234,7 @@ class Home extends React.Component {
             <title>HSP | Home</title>
           </Helmet>
           <StyledEngineProvider injectFirst>
-            <div
-              id="application"
-              data-layout={page.layout}
-            >
+            <div id="application" data-layout={page.layout}>
               <section style={{ backgroundColor: "#e6eeaf" }}>
                 <Container
                   maxWidth="xl"
@@ -270,11 +267,7 @@ class Home extends React.Component {
                   borderRadius: "16px",
                 }}
               >
-                <Grid
-                  container
-                  spacing={2}
-                  sx={{ marginY: "12px" }}
-                >
+                <Grid container spacing={2} sx={{ marginY: "12px" }}>
                   {page.basicCards.map((props, i) => {
                     return (
                       <Grid
