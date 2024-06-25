@@ -32,7 +32,6 @@ body {
 .dot {
   /*pointer-events: all;*/
   fill: #727272;
-  stroke: none;
   opacity: 0.6;
   &.sig {
     fill: red;

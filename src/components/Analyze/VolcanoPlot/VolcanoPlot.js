@@ -14,9 +14,7 @@ const VolcanoPlot = ({
   xlabel = "",
   ylabel = "",
 }) => {
-  let event;
   let handleKeyDown;
-  console.log(data);
   pval = -Math.log10(pval);
   foldChange = Math.log2(foldChange);
   const chartRef = useRef(null),
@@ -29,8 +27,6 @@ const VolcanoPlot = ({
     const margin = { top: 20, right: 20, bottom: 40, left: 50 };
     const innerWidth = SVGwidth - margin.left - margin.right;
     const innerHeight = SVGheight - margin.top - margin.bottom;
-
-    console.log("innerHeight: " + innerHeight);
 
     // Creating the SVG container
     const svg = d3
@@ -65,7 +61,6 @@ const VolcanoPlot = ({
 
     // Loading and parsing given data
     loadData().then((data) => {
-      // console.log(data.split(".").pop().toLowerCase());
       console.log(data);
       var datakeys = Object.keys(data[0]),
         xValKey = datakeys[xCol],
@@ -74,7 +69,6 @@ const VolcanoPlot = ({
       // Determine the dynamic scales based on the data
       const xExtent = d3.extent(data, (d) => d[xValKey] * 1.1);
       const yExtent = d3.extent(data, (d) => d[yValKey] * 1.25);
-      console.log(datakeys);
 
       const xScale = d3
         .scaleLinear()
@@ -181,6 +175,8 @@ const VolcanoPlot = ({
         .attr("r", 4)
         .attr("cx", (d) => xScale(d[xValKey]))
         .attr("cy", (d) => yScale(d[yValKey]))
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
         .on("mouseenter", function (event, d) {
           tooltip.style("visibility", "visible").html(tooltipDetails(d));
         })
@@ -227,7 +223,8 @@ const VolcanoPlot = ({
         svg
           .selectAll(".dot")
           .attr("transform", transform)
-          .attr("r", 4 / Math.sqrt(transform.k));
+          .attr("r", 4 / transform.k)
+          .attr("stroke-width", 1 / transform.k);
 
         gX.call(xAxis.scale(transform.rescaleX(xScale)));
         gY.call(yAxis.scale(transform.rescaleY(yScale)));
@@ -269,10 +266,10 @@ const VolcanoPlot = ({
           event.preventDefault();
         }
         if (event.key === "ArrowUp") {
-          svg.call(zoom.scaleBy, 1.1);
+          svg.transition().duration(100).call(zoom.scaleBy, 1.1);
         }
         if (event.key === "ArrowDown") {
-          svg.call(zoom.scaleBy, 0.9);
+          svg.transition().duration(100).call(zoom.scaleBy, 0.9);
         }
       }
 
