@@ -125,7 +125,9 @@ function specificityComponent(props) {
         ...commonStyles,
       }}
     >
-      <span style={{ textAlign: "center" }}>{value}</span>
+      <span style={{ textAlign: "center" }}>
+        {value ? parseFloat(value).toFixed(2) : value}
+      </span>
     </div>
   );
 }
@@ -395,7 +397,7 @@ const SalivaryProteinTable = () => {
       checkboxSelection: false,
       headerCheckboxSelection: false,
       wrapText: true,
-      minWidth: 115,
+      minWidth: 105,
       cellStyle: { wordBreak: "break-word" },
       cellClass: ["table-border", "salivary-protein-cell"],
       cellRenderer: "proteinLinkComponent",
@@ -511,6 +513,33 @@ const SalivaryProteinTable = () => {
         },
       ],
     },
+    {
+      headerName: "mRNA Large",
+      headerGroupComponent: CustomHeaderGroup,
+      headerClass: ["header-border", "salivary-protein-header"],
+      wrapText: true,
+      cellClass: ["table-border"],
+      children: [
+        {
+          headerName: "SM",
+          field: "SM",
+          cellRenderer: "specificityComponent",
+          cellClass: ["square_table", "salivary-proteins-colored-cell"],
+        },
+        {
+          headerName: "SL",
+          field: "SL",
+          cellRenderer: "specificityComponent",
+          cellClass: ["table-border", "salivary-proteins-colored-cell"],
+        },
+        {
+          headerName: "PAR",
+          field: "PAR",
+          cellRenderer: "specificityComponent",
+          cellClass: ["table-border", "salivary-proteins-colored-cell"],
+        },
+      ],
+    },
   ];
 
   const defColumnDefs = {
@@ -531,7 +560,7 @@ const SalivaryProteinTable = () => {
         '    <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon"></span>' +
         '    <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon"></span>' +
         '    <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon"></span>' +
-        '    <span ref="eText" class="ag-header-cell-text" role="columnheader" style="white-space: normal;"></span>' +
+        '    <span ref="eText" class="ag-header-cell-text" role="columnheader" style="white-space: normal; font-size: 10px;"></span>' +
         // '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
         "  </div>" +
         "</div>",
@@ -1771,7 +1800,12 @@ const SalivaryProteinTable = () => {
         </Box>
         <Container
           maxWidth="false"
-          sx={{ marginTop: "30px", marginLeft: "20px" }}
+          id="table-container"
+          sx={{
+            marginTop: "30px",
+            marginLeft: "20px",
+            padding: "0px !important",
+          }}
         >
           <Box sx={{ display: "flex" }}>
             <Box
