@@ -23,7 +23,6 @@ const ResultSection = ({ selectedSection, jobId, searchParams }) => {
         jobId,
         "all_data.tsv"
       );
-
       setAllData({
         data,
         downloadUrl,

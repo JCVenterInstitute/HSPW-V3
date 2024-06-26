@@ -1,32 +1,28 @@
-import "./volcanoplot.css";
+import "./principlecomponentanalysis.css";
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3v7";
 import { ThreeMpTwoTone } from "@mui/icons-material";
+import numeric from "numeric";
 
-const VolcanoPlot = ({
+const PrincipleComponentAnalysis = ({
   data = "",
-  extension = "csv",
-  foldChange = 2,
-  pval = 0.05,
-  xCol = 3,
-  yCol = 4,
-  details = [],
+  xCol = 1,
+  yCol = 2,
   xlabel = "",
   ylabel = "",
 }) => {
   let handleKeyDown;
-  pval = -Math.log10(pval);
-  foldChange = Math.log2(foldChange);
   const chartRef = useRef(null),
     svgRef = useRef(null),
     zoomRef = useRef(null);
 
   useEffect(() => {
-    const SVGwidth = chartRef.current.offsetWidth * 0.8;
-    const SVGheight = 2 * (SVGwidth / 3.5);
+    const SVGwidth = chartRef.current.offsetWidth * 0.6;
+    const SVGheight = SVGwidth;
     const margin = { top: 20, right: 20, bottom: 40, left: 50 };
     const innerWidth = SVGwidth - margin.left - margin.right;
     const innerHeight = SVGheight - margin.top - margin.bottom;
+    var groups = [];
 
     // Creating the SVG container
     const svg = d3
@@ -52,22 +48,15 @@ const VolcanoPlot = ({
     // Instantiating the tooltip
     const tooltip = d3.select("body").append("div").attr("class", "tooltip");
 
-    const loadData = () => {
-      if (extension === "tsv") {
-        return d3.tsv(data, parser);
-      }
-      return d3.csv(data, parser);
-    };
-
     // Loading and parsing given data
-    loadData().then((data) => {
+    d3.csv(data, parser).then((data) => {
       var datakeys = Object.keys(data[0]),
         xValKey = datakeys[xCol],
         yValKey = datakeys[yCol];
 
       // Determine the dynamic scales based on the data
-      const xExtent = d3.extent(data, (d) => d[xValKey] * 1.1);
-      const yExtent = d3.extent(data, (d) => d[yValKey] * 1.25);
+      const xExtent = d3.extent(data, (d) => d[xValKey] * 1.75);
+      const yExtent = d3.extent(data, (d) => d[yValKey] * 1.75);
 
       const xScale = d3
         .scaleLinear()
@@ -135,31 +124,30 @@ const VolcanoPlot = ({
         .attr("height", innerHeight)
         .attr("width", innerWidth);
 
-      // Instantiates thresholds separating circles by class
-      const thresholdLines = svg.append("g").attr("class", "thresholdLines");
+      const groupedData = d3.group(data, (d) => d[""].charAt(0));
 
-      // add horizontal lines at y= pval
-      [pval, 0].forEach(function (threshold) {
-        thresholdLines
-          .append("svg:line")
-          .attr("class", threshold === 0 ? "threshold bold" : "threshold")
-          .attr("x1", 0)
-          .attr("x2", innerWidth)
-          .attr("y1", yScale(threshold))
-          .attr("y2", yScale(threshold))
-          .attr("stroke-dasharray", threshold === 0 ? "none" : "5, 5");
-      });
-
-      // add vertical lines at x = -foldChange, foldChange
-      [-foldChange, foldChange, 0].forEach(function (threshold) {
-        thresholdLines
-          .append("svg:line")
-          .attr("class", threshold === 0 ? "threshold bold" : "threshold")
-          .attr("x1", xScale(threshold))
-          .attr("x2", xScale(threshold))
-          .attr("y1", 0)
-          .attr("y2", innerHeight)
-          .attr("stroke-dasharray", threshold === 0 ? "none" : "5, 5");
+      groupedData.forEach((groupData, key) => {
+        const ellipseParams = calculateEllipse(groupData);
+        groups.push({
+          key: key,
+          angle: ellipseParams.angle,
+          cx: ellipseParams.cx,
+          cy: ellipseParams.cy,
+        });
+        svg
+          .append("g")
+          .attr("clip-path", "url(#clip)")
+          .append("ellipse")
+          .attr("class", `ellipse ${key}`)
+          .attr("cx", ellipseParams.cx)
+          .attr("cy", ellipseParams.cy)
+          .attr("rx", ellipseParams.rx)
+          .attr("ry", ellipseParams.ry)
+          .attr(
+            "transform",
+            `rotate(${ellipseParams.angle},${ellipseParams.cx},${ellipseParams.cy})`
+          )
+          .style("opacity", "0.2");
       });
 
       // bounds points to clip path
@@ -171,35 +159,34 @@ const VolcanoPlot = ({
         .enter()
         .append("circle")
         .attr("class", circleClass)
-        .attr("r", 4)
+        .attr("r", 6)
         .attr("cx", (d) => xScale(d[xValKey]))
         .attr("cy", (d) => yScale(d[yValKey]))
         .attr("stroke", "black")
-        .attr("stroke-width", 1)
-        .on("mouseenter", function (event, d) {
-          tooltip.style("visibility", "visible").html(tooltipDetails(d));
-        })
-        .on("mousemove", function (event) {
-          tooltip
-            .style("top", event.pageY - 5 + "px")
-            .style("left", event.pageX + 20 + "px");
-        })
-        .on("mouseleave", function () {
-          tooltip.style("visibility", "hidden");
-        })
-        .on(
-          "click",
-          (_, d) =>
-            window.open(
-              "https://salivaryproteome.org/protein/" + d[datakeys[0]]
-            ),
-          "_blank"
-        );
+        .attr("stroke-width", 2);
+      // .on("mouseenter", function (event, d) {
+      //   tooltip.style("visibility", "visible").html(tooltipDetails(d));
+      // })
+      // .on("mousemove", function (event) {
+      //   tooltip
+      //     .style("top", event.pageY - 5 + "px")
+      //     .style("left", event.pageX + 20 + "px");
+      // })
+      // .on("mouseleave", function () {
+      //   tooltip.style("visibility", "hidden");
+      // })
+      // .on(
+      //   "click",
+      //   (_, d) =>
+      //     window.open(
+      //       "https://salivaryproteome.org/protein/" + d[datakeys[0]]
+      //     ),
+      //   "_blank"
+      // );
 
       const legendDict = {
-        1: ["DOWN", "Blue"],
-        2: ["Non-SIG", "Gray"],
-        3: ["UP", "Red"],
+        1: ["CS", "Red"],
+        2: ["HS", "Green"],
       };
 
       createLegend(svg, legendDict);
@@ -222,20 +209,20 @@ const VolcanoPlot = ({
         svg
           .selectAll(".dot")
           .attr("transform", transform)
-          .attr("r", 4 / transform.k)
-          .attr("stroke-width", 1 / transform.k);
+          .attr("r", 6 / transform.k)
+          .attr("stroke-width", 2 / transform.k);
 
         gX.call(xAxis.scale(transform.rescaleX(xScale)));
         gY.call(yAxis.scale(transform.rescaleY(yScale)));
 
-        svg
-          .selectAll(".threshold")
-          .attr("transform", transform)
-          .attr("stroke-width", 1 / transform.k)
-          .attr("stroke-dasharray", function () {
-            const length = 5 / transform.k;
-            return `${length},${length}`;
-          });
+        groups.forEach((group) => {
+          svg
+            .selectAll(`.${group.key}`)
+            .attr(
+              "transform",
+              `${transform} rotate(${group.angle},${group.cx},${group.cy})`
+            );
+        });
 
         svg
           .select(".x.grid")
@@ -275,26 +262,73 @@ const VolcanoPlot = ({
       window.addEventListener("keydown", handleKeyDown);
 
       // Function that dynamically creates a tooltip for a circle
-      function tooltipDetails(d) {
-        var output = `<strong>Primary Accession</strong>: ${d[datakeys[0]]}`;
-        details.forEach(
-          (detail) =>
-            (output = output.concat(
-              `<br/><strong>${detail}</strong>: ${d[detail]}`
-            ))
+      // function tooltipDetails(d) {
+      //   var output = `<strong>Primary Accession</strong>: ${d[datakeys[0]]}`;
+      //   details.forEach(
+      //     (detail) =>
+      //       (output = output.concat(
+      //         `<br/><strong>${detail}</strong>: ${d[detail]}`
+      //       ))
+      //   );
+      //   return output;
+      // }
+
+      function calculateEllipse(groupData) {
+        const meanX = d3.mean(groupData, (d) => d.PC1);
+        const meanY = d3.mean(groupData, (d) => d.PC2);
+
+        const centeredData = groupData.map((d) => [
+          d.PC1 - meanX,
+          d.PC2 - meanY,
+        ]);
+
+        const covarianceMatrix = numeric.dot(
+          numeric.transpose(centeredData),
+          centeredData
         );
-        return output;
+
+        // Normalize the covariance matrix by the number of points
+        const n = groupData.length;
+        const normalizedCovarianceMatrix = numeric.div(covarianceMatrix, n);
+
+        const eig = numeric.eig(normalizedCovarianceMatrix);
+        if (!eig.lambda) {
+          console.error("Eigenvalue decomposition failed");
+          return;
+        }
+
+        const eigenvalues = eig.lambda.x;
+        const eigenvectors = eig.E.x;
+
+        // Sort eigenvalues and eigenvectors
+        const sortedIndices = eigenvalues
+          .map((val, idx) => [val, idx])
+          .sort((a, b) => a[0] - b[0])
+          .map((pair) => pair[1]);
+
+        const smallestEigenval = eigenvalues[sortedIndices[0]];
+        const largestEigenval = eigenvalues[sortedIndices[1]];
+
+        const largestEigenvec = eigenvectors[sortedIndices[1]];
+
+        console.log(eigenvectors);
+
+        return {
+          cx: xScale(meanX),
+          cy: yScale(meanY),
+          rx: Math.sqrt(largestEigenval) * 90, // scaling for visualization
+          ry: Math.sqrt(smallestEigenval) * 100, // scaling for visualization
+          angle:
+            Math.atan2(largestEigenvec[1], largestEigenvec[0]) *
+            (180 / Math.PI),
+        };
       }
 
       function circleClass(d) {
-        if (d[yValKey] <= pval) {
-          return "dot";
-        } else if (d[yValKey] > pval && d[xValKey] <= -foldChange) {
-          return "dot sigfold";
-        } else if (d[yValKey] > pval && d[xValKey] >= foldChange) {
-          return "dot sig";
-        } else {
-          return "dot";
+        if (d[""].startsWith("C")) {
+          return "dot CS";
+        } else if (d[""].startsWith("H")) {
+          return "dot HS";
         }
       }
     });
@@ -365,7 +399,7 @@ const VolcanoPlot = ({
   };
 
   return (
-    <div ref={chartRef} id="chart" className="volcano">
+    <div ref={chartRef} id="chart" className="pca">
       <button onClick={resetZoom} className="reset-button">
         Reset Zoom
       </button>
@@ -373,4 +407,4 @@ const VolcanoPlot = ({
   );
 };
 
-export default VolcanoPlot;
+export default PrincipleComponentAnalysis;

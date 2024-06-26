@@ -5,6 +5,7 @@ import ResultDownload from "./ResultSections/ResultDownload";
 import { fetchData, getImageStyle, handleDownload } from "./utils";
 import CsvTable from "./CsvTable";
 import VolcanoPlot from "../VolcanoPlot/VolcanoPlot";
+import PrincipleComponentAnalysis from "../PrincipleComponentAnalysis/PrincipleComponentAnalysis";
 
 const style = {
   dataBox: {
@@ -26,10 +27,14 @@ const DataSection = ({
 }) => {
   const [image, setImage] = useState(null);
   const [data, setData] = useState(null);
+  const [plotData, setPlotData] = useState(null);
 
-  const getDataFile = async () => {
-    const { data } = await fetchData(files["Data Matrix"]);
-    setData(data);
+  const getDataFile = async (
+    dataFile = files["Data Matrix"],
+    forPlot = false
+  ) => {
+    const { data, dataUrl } = await fetchData(dataFile);
+    forPlot ? setPlotData(dataUrl) : setData(data);
   };
 
   useEffect(() => {
@@ -48,7 +53,13 @@ const DataSection = ({
       if (tab.startsWith("Top")) imageLink = files["Top Samples"];
       if (tab.startsWith("All")) imageLink = files["All Samples"];
 
-      setData(null);
+      // Handle PCA file
+      if (files["PCA Score"]) {
+        getDataFile(files["PCA Score"], true);
+      } else {
+        setPlotData(null);
+      }
+
       setImage(imageLink);
     }
   }, [tab]);
@@ -89,7 +100,21 @@ const DataSection = ({
         displayResult = null;
         break;
       case "Principal Component Analysis":
-        displayResult = null;
+        if (plotData && tab !== "Data Matrix") {
+          displayResult = (
+            <PrincipleComponentAnalysis
+              data={plotData}
+              xCol={1}
+              yCol={2}
+              details={["p.value", "Fold.Change"]}
+              xlabel="PC 1 (25.5%)"
+              ylabel="PC 2 (12.5%)"
+            />
+          );
+        } else {
+          displayResult = null;
+          isPngTab = false;
+        }
         break;
       case "Venn-Diagram":
         displayResult = null;
