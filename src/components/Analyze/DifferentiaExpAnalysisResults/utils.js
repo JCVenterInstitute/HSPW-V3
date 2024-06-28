@@ -108,3 +108,14 @@ export const fetchCSV = async (jobId, fileName) => {
     console.error("Error fetching csv:", error);
   }
 };
+
+export const fetchImage = async (jobId, fileName) => {
+  try {
+    let response = await axios.get(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
+    );
+    return response.data.url;
+  } catch (error) {
+    console.error("Error downloading image:", error);
+  }
+};

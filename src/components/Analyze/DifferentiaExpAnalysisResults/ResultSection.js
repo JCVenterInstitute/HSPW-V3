@@ -8,6 +8,7 @@ import CSVDataTable from "../../../pages/Analyze/CSVDataTable";
 import axios from "axios";
 import { fetchCSV, getImageStyle } from "./utils";
 import { fileMapping } from "./Constants";
+import RandomForest from "./RandomForest";
 
 const DataSection = ({
   selectedSection,
@@ -141,7 +142,13 @@ const DataSection = ({
       displayResult = null;
       break;
     case "Random Forest":
-      displayResult = null;
+      displayResult = (
+        <RandomForest
+          selectedSection={selectedSection}
+          jobId={jobId}
+          tab={tab}
+        />
+      );
       break;
     case "GO Biological Process":
       displayResult = null;
@@ -172,7 +179,10 @@ const DataSection = ({
             width: "100%",
           }}
         >
-          <CSVDataTable data={csvData} selectedSection={selectedSection} />
+          <CSVDataTable
+            data={csvData}
+            selectedSection={selectedSection}
+          />
         </Box>
       </Container>
     );
