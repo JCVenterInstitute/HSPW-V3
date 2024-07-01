@@ -1,14 +1,14 @@
 import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useEffect } from "react";
-import { handleDownload } from "./utils";
-import { fileMapping, sectionToTabs } from "./Constants";
+import { getTabOptions } from "./utils";
 
 const TabOptions = ({
   tab,
   selectedSection,
-  setTab,
+  handleTabChange,
+  handleDataDownload,
   numbOfTopVolcanoSamples,
-  jobId,
+  setTab,
 }) => {
   const style = {
     tabStyle: {
@@ -44,31 +44,23 @@ const TabOptions = ({
 
   // When selecting a new section, go back to first tab of that section
   useEffect(() => {
-    const tabOptions = sectionToTabs[selectedSection];
+    const tabOptions = getTabOptions(selectedSection, numbOfTopVolcanoSamples);
     setTab(tabOptions ? tabOptions[0] : null);
   }, [selectedSection]);
 
   const createTabGroup = (selectedSection) => {
-    let tabOptions = sectionToTabs[selectedSection];
+    let tabOptions = getTabOptions(selectedSection, numbOfTopVolcanoSamples);
 
     // No tab options for this menu item
     if (!tabOptions) return null;
 
     const tabButtons = tabOptions.map((tab, i) => {
-      let label = tab;
-
-      // For Heatmap, update tab based on user input param for top samples
-      if (tab === "Top Samples") {
-        const tok = tab.split(" ");
-        label = `${tok[0]} ${numbOfTopVolcanoSamples} ${tok[1]}`;
-      }
-
       return (
         <ToggleButton
           key={`${selectedSection}-tab-${i}`}
           value={tab}
         >
-          {label}
+          {tab}
         </ToggleButton>
       );
     });
@@ -77,7 +69,7 @@ const TabOptions = ({
       <ToggleButtonGroup
         value={tab}
         exclusive
-        onChange={(e) => setTab(e.target.value)}
+        onChange={handleTabChange}
         sx={{ ...style.tabStyle, marginTop: "10px" }}
       >
         {tabButtons}
@@ -99,14 +91,7 @@ const TabOptions = ({
         <Box sx={style.downloadButton}>
           <Button
             variant="contained"
-            onClick={() =>
-              handleDownload(
-                jobId,
-                tab !== null
-                  ? fileMapping[selectedSection][tab]
-                  : fileMapping[selectedSection]
-              )
-            }
+            onClick={handleDataDownload}
           >
             Download
           </Button>

@@ -1,118 +1,267 @@
+import { Box, CircularProgress, Container } from "@mui/material";
 import { useEffect, useState } from "react";
 
 import TabDescription from "./TabDescription";
 import TabOptions from "./TabOptions";
-import { fetchCSV } from "./utils";
+import ResultDownload from "./ResultDownload";
+import CSVDataTable from "../../../pages/Analyze/CSVDataTable";
+import VolcanoPlot from "../VolcanoPlot/VolcanoPlot";
+import StatisticalParametricPlot from "../StatisticalParametricTest/StatisticalParametricTest";
+import axios from "axios";
+import { fetchCSV, getImageStyle } from "./utils";
 import { fileMapping } from "./Constants";
-import { getFileUrl } from "./utils";
-import DataSection from "./DataSection";
-import { Box, CircularProgress } from "@mui/material";
 
-const ResultSection = ({ selectedSection, jobId, searchParams }) => {
-  const [tab, setTab] = useState("Visualization");
-  const [files, setFiles] = useState({});
-  const [allData, setAllData] = useState(null);
+const DataSection = ({
+  selectedSection,
+  handleDownload,
+  tab,
+  jobId,
+  imageUrl,
+  setImageUrl,
+}) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [csvData, setCsvData] = useState(null);
+  const [image, setImage] = useState(null);
+  const [tsvUrl, setTsvUrl] = useState("");
 
-  /**
-   * Get & return all_data.tsv download link & file contents
-   */
-  const getAllDataFile = async () => {
-    try {
+  const style = {
+    dataBox: {
+      marginTop: "40px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "auto",
+    },
+  };
+
+  // Load graph images
+  useEffect(() => {
+    let currentTab = tab;
+
+    setIsLoading(true);
+    setImageUrl(null);
+    setImage(null);
+
+    // No file to display
+    if (fileMapping[selectedSection] === undefined) return;
+
+    // Heat Map has tab name based on param passed in so need diff logic for handling tab names
+    if (selectedSection === "Heatmap") {
+      currentTab = currentTab.startsWith("Top") ? "Top Samples" : "All Samples";
+    }
+
+    const newRelevantFile = fileMapping[selectedSection][currentTab];
+
+    if (newRelevantFile === undefined || currentTab === "Data Matrix") return;
+
+    fetchImage(
+      jobId,
+      Array.isArray(newRelevantFile) ? newRelevantFile[0] : newRelevantFile
+    );
+  }, [selectedSection, tab]);
+
+  // Get all_data.tsv for d3 plots
+  useEffect(() => {
+    const getTsvData = async () => {
       const { data, downloadUrl, textUrl } = await fetchCSV(
         jobId,
         "all_data.tsv"
       );
-      setAllData({
-        data,
-        downloadUrl,
-        textUrl,
-      });
-    } catch (err) {
-      console.error("> Error fetching all data file", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
-  // Get all_data.tsv, shared across all tab sections
-  useEffect(() => {
-    getAllDataFile();
+      setTsvUrl(textUrl);
+    };
+
+    try {
+      getTsvData();
+    } catch (err) {
+      console.log("> TSV Data Load Error", err);
+    }
   }, []);
 
-  /**
-   * Fetch all files associated with the selected results section
-   * @param {string} selectedSection Results section currently selected
-   * @param {string} jobId Id of analysis submission job
-   */
-  const fetchFiles = async (selectedSection, jobId) => {
-    const mappedSectionFiles = fileMapping[selectedSection];
+  // Get CSV data for Data Matrix Tabs
+  useEffect(() => {
+    const getCsvData = async () => {
+      if (tab === "Data Matrix") {
+        const { data, downloadUrl, textUrl } = await fetchCSV(
+          jobId,
+          fileMapping[selectedSection][tab]
+        );
 
-    // No files to fetch
-    if (mappedSectionFiles === undefined || mappedSectionFiles === null) return;
+        setCsvData(data);
+        setImageUrl(downloadUrl);
+      }
+    };
 
     try {
       setIsLoading(true);
-      let files = {};
-
-      if (typeof mappedSectionFiles === "string") {
-        files = await getFileUrl(jobId, mappedSectionFiles);
-      } else {
-        for (const [tabName, fileName] of Object.entries(mappedSectionFiles)) {
-          const fileUrl = await getFileUrl(jobId, fileName);
-
-          files[tabName] = fileUrl;
-        }
-      }
-
-      setFiles(files);
+      setCsvData([]);
+      getCsvData();
     } catch (err) {
-      console.error("> Failed trying to fetch all files", err);
+      console.log("> CSV Data Load Error", err);
     } finally {
       setIsLoading(false);
     }
+  }, [tab]);
+
+  const fetchImage = async (jobId, fileName) => {
+    console.log("> Fetch Image", fileName);
+
+    try {
+      let response = await axios.get(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
+      );
+      setImageUrl(response.data.url); // Set the image URL
+      setImage(response.data.url);
+    } catch (error) {
+      console.error("Error downloading image:", error);
+      setImageUrl(""); // Reset the image URL on error
+    } finally {
+      setIsLoading(false); // Stop loading regardless of the outcome
+    }
   };
 
-  // Fetch all needed files for the current selected section
-  useEffect(() => {
-    fetchFiles(selectedSection, jobId);
-  }, [selectedSection]);
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "50vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
+  let displayResult = null;
+
+  switch (selectedSection) {
+    case "Volcano Plot":
+      displayResult = (
+        <VolcanoPlot
+          data={tsvUrl}
+          extension={"tsv"}
+          pval={1}
+          foldChange={1}
+          xCol={8}
+          yCol={5}
+          details={["p.value", "Fold.Change"]}
+          xlabel="Log2(FC)"
+          ylabel="-Log10(p)"
+        />
+      );
+      break;
+    case "Heatmap":
+      displayResult = null;
+      break;
+    case "Statistical Parametric Test":
+      displayResult = (
+        <StatisticalParametricPlot 
+        data={tsvUrl}
+        extension={"tsv"}
+        /> 
+      );
+      break;
+    case "Fold Change Analysis":
+      displayResult = null;
+      break;
+    case "Principal Component Analysis":
+      displayResult = null;
+      break;
+    case "Venn-Diagram":
+      displayResult = null;
+      break;
+    case "Normalization":
+      displayResult = null;
+      break;
+    case "Random Forest":
+      displayResult = null;
+      break;
+    case "GO Biological Process":
+      displayResult = null;
+      break;
+    case "GO Molecular Function":
+      displayResult = null;
+      break;
+    case "GO Cellular Component":
+      displayResult = null;
+      break;
+    case "KEGG Pathway/Module":
+      displayResult = null;
+      break;
+    case "Download":
+      displayResult = <ResultDownload handleDownload={handleDownload} />;
+      break;
+
+    default:
+      displayResult = null;
+  }
+
+  if (tab === "Data Matrix" && csvData !== null) {
+    displayResult = (
+      <Container sx={{ margin: "0px" }}>
+        <Box
+          sx={{
+            overflowX: "auto", // Enable horizontal scrolling
+            width: "100%",
+          }}
+        >
+          <CSVDataTable data={csvData} selectedSection={selectedSection} />
+        </Box>
+      </Container>
+    );
+  }
+
+  if (displayResult === null) {
+    displayResult = (
+      <img
+        src={image}
+        alt={selectedSection}
+        style={getImageStyle(selectedSection)}
+      />
+    );
+  }
+
+  return <Box sx={style.dataBox}>{displayResult}</Box>;
+};
+
+const ResultSection = ({
+  selectedSection,
+  tab,
+  handleTabChange,
+  handleDataDownload,
+  numbOfTopVolcanoSamples,
+  setTab,
+  jobId,
+  handleDownload,
+  imageUrl,
+  setImageUrl,
+}) => {
   return (
     <>
       <TabOptions
-        numbOfTopVolcanoSamples={searchParams.get("heatmap")}
-        selectedSection={selectedSection}
-        setTab={setTab}
-        jobId={jobId}
+        numbOfTopVolcanoSamples={numbOfTopVolcanoSamples}
         tab={tab}
+        selectedSection={selectedSection}
+        handleTabChange={handleTabChange}
+        handleDataDownload={handleDataDownload}
+        setTab={setTab}
       />
       <TabDescription
         tab={tab}
         selectedSection={selectedSection}
-        numbOfTopVolcanoSamples={searchParams.get("heatmap")}
+        numbOfTopVolcanoSamples={numbOfTopVolcanoSamples}
       />
-      {isLoading ? (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "50vh",
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      ) : (
-        <DataSection
-          selectedSection={selectedSection}
-          allData={allData}
-          files={files}
-          jobId={jobId}
-          tab={tab}
-          searchParams={searchParams}
-        />
-      )}
+      <DataSection
+        selectedSection={selectedSection}
+        handleDownload={handleDownload}
+        jobId={jobId}
+        tab={tab}
+        imageUrl={imageUrl}
+        setImageUrl={setImageUrl}
+      />
     </>
   );
 };

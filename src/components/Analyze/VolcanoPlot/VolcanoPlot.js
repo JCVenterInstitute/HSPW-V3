@@ -1,7 +1,6 @@
 import "./volcanoplot.css";
 import React, { useEffect, useRef } from "react";
-import * as d3 from "d3v7";
-import { ThreeMpTwoTone } from "@mui/icons-material";
+import * as d3 from "d3";
 
 const VolcanoPlot = ({
   data = "",
@@ -14,12 +13,11 @@ const VolcanoPlot = ({
   xlabel = "",
   ylabel = "",
 }) => {
-  let handleKeyDown;
+  let event;
+  console.log(data);
   pval = -Math.log10(pval);
   foldChange = Math.log2(foldChange);
-  const chartRef = useRef(null),
-    svgRef = useRef(null),
-    zoomRef = useRef(null);
+  const chartRef = useRef(null);
 
   useEffect(() => {
     const SVGwidth = chartRef.current.offsetWidth * 0.8;
@@ -27,6 +25,8 @@ const VolcanoPlot = ({
     const margin = { top: 20, right: 20, bottom: 40, left: 50 };
     const innerWidth = SVGwidth - margin.left - margin.right;
     const innerHeight = SVGheight - margin.top - margin.bottom;
+
+    console.log("innerHeight: " + innerHeight);
 
     // Creating the SVG container
     const svg = d3
@@ -36,8 +36,6 @@ const VolcanoPlot = ({
       .attr("height", SVGheight)
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
-
-    svgRef.current = svg;
 
     svg.node().addEventListener("wheel", (event) => event.preventDefault());
     // Defining the clip path to restrict drawing within the chart area
@@ -61,6 +59,8 @@ const VolcanoPlot = ({
 
     // Loading and parsing given data
     loadData().then((data) => {
+      // console.log(data.split(".").pop().toLowerCase());
+      console.log(data);
       var datakeys = Object.keys(data[0]),
         xValKey = datakeys[xCol],
         yValKey = datakeys[yCol];
@@ -68,6 +68,7 @@ const VolcanoPlot = ({
       // Determine the dynamic scales based on the data
       const xExtent = d3.extent(data, (d) => d[xValKey] * 1.1);
       const yExtent = d3.extent(data, (d) => d[yValKey] * 1.25);
+      console.log(datakeys);
 
       const xScale = d3
         .scaleLinear()
@@ -139,27 +140,24 @@ const VolcanoPlot = ({
       const thresholdLines = svg.append("g").attr("class", "thresholdLines");
 
       // add horizontal lines at y= pval
-      [pval, 0].forEach(function (threshold) {
-        thresholdLines
-          .append("svg:line")
-          .attr("class", threshold === 0 ? "threshold bold" : "threshold")
-          .attr("x1", 0)
-          .attr("x2", innerWidth)
-          .attr("y1", yScale(threshold))
-          .attr("y2", yScale(threshold))
-          .attr("stroke-dasharray", threshold === 0 ? "none" : "5, 5");
-      });
+      thresholdLines
+        .append("svg:line")
+        .attr("class", "threshold")
+        .attr("x1", 0)
+        .attr("x2", innerWidth)
+        .attr("y1", yScale(pval))
+        .attr("y2", yScale(pval));
 
       // add vertical lines at x = -foldChange, foldChange
-      [-foldChange, foldChange, 0].forEach(function (threshold) {
+      [-foldChange, foldChange].forEach(function (threshold) {
         thresholdLines
           .append("svg:line")
-          .attr("class", threshold === 0 ? "threshold bold" : "threshold")
+          .attr("class", "threshold")
           .attr("x1", xScale(threshold))
           .attr("x2", xScale(threshold))
           .attr("y1", 0)
-          .attr("y2", innerHeight)
-          .attr("stroke-dasharray", threshold === 0 ? "none" : "5, 5");
+          .attr("y2", innerHeight);
+        console.log(threshold);
       });
 
       // bounds points to clip path
@@ -174,8 +172,6 @@ const VolcanoPlot = ({
         .attr("r", 4)
         .attr("cx", (d) => xScale(d[xValKey]))
         .attr("cy", (d) => yScale(d[yValKey]))
-        .attr("stroke", "black")
-        .attr("stroke-width", 1)
         .on("mouseenter", function (event, d) {
           tooltip.style("visibility", "visible").html(tooltipDetails(d));
         })
@@ -190,9 +186,7 @@ const VolcanoPlot = ({
         .on(
           "click",
           (_, d) =>
-            window.open(
-              "https://salivaryproteome.org/protein/" + d[datakeys[0]]
-            ),
+            window.open("https://salivaryproteome.org/protein/" + d[""]),
           "_blank"
         );
 
@@ -214,29 +208,19 @@ const VolcanoPlot = ({
         .on("zoom", zoomFunction);
 
       svg.call(zoom);
-      zoomRef.current = zoom;
 
       function zoomFunction(event) {
         const transform = event.transform;
-
         svg
           .selectAll(".dot")
           .attr("transform", transform)
-          .attr("r", 4 / transform.k)
-          .attr("stroke-width", 1 / transform.k);
-
+          .attr("r", 4 / Math.sqrt(transform.k));
         gX.call(xAxis.scale(transform.rescaleX(xScale)));
         gY.call(yAxis.scale(transform.rescaleY(yScale)));
-
         svg
           .selectAll(".threshold")
           .attr("transform", transform)
-          .attr("stroke-width", 1 / transform.k)
-          .attr("stroke-dasharray", function () {
-            const length = 5 / transform.k;
-            return `${length},${length}`;
-          });
-
+          .attr("stroke-width", 1 / transform.k);
         svg
           .select(".x.grid")
           .call(
@@ -247,7 +231,6 @@ const VolcanoPlot = ({
               .tickFormat("")
               .scale(transform.rescaleX(xScale))
           );
-
         svg
           .select(".y.grid")
           .call(
@@ -259,20 +242,6 @@ const VolcanoPlot = ({
               .scale(transform.rescaleY(yScale))
           );
       }
-
-      function handleKeyDown(event) {
-        if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-          event.preventDefault();
-        }
-        if (event.key === "ArrowUp") {
-          svg.transition().duration(100).call(zoom.scaleBy, 1.1);
-        }
-        if (event.key === "ArrowDown") {
-          svg.transition().duration(100).call(zoom.scaleBy, 0.9);
-        }
-      }
-
-      window.addEventListener("keydown", handleKeyDown);
 
       // Function that dynamically creates a tooltip for a circle
       function tooltipDetails(d) {
@@ -319,7 +288,7 @@ const VolcanoPlot = ({
       const legend = selection
         .append("g")
         .attr("class", "legend")
-        .attr("transform", "translate(20, 40)");
+        .attr("transform", "translate(20, 20)");
 
       const legendItems = Object.keys(legendDict).map((key) => ({
         key,
@@ -352,24 +321,15 @@ const VolcanoPlot = ({
     return () => {
       d3.select(chartRef.current).selectAll("*").remove();
       tooltip.remove();
-      window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
 
-  const resetZoom = () => {
-    if (svgRef.current && zoomRef.current) {
-      const svg = svgRef.current,
-        zoom = zoomRef.current;
-      svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
-    }
-  };
-
   return (
-    <div ref={chartRef} id="chart" className="volcano">
-      <button onClick={resetZoom} className="reset-button">
-        Reset Zoom
-      </button>
-    </div>
+    <div
+      ref={chartRef}
+      id="chart"
+      style={{ width: "1000px", height: "800px" }}
+    ></div>
   );
 };
 

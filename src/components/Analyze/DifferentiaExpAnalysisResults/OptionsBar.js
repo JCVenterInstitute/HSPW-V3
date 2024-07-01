@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 
-const OptionsBar = ({ selectedSection, option, setSelectedSection }) => {
+const OptionsBar = ({ selectedSection, option, handleSelect }) => {
   const customStyle = {
     box: {
       backgroundColor: "#f9f8f7",
@@ -35,7 +35,7 @@ const OptionsBar = ({ selectedSection, option, setSelectedSection }) => {
                 backgroundColor: "#C9C9C9",
               }),
             }}
-            onClick={() => setSelectedSection(item)}
+            onClick={() => handleSelect(item)}
           >
             {item}
           </Typography>
