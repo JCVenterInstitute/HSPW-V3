@@ -5,6 +5,7 @@ import ResultDownload from "./ResultSections/ResultDownload";
 import { fetchData, getImageStyle, handleDownload } from "./utils";
 import CsvTable from "./CsvTable";
 import VolcanoPlot from "../VolcanoPlot/VolcanoPlot";
+import StatisticalParametricPlot from "../StatisticalParametricTest/StatisticalParametricChart";
 import PrincipleComponentAnalysis from "../PrincipleComponentAnalysis/PrincipleComponentAnalysis";
 
 const style = {
@@ -94,7 +95,12 @@ const DataSection = ({
         displayResult = null;
         break;
       case "Statistical Parametric Test":
-        displayResult = null;
+        displayResult = (
+          <StatisticalParametricPlot
+          data={allData["textUrl"]}
+          extension="tsv"
+           />
+        );
         break;
       case "Fold Change Analysis":
         displayResult = null;
