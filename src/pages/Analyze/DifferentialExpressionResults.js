@@ -73,6 +73,8 @@ const DifferentialExpressionResults = () => {
             const link = document.createElement("a");
             link.href = res.data.url;
 
+            console.log("> Link", res.data.url);
+
             // Set the download attribute to a default filename or based on the URL
             link.download = fileName; // This will take the last part of the URL as a filename
 

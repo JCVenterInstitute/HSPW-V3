@@ -163,7 +163,12 @@ const DataSection = ({
       displayResult = null;
       break;
     case "Download":
-      displayResult = <ResultDownload handleDownload={handleDownload} />;
+      displayResult = (
+        <ResultDownload
+          jobId={jobId}
+          handleDownload={handleDownload}
+        />
+      );
       break;
 
     default:
