@@ -23,6 +23,7 @@ const DataSection = ({
   const [csvData, setCsvData] = useState(null);
   const [image, setImage] = useState(null);
   const [tsvUrl, setTsvUrl] = useState("");
+  const [currentData, setCurrentData] = useState(null);
 
   const style = {
     dataBox: {
@@ -67,8 +68,8 @@ const DataSection = ({
         jobId,
         "all_data.tsv"
       );
-
       setTsvUrl(textUrl);
+      setCurrentData(data)
     };
 
     try {
@@ -159,7 +160,7 @@ const DataSection = ({
     case "Statistical Parametric Test":
       displayResult = (
         <StatisticalParametricPlot 
-        data={tsvUrl}
+        data={currentData}
         extension={"tsv"}
         /> 
       );

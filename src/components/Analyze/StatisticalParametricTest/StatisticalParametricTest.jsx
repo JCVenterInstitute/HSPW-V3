@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3v7";
+import "./statisticalParametricTest.css";
 // import data from "../../data/statistical_parametric_test.csv";
 
 const StatisticalParametricPlot = (data, extension) => {
@@ -7,14 +8,14 @@ const StatisticalParametricPlot = (data, extension) => {
     dataFile: data,
     extension: extension,
     containerID: "statParaTest",
-    width: 800,
-    height: 400,
+    width: 1600,
+    height: 800,
     margin: { top: 10, right: 30, bottom: 50, left: 70 },
-    pointRadius: 3,
+    pointRadius: 5,
     xAxisLabel: "",
-    yAxisLabel: "-log10(p)",
+    yAxisLabel: "X.log10.p.",
     xValue: (d, i) => i,
-    yValue: (d) => d["-log10(p)"],
+    yValue: (d) => d["X.log10.p."],
     circleClass: (d) => {
       if (d.y <= 1) {
         return "dot";
@@ -28,9 +29,9 @@ const StatisticalParametricPlot = (data, extension) => {
     },
     tooltipHTML: (d) => {
       return `<strong>Protein</strong>: ${
-        d[""]
+        d["Protein"]
       }<br/><strong>-log10(p)</strong>: ${
-        d["-log10(p)"]
+        d["X.log10.p."]
       }<br/><strong>FDR</strong>: ${d3.format(".2f")(
         d["FDR"]
       )}<br/><strong>PVal</strong>: ${
@@ -40,22 +41,22 @@ const StatisticalParametricPlot = (data, extension) => {
   };
 
 
-  // Use this function to convert json string numbers to int
-  // const parseData = (d) => {
-  //   for (var key in d) {
-  //     if (d.hasOwnProperty(key)) {
-  //       d[key] = !isNaN(d[key]) ? +d[key] : d[key];
-  //     }
-  //   }
-  //   return d;
-  // };
-
-  const parseData = () => {
-    if (extension === "tsv") {
-      return d3.tsv(data, parser);
+//   Use this function to convert json string numbers to int
+  const parseData = (d) => {
+    for (var key in d) {
+      if (d.hasOwnProperty(key)) {
+        d[key] = !isNaN(d[key]) ? +d[key] : d[key];
+      }
     }
-    return d3.csv(data, parser);
+    return d;
   };
+
+//   const parseData = () => {
+//     if (extension === "tsv") {
+//       return d3.tsv(data, parser);
+//     }
+//     return d3.csv(data, parser);
+//   };
 
   const createScatterPlot = async (config, containerRef) => {
     const {
@@ -126,10 +127,8 @@ const StatisticalParametricPlot = (data, extension) => {
       .style("position", "absolute")
       .style("visibility", "hidden");
 
-    const data = await d3.csv(dataFile, parseData);
-    console.log("HERERWELSRJSLJFRLSEJKF");
-    console.log(data);
-    xScale.domain([0, 600]);
+    const data = plotConfig.dataFile.data;
+    xScale.domain([0, Object.keys(data).length]);
     yScale.domain([0, d3.max(data, yValue)]);
 
     xAxis
@@ -208,7 +207,7 @@ const StatisticalParametricPlot = (data, extension) => {
       })
       .on(
         "click",
-        (_, d) => window.open("https://salivaryproteome.org/protein/" + d[""]),
+        (_, d) => window.open("https://salivaryproteome.org/protein/" + d["Protein"].replace(/^"(.*)"$/, '$1')),
         "_blank"
       );
   };
@@ -219,7 +218,7 @@ const StatisticalParametricPlot = (data, extension) => {
     createScatterPlot(plotConfig, containerRef);
   }, []);
 
-  return <div id="statParaTest" ref={containerRef}></div>;
+  return <div id="statParaTest" ref={containerRef} style={{ width: "90%" }}></div>;
 };
 
 export default StatisticalParametricPlot;

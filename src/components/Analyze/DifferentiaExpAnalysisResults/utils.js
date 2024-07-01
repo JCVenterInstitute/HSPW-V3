@@ -98,7 +98,7 @@ export const fetchCSV = async (jobId, fileName) => {
     );
 
     const csvText = await axios.get(response.data.url).then((res) => res.data);
-    console.log(csvText);
+    // console.log(csvText);
     return {
       data: parseCSV(csvText),
       downloadUrl: response.data.url,
