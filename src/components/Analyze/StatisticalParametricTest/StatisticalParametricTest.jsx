@@ -10,8 +10,8 @@ const StatisticalParametricPlot = (data, extension) => {
     containerID: "statParaTest",
     width: 1600,
     height: 800,
-    margin: { top: 10, right: 30, bottom: 50, left: 70 },
-    pointRadius: 5,
+    margin: { top: 5, right: 60, bottom: 50, left: 100 },
+    pointRadius: 8,
     xAxisLabel: "",
     yAxisLabel: "X.log10.p.",
     xValue: (d, i) => i,
@@ -39,24 +39,6 @@ const StatisticalParametricPlot = (data, extension) => {
       }<br/><strong>t.stat</strong>: ${d3.format(".2f")(d["t.stat"])}`;
     },
   };
-
-
-//   Use this function to convert json string numbers to int
-  const parseData = (d) => {
-    for (var key in d) {
-      if (d.hasOwnProperty(key)) {
-        d[key] = !isNaN(d[key]) ? +d[key] : d[key];
-      }
-    }
-    return d;
-  };
-
-//   const parseData = () => {
-//     if (extension === "tsv") {
-//       return d3.tsv(data, parser);
-//     }
-//     return d3.csv(data, parser);
-//   };
 
   const createScatterPlot = async (config, containerRef) => {
     const {
@@ -117,8 +99,11 @@ const StatisticalParametricPlot = (data, extension) => {
     const xScale = d3.scaleLinear().range([0, width]);
     const yScale = d3.scaleLinear().range([height, 0]);
 
-    const xAxis = svg.append("g").attr("transform", `translate(0,${height})`);
-    const yAxis = svg.append("g");
+    const xAxisBottom = svg.append("g").attr("transform", `translate(0,${height})`);
+    const xAxisTop = svg.append("g");
+
+    const yAxisLeft = svg.append("g");
+    const yAxisRight = svg.append("g").attr("transform", `translate(${width}, 0)`);
 
     const tooltip = d3
       .select("body")
@@ -131,16 +116,19 @@ const StatisticalParametricPlot = (data, extension) => {
     xScale.domain([0, Object.keys(data).length]);
     yScale.domain([0, d3.max(data, yValue)]);
 
-    xAxis
+    xAxisBottom
       .call(d3.axisBottom(xScale))
       .append("text")
       .attr("x", width / 2)
-      .attr("y", margin.bottom - 10)
+      .attr("y", margin.top - 10)
       .attr("fill", "black")
       .attr("text-anchor", "middle")
+      .attr("class", "axis")
       .text(xAxisLabel);
+    xAxisTop
+      .call(d3.axisTop(xScale))
 
-    yAxis
+    yAxisLeft
       .call(d3.axisLeft(yScale))
       .append("text")
       .attr("transform", "rotate(-90)")
@@ -148,7 +136,18 @@ const StatisticalParametricPlot = (data, extension) => {
       .attr("y", -margin.left + 20)
       .attr("fill", "black")
       .attr("text-anchor", "middle")
+      .attr("class", "axis")
       .text(yAxisLabel);
+    yAxisRight
+      .call(d3.axisRight(yScale))
+      .append("text")
+
+    //   .attr("transform", "rotate(-90)")
+
+      .attr("x", -height / 2)
+      .attr("y", -margin.right + 20)
+      .attr("class", "axis")
+      .attr("fill", "black");
 
     var zoomBox = svg
       .append("rect")
@@ -166,8 +165,9 @@ const StatisticalParametricPlot = (data, extension) => {
       .on("zoom", (event) => {
         const zx = event.transform.rescaleX(xScale);
         const zy = event.transform.rescaleY(yScale);
-        xAxis.call(d3.axisBottom(zx));
-        yAxis.call(d3.axisLeft(zy));
+        xAxisBottom.call(d3.axisBottom(zx));
+        yAxisLeft.call(d3.axisLeft(zy));
+        yAxisRight.call(d3.axisRight(zy));
         svg
           .selectAll("circle")
           .attr("cx", (d, i) => zx(xValue(d, i)))
