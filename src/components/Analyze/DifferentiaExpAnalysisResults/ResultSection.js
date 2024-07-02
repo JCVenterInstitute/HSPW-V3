@@ -9,6 +9,7 @@ import axios from "axios";
 import { fetchCSV, getImageStyle } from "./utils";
 import { fileMapping } from "./Constants";
 import RandomForest from "./RandomForest";
+import InputData from "./InputData";
 
 const DataSection = ({
   selectedSection,
@@ -17,11 +18,13 @@ const DataSection = ({
   jobId,
   imageUrl,
   setImageUrl,
+  searchParams,
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [csvData, setCsvData] = useState(null);
   const [image, setImage] = useState(null);
   const [csvUrl, setCsvUrl] = useState("");
+  const [allData, setAllData] = useState(null);
 
   const style = {
     dataBox: {
@@ -33,16 +36,41 @@ const DataSection = ({
     },
   };
 
+  /**
+   * Get & return all_data.tsv download link & file contents
+   */
+  const getAllDataFile = async () => {
+    try {
+      const { data, downloadUrl, textUrl } = await fetchCSV(
+        jobId,
+        "all_data.tsv"
+      );
+      setAllData({
+        data,
+        downloadUrl,
+        textUrl,
+      });
+    } catch (err) {
+      console.error("> Error fetching all data file", err);
+    }
+  };
+
+  // Get all_data.tsv, shared across all tab sections
+  useEffect(() => {
+    getAllDataFile();
+  }, []);
+
   // Load graph images
   useEffect(() => {
     let currentTab = tab;
 
-    setIsLoading(true);
     setImageUrl(null);
     setImage(null);
 
     // No file to display
-    if (fileMapping[selectedSection] === undefined) return;
+    if (fileMapping[selectedSection] === undefined) {
+      return;
+    }
 
     // Heat Map has tab name based on param passed in so need diff logic for handling tab names
     if (selectedSection === "Heatmap") {
@@ -75,13 +103,10 @@ const DataSection = ({
     };
 
     try {
-      setIsLoading(true);
       setCsvData([]);
       getCsvData();
     } catch (err) {
       console.log("> CSV Data Load Error", err);
-    } finally {
-      setIsLoading(false);
     }
   }, [tab]);
 
@@ -162,6 +187,32 @@ const DataSection = ({
     case "KEGG Pathway/Module":
       displayResult = null;
       break;
+    case "Input Data":
+      displayResult = (
+        <InputData
+          searchParams={searchParams}
+          jobId={jobId}
+        />
+      );
+      break;
+    case "Result Data":
+      displayResult = (
+        <Container sx={{ margin: "0px" }}>
+          <Box
+            sx={{
+              overflowX: "auto", // Enable horizontal scrolling
+              width: "100%",
+            }}
+          >
+            <CSVDataTable
+              jobId={jobId}
+              data={allData.data}
+              selectedSection={selectedSection}
+            />
+          </Box>
+        </Container>
+      );
+      break;
     case "Download":
       displayResult = (
         <ResultDownload
@@ -217,6 +268,7 @@ const ResultSection = ({
   handleDownload,
   imageUrl,
   setImageUrl,
+  searchParams,
 }) => {
   return (
     <>
@@ -225,8 +277,9 @@ const ResultSection = ({
         tab={tab}
         selectedSection={selectedSection}
         handleTabChange={handleTabChange}
-        handleDataDownload={handleDataDownload}
         setTab={setTab}
+        handleDownload={handleDownload}
+        jobId={jobId}
       />
       <TabDescription
         tab={tab}
@@ -240,6 +293,7 @@ const ResultSection = ({
         tab={tab}
         imageUrl={imageUrl}
         setImageUrl={setImageUrl}
+        searchParams={searchParams}
       />
     </>
   );

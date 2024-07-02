@@ -55,40 +55,34 @@ const DifferentialExpressionResults = () => {
 
   const handleDownload = async (jobId, fileName) => {
     try {
-      let index = 0;
-      let file = null;
+      let file;
 
-      do {
-        if (typeof fileName === Object) {
-          file = fileName[index];
-        } else {
-          file = fileName;
-        }
+      if (typeof fileName === "object") {
+        file = fileName[fileName.length - 1];
+      } else {
+        file = fileName;
+      }
 
-        await axios
-          .get(
-            `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${file}`
-          )
-          .then((res) => {
-            const link = document.createElement("a");
-            link.href = res.data.url;
+      await axios
+        .get(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${file}`
+        )
+        .then((res) => {
+          const link = document.createElement("a");
+          link.href = res.data.url;
 
-            console.log("> Link", res.data.url);
+          // Set the download attribute to a default filename or based on the URL
+          link.download = fileName; // This will take the last part of the URL as a filename
 
-            // Set the download attribute to a default filename or based on the URL
-            link.download = fileName; // This will take the last part of the URL as a filename
+          // Append the link to the body
+          document.body.appendChild(link);
 
-            // Append the link to the body
-            document.body.appendChild(link);
+          // Trigger a click event on the link
+          link.click();
 
-            // Trigger a click event on the link
-            link.click();
-
-            // Remove the link from the body
-            document.body.removeChild(link);
-          });
-        index++;
-      } while (typeof fileName === Object && fileName.length < index);
+          // Remove the link from the body
+          document.body.removeChild(link);
+        });
     } catch (error) {
       console.error("Error downloading file:", error);
     }
@@ -132,6 +126,7 @@ const DifferentialExpressionResults = () => {
             handleDownload={handleDownload}
             imageUrl={imageUrl}
             setImageUrl={setImageUrl}
+            searchParams={searchParams}
           />
         </Container>
       </Container>

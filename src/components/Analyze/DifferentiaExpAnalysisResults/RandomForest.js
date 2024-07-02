@@ -12,7 +12,7 @@ const RandomForest = ({ selectedSection, tab, jobId }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (tab === null) return;
+      if (tab === null || !files[tab]) return;
 
       // Classification & Feature tabs have additional table to display
       if (tab === "Classification" || tab === "Feature") {
