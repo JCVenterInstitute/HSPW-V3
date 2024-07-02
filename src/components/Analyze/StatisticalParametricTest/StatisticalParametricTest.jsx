@@ -96,14 +96,37 @@ const StatisticalParametricPlot = (data, extension) => {
       .style("width", "50%");
 
     document.getElementById("zoom-slider").disabled = true;
-    const xScale = d3.scaleLinear().range([0, width]);
-    const yScale = d3.scaleLinear().range([height, 0]);
+   
+   
+    const data = plotConfig.dataFile.data;
+    const xScale = d3.scaleLinear().range([0, width]).domain([0, Object.keys(data).length]).nice();
+    const yScale = d3.scaleLinear().range([height, 0]).domain([0, d3.max(data, yValue)]).nice();
 
     const xAxisBottom = svg.append("g").attr("transform", `translate(0,${height})`);
     const xAxisTop = svg.append("g");
 
     const yAxisLeft = svg.append("g");
     const yAxisRight = svg.append("g").attr("transform", `translate(${width}, 0)`);
+
+    var gridLines = svg.append("g").attr("class", "grid");
+
+    // Setup horizontal grid lines
+    gridLines
+      .append("g")
+      .attr("class", "x grid")
+      .attr("transform", "translate(0," + height + ")")
+      .call(
+        d3.axisBottom(xScale).ticks(10).tickSize(-height).tickFormat("")
+      );
+
+    // Setup vertical grid lines
+    gridLines
+      .append("g")
+      .attr("class", "y grid")
+      .call(
+        d3.axisLeft(yScale).ticks(10).tickSize(-innerWidth).tickFormat("")
+      );
+
 
     const tooltip = d3
       .select("body")
@@ -112,9 +135,6 @@ const StatisticalParametricPlot = (data, extension) => {
       .style("position", "absolute")
       .style("visibility", "hidden");
 
-    const data = plotConfig.dataFile.data;
-    xScale.domain([0, Object.keys(data).length]);
-    yScale.domain([0, d3.max(data, yValue)]);
 
     xAxisBottom
       .call(d3.axisBottom(xScale))
@@ -174,6 +194,26 @@ const StatisticalParametricPlot = (data, extension) => {
           .attr("cy", (d) => zy(yValue(d)));
         // Sync zoom level to the slider
         document.getElementById("zoom-slider").value = event.transform.k;
+        svg
+        .select(".x.grid")
+        .call(
+          d3
+            .axisBottom(xScale)
+            .ticks(10)
+            .tickSize(-height)
+            .tickFormat("")
+            .scale(event.transform.rescaleX(xScale))
+        );
+        svg
+          .select(".y.grid")
+          .call(
+            d3
+              .axisLeft(yScale)
+              .ticks(10)
+              .tickSize(-width)
+              .tickFormat("")
+              .scale(event.transform.rescaleY(yScale))
+          );
       });
 
     svg.call(zoom);

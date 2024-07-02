@@ -7,6 +7,7 @@ import ResultDownload from "./ResultDownload";
 import CSVDataTable from "../../../pages/Analyze/CSVDataTable";
 import VolcanoPlot from "../VolcanoPlot/VolcanoPlot";
 import StatisticalParametricPlot from "../StatisticalParametricTest/StatisticalParametricTest";
+import FoldChangePlot from "../FoldChangeAnalysis/FoldChangeAnalysis";
 import axios from "axios";
 import { fetchCSV, getImageStyle } from "./utils";
 import { fileMapping } from "./Constants";
@@ -166,7 +167,12 @@ const DataSection = ({
       );
       break;
     case "Fold Change Analysis":
-      displayResult = null;
+      displayResult = (
+        <FoldChangePlot 
+        data={currentData}
+        extension={"tsv"}
+        />
+      );
       break;
     case "Principal Component Analysis":
       displayResult = null;
