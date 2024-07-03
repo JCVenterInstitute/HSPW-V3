@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3v7";
 import "./statisticalParametricTest.css";
+import { create } from "@mui/material/styles/createTransitions";
 // import data from "../../data/statistical_parametric_test.csv";
 
 const StatisticalParametricPlot = (data, extension) => {
@@ -10,7 +11,7 @@ const StatisticalParametricPlot = (data, extension) => {
     containerID: "statParaTest",
     width: 1600,
     height: 800,
-    margin: { top: 5, right: 60, bottom: 50, left: 100 },
+    margin: { top: 10, right: 60, bottom: 50, left: 100 },
     pointRadius: 8,
     xAxisLabel: "",
     yAxisLabel: "X.log10.p.",
@@ -40,6 +41,10 @@ const StatisticalParametricPlot = (data, extension) => {
     },
   };
 
+  const chartRef = useRef(null),
+    svgRef = useRef(null),
+    zoomRef = useRef(null);
+
   const createScatterPlot = async (config, containerRef) => {
     const {
       dataFile,
@@ -56,7 +61,7 @@ const StatisticalParametricPlot = (data, extension) => {
     } = config;
 
     // Clear existing SVG elements
-    d3.select(containerRef.current).selectAll("*").remove();
+    d3.select(containerRef.current).selectAll("svg").remove();
 
     const parentContainer = d3.select(containerRef.current);
     const svg = parentContainer
@@ -70,7 +75,7 @@ const StatisticalParametricPlot = (data, extension) => {
       )
       .append("g")
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
-
+    svgRef.current = svg;
     const clipPath = svg
       .append("clipPath")
       .attr("id", "clipRect")
@@ -96,17 +101,28 @@ const StatisticalParametricPlot = (data, extension) => {
       .style("width", "50%");
 
     document.getElementById("zoom-slider").disabled = true;
-   
-   
-    const data = plotConfig.dataFile.data;
-    const xScale = d3.scaleLinear().range([0, width]).domain([0, Object.keys(data).length]).nice();
-    const yScale = d3.scaleLinear().range([height, 0]).domain([0, d3.max(data, yValue)]).nice();
 
-    const xAxisBottom = svg.append("g").attr("transform", `translate(0,${height})`);
+    const data = plotConfig.dataFile.data;
+    const xScale = d3
+      .scaleLinear()
+      .range([0, width])
+      .domain([0, Object.keys(data).length])
+      .nice();
+    const yScale = d3
+      .scaleLinear()
+      .range([height, 0])
+      .domain([0, d3.max(data, yValue)])
+      .nice();
+
+    const xAxisBottom = svg
+      .append("g")
+      .attr("transform", `translate(0,${height})`);
     const xAxisTop = svg.append("g");
 
     const yAxisLeft = svg.append("g");
-    const yAxisRight = svg.append("g").attr("transform", `translate(${width}, 0)`);
+    const yAxisRight = svg
+      .append("g")
+      .attr("transform", `translate(${width}, 0)`);
 
     var gridLines = svg.append("g").attr("class", "grid");
 
@@ -115,18 +131,13 @@ const StatisticalParametricPlot = (data, extension) => {
       .append("g")
       .attr("class", "x grid")
       .attr("transform", "translate(0," + height + ")")
-      .call(
-        d3.axisBottom(xScale).ticks(10).tickSize(-height).tickFormat("")
-      );
+      .call(d3.axisBottom(xScale).ticks(10).tickSize(-height).tickFormat(""));
 
     // Setup vertical grid lines
     gridLines
       .append("g")
       .attr("class", "y grid")
-      .call(
-        d3.axisLeft(yScale).ticks(10).tickSize(-innerWidth).tickFormat("")
-      );
-
+      .call(d3.axisLeft(yScale).ticks(10).tickSize(-width).tickFormat(""));
 
     const tooltip = d3
       .select("body")
@@ -134,7 +145,6 @@ const StatisticalParametricPlot = (data, extension) => {
       .attr("class", "tooltip")
       .style("position", "absolute")
       .style("visibility", "hidden");
-
 
     xAxisBottom
       .call(d3.axisBottom(xScale))
@@ -145,8 +155,7 @@ const StatisticalParametricPlot = (data, extension) => {
       .attr("text-anchor", "middle")
       .attr("class", "axis")
       .text(xAxisLabel);
-    xAxisTop
-      .call(d3.axisTop(xScale))
+    xAxisTop.call(d3.axisTop(xScale));
 
     yAxisLeft
       .call(d3.axisLeft(yScale))
@@ -162,7 +171,7 @@ const StatisticalParametricPlot = (data, extension) => {
       .call(d3.axisRight(yScale))
       .append("text")
 
-    //   .attr("transform", "rotate(-90)")
+      //   .attr("transform", "rotate(-90)")
 
       .attr("x", -height / 2)
       .attr("y", -margin.right + 20)
@@ -195,15 +204,15 @@ const StatisticalParametricPlot = (data, extension) => {
         // Sync zoom level to the slider
         document.getElementById("zoom-slider").value = event.transform.k;
         svg
-        .select(".x.grid")
-        .call(
-          d3
-            .axisBottom(xScale)
-            .ticks(10)
-            .tickSize(-height)
-            .tickFormat("")
-            .scale(event.transform.rescaleX(xScale))
-        );
+          .select(".x.grid")
+          .call(
+            d3
+              .axisBottom(xScale)
+              .ticks(10)
+              .tickSize(-height)
+              .tickFormat("")
+              .scale(event.transform.rescaleX(xScale))
+          );
         svg
           .select(".y.grid")
           .call(
@@ -217,6 +226,7 @@ const StatisticalParametricPlot = (data, extension) => {
       });
 
     svg.call(zoom);
+    zoomRef.current = zoom;
 
     const pltPointsGroup = svg
       .append("g")
@@ -247,7 +257,11 @@ const StatisticalParametricPlot = (data, extension) => {
       })
       .on(
         "click",
-        (_, d) => window.open("https://salivaryproteome.org/protein/" + d["Protein"].replace(/^"(.*)"$/, '$1')),
+        (_, d) =>
+          window.open(
+            "https://salivaryproteome.org/protein/" +
+              d["Protein"].replace(/^"(.*)"$/, "$1")
+          ),
         "_blank"
       );
   };
@@ -258,7 +272,23 @@ const StatisticalParametricPlot = (data, extension) => {
     createScatterPlot(plotConfig, containerRef);
   }, []);
 
-  return <div id="statParaTest" ref={containerRef} style={{ width: "90%" }}></div>;
+  const resetZoom = () => {
+    if (svgRef.current && zoomRef.current) {
+      const svg = svgRef.current,
+        zoom = zoomRef.current;
+      svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+    }
+  };
+
+  return (
+    <div id="statParaTest" ref={containerRef} style={{ width: "90%" }}>
+      <div id="reset-button-container">
+        <button onClick={resetZoom} id="reset-button" className="graph-button">
+          Reset
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default StatisticalParametricPlot;

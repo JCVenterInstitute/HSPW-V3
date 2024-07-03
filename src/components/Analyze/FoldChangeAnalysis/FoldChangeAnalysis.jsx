@@ -13,7 +13,7 @@ const FoldChangePlot = (data, extension) => {
     containerID: "statParaTest",
     width: 1600,
     height: 800,
-    margin: { top: 5, right: 60, bottom: 50, left: 100 },
+    margin: { top: 15, right: 60, bottom: 50, left: 100 },
     pointRadius: 8,
     xAxisLabel: "",
     yAxisLabel: "Log2(FC)",
@@ -42,6 +42,9 @@ const FoldChangePlot = (data, extension) => {
       }<br/><strong>t.stat</strong>: ${d3.format(".2f")(d["t.stat"])}`;
     },
   };
+  const chartRef = useRef(null),
+    svgRef = useRef(null),
+    zoomRef = useRef(null);
 
   const createScatterPlot = async (config, containerRef) => {
     const {
@@ -59,7 +62,7 @@ const FoldChangePlot = (data, extension) => {
     } = config;
 
     // Clear existing SVG elements
-    d3.select(containerRef.current).selectAll("*").remove();
+    d3.select(containerRef.current).selectAll("svg").remove();
 
     const parentContainer = d3.select(containerRef.current);
     const svg = parentContainer
@@ -74,6 +77,7 @@ const FoldChangePlot = (data, extension) => {
       .append("g")
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+    svgRef.current = svg;
     const clipPath = svg
       .append("clipPath")
       .attr("id", "clipRect")
@@ -103,7 +107,7 @@ const FoldChangePlot = (data, extension) => {
 
     const scaleMinMax = (data) => {
       // Returns an array for the max and min of a scale domain.
-      // Scale is ballanced on either side of zero and padded to
+      // Scale is balanced on either side of zero and padded to
       // move data a bit to the center.
       const dataMax = d3.max(data, yValue);
       const dataMin = d3.min(data, yValue);
@@ -116,7 +120,7 @@ const FoldChangePlot = (data, extension) => {
     const xScale = d3
       .scaleLinear()
       .range([0, width])
-      .domain([-0, Object.keys(data).length])
+      .domain([-3, Object.keys(data).length + 3])
       .nice();
     const yScale = d3
       .scaleLinear()
@@ -188,7 +192,6 @@ const FoldChangePlot = (data, extension) => {
         const zy = event.transform.rescaleY(yScale);
         xAxisBottom.call(d3.axisBottom(zx));
         xAxisBottom.attr("transform", `translate(0, ${zy(0)})`);
-        console.log(zy(0));
         yAxisLeft.call(d3.axisLeft(zy));
         yAxisRight.call(d3.axisRight(zy));
         svg
@@ -200,6 +203,7 @@ const FoldChangePlot = (data, extension) => {
       });
 
     svg.call(zoom);
+    zoomRef.current = zoom;
 
     const pltPointsGroup = svg
       .append("g")
@@ -245,8 +249,22 @@ const FoldChangePlot = (data, extension) => {
     createScatterPlot(plotConfig, containerRef);
   }, []);
 
+  const resetZoom = () => {
+    if (svgRef.current && zoomRef.current) {
+      const svg = svgRef.current,
+        zoom = zoomRef.current;
+      svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+    }
+  };
+
   return (
-    <div id="statParaTest" ref={containerRef} style={{ width: "90%" }}></div>
+    <div id="FoldChangeGraph" ref={containerRef} style={{ width: "90%" }}>
+      <div id="reset-button-container">
+        <button onClick={resetZoom} id="reset-button" className="graph-button">
+          Reset
+        </button>
+      </div>
+    </div>
   );
 };
 

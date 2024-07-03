@@ -10,6 +10,10 @@
   --tooltip-text-color: #333333;
   --slider-track-color: #dddddd;
   --slider-thumb-color: #007bff;
+  --button-background-color: #007bff;
+  --button-text-color: #ffffff;
+  --button-border-color: #0056b3;
+  --button-hover-background-color: #0056b3;
 }
 
 body {
@@ -19,6 +23,7 @@ body {
 }
 
 #statParaTest {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -105,3 +110,25 @@ text {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
+#reset-button-container {
+  position: absolute;
+  top: 10px;
+  right: 40px;
+}
+
+.graph-button {
+  background-color: var(--button-background-color);
+  color: var(--button-text-color);
+  border: 1px solid var(--button-border-color);
+  font-size: 1em;
+  padding: 6% 14%;
+  margin-right: 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  z-index: -1;
+}
+
+.graph-button:hover {
+  background-color: var(--button-hover-background-color);
+}
