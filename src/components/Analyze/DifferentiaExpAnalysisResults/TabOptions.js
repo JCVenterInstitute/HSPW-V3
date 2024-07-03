@@ -84,7 +84,7 @@ const TabOptions = ({
       id="option-tab-box"
       sx={{ display: "flex" }}
     >
-      <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
+      <Box style={{ display: "flex", width: "100%", maxWidth: "950px" }}>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           {createTabGroup(selectedSection)}
         </Box>
