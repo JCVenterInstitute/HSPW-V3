@@ -27,7 +27,8 @@ export const fileMapping = {
   },
   Normalization: {
     Visualization: "norm_0_dpi150.png",
-    "Data Matrix": "data_normalized.csv",
+    "Data Original": "data_original.csv",
+    "Data Normalized": "data_normalized.csv",
   },
   "Input Data": "data_original.csv",
   "Result Data": "all_data.tsv",

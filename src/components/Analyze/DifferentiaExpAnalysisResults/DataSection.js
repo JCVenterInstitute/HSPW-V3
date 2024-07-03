@@ -1,10 +1,16 @@
 import { Box, Container } from "@mui/material";
 import { useEffect, useState } from "react";
+import { fileMapping } from "./Constants";
 
 import ResultDownload from "./ResultSections/ResultDownload";
 import { fetchData, getImageStyle, handleDownload } from "./utils";
 import CsvTable from "./CsvTable";
-import VolcanoPlot from "../VolcanoPlot/VolcanoPlot";
+import VolcanoPlot from "./D3Graphics/VolcanoPlot/VolcanoPlot";
+import StatisticalParametricPlot from "./D3Graphics/StatisticalParametricTest/StatisticalParametricTest";
+import FoldChangePlot from "./D3Graphics/FoldChangeAnalysis/FoldChangeAnalysis";
+import VennDiagramComponent from "./D3Graphics/VennDiagram/VennDiagramComponent";
+import BoxPlot from "./D3Graphics/Normalization Plot/BoxPlot";
+import DensityPlot from "./D3Graphics/Normalization Plot/DensityPlot";
 import PrincipleComponentAnalysis from "../PrincipleComponentAnalysis/PrincipleComponentAnalysis";
 
 const style = {
@@ -94,16 +100,30 @@ const DataSection = ({
         displayResult = null;
         break;
       case "Statistical Parametric Test":
-        displayResult = null;
+        if (allData && tab !== "Data Matrix") {
+          displayResult = (
+            <StatisticalParametricPlot data={allData.data} extension={"tsv"} />
+          );
+        } else {
+          displayResult = null;
+          isPngTab = false;
+        }
         break;
       case "Fold Change Analysis":
-        displayResult = null;
+        if (allData && tab !== "Data Matrix") {
+          displayResult = (
+            <FoldChangePlot data={allData.data} extension={"tsv"} />
+          );
+        } else {
+          displayResult = null;
+          isPngTab = false;
+        }
         break;
       case "Principal Component Analysis":
         if (plotData && tab !== "Data Matrix") {
           displayResult = (
             <PrincipleComponentAnalysis
-              data={plotData}
+              data={data}
               xCol={1}
               yCol={2}
               details={["p.value", "Fold.Change"]}
@@ -117,11 +137,55 @@ const DataSection = ({
         }
         break;
       case "Venn-Diagram":
-        displayResult = null;
+        if (tab !== "Data Matrix") {
+          displayResult = <VennDiagramComponent jobId={jobId} />;
+        } else {
+          displayResult = null;
+        }
         break;
-      case "Normalization":
-        displayResult = null;
-        break;
+      // case "Normalization":
+      //   if (tab !== "Data Matrix") {
+      //     if (
+      //       dataNorm.beforeNormalization.length > 0 &&
+      //       dataNorm.afterNormalization.length > 0
+      //     ) {
+      //       //console.log("Rendering Normalization section with data:", data);
+
+      //       displayResult = (
+      //         <Container sx={{ margin: "0px" }}>
+      //           <Box className="plot-section">
+      //             <Box className="chart-section">
+      //               <h2>Before Normalization</h2>
+      //               <DensityPlot
+      //                 containerId="density-before"
+      //                 data={dataNorm.beforeNormalization}
+      //               />
+      //               <BoxPlot
+      //                 containerId="box-before"
+      //                 data={dataNorm.beforeNormalization}
+      //               />
+      //             </Box>
+      //             <Box className="chart-section">
+      //               <h2>After Normalization</h2>
+      //               <DensityPlot
+      //                 containerId="density-after"
+      //                 data={dataNorm.afterNormalization}
+      //               />
+      //               <BoxPlot
+      //                 containerId="box-after"
+      //                 data={dataNorm.afterNormalization}
+      //               />
+      //             </Box>
+      //           </Box>
+      //         </Container>
+      //       );
+      //     } else {
+      //       console.log("No data available for Normalization section.");
+      //     }
+      //   } else {
+      //     displayResult = null;
+      //   }
+      //   break;
       case "Random Forest":
         displayResult = null;
         break;

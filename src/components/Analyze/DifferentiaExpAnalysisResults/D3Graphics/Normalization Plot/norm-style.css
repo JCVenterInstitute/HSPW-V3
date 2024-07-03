@@ -1,0 +1,121 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 10px;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+}
+
+h2 {
+  margin: 20px 0 0 0;
+  text-align: left;
+}
+
+.plot-section {
+  display: flex;
+  justify-content: space-between;
+}
+
+.chart-section {
+  flex: 1;
+  margin-right: 10px; /*Adjust spacing between sections as needed */
+}
+
+.chart {
+  width: 100%;
+  height: 420px; /* Adjust height as needed */
+  border: 1px solid #ccc;
+  display: block; /* Ensures the SVG fills its container */
+  margin: 0 auto 20px auto; /* Centers the SVG horizontally and adds bottom margin */
+}
+
+.normtooltip {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.circle-point {
+  stroke: steelblue;
+  stroke-width: 2;
+  pointer-events: all;
+  cursor: pointer;
+}
+
+.box {
+  fill: white;
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.median {
+  stroke: red;
+  stroke-width: 1.5px;
+}
+
+.whisker,
+.min-line,
+.max-line {
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.axis--x path {
+  display: none;
+}
+
+#boxplots {
+  width: 100%;
+  height: auto;
+  overflow-x: auto;
+}
+
+.chart-section .chart svg {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #ccc;
+  display: block;
+  margin: 0 auto;
+}
+
+.chart-section .box-plot svg {
+  width: 100%;
+  height: 100%;
+  border: 2px solid #ccc;
+  display: block;
+  margin: 0 auto;
+}
+
+.input-label {
+  font-weight: bold;
+  margin-right: 10px;
+  font-size: 16px;
+  color: #333;
+}
+
+.input-number {
+  padding: 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 60px;
+}
+
+.input-number:focus {
+  border-color: #66afe9;
+  outline: none;
+}
+
+.box-plot {
+  margin-top: 20px;
+}
