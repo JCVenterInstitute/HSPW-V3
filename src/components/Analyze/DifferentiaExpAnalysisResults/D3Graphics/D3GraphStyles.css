@@ -1,0 +1,377 @@
+.d3Graph {
+  --background-color: #ffffff;
+  --text-color: #333333;
+  --axis-color: #000000;
+  --dot-color: #007bff;
+  --sigfold-dot-color: #007bff;
+  --sig-dot-color: #ff5733;
+  --fold-dot-color: rgb(30, 255, 0);
+  --tooltip-background-color: #f9f9f9;
+  --tooltip-border-color: #cccccc;
+  --tooltip-text-color: #333333;
+  --slider-track-color: #dddddd;
+  --slider-thumb-color: #007bff;
+  --button-background-color: #007bff;
+  --button-text-color: #ffffff;
+  --button-border-color: #0056b3;
+  --button-hover-background-color: #0056b3;
+  font-family: Lato;
+}
+
+svg {
+  background-color: var(--background-color);
+}
+.tooltip {
+  padding: 8px;
+  background-color: var(--tooltip-background-color);
+  border: 1px solid var(--tooltip-border-color);
+  color: var(--tooltip-text-color);
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.dot {
+  fill: var(--dot-color);
+  stroke: none;
+}
+
+.dot.sigfold {
+  fill: var(--sigfold-dot-color);
+}
+
+.dot.sig {
+  fill: var(--sig-dot-color);
+}
+
+.dot.fold {
+  fill: var(--fold-dot-color);
+}
+/* Significance threshold line */
+.threshold {
+  stroke: #000000;
+  stroke-opacity: 0.9;
+  &.bold {
+    stroke-dasharray: none;
+  }
+}
+.zoom {
+  cursor: move;
+  fill: none;
+  pointer-events: all;
+}
+/* .tooltip::after {
+  content: " ";
+  position: absolute;
+  top: 14%;
+  right: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent #000 transparent transparent;
+} */
+
+#zoom-slider-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+
+  .sleek-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 50%;
+    height: 8px;
+    background: var(--slider-track-color);
+    outline: none;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+    border-radius: 4px;
+  }
+
+  .sleek-slider:hover {
+    opacity: 1;
+  }
+
+  .sleek-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 5px;
+    width: 5px;
+    background: var(--slider-thumb-color);
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  }
+
+  .sleek-slider::-moz-range-thumb {
+    height: 5px;
+    width: 5px;
+    background: var(--slider-thumb-color);
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.reset-button-container {
+  position: absolute;
+  top: 10px;
+  right: 40px;
+}
+
+.reset-button {
+  background-color: var(--button-background-color);
+  color: var(--button-text-color);
+  border: 1px solid var(--button-border-color);
+  font-size: 1em;
+  padding: 6% 14%;
+  margin-right: 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  z-index: -1;
+}
+
+.reset-button:hover {
+  background-color: var(--button-hover-background-color);
+}
+
+#statParaTest {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+
+  .axis {
+    font-size: 2.7em;
+    font-weight: bold;
+    fill: var(--axis-color);
+  }
+  text {
+    font-size: 2.2em;
+  }
+}
+
+#chart.volcano {
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+  /*Add clip path for dots and threshold lines to ensure they arent drawn if outside the clip box*/
+  .circlesContainer {
+    clip-path: url(#clip);
+  }
+
+  .thresholdLines {
+    clip-path: url(#clip);
+  }
+  .axis path,
+  .tick line,
+  .tick text {
+    stroke: #000000;
+    stroke-width: 0.5px;
+    stroke-opacity: 0.5;
+  }
+
+  .tick text {
+    fill: #000000;
+  }
+
+  .label {
+    fill: #000000;
+    font-weight: 700;
+    font-size: 12px;
+  }
+}
+
+#vennContainer {
+  #venn {
+    width: 700px;
+    height: 500px;
+  }
+  .group-info,
+  .group-info-special {
+    margin-top: 20px;
+    font-size: 12px;
+    color: black;
+    z-index: 1000;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-family: Lato;
+  }
+
+  .group-info p,
+  .group-info-special p {
+    margin: 5px 0;
+    cursor: pointer;
+    color: black;
+    z-index: 1000;
+    font-family: Lato;
+  }
+
+  .protein-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 14px;
+    color: black;
+    z-index: 1000;
+  }
+
+  .protein-table th,
+  .protein-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+
+  .protein-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+}
+
+#FoldChangeGraph {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+
+  text {
+    font-size: 2.2em;
+  }
+
+  .axis {
+    font-size: 2.7em;
+    font-weight: bold;
+    fill: var(--axis-color);
+  }
+
+  .xAxis text {
+    display: none;
+  }
+}
+
+#normChart {
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+  h2 {
+    margin: 20px 0 0 0;
+    text-align: left;
+  }
+
+  .plot-section {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .chart-section {
+    flex: 1;
+    margin-right: 10px; /*Adjust spacing between sections as needed */
+  }
+
+  .chart {
+    width: 100%;
+    height: 420px; /* Adjust height as needed */
+    border: 1px solid #ccc;
+    display: block; /* Ensures the SVG fills its container */
+    margin: 0 auto 20px auto; /* Centers the SVG horizontally and adds bottom margin */
+  }
+
+  .normtooltip {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .circle-point {
+    stroke: steelblue;
+    stroke-width: 2;
+    pointer-events: all;
+    cursor: pointer;
+  }
+
+  .box {
+    fill: white;
+    stroke: #000;
+    stroke-width: 1.5px;
+  }
+
+  .median {
+    stroke: red;
+    stroke-width: 1.5px;
+  }
+
+  .whisker,
+  .min-line,
+  .max-line {
+    stroke: #000;
+    stroke-width: 1.5px;
+  }
+
+  .axis--x path {
+    display: none;
+  }
+
+  #boxplots {
+    width: 100%;
+    height: auto;
+    overflow-x: auto;
+  }
+
+  .chart-section .chart svg {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #ccc;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .chart-section .box-plot svg {
+    width: 100%;
+    height: 100%;
+    border: 2px solid #ccc;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .input-label {
+    font-weight: bold;
+    margin-right: 10px;
+    font-size: 16px;
+    color: #333;
+  }
+
+  .input-number {
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 60px;
+  }
+
+  .input-number:focus {
+    border-color: #66afe9;
+    outline: none;
+  }
+
+  .box-plot {
+    margin-top: 20px;
+  }
+}

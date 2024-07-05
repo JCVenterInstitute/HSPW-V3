@@ -1,4 +1,3 @@
-import "./principlecomponentanalysis.css";
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3v7";
 import { ThreeMpTwoTone } from "@mui/icons-material";
@@ -124,6 +123,7 @@ const PrincipleComponentAnalysis = ({
         .attr("height", innerHeight)
         .attr("width", innerWidth);
 
+      console.log(data);
       const groupedData = d3.group(data, (d) => d[""].charAt(0));
 
       groupedData.forEach((groupData, key) => {

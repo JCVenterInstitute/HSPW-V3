@@ -1,7 +1,7 @@
+import "../D3GraphStyles.css";
 import React, { useEffect, useState } from "react";
 import * as d3 from "d3v7";
 import { VennDiagram } from "venn.js";
-import "./VennDiagram.css";
 import { fetchCSV } from "../../utils.js"; // Import fetchCSV from utils.js
 
 const VennDiagramComponent = ({ jobId }) => {
@@ -130,7 +130,7 @@ const VennDiagramComponent = ({ jobId }) => {
     d3
       .select("body")
       .append("div")
-      .attr("class", "venntooltip")
+      .attr("class", "tooltip")
       .style("position", "absolute")
       .style("visibility", "hidden")
       .style("background-color", "white")
@@ -259,7 +259,7 @@ const VennDiagramComponent = ({ jobId }) => {
   };
 
   return (
-    <div>
+    <div id="vennContainer">
       <div id="venn"></div>
       {selectedSet && (
         <div>

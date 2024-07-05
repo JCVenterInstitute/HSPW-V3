@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3v7";
-import "./statisticalParametricTest.css";
+import "../D3GraphStyles.css";
 import { create } from "@mui/material/styles/createTransitions";
 // import data from "../../data/statistical_parametric_test.csv";
 
@@ -283,8 +283,8 @@ const StatisticalParametricPlot = (data, extension) => {
 
   return (
     <div id="statParaTest" ref={containerRef} style={{ width: "90%" }}>
-      <div id="reset-button-container">
-        <button onClick={resetZoom} id="reset-button" className="graph-button">
+      <div className="reset-button-container">
+        <button onClick={resetZoom} className="reset-button">
           Reset
         </button>
       </div>
