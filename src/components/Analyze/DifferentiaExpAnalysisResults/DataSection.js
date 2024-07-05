@@ -11,7 +11,7 @@ import FoldChangePlot from "./D3Graphics/FoldChangeAnalysis/FoldChangeAnalysis";
 import VennDiagramComponent from "./D3Graphics/VennDiagram/VennDiagramComponent";
 import BoxPlot from "./D3Graphics/Normalization Plot/BoxPlot";
 import DensityPlot from "./D3Graphics/Normalization Plot/DensityPlot";
-import PrincipleComponentAnalysis from "../PrincipleComponentAnalysis/PrincipleComponentAnalysis";
+import PrincipleComponentAnalysis from "./D3Graphics/PrincipleComponentAnalysis/PrincipleComponentAnalysis";
 
 const style = {
   dataBox: {

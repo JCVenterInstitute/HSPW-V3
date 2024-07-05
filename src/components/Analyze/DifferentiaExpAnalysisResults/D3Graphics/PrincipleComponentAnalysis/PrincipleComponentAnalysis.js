@@ -50,6 +50,7 @@ const PrincipleComponentAnalysis = ({
 
     // Loading and parsing given data
     d3.csv(data, parser).then((data) => {
+      console.log("Parsed Data:", data);
       var datakeys = Object.keys(data[0]),
         xValKey = datakeys[xCol],
         yValKey = datakeys[yCol];
@@ -124,7 +125,7 @@ const PrincipleComponentAnalysis = ({
         .attr("height", innerHeight)
         .attr("width", innerWidth);
 
-      const groupedData = d3.group(data, (d) => d[""].charAt(0));
+      const groupedData = d3.group(data.data, (d) => d[""].charAt(0));
 
       groupedData.forEach((groupData, key) => {
         const ellipseParams = calculateEllipse(groupData);
