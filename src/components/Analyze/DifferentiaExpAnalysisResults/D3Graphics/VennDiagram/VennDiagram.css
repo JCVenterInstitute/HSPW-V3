@@ -2,6 +2,10 @@
   width: 700px;
   height: 500px;
   position: relative;
+  font-family: Lato;
+}
+.venn-circle text {
+  font-family: Lato;
 }
 
 .venntooltip {
@@ -25,6 +29,7 @@
   position: absolute;
   top: 10px;
   right: 10px;
+  font-family: Lato;
 }
 
 .group-info p,
@@ -33,6 +38,7 @@
   cursor: pointer;
   color: black;
   z-index: 1000;
+  font-family: Lato;
 }
 
 .protein-table {

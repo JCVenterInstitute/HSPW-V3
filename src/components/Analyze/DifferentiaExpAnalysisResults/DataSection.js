@@ -68,7 +68,7 @@ const DataSection = ({
 
       setImage(imageLink);
     }
-  }, [tab]);
+  }, [tab, files]);
 
   const getSection = () => {
     let displayResult = null;
@@ -143,49 +143,50 @@ const DataSection = ({
           displayResult = null;
         }
         break;
-      // case "Normalization":
-      //   if (tab !== "Data Matrix") {
-      //     if (
-      //       dataNorm.beforeNormalization.length > 0 &&
-      //       dataNorm.afterNormalization.length > 0
-      //     ) {
-      //       //console.log("Rendering Normalization section with data:", data);
+      case "Normalization":
+        if (tab !== "Data Matrix") {
+          //console.log("Rendering Normalization section with data:", data);
 
-      //       displayResult = (
-      //         <Container sx={{ margin: "0px" }}>
-      //           <Box className="plot-section">
-      //             <Box className="chart-section">
-      //               <h2>Before Normalization</h2>
-      //               <DensityPlot
-      //                 containerId="density-before"
-      //                 data={dataNorm.beforeNormalization}
-      //               />
-      //               <BoxPlot
-      //                 containerId="box-before"
-      //                 data={dataNorm.beforeNormalization}
-      //               />
-      //             </Box>
-      //             <Box className="chart-section">
-      //               <h2>After Normalization</h2>
-      //               <DensityPlot
-      //                 containerId="density-after"
-      //                 data={dataNorm.afterNormalization}
-      //               />
-      //               <BoxPlot
-      //                 containerId="box-after"
-      //                 data={dataNorm.afterNormalization}
-      //               />
-      //             </Box>
-      //           </Box>
-      //         </Container>
-      //       );
-      //     } else {
-      //       console.log("No data available for Normalization section.");
-      //     }
-      //   } else {
-      //     displayResult = null;
-      //   }
-      //   break;
+          const originalFile = fileMapping["Normalization"]["Data Original"];
+          const normalizedFile =
+            fileMapping["Normalization"]["Data Normalized"];
+
+          displayResult = (
+            <Container sx={{ margin: "0px" }}>
+              <Box className="plot-section">
+                <Box className="chart-section">
+                  <h2>Before Normalization</h2>
+                  <DensityPlot
+                    containerId="density-before"
+                    jobId={jobId}
+                    datafile={originalFile}
+                  />
+                  <BoxPlot
+                    containerId="box-before"
+                    jobId={jobId}
+                    datafile={originalFile}
+                  />
+                </Box>
+                <Box className="chart-section">
+                  <h2>After Normalization</h2>
+                  <DensityPlot
+                    containerId="density-after"
+                    jobId={jobId}
+                    datafile={normalizedFile}
+                  />
+                  <BoxPlot
+                    containerId="box-after"
+                    jobId={jobId}
+                    datafile={normalizedFile}
+                  />
+                </Box>
+              </Box>
+            </Container>
+          );
+        } else {
+          displayResult = null;
+        }
+        break;
       case "Random Forest":
         displayResult = null;
         break;

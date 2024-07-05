@@ -1,14 +1,30 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3v7";
 import "./norm-style.css";
+import { fetchCSV } from "../../utils.js"; // Import fetchCSV from utils.js
 
-const DensityPlot = ({ containerId, data }) => {
+const DensityPlot = ({ containerId, jobId, datafile }) => {
   const svgRef = useRef();
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const csvData = await fetchCSV(jobId, datafile);
+        // console.log("Fetched CSV Data:", csvData); // Log fetched CSV data
+        setData(csvData.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [jobId, datafile]);
 
   useEffect(() => {
     if (!data) return;
-    // console.log("> Denisty plot id:", containerId);
-    //console.log("> Denisty plot data:", data);
+    console.log("> Denisty plot id:", containerId);
+    console.log("> Denisty plot data:", data);
 
     // Extract numeric columns for density plot
     const numericColumns = Object.keys(data[0]).filter(
