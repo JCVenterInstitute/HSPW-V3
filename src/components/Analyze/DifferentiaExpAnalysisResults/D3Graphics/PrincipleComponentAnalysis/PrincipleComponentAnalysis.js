@@ -123,8 +123,8 @@ const PrincipleComponentAnalysis = ({
         .attr("height", innerHeight)
         .attr("width", innerWidth);
 
-      console.log(data);
-      const groupedData = d3.group(data, (d) => d[""].charAt(0));
+
+      const groupedData = d3.group(data.data, (d) => d[""].charAt(0));
 
       groupedData.forEach((groupData, key) => {
         const ellipseParams = calculateEllipse(groupData);
