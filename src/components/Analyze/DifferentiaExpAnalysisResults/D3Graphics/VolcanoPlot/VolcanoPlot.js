@@ -1,5 +1,5 @@
-import "./volcanoplot.css";
 import React, { useEffect, useRef } from "react";
+import "../D3GraphStyles.css";
 import * as d3 from "d3v7";
 import { ThreeMpTwoTone } from "@mui/icons-material";
 
@@ -366,9 +366,11 @@ const VolcanoPlot = ({
 
   return (
     <div ref={chartRef} id="chart" className="volcano">
-      <button onClick={resetZoom} className="reset-button">
-        Reset Zoom
-      </button>
+      <div className="reset-button-container">
+        <button onClick={resetZoom} className="reset-button">
+          Reset Zoom
+        </button>
+      </div>
     </div>
   );
 };

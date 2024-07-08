@@ -13,6 +13,7 @@ import DensityPlot from "./D3Graphics/Normalization Plot/DensityPlot";
 import PrincipleComponentAnalysis from "./D3Graphics/PrincipleComponentAnalysis/PrincipleComponentAnalysis";
 import RandomForest from "./D3Graphics/RandomForest/RandomForest";
 
+
 const style = {
   dataBox: {
     marginTop: "40px",
@@ -152,36 +153,38 @@ const DataSection = ({
             fileMapping["Normalization"]["Data Normalized"];
 
           displayResult = (
-            <Container sx={{ margin: "0px" }}>
-              <Box className="plot-section">
-                <Box className="chart-section">
-                  <h2>Before Normalization</h2>
-                  <DensityPlot
-                    containerId="density-before"
-                    jobId={jobId}
-                    datafile={originalFile}
-                  />
-                  <BoxPlot
-                    containerId="box-before"
-                    jobId={jobId}
-                    datafile={originalFile}
-                  />
+            <div id="normChart">
+              <Container sx={{ margin: "0px" }}>
+                <Box className="plot-section">
+                  <Box className="chart-section">
+                    <h2>Before Normalization</h2>
+                    <DensityPlot
+                      containerId="density-before"
+                      jobId={jobId}
+                      datafile={originalFile}
+                    />
+                    <BoxPlot
+                      containerId="box-before"
+                      jobId={jobId}
+                      datafile={originalFile}
+                    />
+                  </Box>
+                  <Box className="chart-section">
+                    <h2>After Normalization</h2>
+                    <DensityPlot
+                      containerId="density-after"
+                      jobId={jobId}
+                      datafile={normalizedFile}
+                    />
+                    <BoxPlot
+                      containerId="box-after"
+                      jobId={jobId}
+                      datafile={normalizedFile}
+                    />
+                  </Box>
                 </Box>
-                <Box className="chart-section">
-                  <h2>After Normalization</h2>
-                  <DensityPlot
-                    containerId="density-after"
-                    jobId={jobId}
-                    datafile={normalizedFile}
-                  />
-                  <BoxPlot
-                    containerId="box-after"
-                    jobId={jobId}
-                    datafile={normalizedFile}
-                  />
-                </Box>
-              </Box>
-            </Container>
+              </Container>
+            </div>
           );
         } else {
           displayResult = null;
@@ -259,7 +262,11 @@ const DataSection = ({
     return displayResult;
   };
 
-  return <Box sx={style.dataBox}>{getSection()}</Box>;
+  return (
+    <Box sx={style.dataBox} className="d3Graph">
+      {getSection()}
+    </Box>
+  );
 };
 
 export default DataSection;

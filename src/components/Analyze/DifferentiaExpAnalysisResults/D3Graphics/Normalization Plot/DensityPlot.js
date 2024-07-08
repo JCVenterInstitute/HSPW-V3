@@ -1,6 +1,6 @@
+import "../D3GraphStyles.css";
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3v7";
-import "./norm-style.css";
 import { fetchCSV } from "../../utils.js"; // Import fetchCSV from utils.js
 
 const DensityPlot = ({ containerId, jobId, datafile }) => {

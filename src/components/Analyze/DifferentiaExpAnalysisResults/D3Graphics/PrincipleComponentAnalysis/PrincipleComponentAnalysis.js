@@ -1,4 +1,3 @@
-import "./principlecomponentanalysis.css";
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3v7";
 import { ThreeMpTwoTone } from "@mui/icons-material";
@@ -50,7 +49,6 @@ const PrincipleComponentAnalysis = ({
 
     // Loading and parsing given data
     d3.csv(data, parser).then((data) => {
-      console.log("Parsed Data:", data);
       var datakeys = Object.keys(data[0]),
         xValKey = datakeys[xCol],
         yValKey = datakeys[yCol];
@@ -124,6 +122,7 @@ const PrincipleComponentAnalysis = ({
         .attr("class", "zoom")
         .attr("height", innerHeight)
         .attr("width", innerWidth);
+
 
       const groupedData = d3.group(data.data, (d) => d[""].charAt(0));
 
