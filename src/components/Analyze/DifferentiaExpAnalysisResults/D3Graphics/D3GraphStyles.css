@@ -18,6 +18,10 @@
   font-family: Lato;
 }
 
+body {
+  overflow-y: hidden !important;
+}
+
 svg {
   background-color: var(--background-color);
 }

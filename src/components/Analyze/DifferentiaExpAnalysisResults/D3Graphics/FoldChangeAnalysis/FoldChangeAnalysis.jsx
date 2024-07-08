@@ -259,8 +259,8 @@ const FoldChangePlot = (data, extension) => {
 
   return (
     <div id="FoldChangeGraph" ref={containerRef} style={{ width: "90%" }}>
-      <div id="reset-button-container">
-        <button onClick={resetZoom} id="reset-button" className="graph-button">
+      <div className="reset-button-container">
+        <button onClick={resetZoom} className="reset-button">
           Reset
         </button>
       </div>
