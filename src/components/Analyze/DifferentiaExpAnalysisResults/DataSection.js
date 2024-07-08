@@ -1,7 +1,6 @@
 import { Box, Container } from "@mui/material";
 import { useEffect, useState } from "react";
 import { fileMapping } from "./Constants";
-
 import ResultDownload from "./ResultSections/ResultDownload";
 import { fetchData, getImageStyle, handleDownload } from "./utils";
 import CsvTable from "./CsvTable";
@@ -12,6 +11,7 @@ import VennDiagramComponent from "./D3Graphics/VennDiagram/VennDiagramComponent"
 import BoxPlot from "./D3Graphics/Normalization Plot/BoxPlot";
 import DensityPlot from "./D3Graphics/Normalization Plot/DensityPlot";
 import PrincipleComponentAnalysis from "./D3Graphics/PrincipleComponentAnalysis/PrincipleComponentAnalysis";
+import RandomForest from "./D3Graphics/RandomForest/RandomForest";
 
 const style = {
   dataBox: {
@@ -188,7 +188,13 @@ const DataSection = ({
         }
         break;
       case "Random Forest":
-        displayResult = null;
+        displayResult = (
+          <RandomForest
+            selectedSection={selectedSection}
+            jobId={jobId}
+            tab={tab}
+          />
+        );
         break;
       case "GO Biological Process":
         displayResult = null;

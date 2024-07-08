@@ -2,9 +2,11 @@ import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useEffect } from "react";
 import { handleDownload } from "./utils";
 import { fileMapping, sectionToTabs } from "./Constants";
+import { getTabOptions } from "./utils";
 
 const TabOptions = ({
   tab,
+  handleTabChange,
   selectedSection,
   setTab,
   numbOfTopVolcanoSamples,
@@ -44,12 +46,12 @@ const TabOptions = ({
 
   // When selecting a new section, go back to first tab of that section
   useEffect(() => {
-    const tabOptions = sectionToTabs[selectedSection];
+    const tabOptions = getTabOptions(selectedSection, numbOfTopVolcanoSamples);
     setTab(tabOptions ? tabOptions[0] : null);
   }, [selectedSection]);
 
   const createTabGroup = (selectedSection) => {
-    let tabOptions = sectionToTabs[selectedSection];
+    let tabOptions = getTabOptions(selectedSection, numbOfTopVolcanoSamples);
 
     // No tab options for this menu item
     if (!tabOptions) return null;
@@ -64,11 +66,8 @@ const TabOptions = ({
       }
 
       return (
-        <ToggleButton
-          key={`${selectedSection}-tab-${i}`}
-          value={tab}
-        >
-          {label}
+        <ToggleButton key={`${selectedSection}-tab-${i}`} value={tab}>
+          {tab}
         </ToggleButton>
       );
     });
@@ -77,7 +76,7 @@ const TabOptions = ({
       <ToggleButtonGroup
         value={tab}
         exclusive
-        onChange={(e) => setTab(e.target.value)}
+        onChange={handleTabChange}
         sx={{ ...style.tabStyle, marginTop: "10px" }}
       >
         {tabButtons}
@@ -86,11 +85,8 @@ const TabOptions = ({
   };
 
   return (
-    <Box
-      id="option-tab-box"
-      sx={{ display: "flex" }}
-    >
-      <Box style={{ display: "flex", width: "100%", maxWidth: "550px" }}>
+    <Box id="option-tab-box" sx={{ display: "flex" }}>
+      <Box style={{ display: "flex", width: "100%", maxWidth: "950px" }}>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           {createTabGroup(selectedSection)}
         </Box>
@@ -99,14 +95,15 @@ const TabOptions = ({
         <Box sx={style.downloadButton}>
           <Button
             variant="contained"
-            onClick={() =>
+            onClick={() => {
               handleDownload(
                 jobId,
+
                 tab !== null
                   ? fileMapping[selectedSection][tab]
                   : fileMapping[selectedSection]
-              )
-            }
+              );
+            }}
           >
             Download
           </Button>
