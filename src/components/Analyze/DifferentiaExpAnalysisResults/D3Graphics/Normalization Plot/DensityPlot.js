@@ -101,8 +101,25 @@ const DensityPlot = ({ containerId, jobId, datafile }) => {
       .datum(densityData)
       .attr("fill", "none")
       .attr("stroke", "steelblue")
-      .attr("stroke-width", 2)
+      .attr("stroke-width", 3)
       .attr("d", line);
+
+    // Draw an invisible dummy line for easier hover interaction
+    densitySvg
+      .append("path")
+      .datum(densityData)
+      .attr("fill", "none")
+      .attr("stroke", "transparent")
+      .attr("stroke-width", 50) // Larger stroke width for easier hover
+      .attr("d", line)
+      .on("mouseover", function (event, d) {
+        d3.selectAll(".point").style("opacity", 1);
+        densityTooltip.transition().duration(200).style("opacity", 0.9);
+      })
+      .on("mouseout", function () {
+        d3.selectAll(".point").style("opacity", 0);
+        densityTooltip.transition().duration(500).style("opacity", 0);
+      });
 
     // Add points to the line
     densitySvg

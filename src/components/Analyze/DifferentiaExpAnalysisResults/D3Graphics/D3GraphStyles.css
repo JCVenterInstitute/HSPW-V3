@@ -1,4 +1,4 @@
-.d3Graph {
+:root {
   --background-color: #ffffff;
   --text-color: #333333;
   --axis-color: #000000;
@@ -6,15 +6,17 @@
   --sigfold-dot-color: #007bff;
   --sig-dot-color: #ff5733;
   --fold-dot-color: rgb(30, 255, 0);
-  --tooltip-background-color: #f9f9f9;
+  --tooltip-background-color: #ffffff;
   --tooltip-border-color: #cccccc;
-  --tooltip-text-color: #333333;
+  --tooltip-text-color: #000000;
   --slider-track-color: #dddddd;
   --slider-thumb-color: #007bff;
   --button-background-color: #007bff;
   --button-text-color: #ffffff;
   --button-border-color: #0056b3;
   --button-hover-background-color: #0056b3;
+}
+.d3Graph {
   font-family: Lato;
 }
 
@@ -34,7 +36,7 @@ svg {
   color: var(--tooltip-text-color);
   border-radius: 4px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  opacity: 1 !important;
+  opacity: 1;
 }
 
 .dot {
