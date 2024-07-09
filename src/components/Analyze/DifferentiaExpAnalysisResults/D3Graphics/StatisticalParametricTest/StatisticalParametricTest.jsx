@@ -127,6 +127,21 @@ const StatisticalParametricPlot = (data, extension) => {
 
     var gridLines = svg.append("g").attr("class", "grid");
 
+    const thresholdLines = svg.append("g").attr("class", "thresholdLines");
+
+    // add horizontal lines at y= pval
+    const pval = 0.05;
+    [-1 * Math.log10(pval)].forEach(function (threshold) {
+      thresholdLines
+        .append("svg:line")
+        .attr("class", threshold === 0 ? "threshold bold" : "threshold")
+        .attr("x1", 0)
+        .attr("x2", width)
+        .attr("y1", yScale(threshold))
+        .attr("y2", yScale(threshold))
+        .attr("stroke-dasharray", threshold === 0 ? "none" : "5, 5");
+    });
+
     // Setup horizontal grid lines
     gridLines
       .append("g")
@@ -224,10 +239,24 @@ const StatisticalParametricPlot = (data, extension) => {
               .tickFormat("")
               .scale(event.transform.rescaleY(yScale))
           );
+        svg
+          .selectAll(".threshold")
+          .attr("y1", zy(-1 * Math.log10(0.05)))
+          .attr("y2", zy(-1 * Math.log10(0.05)));
       });
 
     svg.call(zoom);
     zoomRef.current = zoom;
+
+    const getColor = (d) => {
+      const yVal = yScale(yValue(d));
+      console.log(yVal);
+      if (yVal < -1 * Math.log10(0.05)) {
+        return "dot sig";
+      } else {
+        return "dot";
+      }
+    };
 
     const pltPointsGroup = svg
       .append("g")
@@ -245,6 +274,10 @@ const StatisticalParametricPlot = (data, extension) => {
       .attr("cy", (d) => yScale(yValue(d)))
       .attr("r", pointRadius)
       .attr("class", circleClass)
+      .attr("class", (d) => {
+        const cyValue = yValue(d);
+        return cyValue < -1 * Math.log10(pval) ? "dot sig" : "dot";
+      })
       .on("mouseover", (_, d) => {
         tooltip.html(tooltipHTML(d)).style("visibility", "visible");
       })
