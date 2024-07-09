@@ -131,13 +131,7 @@ const VennDiagramComponent = ({ jobId }) => {
       .select("body")
       .append("div")
       .attr("class", "tooltip")
-      .style("position", "absolute")
-      .style("visibility", "hidden")
-      .style("background-color", "white")
-      .style("border", "1px solid #ccc")
-      .style("padding", "5px")
-      .style("border-radius", "4px")
-      .style("font-size", "12px");
+      .style("position", "absolute");
 
   const drawSpecialCaseVenn = (
     vennContainer,
@@ -151,7 +145,8 @@ const VennDiagramComponent = ({ jobId }) => {
     const svg = vennContainer
       .append("svg")
       .attr("width", 600)
-      .attr("height", 600);
+      .attr("height", 500)
+      .attr("viewBox", "0 0 600 500");
 
     svg
       .append("circle")
@@ -293,36 +288,3 @@ const VennDiagramComponent = ({ jobId }) => {
 };
 
 export default VennDiagramComponent;
-
-// return (
-//   <div>
-//     <div id="venn"></div>
-//     {selectedSet && (
-//       <div>
-//         <h2>{selectedSet.label}</h2>
-//         <table className="protein-table">
-//           <thead>
-//             <tr>
-//               <th>Protein</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {[...selectedSet.data].map((protein, index) => (
-//               <tr key={index}>
-//                 <td>
-//                   <a
-//                     href={`https://salivaryproteome.org/protein/${protein}`}
-//                     target="_blank"
-//                     rel="noopener noreferrer"
-//                   >
-//                     {protein}
-//                   </a>
-//                 </td>
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-//       </div>
-//     )}
-//   </div>
-// );

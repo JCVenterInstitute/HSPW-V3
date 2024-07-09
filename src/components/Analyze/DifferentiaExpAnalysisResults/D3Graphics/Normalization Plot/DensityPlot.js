@@ -23,8 +23,8 @@ const DensityPlot = ({ containerId, jobId, datafile }) => {
 
   useEffect(() => {
     if (!data) return;
-    console.log("> Denisty plot id:", containerId);
-    console.log("> Denisty plot data:", data);
+    console.log("> Density plot id:", containerId);
+    console.log("> Density plot data:", data);
 
     // Extract numeric columns for density plot
     const numericColumns = Object.keys(data[0]).filter(
@@ -54,8 +54,15 @@ const DensityPlot = ({ containerId, jobId, datafile }) => {
 
     // Append group element to SVG
     const densitySvg = svgElement
-      .attr("width", densityWidth + densityMargin.left + densityMargin.right)
-      .attr("height", densityHeight + densityMargin.top + densityMargin.bottom)
+      .attr("width", "100%")
+      .attr("height", "100%")
+      .attr(
+        "viewBox",
+        `0 0 ${densityWidth + densityMargin.left + densityMargin.right} ${
+          densityHeight + densityMargin.top + densityMargin.bottom
+        }`
+      )
+
       .append("g")
       .attr(
         "transform",
@@ -142,14 +149,7 @@ const DensityPlot = ({ containerId, jobId, datafile }) => {
     const densityTooltip = d3
       .select("body")
       .append("div")
-      .attr("class", "normtooltip")
-      .style("opacity", 0)
-      .style("position", "absolute")
-      .style("pointer-events", "none")
-      .style("background-color", "white")
-      .style("border", "1px solid #ccc")
-      .style("padding", "10px")
-      .style("border-radius", "5px");
+      .attr("class", "tooltip");
 
     // Add mouseover and mouseout handlers for line and points
     densitySvg

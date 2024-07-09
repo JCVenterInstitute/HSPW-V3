@@ -86,6 +86,13 @@ const Boxplot = ({ containerId, jobId, datafile }) => {
       .attr("class", "box-plot")
       .attr("width", boxWidth + boxMargin.left + boxMargin.right)
       .attr("height", boxHeight + boxMargin.top + boxMargin.bottom)
+      .attr(
+        "viewBox",
+
+        `0 0 ${boxWidth + boxMargin.left + boxMargin.right} ${
+          boxHeight + boxMargin.top + boxMargin.bottom
+        }`
+      )
       .append("g")
       .attr("transform", `translate(${boxMargin.left},${boxMargin.top})`);
 
@@ -112,10 +119,7 @@ const Boxplot = ({ containerId, jobId, datafile }) => {
       .selectAll("text")
       .style("font-size", "10px");
 
-    const boxTooltip = d3
-      .select("body")
-      .append("div")
-      .attr("class", "normtooltip");
+    const boxTooltip = d3.select("body").append("div").attr("class", "tooltip");
 
     const showBoxTooltip = function (event, d) {
       boxTooltip

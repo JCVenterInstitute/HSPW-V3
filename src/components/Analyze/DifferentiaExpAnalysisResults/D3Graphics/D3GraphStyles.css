@@ -26,12 +26,15 @@ svg {
   background-color: var(--background-color);
 }
 .tooltip {
+  position: absolute;
+  z-index: 9999; /* Ensure tooltip appears above other elements */
   padding: 8px;
   background-color: var(--tooltip-background-color);
   border: 1px solid var(--tooltip-border-color);
   color: var(--tooltip-text-color);
   border-radius: 4px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  opacity: 1 !important;
 }
 
 .dot {
@@ -63,16 +66,6 @@ svg {
   fill: none;
   pointer-events: all;
 }
-/* .tooltip::after {
-  content: " ";
-  position: absolute;
-  top: 14%;
-  right: 100%;
-  margin-top: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: transparent #000 transparent transparent;
-} */
 
 #zoom-slider-container {
   width: 100%;
@@ -194,6 +187,7 @@ svg {
   #venn {
     width: 700px;
     height: 500px;
+    position: relative;
   }
   .group-info,
   .group-info-special {
@@ -262,6 +256,11 @@ svg {
 }
 
 #normChart {
+  body {
+    font-family: Arial, sans-serif;
+    margin: 10px;
+  }
+
   .container {
     max-width: 800px;
     margin: 0 auto;
@@ -292,16 +291,6 @@ svg {
     border: 1px solid #ccc;
     display: block; /* Ensures the SVG fills its container */
     margin: 0 auto 20px auto; /* Centers the SVG horizontally and adds bottom margin */
-  }
-
-  .normtooltip {
-    position: absolute;
-    background-color: white;
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 5px;
-    pointer-events: none;
-    opacity: 0;
   }
 
   .circle-point {
