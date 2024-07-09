@@ -1,12 +1,11 @@
 import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useEffect } from "react";
 import { handleDownload } from "./utils";
-import { fileMapping, sectionToTabs } from "./Constants";
+import { fileMapping } from "./Constants";
 import { getTabOptions } from "./utils";
 
 const TabOptions = ({
   tab,
-  handleTabChange,
   selectedSection,
   setTab,
   numbOfTopVolcanoSamples,
@@ -66,7 +65,10 @@ const TabOptions = ({
       }
 
       return (
-        <ToggleButton key={`${selectedSection}-tab-${i}`} value={tab}>
+        <ToggleButton
+          key={`${selectedSection}-tab-${i}`}
+          value={tab}
+        >
           {tab}
         </ToggleButton>
       );
@@ -76,7 +78,7 @@ const TabOptions = ({
       <ToggleButtonGroup
         value={tab}
         exclusive
-        onChange={handleTabChange}
+        onClick={(e) => setTab(e.target.value)}
         sx={{ ...style.tabStyle, marginTop: "10px" }}
       >
         {tabButtons}
@@ -85,7 +87,10 @@ const TabOptions = ({
   };
 
   return (
-    <Box id="option-tab-box" sx={{ display: "flex" }}>
+    <Box
+      id="option-tab-box"
+      sx={{ display: "flex" }}
+    >
       <Box style={{ display: "flex", width: "100%", maxWidth: "950px" }}>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           {createTabGroup(selectedSection)}
@@ -98,7 +103,6 @@ const TabOptions = ({
             onClick={() => {
               handleDownload(
                 jobId,
-
                 tab !== null
                   ? fileMapping[selectedSection][tab]
                   : fileMapping[selectedSection]
