@@ -2,7 +2,7 @@ import { Box, Container } from "@mui/material";
 import { useEffect, useState } from "react";
 import { fileMapping } from "./Constants";
 import ResultDownload from "./ResultSections/ResultDownload";
-import { fetchData, getImageStyle, handleDownload } from "./utils";
+import { fetchData, fetchImage, getImageStyle, handleDownload } from "./utils";
 import CsvTable from "./CsvTable";
 import VolcanoPlot from "./D3Graphics/VolcanoPlot/VolcanoPlot";
 import StatisticalParametricPlot from "./D3Graphics/StatisticalParametricTest/StatisticalParametricTest";
@@ -12,7 +12,7 @@ import BoxPlot from "./D3Graphics/Normalization Plot/BoxPlot";
 import DensityPlot from "./D3Graphics/Normalization Plot/DensityPlot";
 import PrincipleComponentAnalysis from "./D3Graphics/PrincipleComponentAnalysis/PrincipleComponentAnalysis";
 import RandomForest from "./D3Graphics/RandomForest/RandomForest";
-
+import InputData from "./InputData";
 
 const style = {
   dataBox: {
@@ -68,6 +68,17 @@ const DataSection = ({
       }
 
       setImage(imageLink);
+    } else {
+      const getImage = async () => {
+        const imageUrl = await fetchImage(jobId, newRelevantFile);
+        setImage(imageUrl);
+      };
+
+      const newRelevantFile = fileMapping[selectedSection][tab];
+
+      if (newRelevantFile === undefined || tab === "Data Matrix") return;
+
+      getImage();
     }
   }, [tab, files]);
 
@@ -103,7 +114,10 @@ const DataSection = ({
       case "Statistical Parametric Test":
         if (allData && tab !== "Data Matrix") {
           displayResult = (
-            <StatisticalParametricPlot data={allData.data} extension={"tsv"} />
+            <StatisticalParametricPlot
+              data={allData.data}
+              extension={"tsv"}
+            />
           );
         } else {
           displayResult = null;
@@ -113,7 +127,10 @@ const DataSection = ({
       case "Fold Change Analysis":
         if (allData && tab !== "Data Matrix") {
           displayResult = (
-            <FoldChangePlot data={allData.data} extension={"tsv"} />
+            <FoldChangePlot
+              data={allData.data}
+              extension={"tsv"}
+            />
           );
         } else {
           displayResult = null;
@@ -220,14 +237,28 @@ const DataSection = ({
                 width: "100%",
               }}
             >
-              <CsvTable data={allData.data} selectedSection={selectedSection} />
+              <CsvTable
+                data={allData.data}
+                selectedSection={selectedSection}
+              />
             </Box>
           </Container>
         );
         break;
+      case "Input Data":
+        displayResult = (
+          <InputData
+            searchParams={searchParams}
+            jobId={jobId}
+          />
+        );
+        break;
       case "Download":
         displayResult = (
-          <ResultDownload jobId={jobId} handleDownload={handleDownload} />
+          <ResultDownload
+            jobId={jobId}
+            handleDownload={handleDownload}
+          />
         );
         break;
       default:
@@ -252,7 +283,10 @@ const DataSection = ({
                 width: "100%",
               }}
             >
-              <CsvTable data={data} selectedSection={selectedSection} />
+              <CsvTable
+                data={data}
+                selectedSection={selectedSection}
+              />
             </Box>
           </Container>
         );
@@ -263,7 +297,10 @@ const DataSection = ({
   };
 
   return (
-    <Box sx={style.dataBox} className="d3Graph">
+    <Box
+      sx={style.dataBox}
+      className="d3Graph"
+    >
       {getSection()}
     </Box>
   );
