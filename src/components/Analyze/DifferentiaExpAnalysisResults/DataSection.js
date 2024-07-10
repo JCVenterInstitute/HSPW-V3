@@ -36,13 +36,14 @@ const DataSection = ({
   const [image, setImage] = useState(null);
   const [data, setData] = useState(null);
   const [plotData, setPlotData] = useState(null);
+  const [groupData, setGroupData] = useState(null);
 
   const getDataFile = async (
     dataFile = files["Data Matrix"],
-    forPlot = false
+    setter = setData
   ) => {
     const { data, dataUrl } = await fetchData(dataFile);
-    forPlot ? setPlotData(dataUrl) : setData(data);
+    setter(data);
   };
 
   useEffect(() => {
@@ -62,10 +63,12 @@ const DataSection = ({
       if (tab.startsWith("All")) imageLink = files["All Samples"];
 
       // Handle PCA file
-      if (files["PCA Score"]) {
-        getDataFile(files["PCA Score"], true);
+      if (files["PCA Score"] && files["Group Labels"]) {
+        getDataFile(files["PCA Score"], setPlotData);
+        getDataFile(files["Group Labels"], setGroupData);
       } else {
         setPlotData(null);
+        setGroupData(null);
       }
 
       setImage(imageLink);
@@ -133,15 +136,21 @@ const DataSection = ({
         }
         break;
       case "Principal Component Analysis":
-        if (plotData && tab !== "Data Matrix") {
+        if (plotData && groupData && tab !== "Data Matrix") {
+          var cleanedGroupData = {};
+          var groupLabels = new Set();
+          for (const [key, value] of Object.entries(groupData[0])) {
+            if (key !== "Protein") {
+              cleanedGroupData[key] = value.replaceAll('"', "");
+              groupLabels.add(cleanedGroupData[key]);
+            }
+          }
           displayResult = (
             <PrincipleComponentAnalysis
-              data={data}
-              xCol={1}
-              yCol={2}
-              details={["p.value", "Fold.Change"]}
-              xlabel="PC 1 (25.5%)"
-              ylabel="PC 2 (12.5%)"
+              data={plotData}
+              groupMapping={cleanedGroupData}
+              groupLabels={[...groupLabels]}
+              extension={"csv"}
             />
           );
         } else {

@@ -187,6 +187,24 @@ body {
   }
 }
 
+#PCATest {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+
+  .axis {
+    font-size: 2.7em;
+    font-weight: bold;
+    fill: var(--axis-color);
+  }
+  text {
+    font-size: 2.2em;
+  }
+}
+
 #vennContainer {
   #venn {
     width: 700px;

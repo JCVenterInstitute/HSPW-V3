@@ -1,393 +1,284 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3v7";
-import { ThreeMpTwoTone } from "@mui/icons-material";
-import numeric from "numeric";
+import "../D3GraphStyles.css";
+import { create } from "@mui/material/styles/createTransitions";
+// import data from "../../data/statistical_parametric_test.csv";
 
 const PrincipleComponentAnalysis = ({
-  data = "",
-  xCol = 1,
-  yCol = 2,
-  xlabel = "",
-  ylabel = "",
+  data,
+  groupLabels,
+  groupMapping,
+  extension,
 }) => {
-  let handleKeyDown;
+  console.log(groupMapping);
+
+  const plotConfig = {
+    dataFile: data,
+    extension: extension,
+    groupLables: groupLabels,
+    groupMapping: groupMapping,
+    containerID: "PCAtest",
+    width: 600,
+    height: 450,
+    margin: { top: 10, right: 60, bottom: 50, left: 100 },
+    pointRadius: 8,
+    xAxisLabel: "PC 1 (25.5%)",
+    yAxisLabel: "PC 2 (12.5%)",
+    xValue: (d) => +d["PC1"],
+    yValue: (d) => +d["PC2"],
+    circleClass: (d) => {
+      if (groupMapping[d["Protein"].replaceAll('"', "")] === groupLabels[0]) {
+        console.log("A");
+        return "dot sigfold";
+      } else {
+        console.log("B");
+        return "dot sig";
+      }
+    },
+    tooltipHTML: (d) => {
+      return `<strong>Protein</strong>: ${d["Protein"]}
+      <br/><strong>Group</strong>: ${
+        groupMapping[d["Protein"].replaceAll('"', "")]
+      }
+      <br/><strong>PC1</strong>: ${d3.format(".2f")(d["PC1"])}
+      <br/><strong>PC2</strong>: ${d3.format(".2f")(d["PC2"])}`;
+    },
+  };
+
   const chartRef = useRef(null),
     svgRef = useRef(null),
     zoomRef = useRef(null);
 
-  useEffect(() => {
-    const SVGwidth = chartRef.current.offsetWidth * 0.6;
-    const SVGheight = SVGwidth;
-    const margin = { top: 20, right: 20, bottom: 40, left: 50 };
-    const innerWidth = SVGwidth - margin.left - margin.right;
-    const innerHeight = SVGheight - margin.top - margin.bottom;
-    var groups = [];
+  const createScatterPlot = async (config, containerRef) => {
+    const {
+      dataFile,
+      width,
+      height,
+      margin,
+      pointRadius,
+      xAxisLabel,
+      yAxisLabel,
+      xValue,
+      yValue,
+      circleClass,
+      tooltipHTML,
+    } = config;
 
-    // Creating the SVG container
-    const svg = d3
-      .select(chartRef.current)
+    // Clear existing SVG elements
+    d3.select(containerRef.current).selectAll("svg").remove();
+
+    const parentContainer = d3.select(containerRef.current);
+    const svg = parentContainer
       .append("svg")
-      .attr("width", SVGwidth)
-      .attr("height", SVGheight)
+      .attr("preserveAspectRatio", "xMinYMin meet")
+      .attr(
+        "viewBox",
+        `0 0 ${width + margin.left + margin.right} ${
+          height + margin.top + margin.bottom
+        }`
+      )
       .append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`);
-
+      .attr("transform", `translate(${margin.left}, ${margin.top})`);
     svgRef.current = svg;
+    const clipPath = svg
+      .append("clipPath")
+      .attr("id", "clipRect")
+      .append("rect")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("x", 0)
+      .attr("y", 0);
 
     svg.node().addEventListener("wheel", (event) => event.preventDefault());
-    // Defining the clip path to restrict drawing within the chart area
-    svg
-      .append("defs")
-      .append("clipPath")
-      .attr("id", "clip")
+    // Append slider in the container for better layout control
+    const slider = parentContainer
+      .append("div")
+      .attr("id", "zoom-slider-container")
+      .append("input")
+      .attr("type", "range")
+      .attr("id", "zoom-slider")
+      .attr("class", "sleek-slider")
+      .attr("min", "0.5")
+      .attr("max", "20")
+      .attr("step", "0.1")
+      .attr("value", "1")
+      .style("width", "50%");
+
+    document.getElementById("zoom-slider").disabled = true;
+
+    const data = plotConfig.dataFile;
+    const xScale = d3
+      .scaleLinear()
+      .range([0, width])
+      .domain(d3.extent(data, xValue))
+      .nice();
+
+    const yScale = d3
+      .scaleLinear()
+      .range([height, 0])
+      .domain(d3.extent(data, yValue))
+      .nice();
+
+    const xAxisBottom = svg
+      .append("g")
+      .attr("transform", `translate(0,${height})`);
+    const xAxisTop = svg.append("g");
+
+    const yAxisLeft = svg.append("g");
+    const yAxisRight = svg
+      .append("g")
+      .attr("transform", `translate(${width}, 0)`);
+
+    var gridLines = svg.append("g").attr("class", "grid");
+
+    // Setup horizontal grid lines
+    gridLines
+      .append("g")
+      .attr("class", "x grid")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(xScale).ticks(10).tickSize(-height).tickFormat(""));
+
+    // Setup vertical grid lines
+    gridLines
+      .append("g")
+      .attr("class", "y grid")
+      .call(d3.axisLeft(yScale).ticks(10).tickSize(-width).tickFormat(""));
+
+    const tooltip = d3
+      .select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("position", "absolute")
+      .style("visibility", "hidden");
+
+    xAxisBottom
+      .call(d3.axisBottom(xScale))
+      .append("text")
+      .attr("x", width / 2)
+      .attr("y", margin.top - 10)
+      .attr("fill", "black")
+      .attr("text-anchor", "middle")
+      .attr("class", "axis")
+      .text(xAxisLabel);
+    xAxisTop.call(d3.axisTop(xScale));
+
+    yAxisLeft
+      .call(d3.axisLeft(yScale))
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("x", -height / 2)
+      .attr("y", -margin.left + 20)
+      .attr("fill", "black")
+      .attr("text-anchor", "middle")
+      .attr("class", "axis")
+      .text(yAxisLabel);
+    yAxisRight
+      .call(d3.axisRight(yScale))
+      .append("text")
+
+      //   .attr("transform", "rotate(-90)")
+
+      .attr("x", -height / 2)
+      .attr("y", -margin.right + 20)
+      .attr("class", "axis")
+      .attr("fill", "black");
+
+    var zoomBox = svg
       .append("rect")
-      .attr("width", innerWidth)
-      .attr("height", innerHeight);
+      .attr("class", "zoom")
+      .attr("height", height)
+      .attr("width", width);
 
-    // Instantiating the tooltip
-    const tooltip = d3.select("body").append("div").attr("class", "tooltip");
-
-    // Loading and parsing given data
-    d3.csv(data, parser).then((data) => {
-      var datakeys = Object.keys(data[0]),
-        xValKey = datakeys[xCol],
-        yValKey = datakeys[yCol];
-
-      // Determine the dynamic scales based on the data
-      const xExtent = d3.extent(data, (d) => d[xValKey] * 1.75);
-      const yExtent = d3.extent(data, (d) => d[yValKey] * 1.75);
-
-      const xScale = d3
-        .scaleLinear()
-        .range([0, innerWidth])
-        .domain([-0.1 * xExtent[1] + xExtent[0], xExtent[1]]);
-      const yScale = d3
-        .scaleLinear()
-        .range([innerHeight, 0])
-        .domain([-0.1 * yExtent[1] + yExtent[0], yExtent[1]]);
-
-      // Instantiating x and y axis
-      const xAxis = d3.axisBottom(xScale);
-      const yAxis = d3.axisLeft(yScale);
-
-      // Setting up x axis
-      const gX = svg
-        .append("g")
-        .attr("class", "x axis")
-        .attr("transform", `translate(0,${innerHeight})`)
-        .call(xAxis);
-
-      // Labeling x axis
-      gX.append("text")
-        .attr("class", "label")
-        .attr("transform", `translate(${innerWidth / 2},${margin.bottom - 6})`)
-        .attr("text-anchor", "middle")
-        .text(xlabel === "" ? xValKey : xlabel);
-
-      // Setting up y axis
-      const gY = svg.append("g").attr("class", "y axis").call(yAxis);
-
-      // Labeling y axis
-      gY.append("text")
-        .attr("class", "label")
-        .attr(
-          "transform",
-          `translate(${-margin.left / 1.25},${innerHeight / 2}) rotate(-90)`
-        )
-        .attr("text-anchor", "middle")
-        .text(ylabel === "" ? yValKey : ylabel);
-      // Instantiate gridlines
-      var gridLines = svg.append("g").attr("class", "grid");
-
-      // Setup horizontal grid lines
-      gridLines
-        .append("g")
-        .attr("class", "x grid")
-        .attr("transform", "translate(0," + innerHeight + ")")
-        .call(
-          d3.axisBottom(xScale).ticks(10).tickSize(-innerHeight).tickFormat("")
-        );
-
-      // Setup vertical grid lines
-      gridLines
-        .append("g")
-        .attr("class", "y grid")
-        .call(
-          d3.axisLeft(yScale).ticks(10).tickSize(-innerWidth).tickFormat("")
-        );
-
-      // Creates a rectangle that allows zooming to be done anywhere on the chart
-      svg
-        .append("rect")
-        .attr("class", "zoom")
-        .attr("height", innerHeight)
-        .attr("width", innerWidth);
-
-
-      const groupedData = d3.group(data.data, (d) => d[""].charAt(0));
-
-      groupedData.forEach((groupData, key) => {
-        const ellipseParams = calculateEllipse(groupData);
-        groups.push({
-          key: key,
-          angle: ellipseParams.angle,
-          cx: ellipseParams.cx,
-          cy: ellipseParams.cy,
-        });
+    const zoom = d3
+      .zoom()
+      .scaleExtent([0.5, 20])
+      .translateExtent([
+        [0, 0],
+        [width, height],
+      ])
+      .on("zoom", (event) => {
+        const zx = event.transform.rescaleX(xScale);
+        const zy = event.transform.rescaleY(yScale);
+        xAxisBottom.call(d3.axisBottom(zx));
+        yAxisLeft.call(d3.axisLeft(zy));
+        yAxisRight.call(d3.axisRight(zy));
         svg
-          .append("g")
-          .attr("clip-path", "url(#clip)")
-          .append("ellipse")
-          .attr("class", `ellipse ${key}`)
-          .attr("cx", ellipseParams.cx)
-          .attr("cy", ellipseParams.cy)
-          .attr("rx", ellipseParams.rx)
-          .attr("ry", ellipseParams.ry)
-          .attr(
-            "transform",
-            `rotate(${ellipseParams.angle},${ellipseParams.cx},${ellipseParams.cy})`
-          )
-          .style("opacity", "0.2");
-      });
-
-      // bounds points to clip path
-      const circleGroup = svg.append("g").attr("clip-path", "url(#clip)");
-
-      circleGroup
-        .selectAll(".dot")
-        .data(data)
-        .enter()
-        .append("circle")
-        .attr("class", circleClass)
-        .attr("r", 6)
-        .attr("cx", (d) => xScale(d[xValKey]))
-        .attr("cy", (d) => yScale(d[yValKey]))
-        .attr("stroke", "black")
-        .attr("stroke-width", 2);
-      // .on("mouseenter", function (event, d) {
-      //   tooltip.style("visibility", "visible").html(tooltipDetails(d));
-      // })
-      // .on("mousemove", function (event) {
-      //   tooltip
-      //     .style("top", event.pageY - 5 + "px")
-      //     .style("left", event.pageX + 20 + "px");
-      // })
-      // .on("mouseleave", function () {
-      //   tooltip.style("visibility", "hidden");
-      // })
-      // .on(
-      //   "click",
-      //   (_, d) =>
-      //     window.open(
-      //       "https://salivaryproteome.org/protein/" + d[datakeys[0]]
-      //     ),
-      //   "_blank"
-      // );
-
-      const legendDict = {
-        1: ["CS", "Red"],
-        2: ["HS", "Green"],
-      };
-
-      createLegend(svg, legendDict);
-
-      const zoom = d3
-        .zoom()
-        .scaleExtent([1, 2000])
-        .translateExtent([
-          [0, 0],
-          [SVGwidth, SVGheight],
-        ])
-        .on("zoom", zoomFunction);
-
-      svg.call(zoom);
-      zoomRef.current = zoom;
-
-      function zoomFunction(event) {
-        const transform = event.transform;
-
-        svg
-          .selectAll(".dot")
-          .attr("transform", transform)
-          .attr("r", 6 / transform.k)
-          .attr("stroke-width", 2 / transform.k);
-
-        gX.call(xAxis.scale(transform.rescaleX(xScale)));
-        gY.call(yAxis.scale(transform.rescaleY(yScale)));
-
-        groups.forEach((group) => {
-          svg
-            .selectAll(`.${group.key}`)
-            .attr(
-              "transform",
-              `${transform} rotate(${group.angle},${group.cx},${group.cy})`
-            );
-        });
-
+          .selectAll("circle")
+          .attr("cx", (d, i) => zx(xValue(d, i)))
+          .attr("cy", (d) => zy(yValue(d)));
+        // Sync zoom level to the slider
+        document.getElementById("zoom-slider").value = event.transform.k;
         svg
           .select(".x.grid")
           .call(
             d3
               .axisBottom(xScale)
               .ticks(10)
-              .tickSize(-innerHeight)
+              .tickSize(-height)
               .tickFormat("")
-              .scale(transform.rescaleX(xScale))
+              .scale(event.transform.rescaleX(xScale))
           );
-
         svg
           .select(".y.grid")
           .call(
             d3
               .axisLeft(yScale)
               .ticks(10)
-              .tickSize(-innerWidth)
+              .tickSize(-width)
               .tickFormat("")
-              .scale(transform.rescaleY(yScale))
+              .scale(event.transform.rescaleY(yScale))
           );
-      }
+        svg
+          .selectAll(".threshold")
+          .attr("y1", zy(-1 * Math.log10(0.05)))
+          .attr("y2", zy(-1 * Math.log10(0.05)));
+      });
 
-      function handleKeyDown(event) {
-        if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-          event.preventDefault();
-        }
-        if (event.key === "ArrowUp") {
-          svg.transition().duration(100).call(zoom.scaleBy, 1.1);
-        }
-        if (event.key === "ArrowDown") {
-          svg.transition().duration(100).call(zoom.scaleBy, 0.9);
-        }
-      }
+    svg.call(zoom);
+    zoomRef.current = zoom;
 
-      window.addEventListener("keydown", handleKeyDown);
+    const pltPointsGroup = svg
+      .append("g")
+      .attr("id", "points-group")
+      .attr("clip-path", "url(#clipRect)")
+      .attr("height", height)
+      .attr("width", width);
 
-      // Function that dynamically creates a tooltip for a circle
-      // function tooltipDetails(d) {
-      //   var output = `<strong>Primary Accession</strong>: ${d[datakeys[0]]}`;
-      //   details.forEach(
-      //     (detail) =>
-      //       (output = output.concat(
-      //         `<br/><strong>${detail}</strong>: ${d[detail]}`
-      //       ))
-      //   );
-      //   return output;
-      // }
+    const pltPoints = pltPointsGroup
+      .selectAll(".dot")
+      .data(data)
+      .enter()
+      .append("circle")
+      .attr("cx", (d, i) => xScale(xValue(d, i)))
+      .attr("cy", (d) => yScale(yValue(d)))
+      .attr("r", pointRadius)
+      .attr("class", circleClass)
+      .on("mouseover", (_, d) => {
+        tooltip.html(tooltipHTML(d)).style("visibility", "visible");
+      })
+      .on("mousemove", (event) => {
+        tooltip
+          .style("top", `${event.pageY - 10}px`)
+          .style("left", `${event.pageX + 10}px`);
+      })
+      .on("mouseout", () => {
+        tooltip.style("visibility", "hidden");
+      })
+      .on(
+        "click",
+        (_, d) =>
+          window.open(
+            "https://salivaryproteome.org/protein/" +
+              d["Protein"].replace(/^"(.*)"$/, "$1")
+          ),
+        "_blank"
+      );
+  };
 
-      function calculateEllipse(groupData) {
-        const meanX = d3.mean(groupData, (d) => d.PC1);
-        const meanY = d3.mean(groupData, (d) => d.PC2);
+  const containerRef = useRef(null);
 
-        const centeredData = groupData.map((d) => [
-          d.PC1 - meanX,
-          d.PC2 - meanY,
-        ]);
-
-        const covarianceMatrix = numeric.dot(
-          numeric.transpose(centeredData),
-          centeredData
-        );
-
-        // Normalize the covariance matrix by the number of points
-        const n = groupData.length;
-        const normalizedCovarianceMatrix = numeric.div(covarianceMatrix, n);
-
-        const eig = numeric.eig(normalizedCovarianceMatrix);
-        if (!eig.lambda) {
-          console.error("Eigenvalue decomposition failed");
-          return;
-        }
-
-        const eigenvalues = eig.lambda.x;
-        const eigenvectors = eig.E.x;
-
-        // Sort eigenvalues and eigenvectors
-        const sortedIndices = eigenvalues
-          .map((val, idx) => [val, idx])
-          .sort((a, b) => a[0] - b[0])
-          .map((pair) => pair[1]);
-
-        const smallestEigenval = eigenvalues[sortedIndices[0]];
-        const largestEigenval = eigenvalues[sortedIndices[1]];
-
-        const largestEigenvec = eigenvectors[sortedIndices[1]];
-
-        console.log(eigenvectors);
-
-        return {
-          cx: xScale(meanX),
-          cy: yScale(meanY),
-          rx: Math.sqrt(largestEigenval) * 90, // scaling for visualization
-          ry: Math.sqrt(smallestEigenval) * 100, // scaling for visualization
-          angle:
-            Math.atan2(largestEigenvec[1], largestEigenvec[0]) *
-            (180 / Math.PI),
-        };
-      }
-
-      function circleClass(d) {
-        if (d[""].startsWith("C")) {
-          return "dot CS";
-        } else if (d[""].startsWith("H")) {
-          return "dot HS";
-        }
-      }
-    });
-
-    // Function to determine the class of a circle
-
-    function parser(d) {
-      for (let key in d) {
-        if (d.hasOwnProperty(key)) {
-          d[key] = numberParser(d[key]);
-        }
-      }
-      return d;
-    }
-
-    function numberParser(value) {
-      return +value ? +value : value;
-    }
-
-    // Function for creating a legend to be attached to a chart
-    function createLegend(selection, legendDict) {
-      const legend = selection
-        .append("g")
-        .attr("class", "legend")
-        .attr("transform", "translate(20, 40)");
-
-      const legendItems = Object.keys(legendDict).map((key) => ({
-        key,
-        label: legendDict[key][0],
-        color: legendDict[key][1],
-      }));
-
-      const legendItem = legend
-        .selectAll(".legend-item")
-        .data(legendItems)
-        .enter()
-        .append("g")
-        .attr("class", "legend-item")
-        .attr("transform", (d, i) => `translate(0,${i * 20})`);
-
-      legendItem
-        .append("circle")
-        .attr("cx", 5)
-        .attr("cy", 5)
-        .attr("r", 5)
-        .attr("fill", (d) => d.color);
-
-      legendItem
-        .append("text")
-        .attr("x", 15)
-        .attr("y", 9)
-        .text((d) => d.label);
-    }
-
-    return () => {
-      d3.select(chartRef.current).selectAll("*").remove();
-      tooltip.remove();
-      window.removeEventListener("keydown", handleKeyDown);
-    };
+  useEffect(() => {
+    createScatterPlot(plotConfig, containerRef);
   }, []);
 
   const resetZoom = () => {
@@ -399,10 +290,16 @@ const PrincipleComponentAnalysis = ({
   };
 
   return (
-    <div ref={chartRef} id="chart" className="pca">
-      <button onClick={resetZoom} className="reset-button">
-        Reset Zoom
-      </button>
+    <div
+      id="PrincipleComponentAnalysisPlot"
+      ref={containerRef}
+      style={{ width: "90%" }}
+    >
+      <div className="reset-button-container">
+        <button onClick={resetZoom} className="reset-button">
+          Reset
+        </button>
+      </div>
     </div>
   );
 };
