@@ -1,17 +1,18 @@
 import "../D3GraphStyles.css";
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3v7";
-import { fetchCSV } from "../../utils.js"; // Import fetchCSV from utils.js
+import { fetchCSV } from "../../utils.js";
 
 const DensityPlot = ({ containerId, jobId, datafile }) => {
   const svgRef = useRef();
   const [data, setData] = useState(null);
+  const densityTooltip = useRef(null);
 
   useEffect(() => {
+    // Fetch CSV data
     const fetchData = async () => {
       try {
         const csvData = await fetchCSV(jobId, datafile);
-        // console.log("Fetched CSV Data:", csvData); // Log fetched CSV data
         setData(csvData.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -23,24 +24,24 @@ const DensityPlot = ({ containerId, jobId, datafile }) => {
 
   useEffect(() => {
     if (!data) return;
+
     console.log("> Density plot id:", containerId);
     console.log("> Density plot data:", data);
 
-    // Extract numeric columns for density plot
+    // Extract numeric columns
     const numericColumns = Object.keys(data[0]).filter(
       (column) => column !== "" && column !== "Label" && column !== "Protein"
     );
-    //console.log("numericColumns", numericColumns);
 
-    // Extract the first numeric column for density plot (e.g., "HSPP_DW_2155.97")
-    const columnKey = numericColumns[0];
-    //console.log("columnKey", columnKey);
-
-    // Prepare data for density plot
-    const densityValues = data.map((d) =>
-      parseFloat(d[columnKey].replace(/"/g, ""))
-    );
-    //console.log("densityValues", densityValues);
+    // Calculate the mean of each row
+    const densityValues = data.map((d) => {
+      const numericValues = numericColumns.map((column) =>
+        parseFloat(d[column].replace(/"/g, ""))
+      );
+      const meanValue = d3.mean(numericValues);
+      return meanValue;
+    });
+    console.log("> densityValues:", densityValues);
 
     // Set up dimensions and margins for density plot
     const densityMargin = { top: 20, right: 14, bottom: 60, left: 70 };
@@ -54,7 +55,6 @@ const DensityPlot = ({ containerId, jobId, datafile }) => {
 
     // Append group element to SVG
     const densitySvg = svgElement
-
       .attr(
         "viewBox",
         `0 0 ${densityWidth + densityMargin.left + densityMargin.right} ${
@@ -111,13 +111,13 @@ const DensityPlot = ({ containerId, jobId, datafile }) => {
       .attr("stroke", "transparent")
       .attr("stroke-width", 50) // Larger stroke width for easier hover
       .attr("d", line)
-      .on("mouseover", function (event, d) {
+      .on("mouseover", () => {
         d3.selectAll(".point").style("opacity", 1);
-        densityTooltip.transition().duration(200).style("opacity", 0.9);
+        densityTooltip.current.transition().duration(200).style("opacity", 0.9);
       })
-      .on("mouseout", function () {
+      .on("mouseout", () => {
         d3.selectAll(".point").style("opacity", 0);
-        densityTooltip.transition().duration(500).style("opacity", 0);
+        densityTooltip.current.transition().duration(500).style("opacity", 0);
       });
 
     // Add points to the line
@@ -150,7 +150,7 @@ const DensityPlot = ({ containerId, jobId, datafile }) => {
       .attr("text-anchor", "middle")
       .attr("x", densityWidth / 2)
       .attr("y", densityHeight + densityMargin.bottom - 20)
-      .text("Value");
+      .text("Mean Value");
 
     densitySvg
       .append("text")
@@ -161,19 +161,21 @@ const DensityPlot = ({ containerId, jobId, datafile }) => {
       .attr("y", -densityMargin.left + 20)
       .text("Density");
 
-    // Add tooltip div for density plot
-    const densityTooltip = d3
-      .select("body")
-      .append("div")
-      .attr("class", "tooltip");
+    // Initialize tooltip once
+    if (!densityTooltip.current) {
+      densityTooltip.current = d3
+        .select("body")
+        .append("div")
+        .attr("class", "tooltip");
+    }
 
     // Add mouseover and mouseout handlers for line and points
     densitySvg
       .selectAll(".point")
       .on("mouseover", function (event, d) {
         d3.select(this).attr("fill", "orange").style("opacity", 1);
-        densityTooltip.transition().duration(200).style("opacity", 0.9);
-        densityTooltip
+        densityTooltip.current.transition().duration(200).style("opacity", 0.9);
+        densityTooltip.current
           .html(
             `<strong>Value:</strong> ${d[0].toFixed(
               2
@@ -184,11 +186,11 @@ const DensityPlot = ({ containerId, jobId, datafile }) => {
       })
       .on("mouseout", function () {
         d3.select(this).attr("fill", "steelblue").style("opacity", 0);
-        densityTooltip.transition().duration(500).style("opacity", 0);
+        densityTooltip.current.transition().duration(500).style("opacity", 0);
       });
 
     densitySvg.on("mousemove", function (event) {
-      densityTooltip
+      densityTooltip.current
         .style("left", `${event.pageX + 15}px`)
         .style("top", `${event.pageY - 28}px`);
     });
@@ -214,11 +216,8 @@ const DensityPlot = ({ containerId, jobId, datafile }) => {
       };
     }
 
-    //console.log(`Creating density plot in ${containerId} with data:`, data);
-
     // Cleanup function
     return () => {
-      // Clean up any D3 elements if necessary
       svgElement.selectAll("*").remove();
       d3.select("body").selectAll(".tooltip").remove();
     };
