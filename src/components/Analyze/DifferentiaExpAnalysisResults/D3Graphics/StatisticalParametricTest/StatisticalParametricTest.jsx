@@ -315,9 +315,14 @@ const StatisticalParametricPlot = (data, extension) => {
     }
   };
 
+  const resetButtonMargin = {
+    top: `${plotConfig.margin.top + 10}px`,
+    right: `${plotConfig.margin.right + 40}px`,
+  };
+
   return (
-    <div id="statParaTest" ref={containerRef} style={{ width: "90%" }}>
-      <div className="reset-button-container">
+    <div id="statParaTest" ref={containerRef}>
+      <div className="reset-button-container" style={resetButtonMargin}>
         <button onClick={resetZoom} className="reset-button">
           Reset
         </button>

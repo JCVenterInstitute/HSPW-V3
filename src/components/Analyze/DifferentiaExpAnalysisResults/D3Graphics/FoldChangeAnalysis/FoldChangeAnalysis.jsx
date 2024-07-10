@@ -256,10 +256,14 @@ const FoldChangePlot = (data, extension) => {
       svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
     }
   };
+  const resetButtonMargin = {
+    top: `${plotConfig.margin.top + 10}px`,
+    right: `${plotConfig.margin.right + 40}px`,
+  };
 
   return (
-    <div id="FoldChangeGraph" ref={containerRef} style={{ width: "90%" }}>
-      <div className="reset-button-container">
+    <div id="FoldChangeGraph" ref={containerRef}>
+      <div className="reset-button-container" style={resetButtonMargin}>
         <button onClick={resetZoom} className="reset-button">
           Reset
         </button>
