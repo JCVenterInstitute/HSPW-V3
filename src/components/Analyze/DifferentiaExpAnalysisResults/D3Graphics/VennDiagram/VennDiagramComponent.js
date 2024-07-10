@@ -144,8 +144,7 @@ const VennDiagramComponent = ({ jobId }) => {
   ) => {
     const svg = vennContainer
       .append("svg")
-      .attr("width", 600)
-      .attr("height", 500)
+      .attr("preserveAspectRatio", "xMinYMin meet")
       .attr("viewBox", "0 0 600 500");
 
     svg

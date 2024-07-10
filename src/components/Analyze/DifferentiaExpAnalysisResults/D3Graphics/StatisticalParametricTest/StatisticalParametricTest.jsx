@@ -104,6 +104,7 @@ const StatisticalParametricPlot = (data, extension) => {
 
     const data = plotConfig.dataFile["data"];
     console.log(data);
+    console.log(data);
     const xScale = d3
       .scaleLinear()
       .range([0, width])
