@@ -55,14 +55,13 @@ const DensityPlot = ({ containerId, jobId, datafile }) => {
     // Append group element to SVG
     const densitySvg = svgElement
 
-      .attr("preserveAspectRatio", "xMinYMin meet")
       .attr(
         "viewBox",
         `0 0 ${densityWidth + densityMargin.left + densityMargin.right} ${
           densityHeight + densityMargin.top + densityMargin.bottom
         }`
       )
-
+      .attr("preserveAspectRatio", "xMinYMin meet")
       .append("g")
       .attr(
         "transform",

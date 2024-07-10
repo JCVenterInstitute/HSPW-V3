@@ -55,9 +55,9 @@
     "styled-components": "^5.3.11",
     "svg-sprite-loader": "^6.0.11",
     "sweetalert2": "^11.7.32",
+    "venn.js": "^0.2.20",
     "web-vitals": "^2.1.4",
-    "xml2js": "^0.4.23",
-    "venn.js": "^0.2.20"
+    "xml2js": "^0.4.23"
   },
   "scripts": {
     "dev": "react-scripts start",
