@@ -62,6 +62,7 @@ const StatisticalParametricPlot = (data, extension) => {
 
     // Clear existing SVG elements
     d3.select(containerRef.current).selectAll("svg").remove();
+    d3.select(containerRef.current).selectAll("div").remove();
 
     const parentContainer = d3.select(containerRef.current);
     const svg = parentContainer

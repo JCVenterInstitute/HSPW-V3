@@ -66,6 +66,7 @@ const PrincipleComponentAnalysis = ({
 
     // Clear existing SVG elements
     d3.select(containerRef.current).selectAll("svg").remove();
+    d3.select(containerRef.current).selectAll("div").remove();
 
     const parentContainer = d3.select(containerRef.current);
     const svg = parentContainer
@@ -196,6 +197,7 @@ const PrincipleComponentAnalysis = ({
         [0, 0],
         [width, height],
       ])
+
       .on("zoom", (event) => {
         const zx = event.transform.rescaleX(xScale);
         const zy = event.transform.rescaleY(yScale);
