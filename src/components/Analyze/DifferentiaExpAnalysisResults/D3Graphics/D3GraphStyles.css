@@ -2,7 +2,7 @@
   --background-color: #ffffff;
   --text-color: #333333;
   --axis-color: #000000;
-  --dot-color: #007bff;
+  --dot-color: gray;
   --sigfold-dot-color: #007bff;
   --sig-dot-color: #ff5733;
   --fold-dot-color: rgb(30, 255, 0);
@@ -24,9 +24,6 @@ body {
   overflow-y: hidden !important;
 }
 
-svg {
-  background-color: var(--background-color);
-}
 .tooltip {
   position: absolute;
   z-index: 9999; /* Ensure tooltip appears above other elements */
