@@ -63,6 +63,7 @@ svg {
     stroke-dasharray: none;
   }
 }
+
 .zoom {
   cursor: move;
   fill: none;
@@ -148,6 +149,9 @@ svg {
   }
   text {
     font-size: 2.2em;
+  }
+  .threshold {
+    stroke-width: 3px;
   }
 }
 

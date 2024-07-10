@@ -128,7 +128,12 @@ const StatisticalParametricPlot = (data, extension) => {
 
     var gridLines = svg.append("g").attr("class", "grid");
 
-    const thresholdLines = svg.append("g").attr("class", "thresholdLines");
+    const thresholdLines = svg
+      .append("g")
+      .attr("class", "thresholdLines")
+      .attr("clip-path", "url(#clipRect)")
+      .attr("height", height)
+      .attr("width", width);
 
     // add horizontal lines at y= pval
     const pval = 0.05;
