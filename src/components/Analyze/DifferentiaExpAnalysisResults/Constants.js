@@ -19,6 +19,7 @@ export const fileMapping = {
   "Principal Component Analysis": {
     Visualization: "pca_score2d_0_dpi150.png",
     "Data Matrix": "pca_score.csv",
+    "PCA Score": "pca_score.csv",
   },
   "Venn-Diagram": {
     Visualization: "venn-dimensions.png",

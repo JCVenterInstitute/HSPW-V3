@@ -123,8 +123,8 @@ const PrincipleComponentAnalysis = ({
         .attr("height", innerHeight)
         .attr("width", innerWidth);
 
-
-      const groupedData = d3.group(data.data, (d) => d[""].charAt(0));
+      console.log(data);
+      const groupedData = d3.group(data, (d) => d[""].charAt(0));
 
       groupedData.forEach((groupData, key) => {
         const ellipseParams = calculateEllipse(groupData);
@@ -325,7 +325,7 @@ const PrincipleComponentAnalysis = ({
       }
 
       function circleClass(d) {
-        if (d[""].startsWith("C")) {
+        if (d[""].startsWith("S")) {
           return "dot CS";
         } else if (d[""].startsWith("H")) {
           return "dot HS";

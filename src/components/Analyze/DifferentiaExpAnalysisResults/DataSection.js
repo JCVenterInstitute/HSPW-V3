@@ -136,7 +136,7 @@ const DataSection = ({
         if (plotData && tab !== "Data Matrix") {
           displayResult = (
             <PrincipleComponentAnalysis
-              data={data}
+              data={plotData}
               xCol={1}
               yCol={2}
               details={["p.value", "Fold.Change"]}
