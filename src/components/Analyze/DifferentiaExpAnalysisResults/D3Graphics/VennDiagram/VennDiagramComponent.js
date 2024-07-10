@@ -380,7 +380,11 @@ const VennDiagramComponent = ({ jobId }) => {
       <div id="venn"></div>
       {selectedSet && (
         <div>
-          <h2>{`Unique ${selectedSet.label}`}</h2>
+          <h2>
+            {selectedSet.label.startsWith("Common")
+              ? `${selectedSet.label}`
+              : `Unique ${selectedSet.label}`}
+          </h2>
           <table className="protein-table">
             <thead>
               <tr>
