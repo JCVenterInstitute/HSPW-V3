@@ -126,7 +126,14 @@ const Boxplot = ({ containerId, jobId, datafile }) => {
       boxTooltip
         .style("opacity", 1)
         .html(
-          `Label: ${d.label}<br>Q1: ${d.q1}<br>Median: ${d.median}<br>Q3: ${d.q3}<br>IQR: ${d.iqr}<br>Min: ${d.min}<br>Max: ${d.max}<br>Outliers: ${d.outliers.length}`
+          `<strong>Label:</strong> ${d.label}<br>` +
+            `<strong>Q1:</strong> ${d.q1}<br>` +
+            `<strong>Median:</strong> ${d.median}<br>` +
+            `<strong>Q3:</strong> ${d.q3}<br>` +
+            `<strong>IQR:</strong> ${d.iqr}<br>` +
+            `<strong>Min:</strong> ${d.min}<br>` +
+            `<strong>Max:</strong> ${d.max}<br>` +
+            `<strong>Outliers:</strong> ${d.outliers.length}`
         )
         .style("left", event.pageX + 10 + "px")
         .style("top", event.pageY - 10 + "px");

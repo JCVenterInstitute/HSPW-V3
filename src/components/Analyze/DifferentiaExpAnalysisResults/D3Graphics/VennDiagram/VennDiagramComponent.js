@@ -2,11 +2,18 @@ import "../D3GraphStyles.css";
 import React, { useEffect, useState } from "react";
 import * as d3 from "d3v7";
 import { VennDiagram } from "venn.js";
-import { fetchCSV } from "../../utils.js"; // Import fetchCSV from utils.js
+import { fetchCSV } from "../../utils.js";
+import { AgGridReact, AgGridColumn } from "ag-grid-react";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
 
 const VennDiagramComponent = ({ jobId }) => {
   const [data, setData] = useState(null);
   const [selectedSet, setSelectedSet] = useState(null);
+
+  const width = 600;
+  const height = 400;
+  const margin = { top: 20, right: 20, bottom: 20, left: 20 };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -145,22 +152,27 @@ const VennDiagramComponent = ({ jobId }) => {
     const svg = vennContainer
       .append("svg")
       .attr("preserveAspectRatio", "xMinYMin meet")
-      .attr("viewBox", "0 0 600 500");
+      .attr(
+        "viewBox",
+        `0 0 ${width + margin.left + margin.right} ${
+          height + margin.top + margin.bottom
+        }`
+      );
 
     svg
       .append("circle")
       .attr("cx", 250)
       .attr("cy", 250)
-      .attr("r", 200)
+      .attr("r", 188)
       .style("fill", "lightgrey")
       .style("stroke", "black")
       .style("stroke-width", 2)
       .on("mouseover", function () {
         d3.select(this).style("fill-opacity", 0.5);
         venntooltip.html(
-          `Unique ${groups[0]}<br>Size: ${unique_a.size}<br>` +
-            `Unique ${groups[1]}<br>Size: ${unique_b.size}<br>` +
-            `Common ${groups[0]} & ${groups[1]}<br>Size: ${common_ab.size}`
+          `<strong>Unique ${groups[0]}</strong><br>Size: ${unique_a.size}<br>` +
+            `<strong>Unique ${groups[1]}</strong><br>Size: ${unique_b.size}<br>` +
+            `<strong>Common ${groups[0]} & ${groups[1]}</strong><br>Size: ${common_ab.size}`
         );
         venntooltip.style("visibility", "visible");
       })
@@ -184,7 +196,7 @@ const VennDiagramComponent = ({ jobId }) => {
       .attr("text-anchor", "middle")
       .attr("dy", ".3em")
       .style("font-weight", "bold")
-      .style("font-size", "18px")
+      .style("font-size", "15px")
       .text("Coincidental");
 
     const groupInfo = vennContainer
@@ -199,37 +211,50 @@ const VennDiagramComponent = ({ jobId }) => {
   };
 
   const drawStandardVenn = (vennContainer, sets, groups, venntooltip) => {
-    const chart = VennDiagram();
-    vennContainer.datum(sets).call(chart);
+    const svg = vennContainer
+      .append("svg")
+      .attr("preserveAspectRatio", "xMinYMin meet")
+      .attr(
+        "viewBox",
+        `0 0 ${width + margin.left + margin.right} ${
+          height + margin.top + margin.bottom
+        }`
+      );
 
-    vennContainer
+    const chart = VennDiagram().width(width).height(height);
+    svg.datum(sets).call(chart);
+
+    svg
       .selectAll(".venn-circle path")
       .style("stroke-width", 2)
       .style("stroke", "black");
 
-    vennContainer
+    svg
       .selectAll(".venn-circle text")
-      .html((d) => `${d.label}`)
+      .html((d, i) => `${sets[i].label}`)
       .style("font-weight", "bold")
-      .style("font-size", "12px")
+      .style("font-size", "15px") // Ensure this is set to 15px
       .style("fill", "black")
       .attr("dx", (d) => {
-        // Adjust text offset from the center
         return 5; // Adjust as needed
       })
       .attr("dy", (d) => {
-        return -25; // Adjust as needed
+        return -32; // Adjust as needed
       });
 
-    vennContainer
+    // Event handlers for .venn-area elements
+    svg
       .selectAll(".venn-area")
       .on("mouseover", function (event, d) {
         d3.select(this).select("path").style("fill-opacity", 0.5);
         venntooltip.html(
-          `Set: ${d.label.split("(")[0].trim()}<br>Size: ${d.size}`
+          `<strong>Set:</strong> ${d.label
+            .split("(")[0]
+            .trim()}<br><strong>Size:</strong> ${d.size}`
         );
         venntooltip.style("visibility", "visible");
       })
+
       .on("mousemove", function (event) {
         venntooltip
           .style("top", event.pageY + 10 + "px")
@@ -243,6 +268,7 @@ const VennDiagramComponent = ({ jobId }) => {
         setSelectedSet(d); // Set selected set to state
       });
 
+    // Display group information
     const groupInfo = vennContainer.append("div").attr("class", "group-info");
 
     groupInfo.append("p").html(`Unique ${groups[0]}: ${sets[0].size}`);
@@ -252,6 +278,44 @@ const VennDiagramComponent = ({ jobId }) => {
       .html(`Common ${groups[0]} & ${groups[1]}: ${sets[2].size}`);
   };
 
+  // return (
+  //   <div>
+  //     <div id="venn"></div>
+  //     {selectedSet && (
+  //       <div>
+  //         <h2>{selectedSet.label}</h2>
+  //         <div
+  //           className="ag-theme-alpine"
+  //           style={{ height: "100%", width: "100%" }}
+  //         >
+  //           <AgGridReact
+  //             rowData={[...selectedSet.data].map((protein, index) => ({
+  //               protein,
+  //               id: index,
+  //             }))}
+  //             domLayout="autoHeight"
+  //           >
+  //             <AgGridColumn
+  //               field="protein"
+  //               headerName="Protein"
+  //               sortable={true}
+  //               filter={true}
+  //               cellRenderer={(params) => (
+  //                 <a
+  //                   href={`https://salivaryproteome.org/protein/${params.value}`}
+  //                   target="_blank"
+  //                   rel="noopener noreferrer"
+  //                 >
+  //                   {params.value}
+  //                 </a>
+  //               )}
+  //             />
+  //           </AgGridReact>
+  //         </div>
+  //       </div>
+  //     )}
+  //   </div>
+  // );
   return (
     <div id="vennContainer">
       <div id="venn"></div>
