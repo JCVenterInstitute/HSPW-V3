@@ -20,7 +20,7 @@ const PrincipleComponentAnalysis = ({
     containerID: "PCAtest",
     width: 600,
     height: 450,
-    margin: { top: 10, right: 60, bottom: 50, left: 100 },
+    margin: { top: 10, right: 60, bottom: 70, left: 100 },
     pointRadius: 8,
     xAxisLabel: "PC 1 (25.5%)",
     yAxisLabel: "PC 2 (12.5%)",
@@ -157,6 +157,7 @@ const PrincipleComponentAnalysis = ({
     xAxisBottom
       .call(d3.axisBottom(xScale))
       .append("text")
+      .attr("transform", `translate(0, 60)`)
       .attr("x", width / 2)
       .attr("y", margin.top - 10)
       .attr("fill", "black")

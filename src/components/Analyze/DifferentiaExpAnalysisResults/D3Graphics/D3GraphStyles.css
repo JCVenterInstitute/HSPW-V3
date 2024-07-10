@@ -203,6 +203,9 @@ body {
   text {
     font-size: 2.2em;
   }
+  #zoom-slider-container {
+    margin-top: 10px;
+  }
 }
 
 #vennContainer {
