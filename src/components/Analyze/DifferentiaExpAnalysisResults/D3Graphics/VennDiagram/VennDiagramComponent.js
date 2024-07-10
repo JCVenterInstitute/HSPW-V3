@@ -170,9 +170,9 @@ const VennDiagramComponent = ({ jobId }) => {
       .on("mouseover", function () {
         d3.select(this).style("fill-opacity", 0.5);
         venntooltip.html(
-          `<strong>Unique ${groups[0]}</strong><br>Size: ${unique_a.size}<br>` +
-            `<strong>Unique ${groups[1]}</strong><br>Size: ${unique_b.size}<br>` +
-            `<strong>Common ${groups[0]} & ${groups[1]}</strong><br>Size: ${common_ab.size}`
+          `<strong>Unique ${groups[0]}</strong><br><strong>Size:</strong> ${unique_a.size}<br>` +
+            `<strong>Unique ${groups[1]}</strong><br><strong>Size:</strong> ${unique_b.size}<br>` +
+            `<strong>Common ${groups[0]} & ${groups[1]}</strong><br><strong>Size:</strong> ${common_ab.size}`
         );
         venntooltip.style("visibility", "visible");
       })
@@ -203,11 +203,42 @@ const VennDiagramComponent = ({ jobId }) => {
       .append("div")
       .attr("class", "group-info-special");
 
-    groupInfo.append("p").html(`Unique ${groups[0]}: ${unique_a.size}`);
-    groupInfo.append("p").html(`Unique ${groups[1]}: ${unique_b.size}`);
-    groupInfo
+    //Display group information and colored circles as legends in upper right corner
+    const legend = vennContainer
+      .append("div")
+      .attr("class", "legend")
+      .style("position", "absolute")
+      .style("top", "10px")
+      .style("right", "10px");
+
+    // Function to create colored circle SVG
+    const createLegendCircle = (color) => {
+      const size = 12;
+      return `<svg width="${size}" height="${size}" style="vertical-align: middle;">
+                <circle cx="${size / 2}" cy="${size / 2}" r="${
+        size / 2
+      }" fill="${color}" />
+              </svg>`;
+    };
+
+    // Add legend items with colored circles
+    legend
       .append("p")
-      .html(`Common ${groups[0]} & ${groups[1]}: ${common_ab.size}`);
+      .html(
+        `${createLegendCircle("#1f77b4")} Unique ${groups[0]}: ${sets[0].size}`
+      );
+    legend
+      .append("p")
+      .html(
+        `${createLegendCircle("#ff7f0e")} Unique ${groups[1]}: ${sets[1].size}`
+      );
+    legend
+      .append("p")
+      .html(
+        `${createLegendCircle("grey")} Common ${groups[0]} & ${groups[1]}: ${
+          sets[2].size
+        }`
+      );
   };
 
   const drawStandardVenn = (vennContainer, sets, groups, venntooltip) => {
@@ -280,10 +311,10 @@ const VennDiagramComponent = ({ jobId }) => {
     const createLegendCircle = (color) => {
       const size = 12;
       return `<svg width="${size}" height="${size}" style="vertical-align: middle;">
-                <circle cx="${size / 2}" cy="${size / 2}" r="${
+              <circle cx="${size / 2}" cy="${size / 2}" r="${
         size / 2
       }" fill="${color}" />
-              </svg>`;
+            </svg>`;
     };
 
     // Add legend items with colored circles
@@ -300,9 +331,9 @@ const VennDiagramComponent = ({ jobId }) => {
     legend
       .append("p")
       .html(
-        `${createLegendCircle("lightgrey")} Common ${groups[0]} & ${
-          groups[1]
-        }: ${sets[2].size}`
+        `${createLegendCircle("grey")} Common ${groups[0]} & ${groups[1]}: ${
+          sets[2].size
+        }`
       );
   };
 
