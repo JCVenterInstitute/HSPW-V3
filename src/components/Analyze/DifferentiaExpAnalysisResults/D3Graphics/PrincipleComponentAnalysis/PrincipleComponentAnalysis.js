@@ -160,7 +160,7 @@ const PrincipleComponentAnalysis = ({
       .attr("text-anchor", "middle")
       .attr("class", "axis")
       .text(xAxisLabel);
-    xAxisTop.call(d3.axisTop(xScale));
+    xAxisTop.append("line");
 
     yAxisLeft
       .call(d3.axisLeft(yScale))
