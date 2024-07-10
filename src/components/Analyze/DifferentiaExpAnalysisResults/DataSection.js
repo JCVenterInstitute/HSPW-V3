@@ -12,6 +12,7 @@ import BoxPlot from "./D3Graphics/Normalization Plot/BoxPlot";
 import DensityPlot from "./D3Graphics/Normalization Plot/DensityPlot";
 import PrincipleComponentAnalysis from "./D3Graphics/PrincipleComponentAnalysis/PrincipleComponentAnalysis";
 import RandomForest from "./D3Graphics/RandomForest/RandomForest";
+import DotGraph from "./D3Graphics/DotGraph/DotGraph";
 import InputData from "./InputData";
 
 const style = {
@@ -114,10 +115,7 @@ const DataSection = ({
       case "Statistical Parametric Test":
         if (allData && tab !== "Data Matrix") {
           displayResult = (
-            <StatisticalParametricPlot
-              data={allData.data}
-              extension={"tsv"}
-            />
+            <StatisticalParametricPlot data={allData.data} extension={"tsv"} />
           );
         } else {
           displayResult = null;
@@ -127,10 +125,7 @@ const DataSection = ({
       case "Fold Change Analysis":
         if (allData && tab !== "Data Matrix") {
           displayResult = (
-            <FoldChangePlot
-              data={allData.data}
-              extension={"tsv"}
-            />
+            <FoldChangePlot data={allData.data} extension={"tsv"} />
           );
         } else {
           displayResult = null;
@@ -163,8 +158,6 @@ const DataSection = ({
         break;
       case "Normalization":
         if (tab !== "Data Matrix") {
-          //console.log("Rendering Normalization section with data:", data);
-
           const originalFile = fileMapping["Normalization"]["Data Original"];
           const normalizedFile =
             fileMapping["Normalization"]["Data Normalized"];
@@ -209,11 +202,14 @@ const DataSection = ({
         break;
       case "Random Forest":
         displayResult = (
-          <RandomForest
-            selectedSection={selectedSection}
-            jobId={jobId}
-            tab={tab}
-          />
+          <>
+            <RandomForest
+              selectedSection={selectedSection}
+              jobId={jobId}
+              tab={tab}
+            />
+            <DotGraph />
+          </>
         );
         break;
       case "GO Biological Process":
@@ -237,28 +233,17 @@ const DataSection = ({
                 width: "100%",
               }}
             >
-              <CsvTable
-                data={allData.data}
-                selectedSection={selectedSection}
-              />
+              <CsvTable data={allData.data} selectedSection={selectedSection} />
             </Box>
           </Container>
         );
         break;
       case "Input Data":
-        displayResult = (
-          <InputData
-            searchParams={searchParams}
-            jobId={jobId}
-          />
-        );
+        displayResult = <InputData searchParams={searchParams} jobId={jobId} />;
         break;
       case "Download":
         displayResult = (
-          <ResultDownload
-            jobId={jobId}
-            handleDownload={handleDownload}
-          />
+          <ResultDownload jobId={jobId} handleDownload={handleDownload} />
         );
         break;
       default:
@@ -283,10 +268,7 @@ const DataSection = ({
                 width: "100%",
               }}
             >
-              <CsvTable
-                data={data}
-                selectedSection={selectedSection}
-              />
+              <CsvTable data={data} selectedSection={selectedSection} />
             </Box>
           </Container>
         );
@@ -297,10 +279,7 @@ const DataSection = ({
   };
 
   return (
-    <Box
-      sx={style.dataBox}
-      className="d3Graph"
-    >
+    <Box sx={style.dataBox} className="d3Graph">
       {getSection()}
     </Box>
   );
