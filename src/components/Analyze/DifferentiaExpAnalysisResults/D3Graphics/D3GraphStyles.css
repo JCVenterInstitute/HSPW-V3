@@ -185,27 +185,21 @@ svg {
   }
 }
 
-#chart.pca {
-  width: 100%;
-  height: 100%;
+#PCATest {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
 
-  .axis path,
-  .tick line,
-  .tick text {
-    stroke: #000000;
-    stroke-width: 0.5px;
-    stroke-opacity: 0.5;
+  .axis {
+    font-size: 2.7em;
+    font-weight: bold;
+    fill: var(--axis-color);
   }
-
-  .tick text {
-    fill: #000000;
-  }
-
-  .label {
-    fill: #000000;
-    font-weight: 700;
-    font-size: 12px;
+  text {
+    font-size: 2.2em;
   }
 }
 
