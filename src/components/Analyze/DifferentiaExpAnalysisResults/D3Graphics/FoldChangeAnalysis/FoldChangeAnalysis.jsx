@@ -190,7 +190,7 @@ const FoldChangePlot = (data, extension) => {
       .on("zoom", (event) => {
         const zx = event.transform.rescaleX(xScale);
         const zy = event.transform.rescaleY(yScale);
-        xAxisBottom.call(d3.axisBottom(zx));
+        // xAxisBottom.call(d3.axisBottom(zx));
         xAxisBottom.attr("transform", `translate(0, ${zy(0)})`);
         yAxisLeft.call(d3.axisLeft(zy));
         yAxisRight.call(d3.axisRight(zy));
