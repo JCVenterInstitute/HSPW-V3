@@ -59,19 +59,19 @@ const VennDiagramComponent = ({ jobId }) => {
       {
         sets: [`${groups[0]}`],
         size: unique_a.size,
-        label: `Unique ${groups[0]} (${unique_a.size})`,
+        label: `${groups[0].replace(/['"]+/g, "")} (${unique_a.size})`,
         data: unique_a,
       },
       {
         sets: [`${groups[1]}`],
         size: unique_b.size,
-        label: `Unique ${groups[1]} (${unique_b.size})`,
+        label: `${groups[1].replace(/['"]+/g, "")} (${unique_b.size})`,
         data: unique_b,
       },
       {
         sets: [`${groups[0]}`, `${groups[1]}`],
         size: common_ab.size,
-        label: `Common ${groups[0]} & ${groups[1]} (${common_ab.size})`,
+        label: `Common (${common_ab.size})`,
         data: common_ab,
       },
     ];
@@ -380,7 +380,7 @@ const VennDiagramComponent = ({ jobId }) => {
       <div id="venn"></div>
       {selectedSet && (
         <div>
-          <h2>{selectedSet.label}</h2>
+          <h2>{`Unique ${selectedSet.label}`}</h2>
           <table className="protein-table">
             <thead>
               <tr>
