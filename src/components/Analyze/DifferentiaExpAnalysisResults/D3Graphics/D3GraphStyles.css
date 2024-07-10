@@ -256,6 +256,9 @@ svg {
   .xAxis text {
     display: none;
   }
+  .xAxis .tick {
+    display: none;
+  }
 }
 
 #normChart {
