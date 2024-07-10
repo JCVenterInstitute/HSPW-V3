@@ -21,10 +21,10 @@ const VolcanoPlot = ({
     svgRef = useRef(null),
     zoomRef = useRef(null);
 
+  const margin = { top: 20, right: 20, bottom: 40, left: 50 };
   useEffect(() => {
-    const SVGwidth = chartRef.current.offsetWidth * 0.8;
+    const SVGwidth = chartRef.current.offsetWidth;
     const SVGheight = 2 * (SVGwidth / 3.5);
-    const margin = { top: 20, right: 20, bottom: 40, left: 50 };
     const innerWidth = SVGwidth - margin.left - margin.right;
     const innerHeight = SVGheight - margin.top - margin.bottom;
 
@@ -32,8 +32,8 @@ const VolcanoPlot = ({
     const svg = d3
       .select(chartRef.current)
       .append("svg")
-      .attr("width", SVGwidth)
-      .attr("height", SVGheight)
+      .attr("preserveAspectRatio", "xMinYMin meet")
+      .attr("viewBox", `0 0 ${SVGwidth} ${SVGheight}`)
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -364,11 +364,15 @@ const VolcanoPlot = ({
     }
   };
 
+  const resetButtonMargin = {
+    top: `${margin.top + 10}px`,
+    right: `${margin.right + 40}px`,
+  };
   return (
     <div ref={chartRef} id="chart" className="volcano">
-      <div className="reset-button-container">
+      <div className="reset-button-container" style={resetButtonMargin}>
         <button onClick={resetZoom} className="reset-button">
-          Reset Zoom
+          Reset
         </button>
       </div>
     </div>
