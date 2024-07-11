@@ -1,53 +1,49 @@
 import React, { useEffect, useRef } from "react";
+import numeric from "numeric";
 import * as d3 from "d3v7";
 import "../D3GraphStyles.css";
-import { create } from "@mui/material/styles/createTransitions";
-// import data from "../../data/statistical_parametric_test.csv";
 
 const PrincipleComponentAnalysis = ({
   data,
   groupLabels,
   groupMapping,
+  pcaVariance,
   extension,
 }) => {
-  console.log(groupMapping);
-
+  // Configuration for the plot
   const plotConfig = {
     dataFile: data,
     extension: extension,
-    groupLables: groupLabels,
+    groupLabels: groupLabels,
     groupMapping: groupMapping,
-    containerID: "PCAtest",
+    pcaVariance: pcaVariance,
     width: 600,
     height: 450,
     margin: { top: 10, right: 60, bottom: 70, left: 100 },
     pointRadius: 8,
-    xAxisLabel: "PC 1 (25.5%)",
-    yAxisLabel: "PC 2 (12.5%)",
+    xAxisLabel: `PC 1 (${d3.format(".2f")(pcaVariance[0]["x"] * 100)}%)`,
+    yAxisLabel: `PC 2 (${d3.format(".2f")(pcaVariance[1]["x"] * 100)}%)`,
     xValue: (d) => +d["PC1"],
     yValue: (d) => +d["PC2"],
     circleClass: (d) => {
-      if (groupMapping[d["Protein"].replaceAll('"', "")] === groupLabels[0]) {
-        console.log("A");
-        return "dot sigfold";
-      } else {
-        console.log("B");
-        return "dot sig";
-      }
+      return groupMapping[d["Protein"].replaceAll('"', "")] === groupLabels[0]
+        ? "dot sigfold"
+        : "dot sig";
     },
     tooltipHTML: (d) => {
       return `<strong>Protein</strong>: ${d["Protein"]}
-      <br/><strong>Group</strong>: ${
-        groupMapping[d["Protein"].replaceAll('"', "")]
-      }
-      <br/><strong>PC1</strong>: ${d3.format(".2f")(d["PC1"])}
-      <br/><strong>PC2</strong>: ${d3.format(".2f")(d["PC2"])}`;
+              <br/><strong>Group</strong>: ${
+                groupMapping[d["Protein"].replaceAll('"', "")]
+              }
+              <br/><strong>PC1</strong>: ${d3.format(".2f")(d["PC1"])}
+              <br/><strong>PC2</strong>: ${d3.format(".2f")(d["PC2"])}`;
     },
   };
 
-  const chartRef = useRef(null),
-    svgRef = useRef(null),
-    zoomRef = useRef(null);
+  console.log(pcaVariance);
+  const chartRef = useRef(null);
+  const svgRef = useRef(null);
+  const zoomRef = useRef(null);
 
   const createScatterPlot = async (config, containerRef) => {
     const {
@@ -83,7 +79,9 @@ const PrincipleComponentAnalysis = ({
       .append("g")
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
     svgRef.current = svg;
-    const clipPath = svg
+
+    // Define clip path
+    svg
       .append("clipPath")
       .attr("id", "clipRect")
       .append("rect")
@@ -92,8 +90,10 @@ const PrincipleComponentAnalysis = ({
       .attr("x", 0)
       .attr("y", 0);
 
+    // Prevent default wheel behavior
     svg.node().addEventListener("wheel", (event) => event.preventDefault());
-    // Append slider in the container for better layout control
+
+    // Append slider for zoom control
     const slider = parentContainer
       .append("div")
       .attr("id", "zoom-slider-container")
@@ -106,7 +106,6 @@ const PrincipleComponentAnalysis = ({
       .attr("step", "0.1")
       .attr("value", "1")
       .style("width", "50%");
-
     document.getElementById("zoom-slider").disabled = true;
 
     const data = plotConfig.dataFile;
@@ -115,38 +114,48 @@ const PrincipleComponentAnalysis = ({
       .range([0, width])
       .domain(d3.extent(data, xValue))
       .nice();
-
     const yScale = d3
       .scaleLinear()
       .range([height, 0])
       .domain(d3.extent(data, yValue))
       .nice();
 
+    // Append axes
     const xAxisBottom = svg
       .append("g")
       .attr("transform", `translate(0,${height})`);
     const xAxisTop = svg.append("g");
-
     const yAxisLeft = svg.append("g");
     const yAxisRight = svg
       .append("g")
       .attr("transform", `translate(${width}, 0)`);
 
-    var gridLines = svg.append("g").attr("class", "grid");
-
-    // Setup horizontal grid lines
+    // Append grid lines
+    const gridLines = svg.append("g").attr("class", "grid");
     gridLines
       .append("g")
       .attr("class", "x grid")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(xScale).ticks(10).tickSize(-height).tickFormat(""));
+      .attr("transform", `translate(0,${height})`)
+      .call(d3.axisBottom(xScale).ticks(10).tickSize(-height).tickFormat(""))
+      .call((g) =>
+        g
+          .selectAll("line")
+          .filter((d) => d === 0)
+          .classed("axis-zero", true)
+      );
 
-    // Setup vertical grid lines
     gridLines
       .append("g")
       .attr("class", "y grid")
-      .call(d3.axisLeft(yScale).ticks(10).tickSize(-width).tickFormat(""));
+      .call(d3.axisLeft(yScale).ticks(10).tickSize(-width).tickFormat(""))
+      .call((g) =>
+        g
+          .selectAll("line")
+          .filter((d) => d === 0)
+          .classed("axis-zero", true)
+      );
 
+    // Tooltip setup
     const tooltip = d3
       .select("body")
       .append("div")
@@ -154,6 +163,7 @@ const PrincipleComponentAnalysis = ({
       .style("position", "absolute")
       .style("visibility", "hidden");
 
+    // Append and label x-axis
     xAxisBottom
       .call(d3.axisBottom(xScale))
       .append("text")
@@ -164,8 +174,8 @@ const PrincipleComponentAnalysis = ({
       .attr("text-anchor", "middle")
       .attr("class", "axis")
       .text(xAxisLabel);
-    xAxisTop.append("line");
 
+    // Append and label y-axis
     yAxisLeft
       .call(d3.axisLeft(yScale))
       .append("text")
@@ -176,23 +186,16 @@ const PrincipleComponentAnalysis = ({
       .attr("text-anchor", "middle")
       .attr("class", "axis")
       .text(yAxisLabel);
-    yAxisRight
-      .call(d3.axisRight(yScale))
-      .append("text")
+    yAxisRight.call(d3.axisRight(yScale));
 
-      //   .attr("transform", "rotate(-90)")
-
-      .attr("x", -height / 2)
-      .attr("y", -margin.right + 20)
-      .attr("class", "axis")
-      .attr("fill", "black");
-
-    var zoomBox = svg
+    // Append zoom rectangle
+    svg
       .append("rect")
       .attr("class", "zoom")
       .attr("height", height)
       .attr("width", width);
 
+    // Define zoom behavior
     const zoom = d3
       .zoom()
       .scaleExtent([0.5, 20])
@@ -204,7 +207,6 @@ const PrincipleComponentAnalysis = ({
         [0, 0],
         [width, height],
       ])
-
       .on("zoom", (event) => {
         const zx = event.transform.rescaleX(xScale);
         const zy = event.transform.rescaleY(yScale);
@@ -215,7 +217,6 @@ const PrincipleComponentAnalysis = ({
           .selectAll("circle")
           .attr("cx", (d, i) => zx(xValue(d, i)))
           .attr("cy", (d) => zy(yValue(d)));
-        // Sync zoom level to the slider
         document.getElementById("zoom-slider").value = event.transform.k;
         svg
           .select(".x.grid")
@@ -246,14 +247,14 @@ const PrincipleComponentAnalysis = ({
     svg.call(zoom);
     zoomRef.current = zoom;
 
+    // Append data points
     const pltPointsGroup = svg
       .append("g")
       .attr("id", "points-group")
       .attr("clip-path", "url(#clipRect)")
       .attr("height", height)
       .attr("width", width);
-
-    const pltPoints = pltPointsGroup
+    pltPointsGroup
       .selectAll(".dot")
       .data(data)
       .enter()
@@ -273,15 +274,70 @@ const PrincipleComponentAnalysis = ({
       .on("mouseout", () => {
         tooltip.style("visibility", "hidden");
       })
-      .on(
-        "click",
-        (_, d) =>
-          window.open(
-            "https://salivaryproteome.org/protein/" +
-              d["Protein"].replace(/^"(.*)"$/, "$1")
-          ),
-        "_blank"
+      .on("click", (_, d) =>
+        window.open(
+          "https://salivaryproteome.org/protein/" +
+            d["Protein"].replace(/^"(.*)"$/, "$1")
+        )
       );
+
+    // Append ellipses
+    const groupData = d3.groups(
+      data,
+      (d) => groupMapping[d["Protein"].replaceAll('"', "")]
+    );
+    groupData.forEach(([group, values]) => {
+      const meanX = d3.mean(values, xValue);
+      const meanY = d3.mean(values, yValue);
+      const covarianceMatrix = calculateCovarianceMatrix(
+        values.map(xValue),
+        values.map(yValue)
+      );
+      const [a, b, angle] = getEllipseParameters(covarianceMatrix);
+      svg
+        .append("ellipse")
+        .attr("class", "ellipse")
+        .attr("cx", xScale(meanX))
+        .attr("cy", yScale(meanY))
+        .attr("rx", xScale(meanX + a) - xScale(meanX))
+        .attr("ry", yScale(meanY + b) - yScale(meanY))
+        .attr("transform", `rotate(${(angle * 180) / Math.PI})`)
+        .style("fill", "none")
+        .style("stroke", "black");
+    });
+  };
+
+  // Calculate covariance matrix
+  const calculateCovarianceMatrix = (x, y) => {
+    const meanX = d3.mean(x);
+    const meanY = d3.mean(y);
+    let covarianceXX = 0,
+      covarianceXY = 0,
+      covarianceYY = 0;
+    for (let i = 0; i < x.length; i++) {
+      const dx = x[i] - meanX;
+      const dy = y[i] - meanY;
+      covarianceXX += dx * dx;
+      covarianceXY += dx * dy;
+      covarianceYY += dy * dy;
+    }
+    const n = x.length;
+    return [
+      [covarianceXX / n, covarianceXY / n],
+      [covarianceXY / n, covarianceYY / n],
+    ];
+  };
+
+  // Calculate ellipse parameters
+  const getEllipseParameters = (covarianceMatrix) => {
+    const eigen = numeric.eig(covarianceMatrix);
+    const eigenValues = eigen.lambda["x"];
+    const eigenVectors = eigen.E["x"];
+    const a = Math.sqrt(eigenValues[0]);
+    const b = Math.sqrt(eigenValues[1]);
+    console.log(eigen);
+    const angle = Math.atan2(eigenVectors[1][0], eigenVectors[0][0]);
+    return [a, b, angle];
   };
 
   const containerRef = useRef(null);
@@ -290,10 +346,11 @@ const PrincipleComponentAnalysis = ({
     createScatterPlot(plotConfig, containerRef);
   }, []);
 
+  // Function to reset zoom
   const resetZoom = () => {
     if (svgRef.current && zoomRef.current) {
-      const svg = svgRef.current,
-        zoom = zoomRef.current;
+      const svg = svgRef.current;
+      const zoom = zoomRef.current;
       svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
     }
   };

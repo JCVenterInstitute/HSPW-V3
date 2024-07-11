@@ -37,6 +37,7 @@ const DataSection = ({
   const [data, setData] = useState(null);
   const [plotData, setPlotData] = useState(null);
   const [groupData, setGroupData] = useState(null);
+  const [pcaVariance, setPcaVariance] = useState(null);
 
   const getDataFile = async (
     dataFile = files["Data Matrix"],
@@ -63,12 +64,18 @@ const DataSection = ({
       if (tab.startsWith("All")) imageLink = files["All Samples"];
 
       // Handle PCA file
-      if (files["PCA Score"] && files["Group Labels"]) {
+      if (
+        files["PCA Score"] &&
+        files["Group Labels"] &&
+        files["PCA Variance"]
+      ) {
         getDataFile(files["PCA Score"], setPlotData);
         getDataFile(files["Group Labels"], setGroupData);
+        getDataFile(files["PCA Variance"], setPcaVariance);
       } else {
         setPlotData(null);
         setGroupData(null);
+        setPcaVariance(null);
       }
 
       setImage(imageLink);
@@ -136,7 +143,7 @@ const DataSection = ({
         }
         break;
       case "Principal Component Analysis":
-        if (plotData && groupData && tab !== "Data Matrix") {
+        if (plotData && groupData && pcaVariance && tab !== "Data Matrix") {
           var cleanedGroupData = {};
           var groupLabels = new Set();
           for (const [key, value] of Object.entries(groupData[0])) {
@@ -150,6 +157,7 @@ const DataSection = ({
               data={plotData}
               groupMapping={cleanedGroupData}
               groupLabels={[...groupLabels]}
+              pcaVariance={pcaVariance}
               extension={"csv"}
             />
           );
