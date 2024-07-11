@@ -121,7 +121,7 @@ const DataSection = ({
             <StatisticalParametricPlot
               data={allData.data}
               extension={"tsv"}
-              pval={"0.05"}
+              pval={searchParams.get("pValue")}
               // TODO: make pval a user input
             />
           );
