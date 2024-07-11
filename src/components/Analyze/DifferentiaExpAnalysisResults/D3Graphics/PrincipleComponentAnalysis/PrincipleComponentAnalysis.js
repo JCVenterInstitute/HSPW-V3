@@ -197,6 +197,10 @@ const PrincipleComponentAnalysis = ({
       .zoom()
       .scaleExtent([0.5, 20])
       .translateExtent([
+        [-margin.left, -margin.top],
+        [width + margin.right, height + margin.bottom],
+      ])
+      .extent([
         [0, 0],
         [width, height],
       ])
