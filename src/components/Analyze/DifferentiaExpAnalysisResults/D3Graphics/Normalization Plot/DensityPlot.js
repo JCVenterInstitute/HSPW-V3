@@ -44,7 +44,7 @@ const DensityPlot = ({ containerId, jobId, datafile }) => {
     console.log("> densityValues:", densityValues);
 
     // Set up dimensions and margins for density plot
-    const densityMargin = { top: 20, right: 14, bottom: 60, left: 70 };
+    const densityMargin = { top: 20, right: 14, bottom: 60, left: 60 };
     const densityWidth = 500 - densityMargin.left - densityMargin.right;
     const densityHeight = 420 - densityMargin.top - densityMargin.bottom;
 

@@ -414,3 +414,7 @@ body {
     margin-top: 20px;
   }
 }
+.barchart-container {
+  width: 100%;
+  height: 100%;
+}
