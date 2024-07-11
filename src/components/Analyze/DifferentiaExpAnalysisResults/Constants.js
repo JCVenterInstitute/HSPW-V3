@@ -21,6 +21,7 @@ export const fileMapping = {
     "Data Matrix": "pca_score.csv",
     "PCA Score": "pca_score.csv",
     "Group Labels": "data_normalized.csv",
+    "PCA Variance": "pca_variance.csv",
   },
   "Venn-Diagram": {
     Visualization: "venn-dimensions.png",
