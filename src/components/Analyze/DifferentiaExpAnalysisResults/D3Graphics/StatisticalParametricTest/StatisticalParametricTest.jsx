@@ -4,17 +4,18 @@ import "../D3GraphStyles.css";
 import { create } from "@mui/material/styles/createTransitions";
 // import data from "../../data/statistical_parametric_test.csv";
 
-const StatisticalParametricPlot = (data, extension) => {
+const StatisticalParametricPlot = (data, extension, pval) => {
   const plotConfig = {
     dataFile: data,
     extension: extension,
+    threshold: -1 * Math.log10(pval),
     containerID: "statParaTest",
     width: 1600,
     height: 800,
     margin: { top: 10, right: 60, bottom: 50, left: 100 },
     pointRadius: 8,
     xAxisLabel: "",
-    yAxisLabel: "X.log10.p.",
+    yAxisLabel: "-log10(p)",
     xValue: (d, i) => i,
     yValue: (d) => d["X.log10.p."],
     circleClass: (d) => {
@@ -110,7 +111,7 @@ const StatisticalParametricPlot = (data, extension) => {
     const xScale = d3
       .scaleLinear()
       .range([0, width])
-      .domain([0, Object.keys(data).length])
+      .domain([-5, Object.keys(data).length + 5])
       .nice();
     const yScale = d3
       .scaleLinear()
@@ -138,8 +139,8 @@ const StatisticalParametricPlot = (data, extension) => {
       .attr("width", width);
 
     // add horizontal lines at y= pval
-    const pval = 0.05;
-    [-1 * Math.log10(pval)].forEach(function (threshold) {
+    const threshold = plotConfig.threshold;
+    [threshold].forEach(function (threshold) {
       thresholdLines
         .append("svg:line")
         .attr("class", threshold === 0 ? "threshold bold" : "threshold")
@@ -249,22 +250,12 @@ const StatisticalParametricPlot = (data, extension) => {
           );
         svg
           .selectAll(".threshold")
-          .attr("y1", zy(-1 * Math.log10(0.05)))
-          .attr("y2", zy(-1 * Math.log10(0.05)));
+          .attr("y1", zy(threshold))
+          .attr("y2", zy(threshold));
       });
 
     svg.call(zoom);
     zoomRef.current = zoom;
-
-    const getColor = (d) => {
-      const yVal = yScale(yValue(d));
-      console.log(yVal);
-      if (yVal < -1 * Math.log10(0.05)) {
-        return "dot sig";
-      } else {
-        return "dot";
-      }
-    };
 
     const pltPointsGroup = svg
       .append("g")
@@ -284,7 +275,7 @@ const StatisticalParametricPlot = (data, extension) => {
       .attr("class", circleClass)
       .attr("class", (d) => {
         const cyValue = yValue(d);
-        return cyValue < -1 * Math.log10(pval) ? "dot sig" : "dot";
+        return cyValue > threshold ? "dot sig" : "dot";
       })
       .on("mouseover", (_, d) => {
         tooltip.html(tooltipHTML(d)).style("visibility", "visible");
@@ -324,7 +315,7 @@ const StatisticalParametricPlot = (data, extension) => {
 
   const resetButtonMargin = {
     top: `${plotConfig.margin.top + 10}px`,
-    right: `${plotConfig.margin.right + 40}px`,
+    right: `${plotConfig.margin.right + 10}px`,
   };
 
   return (

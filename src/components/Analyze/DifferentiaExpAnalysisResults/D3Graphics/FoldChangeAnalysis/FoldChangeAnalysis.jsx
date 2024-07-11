@@ -63,6 +63,9 @@ const FoldChangePlot = (data, extension) => {
 
     // Clear existing SVG elements
     d3.select(containerRef.current).selectAll("svg").remove();
+    d3.select(containerRef.current)
+      .selectAll("div#zoom-slider-container")
+      .remove();
 
     const parentContainer = d3.select(containerRef.current);
     const svg = parentContainer
@@ -258,7 +261,7 @@ const FoldChangePlot = (data, extension) => {
   };
   const resetButtonMargin = {
     top: `${plotConfig.margin.top + 10}px`,
-    right: `${plotConfig.margin.right + 40}px`,
+    right: `${plotConfig.margin.right + 10}px`,
   };
 
   return (
