@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { fileMapping } from "../../Constants";
 import { fetchCSV, fetchImage } from "../../utils";
 import CSVDataTable from "../../../../../pages/Analyze/CSVDataTable";
+import DotGraph from "../DotGraph/DotGraph";
 import { Box, CircularProgress, Container } from "@mui/material";
 
 const RandomForest = ({ selectedSection, tab, jobId }) => {
@@ -23,14 +24,13 @@ const RandomForest = ({ selectedSection, tab, jobId }) => {
       }
 
       const imageUrl = await fetchImage(jobId, files[tab][0]);
-
       setImage(imageUrl);
       setLoading(false);
     };
 
     setLoading(true);
     fetchData();
-  }, [tab]);
+  }, [tab, files, jobId]);
 
   if (loading) {
     return (
@@ -58,11 +58,13 @@ const RandomForest = ({ selectedSection, tab, jobId }) => {
           flexDirection: "column",
         }}
       >
-        <img
-          src={image}
-          alt={`${selectedSection} ${tab}`}
-          style={{ maxWidth: "1200px" }}
-        />
+        {tab !== "Feature" && (
+          <img
+            src={image}
+            alt={`${selectedSection} ${tab}`}
+            style={{ maxWidth: "1200px" }}
+          />
+        )}
         {tableData ? (
           <Container sx={{ margin: "0px" }}>
             <Box
@@ -71,6 +73,7 @@ const RandomForest = ({ selectedSection, tab, jobId }) => {
                 width: "100%",
               }}
             >
+              {tab === "Feature" && <DotGraph jobId={jobId} />}
               <CSVDataTable
                 data={tableData}
                 selectedSection={selectedSection}

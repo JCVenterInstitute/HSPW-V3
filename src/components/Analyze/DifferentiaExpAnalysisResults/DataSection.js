@@ -11,8 +11,7 @@ import VennDiagramComponent from "./D3Graphics/VennDiagram/VennDiagramComponent"
 import BoxPlot from "./D3Graphics/Normalization Plot/BoxPlot";
 import DensityPlot from "./D3Graphics/Normalization Plot/DensityPlot";
 import PrincipleComponentAnalysis from "./D3Graphics/PrincipleComponentAnalysis/PrincipleComponentAnalysis";
-// import RandomForest from "./D3Graphics/RandomForest/RandomForest";
-// import DotGraph from "./D3Graphics/DotGraph/DotGraph";
+import RandomForest from "./D3Graphics/RandomForest/RandomForest";
 import InputData from "./InputData";
 
 const style = {
@@ -219,14 +218,14 @@ const DataSection = ({
         break;
       case "Random Forest":
         displayResult = null;
-        // <>
-        //   <RandomForest
-        //     selectedSection={selectedSection}
-        //     jobId={jobId}
-        //     tab={tab}
-        //   />
-        //   <DotGraph />
-        // </>
+        <>
+          <RandomForest
+            selectedSection={selectedSection}
+            jobId={jobId}
+            tab={tab}
+          />
+          
+        </>
         break;
       case "GO Biological Process":
         displayResult = null;
