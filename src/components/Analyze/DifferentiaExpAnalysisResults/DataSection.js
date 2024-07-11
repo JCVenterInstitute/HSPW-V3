@@ -11,6 +11,7 @@ import VennDiagramComponent from "./D3Graphics/VennDiagram/VennDiagramComponent"
 import BoxPlot from "./D3Graphics/Normalization Plot/BoxPlot";
 import DensityPlot from "./D3Graphics/Normalization Plot/DensityPlot";
 import PrincipleComponentAnalysis from "./D3Graphics/PrincipleComponentAnalysis/PrincipleComponentAnalysis";
+import BarChartComponent from "./D3Graphics/Go Molecular Function/Enrichment Plot/MfBarPlot";
 import RandomForest from "./D3Graphics/RandomForest/RandomForest";
 import InputData from "./InputData";
 
@@ -231,7 +232,12 @@ const DataSection = ({
         displayResult = null;
         break;
       case "GO Molecular Function":
-        displayResult = null;
+        if (tab === "Enrichment Plot") {
+          displayResult = <BarChartComponent jobId={jobId} />;
+        } else {
+          displayResult = null;
+          isPngTab = false;
+        }
         break;
       case "GO Cellular Component":
         displayResult = null;

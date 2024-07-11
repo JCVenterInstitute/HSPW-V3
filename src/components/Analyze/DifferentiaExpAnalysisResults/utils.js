@@ -67,6 +67,69 @@ export const parseCSV = (csvText, selectedSection) => {
   return parsedData;
 };
 
+export const parseTSV = (tsvText, selectedSection) => {
+  const lines = tsvText.split("\n");
+
+  // Assuming TSV, so delimiter is tab (\t)
+  const delimiter = "\t";
+
+  // Split the first line with the tab delimiter to get headers
+  let headers = lines[0].split(delimiter);
+
+  // Replace the first header if it's empty and remove quotes from all headers
+  headers = headers.map((header, index) => {
+    if (
+      index === 0 &&
+      (header.replace(/['"]+/g, "") === "" ||
+        header.replace(/['"]+/g, "") === "rn")
+    ) {
+      return selectedSection === "Principal Component Analysis"
+        ? "Sample"
+        : "Protein";
+    } else {
+      return header.replace(/['"]+/g, "");
+    }
+  });
+
+  console.log("> Headers", headers);
+
+  const parsedData = [];
+  console.log(">line length", lines.length);
+
+  for (let i = 1; i < lines.length; i++) {
+    const currentLine = lines[i].split(delimiter);
+    console.log("> Current Line", currentLine);
+
+    const isValid =
+      selectedSection === "Go Molecular Function"
+        ? currentLine.length === headers.length + 1
+        : currentLine.length === headers.length;
+
+    console.log("> Is Valid", isValid);
+    console.log("> Selected Section", selectedSection);
+    console.log("> Current Line Length", currentLine.length);
+    console.log("> Header Length", headers.length);
+
+    if (isValid) {
+      console.log("> Testing");
+      const row = {};
+      for (let j = 0; j < headers.length; j++) {
+        row[headers[j].trim()] = currentLine[j].trim();
+      }
+      // Add the last column (without a header)
+      if (currentLine.length === headers.length + 1) {
+        row["Unnamed Column"] = currentLine[headers.length].trim();
+      }
+      console.log("> Row", row);
+      parsedData.push(row);
+    }
+  }
+
+  console.log("> Parsed Data", parsedData);
+
+  return parsedData;
+};
+
 /**
  * Fet the relevant style needed for the image depending on selected section
  * @param {string} selectedItem Current section selected by user
@@ -104,6 +167,36 @@ export const fetchCSV = async (jobId, fileName) => {
     };
   } catch (error) {
     console.error("Error fetching csv:", error);
+  }
+};
+
+/**
+ * Returns the TSV data & the download link for the file
+ * @param {string} jobId Id of analysis submission job, used to help locate s3 file
+ * @param {string} fileName Name of the s3 file
+ * @returns {Object} Object containing parsed TSV data, download URL, and text URL
+ */
+export const fetchTSV = async (jobId, fileName, selectedSection = null) => {
+  try {
+    // Fetch the response object containing the URL to download the file
+    let response = await axios.get(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
+    );
+
+    // Fetch the actual TSV data using the URL obtained from the response
+    const tsvText = await axios.get(response.data.url).then((res) => res.data);
+
+    // Parse the TSV data using parseTSV function (assumed to be defined elsewhere)
+    const parsedData = parseTSV(tsvText, selectedSection);
+
+    // Return an object with parsed data, download URL, and text URL for Blob
+    return {
+      data: parsedData,
+      downloadUrl: response.data.url,
+      textUrl: URL.createObjectURL(new Blob([tsvText], { type: "text/tsv" })),
+    };
+  } catch (error) {
+    console.error("Error fetching TSV:", error);
   }
 };
 
