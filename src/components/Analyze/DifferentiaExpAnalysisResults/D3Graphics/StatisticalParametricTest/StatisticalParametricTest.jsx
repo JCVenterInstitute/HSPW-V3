@@ -4,7 +4,7 @@ import "../D3GraphStyles.css";
 import { create } from "@mui/material/styles/createTransitions";
 // import data from "../../data/statistical_parametric_test.csv";
 
-const StatisticalParametricPlot = (data, extension, pval) => {
+const StatisticalParametricPlot = ({ data, extension, pval }) => {
   const plotConfig = {
     dataFile: data,
     extension: extension,
@@ -105,7 +105,7 @@ const StatisticalParametricPlot = (data, extension, pval) => {
 
     document.getElementById("zoom-slider").disabled = true;
 
-    const data = plotConfig.dataFile["data"];
+    const data = plotConfig.dataFile;
     console.log(data);
     console.log(data);
     const xScale = d3
