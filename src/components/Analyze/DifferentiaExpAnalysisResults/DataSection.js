@@ -11,7 +11,8 @@ import VennDiagramComponent from "./D3Graphics/VennDiagram/VennDiagramComponent"
 import BoxPlot from "./D3Graphics/Normalization Plot/BoxPlot";
 import DensityPlot from "./D3Graphics/Normalization Plot/DensityPlot";
 import PrincipleComponentAnalysis from "./D3Graphics/PrincipleComponentAnalysis/PrincipleComponentAnalysis";
-import BarChartComponent from "./D3Graphics/GO & KEGG/Enrichment Plot/BarPlot";
+import BarChartComponent from "./D3Graphics/GoKegg/EncrichmentPlot/BarPlot";
+import RidgePlotComponent from "./D3Graphics/GoKegg/GSEARidgePlot/RidgePlot";
 //import RandomForest from "./D3Graphics/RandomForest/RandomForest";
 import InputData from "./InputData";
 
@@ -232,7 +233,11 @@ const DataSection = ({
           fileMapping["GO Biological Process"]["Enrichment Plot Data"];
         if (tab === "Enrichment Plot") {
           displayResult = (
-            <BarChartComponent jobId={jobId} datafile={bpBarfile} />
+            <BarChartComponent
+              jobId={jobId}
+              datafile={bpBarfile}
+              selectedSection={selectedSection}
+            />
           );
         } else {
           displayResult = null;
@@ -244,7 +249,11 @@ const DataSection = ({
           fileMapping["GO Molecular Function"]["Enrichment Plot Data"];
         if (tab === "Enrichment Plot") {
           displayResult = (
-            <BarChartComponent jobId={jobId} datafile={mfBarfile} />
+            <BarChartComponent
+              jobId={jobId}
+              datafile={mfBarfile}
+              selectedSection={selectedSection}
+            />
           );
         } else {
           displayResult = null;
@@ -255,9 +264,24 @@ const DataSection = ({
       case "GO Cellular Component":
         const ccBarfile =
           fileMapping["GO Cellular Component"]["Enrichment Plot Data"];
+
         if (tab === "Enrichment Plot") {
           displayResult = (
-            <BarChartComponent jobId={jobId} datafile={ccBarfile} />
+            <BarChartComponent
+              jobId={jobId}
+              datafile={ccBarfile}
+              selectedSection={selectedSection}
+            />
+          );
+        } else if (tab === "GSEA Ridge plot") {
+          const ccRidgeFile =
+            fileMapping["GO Cellular Component"]["GSEA Ridge plot Data"];
+          displayResult = (
+            <RidgePlotComponent
+              jobId={jobId}
+              fileName={ccRidgeFile}
+              selectedSection={selectedSection}
+            />
           );
         } else {
           displayResult = null;
@@ -269,7 +293,11 @@ const DataSection = ({
           fileMapping["KEGG Pathway/Module"]["Enrichment Plot Data"];
         if (tab === "Enrichment Plot") {
           displayResult = (
-            <BarChartComponent jobId={jobId} datafile={keggBarfile} />
+            <BarChartComponent
+              jobId={jobId}
+              datafile={keggBarfile}
+              selectedSection={selectedSection}
+            />
           );
         } else {
           displayResult = null;

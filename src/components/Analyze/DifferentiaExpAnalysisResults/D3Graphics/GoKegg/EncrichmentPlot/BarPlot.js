@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
 import { fetchTSV } from "../../../utils";
 
-const BarChartComponent = ({ jobId, datafile }) => {
+const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
   const [data, setData] = useState(null);
   const svgRef = useRef();
 
@@ -17,7 +17,7 @@ const BarChartComponent = ({ jobId, datafile }) => {
         const { data: tsvData } = await fetchTSV(
           jobId,
           datafile,
-          "Go Molecular Function"
+          selectedSection
         );
         setData(tsvData.slice(0, 20)); // Take the first 20 rows for plotting
       } catch (error) {
@@ -26,7 +26,7 @@ const BarChartComponent = ({ jobId, datafile }) => {
     };
 
     fetchData();
-  }, [jobId, datafile]);
+  }, [jobId, datafile, selectedSection]);
 
   useEffect(() => {
     if (data) {

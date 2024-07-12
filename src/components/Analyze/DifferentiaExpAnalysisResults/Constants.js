@@ -60,6 +60,7 @@ export const fileMapping = {
     "Enrichment Plot Data": "egocc.tsv",
     "Enriched terms & connected genes": "gocc_gene_network.jpeg",
     "GSEA Ridge plot": "gsecc_ridge.jpeg",
+    "GSEA Ridge plot Data": "gsecc.tsv",
     "GSEA Heatmap plot": "gsecc_heat.jpeg",
     "GSEA Tree cluster plot": "gocc_tree.jpeg",
   },
