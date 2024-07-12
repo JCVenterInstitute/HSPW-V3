@@ -39,7 +39,6 @@ const PrincipleComponentAnalysis = ({
               <br/><strong>PC2</strong>: ${d3.format(".2f")(d["PC2"])}`;
     },
   };
-
   console.log(pcaVariance);
   const chartRef = useRef(null);
   const svgRef = useRef(null);
@@ -293,15 +292,26 @@ const PrincipleComponentAnalysis = ({
         values.map(xValue),
         values.map(yValue)
       );
-      const [a, b, angle] = getEllipseParameters(covarianceMatrix);
+      const [a, b, angle] = getEllipseParameters(covarianceMatrix, 0.95);
+
+      // Compute the scaled radii
+      const scaledA = a * Math.abs(xScale(1) - xScale(0)); // Correct scaling for rx
+      const scaledB = b * Math.abs(yScale(0) - yScale(1)); // Correct scaling for ry
+
+
       svg
         .append("ellipse")
         .attr("class", "ellipse")
         .attr("cx", xScale(meanX))
         .attr("cy", yScale(meanY))
-        .attr("rx", xScale(meanX + a) - xScale(meanX))
-        .attr("ry", yScale(meanY + b) - yScale(meanY))
-        .attr("transform", `rotate(${(angle * 180) / Math.PI})`)
+        .attr("rx", scaledA)
+        .attr("ry", scaledB)
+        .attr(
+          "transform",
+          `rotate(${(-angle * 180) / Math.PI}, ${xScale(meanX)}, ${yScale(
+            meanY
+          )})`
+        )
         .style("fill", "none")
         .style("stroke", "black");
     });
@@ -322,21 +332,26 @@ const PrincipleComponentAnalysis = ({
       covarianceYY += dy * dy;
     }
     const n = x.length;
-    return [
+    const covarianceMatrix = [
       [covarianceXX / n, covarianceXY / n],
       [covarianceXY / n, covarianceYY / n],
     ];
+    return covarianceMatrix;
   };
 
   // Calculate ellipse parameters
-  const getEllipseParameters = (covarianceMatrix) => {
+  const getEllipseParameters = (covarianceMatrix, confidenceLevel) => {
     const eigen = numeric.eig(covarianceMatrix);
-    const eigenValues = eigen.lambda["x"];
-    const eigenVectors = eigen.E["x"];
-    const a = Math.sqrt(eigenValues[0]);
-    const b = Math.sqrt(eigenValues[1]);
-    console.log(eigen);
+    const eigenValues = eigen.lambda.x;
+    const eigenVectors = eigen.E.x;
+
+    // Chi-squared value for the given confidence level (95% confidence interval)
+    const chiSquaredValue = Math.sqrt(5.991); // chi-squared value for 2 degrees of freedom and 95% confidence
+
+    const a = Math.sqrt(eigenValues[0]) * chiSquaredValue;
+    const b = Math.sqrt(eigenValues[1]) * chiSquaredValue;
     const angle = Math.atan2(eigenVectors[1][0], eigenVectors[0][0]);
+
     return [a, b, angle];
   };
 
