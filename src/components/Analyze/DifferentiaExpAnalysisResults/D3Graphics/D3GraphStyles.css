@@ -62,6 +62,12 @@ body {
   }
 }
 
+.legend .legend-item text {
+  font-family: Lato;
+  font-weight: 700;
+  letter-spacing: 0.1rem;
+}
+
 .zoom {
   cursor: move;
   fill: none;

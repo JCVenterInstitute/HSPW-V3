@@ -40,6 +40,10 @@ const StatisticalParametricPlot = ({ data, extension, pval }) => {
         d["p.value"]
       }<br/><strong>t.stat</strong>: ${d3.format(".2f")(d["t.stat"])}`;
     },
+    legendDict: {
+      1: ["Significant", "#ff5733"],
+      2: ["Non-Significant", "Gray"],
+    },
   };
 
   const chartRef = useRef(null),
@@ -209,6 +213,46 @@ const StatisticalParametricPlot = ({ data, extension, pval }) => {
       .attr("height", height)
       .attr("width", width);
 
+    function createLegend(selection, legendDict) {
+      const legend = selection
+        .append("g")
+        .attr("class", "legend")
+        .attr("transform", "translate(25, 40)");
+      // .append("rect")
+      // .attr("width", "200")
+      // .attr("height", "80")
+      // .attr("fill", "white");
+
+      const legendItems = Object.keys(legendDict).map((key) => ({
+        key,
+        label: legendDict[key][0],
+        color: legendDict[key][1],
+      }));
+
+      const legendItem = legend
+        .selectAll(".legend-item")
+        .data(legendItems)
+        .enter()
+        .append("g")
+        .attr("class", "legend-item")
+        .attr("transform", (d, i) => `translate(0,${i * 40})`);
+
+      legendItem
+        .append("circle")
+        .attr("cx", 5)
+        .attr("cy", 5)
+        .attr("r", 10)
+        .attr("fill", (d) => d.color);
+
+      legendItem
+        .append("text")
+        .attr("x", 15)
+        .attr("y", 9)
+        .attr("transform", `translate(8, 8)`)
+        .text((d) => d.label);
+    }
+    createLegend(svg, plotConfig.legendDict);
+
     const zoom = d3
       .zoom()
       .scaleExtent([0.5, 20])
@@ -223,7 +267,7 @@ const StatisticalParametricPlot = ({ data, extension, pval }) => {
         yAxisLeft.call(d3.axisLeft(zy));
         yAxisRight.call(d3.axisRight(zy));
         svg
-          .selectAll("circle")
+          .selectAll("circle.dot")
           .attr("cx", (d, i) => zx(xValue(d, i)))
           .attr("cy", (d) => zy(yValue(d)));
         // Sync zoom level to the slider
