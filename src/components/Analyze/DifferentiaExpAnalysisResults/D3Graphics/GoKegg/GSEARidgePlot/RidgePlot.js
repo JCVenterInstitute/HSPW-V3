@@ -13,6 +13,10 @@ const RidgePlotComponent = ({
   const [data1, setData1] = useState([]);
   const [data2, setData2] = useState([]);
 
+  const margin = { top: 20, right: 30, bottom: 40, left: 100 };
+  const width = 1200 - margin.left - margin.right;
+  const height = 700 - margin.top - margin.bottom;
+
   useEffect(() => {
     const loadData = async () => {
       const result1 = await fetchTSV(jobId, fileName1, selectedSection);
@@ -32,13 +36,19 @@ const RidgePlotComponent = ({
       // Remove any existing SVG content before drawing the new plot
       svg.selectAll("*").remove();
 
-      // Set dimensions and margins
-      const margin = { top: 20, right: 30, bottom: 40, left: 100 };
-      const width = 800 - margin.left - margin.right;
-      const height = 600 - margin.top - margin.bottom;
-
       // Append the svg object to the body of the page
       const plot = svg
+        .append("svg")
+        .attr("class", "chart")
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .attr(
+          "viewBox",
+          `0 0 ${width + margin.left + margin.right} ${
+            height + margin.top + margin.bottom
+          }`
+        )
+        .attr("width", "100%")
+        .attr("height", "auto")
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -77,17 +87,22 @@ const RidgePlotComponent = ({
 
       // Process each setSize group
       setSizeValues.forEach((setSize) => {
-        const groupData1 = data1
-          .filter((d) => d.setSize === setSize)
-          .map((d) => +d["Fold.Change"]);
+        // Filter Data1 for the current setSize
+        const groupData1 = data1.filter((d) => d.setSize === setSize);
 
-        // Filter Data2 based on matched Protein/Unnamed Column
-        const groupData2 = data2.filter((d2) => groupData1.includes(+d2["rn"]));
+        // Find matching rows in Data2 based on Unnamed Column and Protein
+        const matchedData2 = data2.filter((d2) =>
+          groupData1.some(
+            (d1) =>
+              d1["Unnamed Column"].replace(/['"]+/g, "") ===
+              d2.Protein.replace(/['"]+/g, "")
+          )
+        );
 
         const density = kde(
           kernelEpanechnikov(7),
           xScale.ticks(40),
-          groupData2
+          matchedData2
         );
 
         plot
@@ -117,7 +132,11 @@ const RidgePlotComponent = ({
     }
   }, [data1, data2]);
 
-  return <svg ref={svgRef}></svg>;
+  return (
+    <div className="ridgechart-container">
+      <svg id="ridgeChart" className="ridgechart" ref={svgRef}></svg>
+    </div>
+  );
 };
 
 export default RidgePlotComponent;
