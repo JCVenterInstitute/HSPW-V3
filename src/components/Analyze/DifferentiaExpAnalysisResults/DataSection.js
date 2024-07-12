@@ -276,10 +276,12 @@ const DataSection = ({
         } else if (tab === "GSEA Ridge plot") {
           const ccRidgeFile =
             fileMapping["GO Cellular Component"]["GSEA Ridge plot Data"];
+          const allDatafile = fileMapping["Result Data"];
           displayResult = (
             <RidgePlotComponent
               jobId={jobId}
-              fileName={ccRidgeFile}
+              fileName1={ccRidgeFile}
+              fileName2={allDatafile}
               selectedSection={selectedSection}
             />
           );
