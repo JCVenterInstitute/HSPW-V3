@@ -125,7 +125,12 @@ const DataSection = ({
       case "Statistical Parametric Test":
         if (allData && tab !== "Data Matrix") {
           displayResult = (
-            <StatisticalParametricPlot data={allData.data} extension={"tsv"} />
+            <StatisticalParametricPlot
+              data={allData.data}
+              extension={"tsv"}
+              pval={searchParams.get("pValue")}
+              // TODO: make pval a user input
+            />
           );
         } else {
           displayResult = null;
