@@ -41,6 +41,7 @@ export const fileMapping = {
   },
   "GO Biological Process": {
     "Enrichment Plot": "gobp_bar.jpeg",
+    "Enrichment Plot Data": "egobp.tsv",
     "Enriched terms & connected genes": "gobp_gene_network.jpeg",
     "GSEA Ridge plot": "gsebp_ridge.jpeg",
     "GSEA Heatmap plot": "gsebp_heat.jpeg",
@@ -48,6 +49,7 @@ export const fileMapping = {
   },
   "GO Molecular Function": {
     "Enrichment Plot": "gomf_bar.jpeg",
+    "Enrichment Plot Data": "egomf.tsv",
     "Enriched terms & connected genes": "gomf_gene_network.jpeg",
     "GSEA Ridge plot": "gsemf_ridge.jpeg",
     "GSEA Heatmap plot": "gsemf_heat.jpeg",
@@ -55,6 +57,7 @@ export const fileMapping = {
   },
   "GO Cellular Component": {
     "Enrichment Plot": "gocc_bar.jpeg",
+    "Enrichment Plot Data": "egocc.tsv",
     "Enriched terms & connected genes": "gocc_gene_network.jpeg",
     "GSEA Ridge plot": "gsecc_ridge.jpeg",
     "GSEA Heatmap plot": "gsecc_heat.jpeg",
@@ -62,6 +65,7 @@ export const fileMapping = {
   },
   "KEGG Pathway/Module": {
     "Enrichment Plot": "kegg_pathway_bar.jpeg",
+    "Enrichment Plot Data": "kegg.tsv",
     "Enriched terms & connected genes": "kegg_gene_network.jpeg",
     "GSEA Ridge plot": "kegg_pathway_ridge.jpeg",
     "GSEA Heatmap plot": "kegg_heat.jpeg",

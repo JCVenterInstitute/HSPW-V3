@@ -101,7 +101,10 @@ export const parseTSV = (tsvText, selectedSection) => {
     console.log("> Current Line", currentLine);
 
     const isValid =
-      selectedSection === "Go Molecular Function"
+      selectedSection === "Go Molecular Function" ||
+      "GO Biological Process" ||
+      "GO Cellular Component" ||
+      "KEGG Pathway/Module"
         ? currentLine.length === headers.length + 1
         : currentLine.length === headers.length;
 

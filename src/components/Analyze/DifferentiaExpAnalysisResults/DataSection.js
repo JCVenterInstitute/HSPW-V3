@@ -11,8 +11,8 @@ import VennDiagramComponent from "./D3Graphics/VennDiagram/VennDiagramComponent"
 import BoxPlot from "./D3Graphics/Normalization Plot/BoxPlot";
 import DensityPlot from "./D3Graphics/Normalization Plot/DensityPlot";
 import PrincipleComponentAnalysis from "./D3Graphics/PrincipleComponentAnalysis/PrincipleComponentAnalysis";
-import BarChartComponent from "./D3Graphics/Go Molecular Function/Enrichment Plot/MfBarPlot";
-import RandomForest from "./D3Graphics/RandomForest/RandomForest";
+import BarChartComponent from "./D3Graphics/GO & KEGG/Enrichment Plot/BarPlot";
+//import RandomForest from "./D3Graphics/RandomForest/RandomForest";
 import InputData from "./InputData";
 
 const style = {
@@ -219,31 +219,62 @@ const DataSection = ({
         break;
       case "Random Forest":
         displayResult = null;
-        <>
-          <RandomForest
-            selectedSection={selectedSection}
-            jobId={jobId}
-            tab={tab}
-          />
-          
-        </>
+        // <>
+        //   <RandomForest
+        //     selectedSection={selectedSection}
+        //     jobId={jobId}
+        //     tab={tab}
+        //   />
+        // </>;
         break;
       case "GO Biological Process":
-        displayResult = null;
-        break;
-      case "GO Molecular Function":
+        const bpBarfile =
+          fileMapping["GO Biological Process"]["Enrichment Plot Data"];
         if (tab === "Enrichment Plot") {
-          displayResult = <BarChartComponent jobId={jobId} />;
+          displayResult = (
+            <BarChartComponent jobId={jobId} datafile={bpBarfile} />
+          );
         } else {
           displayResult = null;
           isPngTab = false;
         }
         break;
+      case "GO Molecular Function":
+        const mfBarfile =
+          fileMapping["GO Molecular Function"]["Enrichment Plot Data"];
+        if (tab === "Enrichment Plot") {
+          displayResult = (
+            <BarChartComponent jobId={jobId} datafile={mfBarfile} />
+          );
+        } else {
+          displayResult = null;
+          isPngTab = false;
+        }
+        break;
+
       case "GO Cellular Component":
-        displayResult = null;
+        const ccBarfile =
+          fileMapping["GO Cellular Component"]["Enrichment Plot Data"];
+        if (tab === "Enrichment Plot") {
+          displayResult = (
+            <BarChartComponent jobId={jobId} datafile={ccBarfile} />
+          );
+        } else {
+          displayResult = null;
+          isPngTab = false;
+        }
         break;
       case "KEGG Pathway/Module":
-        displayResult = null;
+        const keggBarfile =
+          fileMapping["KEGG Pathway/Module"]["Enrichment Plot Data"];
+        if (tab === "Enrichment Plot") {
+          displayResult = (
+            <BarChartComponent jobId={jobId} datafile={keggBarfile} />
+          );
+        } else {
+          displayResult = null;
+          isPngTab = false;
+        }
         break;
       case "Result Data":
         displayResult = (
