@@ -67,22 +67,34 @@ export const parseCSV = (csvText, selectedSection) => {
   return parsedData;
 };
 
+/**
+ * Parses a TSV (Tab-Separated Values) text into an array of objects,
+ * where each object represents a row of parsed data. Handles scenarios
+ * specific to different selected sections.
+ *
+ * @param {string} tsvText The TSV text to parse
+ * @param {string} selectedSection The selected section to determine parsing logic
+ * @returns {Array} An array of objects representing parsed data rows
+ */
 export const parseTSV = (tsvText, selectedSection) => {
+  // Split the TSV text into lines
   const lines = tsvText.split("\n");
 
-  // Assuming TSV, so delimiter is tab (\t)
+  // Determine the delimiter (assuming TSV format)
   const delimiter = "\t";
 
-  // Split the first line with the tab delimiter to get headers
+  // Split the first line to get column headers
   let headers = lines[0].split(delimiter);
 
-  // Replace the first header if it's empty and remove quotes from all headers
+  // Clean headers: remove surrounding quotes and handle empty headers
   headers = headers.map((header, index) => {
+    // Replace empty headers or headers with 'rn' (potentially corrupted)
     if (
       index === 0 &&
       (header.replace(/['"]+/g, "") === "" ||
         header.replace(/['"]+/g, "") === "rn")
     ) {
+      // Special case for Principal Component Analysis
       return selectedSection === "Principal Component Analysis"
         ? "Sample"
         : "Protein";
@@ -93,30 +105,41 @@ export const parseTSV = (tsvText, selectedSection) => {
 
   console.log("> Headers", headers);
 
+  // Initialize an array to store parsed data rows
   const parsedData = [];
-  console.log(">line length", lines.length);
 
+  // Iterate over lines (starting from the second line, skipping headers)
   for (let i = 1; i < lines.length; i++) {
+    // Split the current line into columns
     const currentLine = lines[i].split(delimiter);
     console.log("> Current Line", currentLine);
 
-    const isValid =
-      selectedSection === "Go Molecular Function"
-        ? currentLine.length === headers.length + 1
-        : currentLine.length === headers.length;
+    // Determine if the section is one requiring special handling for column count
+    const isBarSection = [
+      "GO Biological Process",
+      "GO Molecular Function",
+      "GO Cellular Component",
+      "KEGG Pathway/Module",
+    ].includes(selectedSection);
+
+    // Validate if the current line matches expected column count
+    const isValid = isBarSection
+      ? currentLine.length === headers.length + 1 // Bar sections have an additional unnamed column
+      : currentLine.length === headers.length;
 
     console.log("> Is Valid", isValid);
     console.log("> Selected Section", selectedSection);
     console.log("> Current Line Length", currentLine.length);
     console.log("> Header Length", headers.length);
 
+    // If valid, construct an object for the row and push it to parsedData
     if (isValid) {
-      console.log("> Testing");
+      console.log("> Parsing row");
       const row = {};
       for (let j = 0; j < headers.length; j++) {
-        row[headers[j].trim()] = currentLine[j].trim();
+        row[headers[j].trim()] = currentLine[j].trim(); // Populate object properties with trimmed values
       }
-      // Add the last column (without a header)
+      // Handle the last column (without a header) if present
       if (currentLine.length === headers.length + 1) {
         row["Unnamed Column"] = currentLine[headers.length].trim();
       }
@@ -127,6 +150,7 @@ export const parseTSV = (tsvText, selectedSection) => {
 
   console.log("> Parsed Data", parsedData);
 
+  // Return the parsed data array
   return parsedData;
 };
 

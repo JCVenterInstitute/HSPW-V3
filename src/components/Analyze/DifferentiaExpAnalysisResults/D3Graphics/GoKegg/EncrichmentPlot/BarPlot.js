@@ -1,22 +1,23 @@
 import "../../D3GraphStyles.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
 import { fetchTSV } from "../../../utils";
 
-const BarChartComponent = ({ jobId }) => {
+const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
   const [data, setData] = useState(null);
+  const svgRef = useRef();
 
-  const margin = { top: 20, right: 30, bottom: 50, left: 250 };
-  const width = 800 - margin.left - margin.right;
-  const height = 600 - margin.top - margin.bottom;
+  const margin = { top: 20, right: 10, bottom: 50, left: 280 };
+  const width = 1200 - margin.left - margin.right;
+  const height = 700 - margin.top - margin.bottom;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const { data: tsvData } = await fetchTSV(
           jobId,
-          "egomf.tsv",
-          "Go Molecular Function"
+          datafile,
+          selectedSection
         );
         setData(tsvData.slice(0, 20)); // Take the first 20 rows for plotting
       } catch (error) {
@@ -25,18 +26,21 @@ const BarChartComponent = ({ jobId }) => {
     };
 
     fetchData();
-  }, [jobId]);
+  }, [jobId, datafile, selectedSection]);
 
   useEffect(() => {
-    if (data) drawBarChart(data);
+    if (data) {
+      drawBarChart(data);
+    }
   }, [data]);
 
   const drawBarChart = (data) => {
     // Clear existing SVG content
-    d3.select("#barChart").selectAll("*").remove();
+    d3.select(svgRef.current).selectAll("*").remove();
 
+    // Create SVG
     const svg = d3
-      .select("#barChart")
+      .select(svgRef.current)
       .append("svg")
       .attr("class", "chart")
       .attr("preserveAspectRatio", "xMinYMin meet")
@@ -155,11 +159,72 @@ const BarChartComponent = ({ jobId }) => {
       .text((d) => d["Unnamed Column"])
       .attr("text-anchor", "start")
       .attr("alignment-baseline", "middle");
+
+    // Legend
+    const legendHeight = 150;
+    const legendWidth = 18;
+
+    const legend = svg
+      .append("g")
+      .attr("id", "barChartLegend")
+      .attr(
+        "transform",
+        `translate(${width - 70},${height - legendHeight - 30})`
+      );
+
+    const defs = legend.append("defs");
+
+    const linearGradient = defs
+      .append("linearGradient")
+      .attr("id", "linear-gradient")
+      .attr("x1", "0%")
+      .attr("y1", "100%")
+      .attr("x2", "0%")
+      .attr("y2", "0%");
+
+    linearGradient
+      .append("stop")
+      .attr("offset", "0%")
+      .attr("stop-color", "red");
+
+    linearGradient
+      .append("stop")
+      .attr("offset", "100%")
+      .attr("stop-color", "blue");
+
+    legend
+      .append("rect")
+      .attr("width", legendWidth)
+      .attr("height", legendHeight)
+      .style("fill", "url(#linear-gradient)");
+
+    // Add text labels to the legend
+    legend
+      .append("text")
+      .attr("x", legendWidth / 2)
+      .attr("y", -5) // Adjust the y position for the text
+      .attr("text-anchor", "middle")
+      .text("p.adjust")
+      .style("font-size", "12px")
+      .style("fill", "#333"); // Adjust font size and color as needed
+
+    const legendScale = d3
+      .scaleLinear()
+      .domain(d3.extent(data, (d) => +d["p.adjust"]))
+      .range([legendHeight, 0]);
+
+    const legendAxis = d3.axisRight(legendScale).ticks(5);
+
+    legend
+      .append("g")
+      .attr("class", "axis legend-axis")
+      .attr("transform", `translate(${legendWidth}, 0)`)
+      .call(legendAxis);
   };
 
   return (
     <div className="barchart-container">
-      <div id="barChart" className="barchart"></div>
+      <div id="barChart" className="barchart" ref={svgRef}></div>
     </div>
   );
 };
