@@ -14,7 +14,7 @@ const RidgePlotComponent = ({
   const [data2, setData2] = useState([]);
 
   const margin = { top: 20, right: 30, bottom: 40, left: 100 };
-  const width = 1200 - margin.left - margin.right;
+  const width = 900 - margin.left - margin.right;
   const height = 700 - margin.top - margin.bottom;
 
   useEffect(() => {
