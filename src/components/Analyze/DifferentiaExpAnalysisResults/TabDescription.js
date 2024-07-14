@@ -3,7 +3,7 @@ import { Typography } from "@mui/material";
 import descriptions from "../DifferentialExpressionAnalysis/AnalysisDescription";
 
 const TabDescription = ({ tab, selectedSection, numbOfTopVolcanoSamples }) => {
-  let description = descriptions[selectedSection];
+  const description = descriptions[selectedSection];
 
   if (typeof description === "object") description = description[tab];
 

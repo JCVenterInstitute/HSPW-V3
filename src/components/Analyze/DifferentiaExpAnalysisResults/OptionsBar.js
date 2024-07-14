@@ -10,10 +10,9 @@ const OptionsBar = ({ selectedSection, option, setSelectedSection }) => {
     typography: {
       color: "#454545",
       fontFamily: "Montserrat",
-      textAlign: "left",
-      marginTop: "10px",
-      fontSize: "16px",
-      padding: "12px 15px 12px 15px",
+      marginTop: "5px",
+      fontSize: "14px",
+      padding: "10px",
       borderRadius: "16px",
       transition: "0.3s",
       "&:hover": {

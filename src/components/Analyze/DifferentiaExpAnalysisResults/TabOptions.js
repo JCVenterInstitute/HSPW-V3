@@ -1,5 +1,5 @@
 import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { handleDownload } from "./utils";
 import { fileMapping } from "./Constants";
 import { getTabOptions } from "./utils";
@@ -11,6 +11,12 @@ const TabOptions = ({
   numbOfTopVolcanoSamples,
   jobId,
 }) => {
+  const [fileName, setFileName] = useState(
+    tab !== null
+      ? fileMapping[selectedSection][tab]
+      : fileMapping[selectedSection]
+  );
+
   const style = {
     tabStyle: {
       backgroundColor: "#EBEBEB",
@@ -18,7 +24,7 @@ const TabOptions = ({
       "& .MuiToggleButtonGroup-grouped": {
         margin: "7px 5px",
         border: "none",
-        padding: "8px 12px",
+        padding: "5px 10px",
         fontFamily: "Montserrat",
         borderRadius: "16px !important",
         "&.Mui-selected": {
@@ -43,6 +49,21 @@ const TabOptions = ({
     },
   };
 
+  // Get correct file name for download when tab or section switched
+  useEffect(() => {
+    let name =
+      tab !== null
+        ? fileMapping[selectedSection][tab]
+        : fileMapping[selectedSection];
+
+    // Handle special case for Heat Map first tab
+    if (name === undefined && tab.startsWith("Top")) {
+      name = fileMapping[selectedSection]["Top Samples"];
+    }
+
+    setFileName(name);
+  }, [tab, selectedSection]);
+
   // When selecting a new section, go back to first tab of that section
   useEffect(() => {
     const tabOptions = getTabOptions(selectedSection, numbOfTopVolcanoSamples);
@@ -66,6 +87,7 @@ const TabOptions = ({
 
       return (
         <ToggleButton
+          className="tab-button"
           key={`${selectedSection}-tab-${i}`}
           value={tab}
         >
@@ -87,10 +109,7 @@ const TabOptions = ({
   };
 
   return (
-    <Box
-      id="option-tab-box"
-      sx={{ display: "flex" }}
-    >
+    <Box id="option-tab-box" sx={{ display: "flex" }}>
       <Box style={{ display: "flex", width: "100%", maxWidth: "950px" }}>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           {createTabGroup(selectedSection)}
@@ -101,12 +120,7 @@ const TabOptions = ({
           <Button
             variant="contained"
             onClick={() => {
-              handleDownload(
-                jobId,
-                tab !== null
-                  ? fileMapping[selectedSection][tab]
-                  : fileMapping[selectedSection]
-              );
+              handleDownload(jobId, fileName);
             }}
           >
             Download
