@@ -105,8 +105,6 @@ export const parseTSV = (tsvText, selectedSection) => {
     }
   });
 
-  console.log("> Headers", headers);
-
   // Initialize an array to store parsed data rows
   const parsedData = [];
 
@@ -114,7 +112,6 @@ export const parseTSV = (tsvText, selectedSection) => {
   for (let i = 1; i < lines.length; i++) {
     // Split the current line into columns
     const currentLine = lines[i].split(delimiter);
-    console.log("> Current Line", currentLine);
 
     // Determine if the section is one requiring special handling for column count
     const isBarSection = [
@@ -129,23 +126,19 @@ export const parseTSV = (tsvText, selectedSection) => {
       ? currentLine.length === headers.length + 1 // Bar sections have an additional unnamed column
       : currentLine.length === headers.length;
 
-    console.log("> Is Valid", isValid);
-    console.log("> Selected Section", selectedSection);
-    console.log("> Current Line Length", currentLine.length);
-    console.log("> Header Length", headers.length);
-
     // If valid, construct an object for the row and push it to parsedData
     if (isValid) {
-      console.log("> Parsing row");
       const row = {};
+
       for (let j = 0; j < headers.length; j++) {
         row[headers[j].trim()] = currentLine[j].trim(); // Populate object properties with trimmed values
       }
+
       // Handle the last column (without a header) if present
       if (currentLine.length === headers.length + 1) {
         row["Unnamed Column"] = currentLine[headers.length].trim();
       }
-      console.log("> Row", row);
+
       parsedData.push(row);
     }
   }

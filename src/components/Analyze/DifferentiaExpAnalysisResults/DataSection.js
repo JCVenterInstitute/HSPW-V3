@@ -48,7 +48,10 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
     dataFile = files["Data Matrix"],
     setter = setData
   ) => {
+    if (!dataFile) return;
+
     const { data, dataUrl } = await fetchData(dataFile);
+
     setter(data);
   };
 
@@ -292,80 +295,31 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
         );
         break;
       case "GO Biological Process":
-        const bpBarfile =
-          fileMapping["GO Biological Process"]["Enrichment Plot Data"];
-        if (tab === "Enrichment Plot") {
-          displayResult = (
-            <BarChartComponent
-              jobId={jobId}
-              datafile={bpBarfile}
-              selectedSection={selectedSection}
-            />
-          );
-        } else {
-          displayResult = null;
-          isPngTab = false;
-        }
-        break;
       case "GO Molecular Function":
-        const mfBarfile =
-          fileMapping["GO Molecular Function"]["Enrichment Plot Data"];
-        if (tab === "Enrichment Plot") {
-          displayResult = (
-            <BarChartComponent
-              jobId={jobId}
-              datafile={mfBarfile}
-              selectedSection={selectedSection}
-            />
-          );
-        } else {
-          displayResult = null;
-          isPngTab = false;
-        }
-        break;
+      case "GO Molecular Function":
       case "GO Cellular Component":
-        const ccBarfile =
-          fileMapping["GO Cellular Component"]["Enrichment Plot Data"];
+      case "KEGG Pathway/Module":
+        const sectionFile = fileMapping[selectedSection][`${tab} Data`];
 
         if (tab === "Enrichment Plot") {
           displayResult = (
             <BarChartComponent
               jobId={jobId}
-              datafile={ccBarfile}
+              datafile={sectionFile}
               selectedSection={selectedSection}
             />
           );
-        } else if (tab === "GSEA Ridge plot") {
-          const ccRidgeFile =
-            fileMapping["GO Cellular Component"]["GSEA Ridge plot Data"];
-          const allDatafile = fileMapping["Result Data"];
+        } else if (tab.endsWith("Ridge plot")) {
           displayResult = (
             <RidgePlotComponent
               jobId={jobId}
-              fileName1={ccRidgeFile}
-              fileName2={allDatafile}
+              fileName1={sectionFile}
+              fileName2={fileMapping["Result Data"]}
               selectedSection={selectedSection}
             />
           );
         } else {
           displayResult = null;
-          isPngTab = false;
-        }
-        break;
-      case "KEGG Pathway/Module":
-        const keggBarfile =
-          fileMapping["KEGG Pathway/Module"]["Enrichment Plot Data"];
-        if (tab === "Enrichment Plot") {
-          displayResult = (
-            <BarChartComponent
-              jobId={jobId}
-              datafile={keggBarfile}
-              selectedSection={selectedSection}
-            />
-          );
-        } else {
-          displayResult = null;
-          isPngTab = false;
         }
         break;
       case "Result Data":
