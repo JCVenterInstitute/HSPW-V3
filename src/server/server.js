@@ -2,11 +2,12 @@ const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
 const app = express();
+const { exec } = require("child_process");
 const { Client } = require("@opensearch-project/opensearch");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const createAwsOpensearchConnector = require("aws-opensearch-connector");
-const { exec } = require("child_process");
 const path = require("path");
+
 const { processGroupData } = require("./utils/processGroupData");
 const { processFile } = require("./utils/processFile");
 const { s3Download } = require("./utils/s3Download");
@@ -1502,7 +1503,6 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
       parametricTest,
       timestamp,
       formattedDate,
-      workingDirectory,
     } = req.body;
 
     console.log(
@@ -1514,41 +1514,38 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
       timestamp,
       formattedDate
     );
-
     console.log("> Input file location", inputFile);
 
-    const command = `docker run --rm -v ~/.aws:/root/.aws diff_exp_local -i ${inputFile} -l ${logNorm} -f ${foldChangeThreshold} -p ${pValueThreshold} -r ${pValueType} -t ${parametricTest} -n ${numberOfDifferentiallyAbundantProteinsInHeatmap}`;
-
+    let command = `docker run --rm -v ~/.aws:/root/.aws diff_exp_local -i ${inputFile} -l ${logNorm} -f ${foldChangeThreshold} -p ${pValueThreshold} -r ${pValueType} -t ${parametricTest} -n ${numberOfDifferentiallyAbundantProteinsInHeatmap}`;
     console.log("> Command", command);
 
-    const childProcess = exec(command, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.error(`stderr: ${stderr}`);
-        return;
-      }
-      console.log(`Output: ${stdout}`);
-    });
+    const initialAnalysis = await execCommand(command);
+    console.log("> Initial Analysis output:", initialAnalysis);
 
-    childProcess.on("exit", (code, signal) => {
-      console.log(
-        `Child process exited with code ${code} and signal ${signal}`
-      );
+    command = `docker run --rm -v ~/.aws:/root/.aws go_keg_local -i ${inputFile} -p 0.65 -q 0.25`;
+    console.log("> Go/KEGG Command", command);
 
-      if (code === 1) {
-        return res.status(500).json({ mssg: "Error running analysis" });
-      }
+    const goKeggAnalysis = await execCommand(command);
+    console.log("> Go/Kegg output:", goKeggAnalysis);
 
-      res.status(200).send("Docker run complete");
-    });
+    res.status(200).send("Docker run complete");
   } catch (error) {
     console.error(`Error during file operations: ${error.message}`);
     res.status(500).send(`Server Error: ${error.message}`);
   }
 });
+
+function execCommand(command) {
+  return new Promise((resolve, reject) => {
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(stdout);
+      }
+    });
+  });
+}
 
 app.post("/api/differential-expression/analyze-file", async (req, res) => {
   try {
@@ -1562,7 +1559,6 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
       parametricTest,
       timestamp,
       formattedDate,
-      workingDirectory,
     } = req.body;
 
     console.log(
@@ -1573,33 +1569,19 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
 
     console.log("> Input file location", inputFile);
 
-    const command = `docker run --rm -v ~/.aws:/root/.aws diff_exp_local -i ${inputFile} -l ${logNorm} -f ${foldChangeThreshold} -p ${pValueThreshold} -r ${pValueType} -t ${parametricTest} -n ${numberOfDifferentiallyAbundantProteinsInHeatmap}`;
-
+    let command = `docker run --rm -v ~/.aws:/root/.aws diff_exp_local -i ${inputFile} -l ${logNorm} -f ${foldChangeThreshold} -p ${pValueThreshold} -r ${pValueType} -t ${parametricTest} -n ${numberOfDifferentiallyAbundantProteinsInHeatmap}`;
     console.log("> Command", command);
 
-    const childProcess = exec(command, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.error(`stderr: ${stderr}`);
-        return;
-      }
-      console.log(`Output: ${stdout}`);
-    });
+    const initialAnalysis = await execCommand(command);
+    console.log("> Initial Analysis output:", initialAnalysis);
 
-    childProcess.on("exit", (code, signal) => {
-      console.log(
-        `Child process exited with code ${code} and signal ${signal}`
-      );
+    command = `docker run --rm -v ~/.aws:/root/.aws go_keg_local -i ${inputFile} -p 0.65 -q 0.25`;
+    console.log("> Go/KEGG Command", command);
 
-      if (code === 1) {
-        return res.status(500).json({ mssg: "Error running analysis docker" });
-      }
+    const goKeggAnalysis = await execCommand(command);
+    console.log("> Go/Kegg output:", goKeggAnalysis);
 
-      res.status(200).send("Docker run complete");
-    });
+    res.status(200).send("Docker run complete");
   } catch (error) {
     console.error(`Error during file operations: ${error.message}`);
     res.status(500).send(`Server Error: ${error.message}`);
