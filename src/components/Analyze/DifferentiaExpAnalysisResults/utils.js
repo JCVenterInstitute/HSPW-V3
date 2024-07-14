@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import { sectionToTabs } from "./Constants";
 
 /**
@@ -20,6 +21,7 @@ export const getTabOptions = (selectedSection, numbOfTopVolcanoSamples) => {
 
   return options;
 };
+
 /**
  * Parses the csv string
  * @param {string} csvText CSV String
@@ -244,8 +246,13 @@ export const fetchData = async (url) => {
  */
 export const handleDownload = async (jobId, fileName) => {
   try {
+    let file = fileName;
+
+    // Handle random forest download, some tab contains multiple files first one is the image
+    if (typeof file === "object") file = file[0];
+
     const res = await axios.get(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
+      `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${file}`
     );
     const link = document.createElement("a");
     link.href = res.data.url;

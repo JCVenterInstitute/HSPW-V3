@@ -13,7 +13,7 @@ import DensityPlot from "./D3Graphics/Normalization Plot/DensityPlot";
 import PrincipleComponentAnalysis from "./D3Graphics/PrincipleComponentAnalysis/PrincipleComponentAnalysis";
 import BarChartComponent from "./D3Graphics/GoKegg/EncrichmentPlot/BarPlot";
 import RidgePlotComponent from "./D3Graphics/GoKegg/GSEARidgePlot/RidgePlot";
-//import RandomForest from "./D3Graphics/RandomForest/RandomForest";
+import RandomForest from "./D3Graphics/RandomForest/RandomForest";
 import InputData from "./InputData";
 import {
   fetchCSV,
@@ -189,7 +189,6 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
           displayResult = (
             <StatisticalParametricPlot
               data={allData.data}
-              extension={"tsv"}
               pval={searchParams.get("pValue")}
               // TODO: make pval a user input
             />
@@ -201,9 +200,7 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
         break;
       case "Fold Change Analysis":
         if (allData && tab !== "Data Matrix") {
-          displayResult = (
-            <FoldChangePlot data={allData.data} extension={"tsv"} />
-          );
+          displayResult = <FoldChangePlot data={allData.data} />;
         } else {
           displayResult = null;
           isPngTab = false;
@@ -238,6 +235,7 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
           displayResult = <VennDiagramComponent jobId={jobId} />;
         } else {
           displayResult = null;
+          isPngTab = false;
         }
         break;
       case "Normalization":
@@ -285,14 +283,13 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
         }
         break;
       case "Random Forest":
-        displayResult = null;
-        // <>
-        //   <RandomForest
-        //     selectedSection={selectedSection}
-        //     jobId={jobId}
-        //     tab={tab}
-        //   />
-        // </>;
+        displayResult = (
+          <RandomForest
+            selectedSection={selectedSection}
+            jobId={jobId}
+            tab={tab}
+          />
+        );
         break;
       case "GO Biological Process":
         const bpBarfile =

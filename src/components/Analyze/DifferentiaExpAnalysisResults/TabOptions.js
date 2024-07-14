@@ -5,14 +5,14 @@ import { fileMapping } from "./Constants";
 import { getTabOptions } from "./utils";
 
 const TabOptions = ({
-  tab,
+  tab = null,
   selectedSection,
   setTab,
   numbOfTopVolcanoSamples,
   jobId,
 }) => {
   const [fileName, setFileName] = useState(
-    tab !== null
+    tab && fileMapping[selectedSection]
       ? fileMapping[selectedSection][tab]
       : fileMapping[selectedSection]
   );
@@ -52,12 +52,12 @@ const TabOptions = ({
   // Get correct file name for download when tab or section switched
   useEffect(() => {
     let name =
-      tab !== null
+      tab && fileMapping[selectedSection]
         ? fileMapping[selectedSection][tab]
         : fileMapping[selectedSection];
 
     // Handle special case for Heat Map first tab
-    if (name === undefined && tab.startsWith("Top")) {
+    if (tab && name === undefined && tab.startsWith("Top")) {
       name = fileMapping[selectedSection]["Top Samples"];
     }
 

@@ -1,9 +1,10 @@
 import { Typography } from "@mui/material";
 
 import descriptions from "../DifferentialExpressionAnalysis/AnalysisDescription";
+import { useEffect } from "react";
 
 const TabDescription = ({ tab, selectedSection, numbOfTopVolcanoSamples }) => {
-  const description = descriptions[selectedSection];
+  let description = descriptions[selectedSection];
 
   if (typeof description === "object") description = description[tab];
 
