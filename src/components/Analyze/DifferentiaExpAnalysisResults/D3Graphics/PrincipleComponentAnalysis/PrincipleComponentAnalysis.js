@@ -10,7 +10,6 @@ const PrincipleComponentAnalysis = ({
   pcaVariance,
   extension,
 }) => {
-  // Configuration for the plot
   const plotConfig = {
     dataFile: data,
     extension: extension,
@@ -21,8 +20,8 @@ const PrincipleComponentAnalysis = ({
     height: 450,
     margin: { top: 10, right: 60, bottom: 70, left: 100 },
     pointRadius: 8,
-    xAxisLabel: `PC 1 (${d3.format(".2f")(pcaVariance[0]["x"] * 100)}%)`,
-    yAxisLabel: `PC 2 (${d3.format(".2f")(pcaVariance[1]["x"] * 100)}%)`,
+    xAxisLabel: `PC 1 (${d3.format(".1f")(pcaVariance[0]["x"] * 100)}%)`,
+    yAxisLabel: `PC 2 (${d3.format(".1f")(pcaVariance[1]["x"] * 100)}%)`,
     xValue: (d) => +d["PC1"],
     yValue: (d) => +d["PC2"],
     circleClass: (d) => {
@@ -39,7 +38,6 @@ const PrincipleComponentAnalysis = ({
               <br/><strong>PC2</strong>: ${d3.format(".2f")(d["PC2"])}`;
     },
   };
-  console.log(pcaVariance);
   const chartRef = useRef(null);
   const svgRef = useRef(null);
   const zoomRef = useRef(null);
@@ -246,6 +244,44 @@ const PrincipleComponentAnalysis = ({
     svg.call(zoom);
     zoomRef.current = zoom;
 
+    // Append ellipses to a group that will be clipped
+    const ellipsesGroup = svg.append("g").attr("clip-path", "url(#clipRect)");
+
+    const groupData = d3.groups(
+      data,
+      (d) => groupMapping[d["Protein"].replaceAll('"', "")]
+    );
+    groupData.forEach(([group, values]) => {
+      const meanX = d3.mean(values, xValue);
+      const meanY = d3.mean(values, yValue);
+      const covarianceMatrix = calculateCovarianceMatrix(
+        values.map(xValue),
+        values.map(yValue)
+      );
+      const [a, b, angle] = getEllipseParameters(covarianceMatrix, 0.95);
+
+      // Compute the scaled radii
+      const scaledA = a * Math.abs(xScale(1) - xScale(0)); // Correct scaling for rx
+      const scaledB = b * Math.abs(yScale(0) - yScale(1)); // Correct scaling for ry
+
+      // Append ellipses
+      ellipsesGroup
+        .append("ellipse")
+        .attr("class", "ellipse")
+        .attr("cx", xScale(meanX))
+        .attr("cy", yScale(meanY))
+        .attr("rx", scaledA)
+        .attr("ry", scaledB)
+        .attr(
+          "transform",
+          `rotate(${(-angle * 180) / Math.PI}, ${xScale(meanX)}, ${yScale(
+            meanY
+          )})`
+        )
+        .style("fill", "none")
+        .style("stroke", "black");
+    });
+
     // Append data points
     const pltPointsGroup = svg
       .append("g")
@@ -279,42 +315,6 @@ const PrincipleComponentAnalysis = ({
             d["Protein"].replace(/^"(.*)"$/, "$1")
         )
       );
-
-    // Append ellipses
-    const groupData = d3.groups(
-      data,
-      (d) => groupMapping[d["Protein"].replaceAll('"', "")]
-    );
-    groupData.forEach(([group, values]) => {
-      const meanX = d3.mean(values, xValue);
-      const meanY = d3.mean(values, yValue);
-      const covarianceMatrix = calculateCovarianceMatrix(
-        values.map(xValue),
-        values.map(yValue)
-      );
-      const [a, b, angle] = getEllipseParameters(covarianceMatrix, 0.95);
-
-      // Compute the scaled radii
-      const scaledA = a * Math.abs(xScale(1) - xScale(0)); // Correct scaling for rx
-      const scaledB = b * Math.abs(yScale(0) - yScale(1)); // Correct scaling for ry
-
-
-      svg
-        .append("ellipse")
-        .attr("class", "ellipse")
-        .attr("cx", xScale(meanX))
-        .attr("cy", yScale(meanY))
-        .attr("rx", scaledA)
-        .attr("ry", scaledB)
-        .attr(
-          "transform",
-          `rotate(${(-angle * 180) / Math.PI}, ${xScale(meanX)}, ${yScale(
-            meanY
-          )})`
-        )
-        .style("fill", "none")
-        .style("stroke", "black");
-    });
   };
 
   // Calculate covariance matrix
