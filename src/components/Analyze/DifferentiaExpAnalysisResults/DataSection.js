@@ -203,7 +203,12 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
         break;
       case "Fold Change Analysis":
         if (allData && tab !== "Data Matrix") {
-          displayResult = <FoldChangePlot data={allData.data} />;
+          displayResult = (
+            <FoldChangePlot
+              data={allData.data}
+              fc={searchParams.get("foldChange")}
+            />
+          );
         } else {
           displayResult = null;
           isPngTab = false;

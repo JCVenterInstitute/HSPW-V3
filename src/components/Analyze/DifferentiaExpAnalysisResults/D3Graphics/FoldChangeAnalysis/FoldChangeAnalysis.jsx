@@ -6,9 +6,11 @@ import * as d3 from "d3v7";
 // Fold.Change
 // log2.FC.
 
-const FoldChangePlot = ({ data }) => {
+const FoldChangePlot = ({ data, fc }) => {
   const plotConfig = {
     dataFile: data,
+    threshold1: Number(fc),
+    threshold2: Number(fc) * -1,
     containerID: "statParaTest",
     width: 1600,
     height: 800,
@@ -142,6 +144,33 @@ const FoldChangePlot = ({ data }) => {
       .attr("class", "yAxis")
       .attr("transform", `translate(${width}, 0)`);
 
+    const thresholdLines = svg
+      .append("g")
+      .attr("class", "thresholdLines")
+      .attr("clip-path", "url(#clipRect)")
+      .attr("height", height)
+      .attr("width", width);
+
+    const threshold1 = config.threshold1;
+    const threshold2 = config.threshold2;
+    const thresholdLine1 = thresholdLines
+      .append("svg:line")
+      .attr("class", "threshold")
+      .attr("x1", 0)
+      .attr("x2", width)
+      .attr("y1", yScale(threshold1))
+      .attr("y2", yScale(threshold1))
+      .attr("stroke-dasharray", "5, 5");
+
+    const thresholdLine2 = thresholdLines
+      .append("svg:line")
+      .attr("class", "threshold")
+      .attr("x1", 0)
+      .attr("x2", width)
+      .attr("y1", yScale(threshold2))
+      .attr("y2", yScale(threshold2))
+      .attr("stroke-dasharray", "5, 5");
+
     const tooltip = d3
       .select("body")
       .append("div")
@@ -204,11 +233,18 @@ const FoldChangePlot = ({ data }) => {
           .attr("cy", (d) => zy(yValue(d)));
         // Sync zoom level to the slider
         document.getElementById("zoom-slider").value = event.transform.k;
+        thresholdLine1.attr("y1", zy(threshold1)).attr("y2", zy(threshold1));
+        thresholdLine2.attr("y1", zy(threshold2)).attr("y2", zy(threshold2));
       });
 
     svg.call(zoom);
     zoomRef.current = zoom;
+    Number.prototype.between = function (a, b) {
+      var min = Math.min(a, b),
+        max = Math.max(a, b);
 
+      return this > min && this < max;
+    };
     const pltPointsGroup = svg
       .append("g")
       .attr("id", "points-group")
@@ -225,6 +261,12 @@ const FoldChangePlot = ({ data }) => {
       .attr("cy", (d) => yScale(yValue(d)))
       .attr("r", pointRadius)
       .attr("class", circleClass)
+      .attr("class", (d) => {
+        const cyValue = yValue(d);
+        return Number(cyValue).between(threshold1, threshold2)
+          ? "dot"
+          : "dot sig";
+      })
       .on("mouseover", (_, d) => {
         tooltip.html(tooltipHTML(d)).style("visibility", "visible");
       })
