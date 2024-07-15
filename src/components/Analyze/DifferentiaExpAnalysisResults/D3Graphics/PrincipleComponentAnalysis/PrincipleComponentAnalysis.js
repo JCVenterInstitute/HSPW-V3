@@ -10,7 +10,6 @@ const PrincipleComponentAnalysis = ({
   pcaVariance,
   extension,
 }) => {
-  // Configuration for the plot
   const plotConfig = {
     dataFile: data,
     extension: extension,
@@ -20,15 +19,15 @@ const PrincipleComponentAnalysis = ({
     width: 600,
     height: 450,
     margin: { top: 10, right: 60, bottom: 70, left: 100 },
-    pointRadius: 8,
-    xAxisLabel: `PC 1 (${d3.format(".2f")(pcaVariance[0]["x"] * 100)}%)`,
-    yAxisLabel: `PC 2 (${d3.format(".2f")(pcaVariance[1]["x"] * 100)}%)`,
+    pointRadius: 5,
+    xAxisLabel: `PC 1 (${d3.format(".1f")(pcaVariance[0]["x"] * 100)}%)`,
+    yAxisLabel: `PC 2 (${d3.format(".1f")(pcaVariance[1]["x"] * 100)}%)`,
     xValue: (d) => +d["PC1"],
     yValue: (d) => +d["PC2"],
     circleClass: (d) => {
       return groupMapping[d["Protein"].replaceAll('"', "")] === groupLabels[0]
-        ? "dot sigfold"
-        : "dot sig";
+        ? "dot sig"
+        : "dot sigfold";
     },
     tooltipHTML: (d) => {
       return `<strong>Protein</strong>: ${d["Protein"]}
@@ -39,7 +38,6 @@ const PrincipleComponentAnalysis = ({
               <br/><strong>PC2</strong>: ${d3.format(".2f")(d["PC2"])}`;
     },
   };
-  console.log(pcaVariance);
   const chartRef = useRef(null);
   const svgRef = useRef(null);
   const zoomRef = useRef(null);
@@ -108,15 +106,31 @@ const PrincipleComponentAnalysis = ({
     document.getElementById("zoom-slider").disabled = true;
 
     const data = plotConfig.dataFile;
+
+    // Calculate the maximum extents of the ellipses
+    const groupData = d3.groups(
+      data,
+      (d) => groupMapping[d["Protein"].replaceAll('"', "")]
+    );
+
+    const maxExtent = getMaxExtents(groupData, xValue, yValue);
+
+    // Adjust the scales to include the entire extent of the ellipses
     const xScale = d3
       .scaleLinear()
       .range([0, width])
-      .domain(d3.extent(data, xValue))
+      .domain([
+        d3.min(data, xValue) - maxExtent.x,
+        d3.max(data, xValue) + maxExtent.x,
+      ])
       .nice();
     const yScale = d3
       .scaleLinear()
       .range([height, 0])
-      .domain(d3.extent(data, yValue))
+      .domain([
+        d3.min(data, yValue) - maxExtent.y,
+        d3.max(data, yValue) + maxExtent.y,
+      ])
       .nice();
 
     // Append axes
@@ -216,6 +230,21 @@ const PrincipleComponentAnalysis = ({
           .selectAll("circle")
           .attr("cx", (d, i) => zx(xValue(d, i)))
           .attr("cy", (d) => zy(yValue(d)));
+
+        svg
+          .selectAll("ellipse")
+          .attr("cx", (d) => zx(d.meanX))
+          .attr("cy", (d) => zy(d.meanY))
+          .attr("rx", (d) => d.scaledA * event.transform.k)
+          .attr("ry", (d) => d.scaledB * event.transform.k)
+          .attr(
+            "transform",
+            (d) =>
+              `rotate(${(-d.angle * 180) / Math.PI}, ${zx(d.meanX)}, ${zy(
+                d.meanY
+              )})`
+          );
+
         document.getElementById("zoom-slider").value = event.transform.k;
         svg
           .select(".x.grid")
@@ -225,7 +254,7 @@ const PrincipleComponentAnalysis = ({
               .ticks(10)
               .tickSize(-height)
               .tickFormat("")
-              .scale(event.transform.rescaleX(xScale))
+              .scale(zx)
           );
         svg
           .select(".y.grid")
@@ -235,7 +264,7 @@ const PrincipleComponentAnalysis = ({
               .ticks(10)
               .tickSize(-width)
               .tickFormat("")
-              .scale(event.transform.rescaleY(yScale))
+              .scale(zy)
           );
         svg
           .selectAll(".threshold")
@@ -246,13 +275,51 @@ const PrincipleComponentAnalysis = ({
     svg.call(zoom);
     zoomRef.current = zoom;
 
-    // Append data points
+    // Append ellipses to a group that will be clipped
+    const ellipsesGroup = svg.append("g").attr("clip-path", "url(#clipRect)");
+
+    // Append data points to a separate group
     const pltPointsGroup = svg
       .append("g")
       .attr("id", "points-group")
       .attr("clip-path", "url(#clipRect)")
       .attr("height", height)
       .attr("width", width);
+
+    // Draw the ellipses first
+    groupData.forEach(([group, values]) => {
+      const meanX = d3.mean(values, xValue);
+      const meanY = d3.mean(values, yValue);
+      const covarianceMatrix = calculateCovarianceMatrix(
+        values.map(xValue),
+        values.map(yValue)
+      );
+      const [a, b, angle] = getEllipseParameters(covarianceMatrix, 0.95);
+
+      // Compute the scaled radii
+      const scaledA = a * Math.abs(xScale(1) - xScale(0)); // Correct scaling for rx
+      const scaledB = b * Math.abs(yScale(0) - yScale(1)); // Correct scaling for ry
+
+      ellipsesGroup
+        .append("ellipse")
+        .datum({ meanX, meanY, scaledA, scaledB, angle })
+        .attr("class", `ellipse ${group}`)
+        .attr("cx", xScale(meanX))
+        .attr("cy", yScale(meanY))
+        .attr("rx", scaledA)
+        .attr("ry", scaledB)
+        .attr(
+          "transform",
+          `rotate(${(-angle * 180) / Math.PI}, ${xScale(meanX)}, ${yScale(
+            meanY
+          )})`
+        )
+        .style("fill", group === groupLabels[0] ? "red" : "blue")
+        .style("opacity", "20%")
+        .style("stroke", "none");
+    });
+
+    // Draw the data points second
     pltPointsGroup
       .selectAll(".dot")
       .data(data)
@@ -278,43 +345,9 @@ const PrincipleComponentAnalysis = ({
           "https://salivaryproteome.org/protein/" +
             d["Protein"].replace(/^"(.*)"$/, "$1")
         )
-      );
-
-    // Append ellipses
-    const groupData = d3.groups(
-      data,
-      (d) => groupMapping[d["Protein"].replaceAll('"', "")]
-    );
-    groupData.forEach(([group, values]) => {
-      const meanX = d3.mean(values, xValue);
-      const meanY = d3.mean(values, yValue);
-      const covarianceMatrix = calculateCovarianceMatrix(
-        values.map(xValue),
-        values.map(yValue)
-      );
-      const [a, b, angle] = getEllipseParameters(covarianceMatrix, 0.95);
-
-      // Compute the scaled radii
-      const scaledA = a * Math.abs(xScale(1) - xScale(0)); // Correct scaling for rx
-      const scaledB = b * Math.abs(yScale(0) - yScale(1)); // Correct scaling for ry
-
-
-      svg
-        .append("ellipse")
-        .attr("class", "ellipse")
-        .attr("cx", xScale(meanX))
-        .attr("cy", yScale(meanY))
-        .attr("rx", scaledA)
-        .attr("ry", scaledB)
-        .attr(
-          "transform",
-          `rotate(${(-angle * 180) / Math.PI}, ${xScale(meanX)}, ${yScale(
-            meanY
-          )})`
-        )
-        .style("fill", "none")
-        .style("stroke", "black");
-    });
+      )
+      .style("stroke", "black")
+      .style("opacity", "80%");
   };
 
   // Calculate covariance matrix
@@ -353,6 +386,25 @@ const PrincipleComponentAnalysis = ({
     const angle = Math.atan2(eigenVectors[1][0], eigenVectors[0][0]);
 
     return [a, b, angle];
+  };
+
+  const getMaxExtents = (groupData, xValue, yValue) => {
+    let maxExtent = { x: -Infinity, y: -Infinity };
+
+    groupData.forEach(([group, values]) => {
+      const meanX = d3.mean(values, xValue);
+      const meanY = d3.mean(values, yValue);
+      const covarianceMatrix = calculateCovarianceMatrix(
+        values.map(xValue),
+        values.map(yValue)
+      );
+      const [a, b] = getEllipseParameters(covarianceMatrix, 0.95);
+
+      maxExtent.x = Math.max(maxExtent.x, meanX + a, meanX - a);
+      maxExtent.y = Math.max(maxExtent.y, meanY + b, meanY - b);
+    });
+
+    return maxExtent;
   };
 
   const containerRef = useRef(null);

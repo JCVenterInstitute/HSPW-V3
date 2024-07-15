@@ -206,10 +206,6 @@ body {
     font-weight: bold;
     fill: var(--axis-color);
   }
-  .ellipse {
-    stroke: black;
-    stroke-width: 1.5px;
-  }
 
   text {
     font-size: 1em;
