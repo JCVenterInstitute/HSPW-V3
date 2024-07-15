@@ -523,31 +523,19 @@ const SalivaryProteinTable = () => {
         {
           headerName: "SM",
           field: "SM",
-          cellRenderer: "GreenComponent",
-          cellRendererParams: {
-            normalizationSelected,
-            max: salivaryMaxAndSum.SM_max,
-          },
+          cellRenderer: "specificityComponent",
           cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
         {
           headerName: "SL",
           field: "SL",
-          cellRenderer: "GreenComponent",
-          cellRendererParams: {
-            normalizationSelected,
-            max: salivaryMaxAndSum.SL_max,
-          },
+          cellRenderer: "specificityComponent",
           cellClass: ["table-border", "salivary-proteins-colored-cell"],
         },
         {
           headerName: "PAR",
           field: "PAR",
-          cellRenderer: "GreenComponent",
-          cellRendererParams: {
-            normalizationSelected,
-            max: salivaryMaxAndSum.PAR_max,
-          },
+          cellRenderer: "specificityComponent",
           cellClass: ["table-border", "salivary-proteins-colored-cell"],
         },
       ],
