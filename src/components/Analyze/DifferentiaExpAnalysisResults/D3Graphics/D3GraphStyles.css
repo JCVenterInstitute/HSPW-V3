@@ -19,10 +19,10 @@
 .d3Graph {
   font-family: Lato;
 }
-
+/* 
 body {
   overflow-y: hidden !important;
-}
+} */
 
 .tooltip {
   position: absolute;
