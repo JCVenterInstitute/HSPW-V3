@@ -523,19 +523,31 @@ const SalivaryProteinTable = () => {
         {
           headerName: "SM",
           field: "SM",
-          cellRenderer: "specificityComponent",
+          cellRenderer: "GreenComponent",
+          cellRendererParams: {
+            normalizationSelected,
+            max: salivaryMaxAndSum.SM_max,
+          },
           cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
         {
           headerName: "SL",
           field: "SL",
-          cellRenderer: "specificityComponent",
+          cellRenderer: "GreenComponent",
+          cellRendererParams: {
+            normalizationSelected,
+            max: salivaryMaxAndSum.SL_max,
+          },
           cellClass: ["table-border", "salivary-proteins-colored-cell"],
         },
         {
           headerName: "PAR",
           field: "PAR",
-          cellRenderer: "specificityComponent",
+          cellRenderer: "GreenComponent",
+          cellRendererParams: {
+            normalizationSelected,
+            max: salivaryMaxAndSum.PAR_max,
+          },
           cellClass: ["table-border", "salivary-proteins-colored-cell"],
         },
       ],
@@ -638,6 +650,9 @@ const SalivaryProteinTable = () => {
         mRNA: normalizeAbundance(item.mRNA),
         plasma_abundance: normalizeAbundance(item.plasma_abundance),
         "sm/sl_abundance": normalizeAbundance(item["sm/sl_abundance"]),
+        SM: normalizeAbundance(item.SM),
+        SL: normalizeAbundance(item.SL),
+        PAR: normalizeAbundance(item.PAR),
       };
     });
   };
@@ -690,6 +705,7 @@ const SalivaryProteinTable = () => {
     const salivaryMaxAndSum = await fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/get-salivary-max-and-sum`
     ).then((res) => res.json());
+
     setSalivaryMaxAndSum(salivaryMaxAndSum);
 
     if (normalizationSelected) {
