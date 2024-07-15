@@ -4,10 +4,9 @@ import "../D3GraphStyles.css";
 import { create } from "@mui/material/styles/createTransitions";
 // import data from "../../data/statistical_parametric_test.csv";
 
-const StatisticalParametricPlot = ({ data, extension, pval }) => {
+const StatisticalParametricPlot = ({ data, pval }) => {
   const plotConfig = {
     dataFile: data,
-    extension: extension,
     threshold: -1 * Math.log10(pval),
     containerID: "statParaTest",
     width: 1600,
@@ -110,13 +109,13 @@ const StatisticalParametricPlot = ({ data, extension, pval }) => {
     document.getElementById("zoom-slider").disabled = true;
 
     const data = plotConfig.dataFile;
-    console.log(data);
-    console.log(data);
+
     const xScale = d3
       .scaleLinear()
       .range([0, width])
       .domain([-5, Object.keys(data).length + 5])
       .nice();
+
     const yScale = d3
       .scaleLinear()
       .range([height, 0])
@@ -251,6 +250,7 @@ const StatisticalParametricPlot = ({ data, extension, pval }) => {
         .attr("transform", `translate(8, 8)`)
         .text((d) => d.label);
     }
+
     createLegend(svg, plotConfig.legendDict);
 
     const zoom = d3

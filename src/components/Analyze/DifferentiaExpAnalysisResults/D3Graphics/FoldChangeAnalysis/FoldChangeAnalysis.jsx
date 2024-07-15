@@ -6,10 +6,9 @@ import * as d3 from "d3v7";
 // Fold.Change
 // log2.FC.
 
-const FoldChangePlot = (data, extension) => {
+const FoldChangePlot = ({ data }) => {
   const plotConfig = {
     dataFile: data,
-    extension: extension,
     containerID: "statParaTest",
     width: 1600,
     height: 800,
@@ -42,13 +41,13 @@ const FoldChangePlot = (data, extension) => {
       }<br/><strong>t.stat</strong>: ${d3.format(".2f")(d["t.stat"])}`;
     },
   };
+
   const chartRef = useRef(null),
     svgRef = useRef(null),
     zoomRef = useRef(null);
 
   const createScatterPlot = async (config, containerRef) => {
     const {
-      dataFile,
       width,
       height,
       margin,
@@ -91,6 +90,7 @@ const FoldChangePlot = (data, extension) => {
       .attr("y", 0);
 
     svg.node().addEventListener("wheel", (event) => event.preventDefault());
+
     // Append slider in the container for better layout control
     const slider = parentContainer
       .append("div")
@@ -105,7 +105,7 @@ const FoldChangePlot = (data, extension) => {
       .attr("value", "1")
       .style("width", "50%");
 
-    const data = plotConfig.dataFile.data;
+    const data = plotConfig.dataFile;
     document.getElementById("zoom-slider").disabled = true;
 
     const scaleMinMax = (data) => {
@@ -169,6 +169,7 @@ const FoldChangePlot = (data, extension) => {
       .attr("text-anchor", "middle")
       .attr("class", "axis")
       .text(yAxisLabel);
+
     yAxisRight
       .call(d3.axisRight(yScale))
       .append("text")
@@ -259,6 +260,7 @@ const FoldChangePlot = (data, extension) => {
       svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
     }
   };
+
   const resetButtonMargin = {
     top: `${plotConfig.margin.top + 10}px`,
     right: `${plotConfig.margin.right + 10}px`,
