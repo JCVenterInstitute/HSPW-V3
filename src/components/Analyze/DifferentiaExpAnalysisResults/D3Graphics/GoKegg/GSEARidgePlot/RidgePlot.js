@@ -47,8 +47,6 @@ const RidgePlotComponent = ({
             height + margin.top + margin.bottom
           }`
         )
-        .attr("width", "100%")
-        .attr("height", "auto")
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -91,19 +89,27 @@ const RidgePlotComponent = ({
         const groupData1 = data1.filter((d) => d.setSize === setSize);
 
         // Find matching rows in Data2 based on Unnamed Column and Protein
-        const matchedData2 = data2.filter((d2) =>
-          groupData1.some(
-            (d1) =>
-              d1["Unnamed Column"].replace(/['"]+/g, "") ===
-              d2.Protein.replace(/['"]+/g, "")
-          )
+        const matchedData2 = groupData1.map((d1) => {
+          const matched = data2.find((d2) => d1["Unnamed Column"] === d2["rn"]);
+          return {
+            ...d1,
+            ...matched,
+          };
+        });
+
+        // Ensure that all matched data has valid Fold.Change values
+        const validData = matchedData2.filter(
+          (d) => !isNaN(d["Fold.Change"]) && d["Fold.Change"] !== undefined
         );
 
-        const density = kde(
-          kernelEpanechnikov(7),
-          xScale.ticks(40),
-          matchedData2
-        );
+        const density = kde(kernelEpanechnikov(7), xScale.ticks(40), validData);
+
+        // Debugging: Check for NaN values in density
+        density.forEach((d) => {
+          if (isNaN(d[0]) || isNaN(d[1])) {
+            console.error("NaN value detected in density:", d);
+          }
+        });
 
         plot
           .append("path")
