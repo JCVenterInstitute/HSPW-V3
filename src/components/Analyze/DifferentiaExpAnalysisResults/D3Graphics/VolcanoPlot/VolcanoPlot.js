@@ -182,7 +182,10 @@ const VolcanoPlot = ({
       .on(
         "click",
         (_, d) =>
-          window.open("https://salivaryproteome.org/protein/" + d[datakeys[0]]),
+          window.open(
+            "https://salivaryproteome.org/protein/" +
+              d[datakeys[0]].replace(/['"]+/g, "")
+          ),
         "_blank"
       );
 
