@@ -19,15 +19,15 @@ const PrincipleComponentAnalysis = ({
     width: 600,
     height: 450,
     margin: { top: 10, right: 60, bottom: 70, left: 100 },
-    pointRadius: 8,
+    pointRadius: 5,
     xAxisLabel: `PC 1 (${d3.format(".1f")(pcaVariance[0]["x"] * 100)}%)`,
     yAxisLabel: `PC 2 (${d3.format(".1f")(pcaVariance[1]["x"] * 100)}%)`,
     xValue: (d) => +d["PC1"],
     yValue: (d) => +d["PC2"],
     circleClass: (d) => {
       return groupMapping[d["Protein"].replaceAll('"', "")] === groupLabels[0]
-        ? "dot sigfold"
-        : "dot sig";
+        ? "dot sig"
+        : "dot sigfold";
     },
     tooltipHTML: (d) => {
       return `<strong>Protein</strong>: ${d["Protein"]}
@@ -112,8 +112,10 @@ const PrincipleComponentAnalysis = ({
       data,
       (d) => groupMapping[d["Protein"].replaceAll('"', "")]
     );
+
     const maxExtent = getMaxExtents(groupData, xValue, yValue);
 
+    // Adjust the scales to include the entire extent of the ellipses
     const xScale = d3
       .scaleLinear()
       .range([0, width])
@@ -228,6 +230,21 @@ const PrincipleComponentAnalysis = ({
           .selectAll("circle")
           .attr("cx", (d, i) => zx(xValue(d, i)))
           .attr("cy", (d) => zy(yValue(d)));
+
+        svg
+          .selectAll("ellipse")
+          .attr("cx", (d) => zx(d.meanX))
+          .attr("cy", (d) => zy(d.meanY))
+          .attr("rx", (d) => d.scaledA * event.transform.k)
+          .attr("ry", (d) => d.scaledB * event.transform.k)
+          .attr(
+            "transform",
+            (d) =>
+              `rotate(${(-d.angle * 180) / Math.PI}, ${zx(d.meanX)}, ${zy(
+                d.meanY
+              )})`
+          );
+
         document.getElementById("zoom-slider").value = event.transform.k;
         svg
           .select(".x.grid")
@@ -237,7 +254,7 @@ const PrincipleComponentAnalysis = ({
               .ticks(10)
               .tickSize(-height)
               .tickFormat("")
-              .scale(event.transform.rescaleX(xScale))
+              .scale(zx)
           );
         svg
           .select(".y.grid")
@@ -247,7 +264,7 @@ const PrincipleComponentAnalysis = ({
               .ticks(10)
               .tickSize(-width)
               .tickFormat("")
-              .scale(event.transform.rescaleY(yScale))
+              .scale(zy)
           );
         svg
           .selectAll(".threshold")
@@ -261,6 +278,15 @@ const PrincipleComponentAnalysis = ({
     // Append ellipses to a group that will be clipped
     const ellipsesGroup = svg.append("g").attr("clip-path", "url(#clipRect)");
 
+    // Append data points to a separate group
+    const pltPointsGroup = svg
+      .append("g")
+      .attr("id", "points-group")
+      .attr("clip-path", "url(#clipRect)")
+      .attr("height", height)
+      .attr("width", width);
+
+    // Draw the ellipses first
     groupData.forEach(([group, values]) => {
       const meanX = d3.mean(values, xValue);
       const meanY = d3.mean(values, yValue);
@@ -274,12 +300,10 @@ const PrincipleComponentAnalysis = ({
       const scaledA = a * Math.abs(xScale(1) - xScale(0)); // Correct scaling for rx
       const scaledB = b * Math.abs(yScale(0) - yScale(1)); // Correct scaling for ry
 
-      console.log(`group: ${group}`);
-
-      // Append ellipses
       ellipsesGroup
         .append("ellipse")
-        .attr("class", "ellipse")
+        .datum({ meanX, meanY, scaledA, scaledB, angle })
+        .attr("class", `ellipse ${group}`)
         .attr("cx", xScale(meanX))
         .attr("cy", yScale(meanY))
         .attr("rx", scaledA)
@@ -290,17 +314,12 @@ const PrincipleComponentAnalysis = ({
             meanY
           )})`
         )
-        .style("fill", "none")
-        .style("stroke", "black");
+        .style("fill", group === groupLabels[0] ? "red" : "blue")
+        .style("opacity", "20%")
+        .style("stroke", "none");
     });
 
-    // Append data points
-    const pltPointsGroup = svg
-      .append("g")
-      .attr("id", "points-group")
-      .attr("clip-path", "url(#clipRect)")
-      .attr("height", height)
-      .attr("width", width);
+    // Draw the data points second
     pltPointsGroup
       .selectAll(".dot")
       .data(data)
@@ -326,7 +345,9 @@ const PrincipleComponentAnalysis = ({
           "https://salivaryproteome.org/protein/" +
             d["Protein"].replace(/^"(.*)"$/, "$1")
         )
-      );
+      )
+      .style("stroke", "black")
+      .style("opacity", "80%");
   };
 
   // Calculate covariance matrix
