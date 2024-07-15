@@ -106,15 +106,29 @@ const PrincipleComponentAnalysis = ({
     document.getElementById("zoom-slider").disabled = true;
 
     const data = plotConfig.dataFile;
+
+    // Calculate the maximum extents of the ellipses
+    const groupData = d3.groups(
+      data,
+      (d) => groupMapping[d["Protein"].replaceAll('"', "")]
+    );
+    const maxExtent = getMaxExtents(groupData, xValue, yValue);
+
     const xScale = d3
       .scaleLinear()
       .range([0, width])
-      .domain(d3.extent(data, xValue))
+      .domain([
+        d3.min(data, xValue) - maxExtent.x,
+        d3.max(data, xValue) + maxExtent.x,
+      ])
       .nice();
     const yScale = d3
       .scaleLinear()
       .range([height, 0])
-      .domain(d3.extent(data, yValue))
+      .domain([
+        d3.min(data, yValue) - maxExtent.y,
+        d3.max(data, yValue) + maxExtent.y,
+      ])
       .nice();
 
     // Append axes
@@ -247,10 +261,6 @@ const PrincipleComponentAnalysis = ({
     // Append ellipses to a group that will be clipped
     const ellipsesGroup = svg.append("g").attr("clip-path", "url(#clipRect)");
 
-    const groupData = d3.groups(
-      data,
-      (d) => groupMapping[d["Protein"].replaceAll('"', "")]
-    );
     groupData.forEach(([group, values]) => {
       const meanX = d3.mean(values, xValue);
       const meanY = d3.mean(values, yValue);
@@ -263,6 +273,8 @@ const PrincipleComponentAnalysis = ({
       // Compute the scaled radii
       const scaledA = a * Math.abs(xScale(1) - xScale(0)); // Correct scaling for rx
       const scaledB = b * Math.abs(yScale(0) - yScale(1)); // Correct scaling for ry
+
+      console.log(`group: ${group}`);
 
       // Append ellipses
       ellipsesGroup
@@ -353,6 +365,25 @@ const PrincipleComponentAnalysis = ({
     const angle = Math.atan2(eigenVectors[1][0], eigenVectors[0][0]);
 
     return [a, b, angle];
+  };
+
+  const getMaxExtents = (groupData, xValue, yValue) => {
+    let maxExtent = { x: -Infinity, y: -Infinity };
+
+    groupData.forEach(([group, values]) => {
+      const meanX = d3.mean(values, xValue);
+      const meanY = d3.mean(values, yValue);
+      const covarianceMatrix = calculateCovarianceMatrix(
+        values.map(xValue),
+        values.map(yValue)
+      );
+      const [a, b] = getEllipseParameters(covarianceMatrix, 0.95);
+
+      maxExtent.x = Math.max(maxExtent.x, meanX + a, meanX - a);
+      maxExtent.y = Math.max(maxExtent.y, meanY + b, meanY - b);
+    });
+
+    return maxExtent;
   };
 
   const containerRef = useRef(null);
