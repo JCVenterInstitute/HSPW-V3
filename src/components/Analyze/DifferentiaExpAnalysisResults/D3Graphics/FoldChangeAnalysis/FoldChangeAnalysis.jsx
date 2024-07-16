@@ -9,8 +9,8 @@ import * as d3 from "d3v7";
 const FoldChangePlot = ({ data, fc }) => {
   const plotConfig = {
     dataFile: data,
-    threshold1: Number(fc),
-    threshold2: Number(fc) * -1,
+    threshold1: Math.log2(Number(fc)),
+    threshold2: Math.log2(Number(fc)) * -1,
     containerID: "statParaTest",
     width: 1600,
     height: 800,
@@ -232,7 +232,7 @@ const FoldChangePlot = ({ data, fc }) => {
         yAxisLeft.call(d3.axisLeft(zy));
         yAxisRight.call(d3.axisRight(zy));
         svg
-          .selectAll("circle")
+          .selectAll("circle.dot")
           .attr("cx", (d, i) => zx(xValue(d, i)))
           .attr("cy", (d) => zy(yValue(d)));
         // Sync zoom level to the slider
