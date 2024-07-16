@@ -10,7 +10,7 @@ import FoldChangePlot from "./D3Graphics/FoldChangeAnalysis/FoldChangeAnalysis";
 import VennDiagramComponent from "./D3Graphics/VennDiagram/VennDiagramComponent";
 import BoxPlot from "./D3Graphics/Normalization Plot/BoxPlot";
 import DensityPlot from "./D3Graphics/Normalization Plot/DensityPlot";
-import PrincipleComponentAnalysis from "./D3Graphics/PrincipleComponentAnalysis/PrincipleComponentAnalysis";
+import PrincipleComponentAnalysis from "./D3Graphics/PrincipleComponentAnalysis/PrincipleComponentAnalysis.jsx";
 import BarChartComponent from "./D3Graphics/GoKegg/EncrichmentPlot/BarPlot";
 import RidgePlotComponent from "./D3Graphics/GoKegg/GSEARidgePlot/RidgePlot";
 import RandomForest from "./D3Graphics/RandomForest/RandomForest";
@@ -50,7 +50,7 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
   ) => {
     if (!dataFile) return;
 
-    const { data, dataUrl } = await fetchData(dataFile);
+    const data = await fetchData(dataFile);
 
     setter(data);
   };

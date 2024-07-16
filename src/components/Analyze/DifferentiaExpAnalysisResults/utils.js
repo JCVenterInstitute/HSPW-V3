@@ -60,7 +60,7 @@ export const parseCSV = (csvText, selectedSection) => {
     if (currentLine.length === headers.length) {
       const row = {};
       for (let j = 0; j < headers.length; j++) {
-        row[headers[j].trim()] = currentLine[j].trim();
+        row[headers[j].trim()] = currentLine[j].trim().replaceAll(/^"|"$/g, "");
       }
       parsedData.push(row);
     }
@@ -223,10 +223,7 @@ export const fetchData = async (url) => {
   try {
     let csv = await axios.get(url).then((res) => res.data);
 
-    return {
-      data: parseCSV(csv),
-      dataUrl: URL.createObjectURL(new Blob([csv], { type: "text/csv" })),
-    };
+    return parseCSV(csv);
   } catch (error) {
     console.error("Error fetching csv:", error);
   }
