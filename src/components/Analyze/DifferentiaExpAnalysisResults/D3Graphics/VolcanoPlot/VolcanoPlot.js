@@ -190,9 +190,9 @@ const VolcanoPlot = ({
       );
 
     const legendDict = {
-      1: ["DOWN", "Blue"],
-      2: ["NON-SIG", "Gray"],
-      3: ["UP", "Red"],
+      1: ["DOWN", "var(--sigfold-dot-color)"],
+      2: ["NON-SIG", "var(--dot-color)"],
+      3: ["UP", "var(--sig-dot-color)"],
     };
 
     createLegend(svg, legendDict);
