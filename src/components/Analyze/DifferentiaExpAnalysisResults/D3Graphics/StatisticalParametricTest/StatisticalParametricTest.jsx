@@ -217,10 +217,6 @@ const StatisticalParametricPlot = ({ data, pval }) => {
         .append("g")
         .attr("class", "legend")
         .attr("transform", "translate(25, 40)");
-      // .append("rect")
-      // .attr("width", "200")
-      // .attr("height", "80")
-      // .attr("fill", "white");
 
       const legendItems = Object.keys(legendDict).map((key) => ({
         key,
@@ -247,11 +243,9 @@ const StatisticalParametricPlot = ({ data, pval }) => {
         .append("text")
         .attr("x", 15)
         .attr("y", 9)
-        .attr("transform", `translate(8, 8)`)
+        .attr("transform", `translate(8, 6)`)
         .text((d) => d.label);
     }
-
-    createLegend(svg, plotConfig.legendDict);
 
     const zoom = d3
       .zoom()
@@ -341,6 +335,7 @@ const StatisticalParametricPlot = ({ data, pval }) => {
           ),
         "_blank"
       );
+    createLegend(svg, plotConfig.legendDict);
   };
 
   const containerRef = useRef(null);

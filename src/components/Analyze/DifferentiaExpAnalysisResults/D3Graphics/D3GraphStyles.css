@@ -64,7 +64,7 @@ body {
 
 .legend .legend-item text {
   font-family: Lato;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.1rem;
 }
 
@@ -152,7 +152,7 @@ body {
     fill: var(--axis-color);
   }
   text {
-    font-size: 2.2em;
+    font-size: 1.5em;
   }
   .threshold {
     stroke-width: 3px;
@@ -291,9 +291,8 @@ body {
   width: 100%;
 
   text {
-    font-size: 2.2em;
+    font-size: 1.5em;
   }
-
   .axis {
     font-size: 2.7em;
     font-weight: bold;

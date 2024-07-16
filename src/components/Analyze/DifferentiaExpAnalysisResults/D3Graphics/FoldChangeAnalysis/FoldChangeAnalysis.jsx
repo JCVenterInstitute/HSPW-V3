@@ -42,6 +42,10 @@ const FoldChangePlot = ({ data, fc }) => {
         d["p.value"]
       }<br/><strong>t.stat</strong>: ${d3.format(".2f")(d["t.stat"])}`;
     },
+    legendDict: {
+      1: ["Significant", "#ff5733"],
+      2: ["Non-Significant", "Gray"],
+    },
   };
 
   const chartRef = useRef(null),
@@ -117,9 +121,9 @@ const FoldChangePlot = ({ data, fc }) => {
       const dataMax = d3.max(data, yValue);
       const dataMin = d3.min(data, yValue);
       if (Math.abs(dataMin) > dataMax) {
-        return [dataMin * 1.2, dataMin * -1.2];
+        return [dataMin * 1.5, dataMin * -1.5];
       } else {
-        return [dataMax * -1.2, dataMax * 1.2];
+        return [dataMax * -1.5, dataMax * 1.5];
       }
     };
     const xScale = d3
@@ -287,6 +291,41 @@ const FoldChangePlot = ({ data, fc }) => {
           ),
         "_blank"
       );
+    function createLegend(selection, legendDict) {
+      const legend = selection
+        .append("g")
+        .attr("class", "legend")
+        .attr("transform", "translate(25, 40)");
+
+      const legendItems = Object.keys(legendDict).map((key) => ({
+        key,
+        label: legendDict[key][0],
+        color: legendDict[key][1],
+      }));
+
+      const legendItem = legend
+        .selectAll(".legend-item")
+        .data(legendItems)
+        .enter()
+        .append("g")
+        .attr("class", "legend-item")
+        .attr("transform", (d, i) => `translate(0,${i * 40})`);
+
+      legendItem
+        .append("circle")
+        .attr("cx", 5)
+        .attr("cy", 5)
+        .attr("r", 10)
+        .attr("fill", (d) => d.color);
+
+      legendItem
+        .append("text")
+        .attr("x", 15)
+        .attr("y", 9)
+        .attr("transform", `translate(8, 6)`)
+        .text((d) => d.label);
+    }
+    createLegend(svg, config.legendDict);
   };
 
   const containerRef = useRef(null);
