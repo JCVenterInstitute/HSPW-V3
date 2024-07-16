@@ -21,7 +21,9 @@ const PrincipleComponentAnalysis = ({
     margin: { top: 10, right: 60, bottom: 70, left: 100 },
     pointRadius: 5,
     xAxisLabel: `PC 1 (${d3.format(".1f")(pcaVariance[0]["x"] * 100)}%)`,
-    yAxisLabel: `PC 2 (${d3.format(".1f")(pcaVariance[1]["x"] * 100)}%)`,
+    yAxisLabel: `PC 2 (${d3.format(".1f")(
+      (pcaVariance[1]["x"] - pcaVariance[0]["x"]) * 100
+    )}%)`,
     xValue: (d) => +d["PC1"],
     yValue: (d) => +d["PC2"],
     circleClass: (d) => {
@@ -36,6 +38,10 @@ const PrincipleComponentAnalysis = ({
               }
               <br/><strong>PC1</strong>: ${d3.format(".2f")(d["PC1"])}
               <br/><strong>PC2</strong>: ${d3.format(".2f")(d["PC2"])}`;
+    },
+    legendDict: {
+      1: ["A", "var(--sig-dot-color)"],
+      2: ["B", "var(--sigfold-dot-color)"],
     },
   };
   const chartRef = useRef(null);
@@ -208,6 +214,48 @@ const PrincipleComponentAnalysis = ({
       .attr("height", height)
       .attr("width", width);
 
+    function createLegend(selection, legendDict) {
+      const legend = selection
+        .append("g")
+        .attr("class", "legend")
+        .attr("transform", "translate(15, 10)");
+      // .append("rect")
+      // .attr("width", "200")
+      // .attr("height", "80")
+      // .attr("fill", "white");
+
+      const legendItems = Object.keys(legendDict).map((key) => ({
+        key,
+        label: legendDict[key][0],
+        color: legendDict[key][1],
+      }));
+
+      const legendItem = legend
+        .selectAll(".legend-item")
+        .data(legendItems)
+        .enter()
+        .append("g")
+        .attr("class", "legend-item")
+        .attr("transform", (d, i) => `translate(0,${i * 30})`);
+
+      legendItem
+        .append("circle")
+        .attr("cx", 5)
+        .attr("cy", 5)
+        .attr("r", 10)
+        .attr("fill", (d) => d.color)
+        .attr("transform", (d, i) => `translate(0,${i + 1 * 4})`);
+
+      legendItem
+        .append("text")
+        .attr("x", 15)
+        .attr("y", 9)
+        .attr("transform", `translate(8, 8)`)
+        .text((d) => d.label);
+    }
+
+    createLegend(svg, plotConfig.legendDict);
+
     // Define zoom behavior
     const zoom = d3
       .zoom()
@@ -227,7 +275,7 @@ const PrincipleComponentAnalysis = ({
         yAxisLeft.call(d3.axisLeft(zy));
         yAxisRight.call(d3.axisRight(zy));
         svg
-          .selectAll("circle")
+          .selectAll(".dot")
           .attr("cx", (d, i) => zx(xValue(d, i)))
           .attr("cy", (d) => zy(yValue(d)));
 
@@ -379,7 +427,7 @@ const PrincipleComponentAnalysis = ({
     const eigenVectors = eigen.E.x;
 
     // Chi-squared value for the given confidence level (95% confidence interval)
-    const chiSquaredValue = Math.sqrt(5.991); // chi-squared value for 2 degrees of freedom and 95% confidence
+    const chiSquaredValue = Math.sqrt(7.378); // chi-squared value for 2 degrees of freedom and 95% confidence
 
     const a = Math.sqrt(eigenValues[0]) * chiSquaredValue;
     const b = Math.sqrt(eigenValues[1]) * chiSquaredValue;
