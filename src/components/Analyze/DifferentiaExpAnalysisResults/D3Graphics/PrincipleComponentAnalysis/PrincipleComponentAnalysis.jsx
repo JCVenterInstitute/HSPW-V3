@@ -18,7 +18,7 @@ const PrincipleComponentAnalysis = ({
     pcaVariance: pcaVariance,
     width: 600,
     height: 450,
-    margin: { top: 10, right: 60, bottom: 70, left: 100 },
+    margin: { top: 10, right: 40, bottom: 60, left: 65 },
     pointRadius: 5,
     xAxisLabel: `PC 1 (${d3.format(".1f")(pcaVariance[0]["x"] * 100)}%)`,
     yAxisLabel: `PC 2 (${d3.format(".1f")(
@@ -186,7 +186,7 @@ const PrincipleComponentAnalysis = ({
     xAxisBottom
       .call(d3.axisBottom(xScale))
       .append("text")
-      .attr("transform", `translate(0, 60)`)
+      .attr("transform", `translate(0, 50)`)
       .attr("x", width / 2)
       .attr("y", margin.top - 10)
       .attr("fill", "black")
@@ -471,8 +471,8 @@ const PrincipleComponentAnalysis = ({
   };
 
   const resetButtonMargin = {
-    top: `${plotConfig.margin.top + 10}px`,
-    right: `${plotConfig.margin.right + 40}px`,
+    top: `${plotConfig.margin.top + 25}px`,
+    right: `${plotConfig.margin.right + 65}px`,
   };
 
   return (
