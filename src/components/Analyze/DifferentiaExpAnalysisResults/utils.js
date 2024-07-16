@@ -223,10 +223,7 @@ export const fetchData = async (url) => {
   try {
     let csv = await axios.get(url).then((res) => res.data);
 
-    return {
-      data: parseCSV(csv),
-      dataUrl: URL.createObjectURL(new Blob([csv], { type: "text/csv" })),
-    };
+    return parseCSV(csv);
   } catch (error) {
     console.error("Error fetching csv:", error);
   }
