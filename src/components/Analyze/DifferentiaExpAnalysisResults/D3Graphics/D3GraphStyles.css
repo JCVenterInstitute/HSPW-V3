@@ -250,27 +250,6 @@ body {
     font-family: Lato;
   }
 
-  .protein-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    font-size: 14px;
-    color: black;
-    z-index: 1000;
-  }
-
-  .protein-table th,
-  .protein-table td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: left;
-  }
-
-  .protein-table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-  }
-
   .label {
     height: 28px;
     padding: 8px 8px 8px 0;
@@ -283,6 +262,16 @@ body {
     cursor: pointer;
     color: #696969;
     /* background: #f6f8fa;  */
+  }
+
+  div.ag-center-cols-container {
+    width: 100%;
+    border-left: 1px gray solid;
+    border-right: 1px gray solid;
+  }
+
+  div.ag-cell a {
+    margin-left: 1.5em;
   }
 }
 
