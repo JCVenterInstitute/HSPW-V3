@@ -155,13 +155,8 @@ const PrincipleComponentAnalysis = ({
       .append("g")
       .attr("class", "x grid")
       .attr("transform", `translate(0,${height})`)
+      .style("opacity", "0.3")
       .call(d3.axisBottom(xScale).ticks(10).tickSize(-height).tickFormat(""))
-      .call((g) =>
-        g
-          .selectAll("line")
-          .filter((d) => d !== 0)
-          .style("opacity", "0.3")
-      )
       .call((g) =>
         g
           .selectAll("line")
@@ -172,13 +167,8 @@ const PrincipleComponentAnalysis = ({
     gridLines
       .append("g")
       .attr("class", "y grid")
+      .style("opacity", "0.3")
       .call(d3.axisLeft(yScale).ticks(10).tickSize(-width).tickFormat(""))
-      .call((g) =>
-        g
-          .selectAll("line")
-          .filter((d) => d !== 0)
-          .style("opacity", "0.3")
-      )
       .call((g) =>
         g
           .selectAll("line")
