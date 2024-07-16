@@ -159,6 +159,12 @@ const PrincipleComponentAnalysis = ({
       .call((g) =>
         g
           .selectAll("line")
+          .filter((d) => d !== 0)
+          .style("opacity", "0.3")
+      )
+      .call((g) =>
+        g
+          .selectAll("line")
           .filter((d) => d === 0)
           .classed("axis-zero", true)
       );
@@ -167,6 +173,12 @@ const PrincipleComponentAnalysis = ({
       .append("g")
       .attr("class", "y grid")
       .call(d3.axisLeft(yScale).ticks(10).tickSize(-width).tickFormat(""))
+      .call((g) =>
+        g
+          .selectAll("line")
+          .filter((d) => d !== 0)
+          .style("opacity", "0.3")
+      )
       .call((g) =>
         g
           .selectAll("line")
