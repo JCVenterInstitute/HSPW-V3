@@ -1,3 +1,4 @@
+// import "../D3GraphStyles.css";
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { fetchCSV } from "../../utils.js";
@@ -11,16 +12,16 @@ const DotGraph = ({ jobId }) => {
     const fetchData = async () => {
       try {
         const csvData = await fetchCSV(jobId, "randomforests_sigfeatures.csv");
-        console.log(csvData.data);
+        console.log("Fetched CSV Data:", csvData.data);
         const jsonData = csvData.data.map((d) => ({
-          type: d.Protein,
+          type: d.Protein.replace(/"/g, ""),
           mean_degrees_accuracy: +d.MeanDecreaseAccuracy,
         }));
 
-        // Sort the data and take the top 15
         const topData = jsonData
           .sort((a, b) => b.mean_degrees_accuracy - a.mean_degrees_accuracy)
           .slice(0, 15);
+        console.log("Processed Top Data:", topData);
         setData(topData);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -54,7 +55,8 @@ const DotGraph = ({ jobId }) => {
       .range([margin.top, height])
       .padding(0.1);
 
-    // Create a tooltip div
+    d3.select("body").selectAll(".tooltip").remove();
+
     const tooltip = d3.select("body").append("div").attr("class", "tooltip");
 
     svg
@@ -65,16 +67,37 @@ const DotGraph = ({ jobId }) => {
       .attr("cx", (d) => x(d.mean_degrees_accuracy))
       .attr("cy", (d) => y(d.type) + y.bandwidth() / 2)
       .attr("r", 5)
-      .on("mouseover", (event, d) => {
+      .attr("class", "circle")
+      .on("mouseover", function (d) {
+        const event = d3.event;
+        console.log("Hovered Data:", d);
+        console.log("Mouse Event on Mouse Over:", event);
         tooltip.transition().duration(200).style("opacity", 0.9);
         tooltip
-          .html(`Type: ${d.type}<br/>Accuracy: ${d.mean_degrees_accuracy}`)
-          .style("left", event.pageX + 5 + "px")
-          .style("top", event.pageY - 28 + "px")
-          .style("opacity", 1);
+          .html(
+            `Type: ${d.type || "N/A"}<br/>Accuracy: ${
+              d.mean_degrees_accuracy || "N/A"
+            }`
+          )
+          .style("left", `${event.pageX + 5}px`)
+          .style("top", `${event.pageY - 28}px`);
+        console.log(
+          `Tooltip show: left=${event.pageX + 5}px, top=${event.pageY - 28}px`
+        );
       })
-      .on("mouseout", () => {
+      .on("mousemove", function () {
+        const event = d3.event;
+        console.log("Mouse Move Event:", event);
+        tooltip
+          .style("left", `${event.pageX + 5}px`)
+          .style("top", `${event.pageY - 28}px`);
+        console.log(
+          `Tooltip move: left=${event.pageX + 5}px, top=${event.pageY - 28}px`
+        );
+      })
+      .on("mouseout", function () {
         tooltip.transition().duration(500).style("opacity", 0);
+        console.log("Tooltip hide");
       });
 
     svg

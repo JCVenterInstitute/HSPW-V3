@@ -21,13 +21,17 @@ svg {
   font-weight: bold;
   fill: #333;
 }
-/* 
+
 circle {
   fill: #1800b6;
   opacity: 1;
   stroke: #2c3e50;
   stroke-width: 1px;
-} */
+}
+
+.circle:hover {
+  cursor: pointer;
+}
 
 .line {
   stroke: #ccc;
