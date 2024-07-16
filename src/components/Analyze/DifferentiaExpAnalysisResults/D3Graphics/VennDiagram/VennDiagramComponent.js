@@ -4,9 +4,11 @@ import * as d3 from "d3v7";
 import { VennDiagram } from "venn.js";
 import { fetchCSV } from "../../utils.js";
 import { AgGridReact } from "ag-grid-react";
-// import "ag-grid-community/styles/ag-grid.css";
-// import "ag-grid-community/styles/ag-theme-alpine.css";
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-material.css";
+import * as testCSS from "../../../../Table.css";
 
+console.log(testCSS);
 const VennDiagramComponent = ({ jobId }) => {
   const [data, setData] = useState(null);
   const [selectedSet, setSelectedSet] = useState(null);
@@ -19,7 +21,6 @@ const VennDiagramComponent = ({ jobId }) => {
     const fetchData = async () => {
       try {
         const csvData = await fetchCSV(jobId, "data_original.csv");
-        console.log("Fetched CSV Data:", csvData); // Log fetched CSV data
         setData(csvData);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -37,20 +38,14 @@ const VennDiagramComponent = ({ jobId }) => {
     const df = graphData.slice(1);
 
     const groups = getGroupLabels(labels);
-    console.log("Groups:", groups); // Log extracted groups
 
     const [a_columns, b_columns] = getGroupColumns(labels, groups);
-    console.log("Columns for", groups[0], ":", a_columns); // Log columns for group A
-    console.log("Columns for", groups[1], ":", b_columns); // Log columns for group B
 
     const { unique_a, unique_b, common_ab } = calculateSets(
       df,
       a_columns,
       b_columns
     );
-    console.log("Unique Set A:", unique_a); // Log unique set A
-    console.log("Unique Set B:", unique_b); // Log unique set B
-    console.log("Common Set AB:", common_ab); // Log common set AB
 
     const vennContainer = d3.select("#venn");
     vennContainer.selectAll("*").remove(); // Clear any existing diagram
@@ -343,11 +338,10 @@ const VennDiagramComponent = ({ jobId }) => {
               ? `${selectedSet.label}`
               : `Unique ${selectedSet.label}`}
           </h2>
-          <div
-            className="ag-theme-alpine"
-            style={{ height: "100%", width: "100%" }}
-          >
+          <div className="ag-theme-material ag-cell-wrap-text ag-theme-alpine">
             <AgGridReact
+              // style="overflow-x: hidden;"
+              className="ag-cell-wrap-text"
               rowData={[...selectedSet.data].map((protein) => ({
                 protein,
                 link: `https://salivaryproteome.org/protein/${protein}`,
