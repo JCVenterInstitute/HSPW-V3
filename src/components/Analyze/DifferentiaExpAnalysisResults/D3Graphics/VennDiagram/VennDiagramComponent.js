@@ -4,8 +4,9 @@ import * as d3 from "d3v7";
 import { VennDiagram } from "venn.js";
 import { fetchCSV } from "../../utils.js";
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
+// import "ag-grid-community/styles/ag-grid.css";
+// import "ag-grid-community/styles/ag-theme-alpine.css";
+import "../../../../Table.css";
 
 const VennDiagramComponent = ({ jobId }) => {
   const [data, setData] = useState(null);
