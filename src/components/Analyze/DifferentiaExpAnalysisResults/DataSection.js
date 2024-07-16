@@ -50,7 +50,7 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
   ) => {
     if (!dataFile) return;
 
-    const { data, dataUrl } = await fetchData(dataFile);
+    const data = await fetchData(dataFile);
 
     setter(data);
   };
