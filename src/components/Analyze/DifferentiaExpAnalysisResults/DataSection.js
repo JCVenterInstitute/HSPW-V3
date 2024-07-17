@@ -354,7 +354,13 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
     }
 
     if (displayResult === null) {
-      if (data === null && isPngTab === true) {
+      console.log(`tab: ${tab}`);
+      if (
+        (data === null && isPngTab === true) ||
+        tab.startsWith("Enriched terms ") ||
+        tab.startsWith("GSEA Heatmap ") ||
+        tab.startsWith("GSEA Tree ")
+      ) {
         displayResult = (
           <img
             src={image}
