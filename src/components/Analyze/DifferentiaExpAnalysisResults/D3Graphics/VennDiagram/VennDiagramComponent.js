@@ -38,7 +38,8 @@ const VennDiagramComponent = ({ jobId }) => {
     const df = graphData.slice(1);
 
     const groups = getGroupLabels(labels);
-
+    console.log(labels);
+    console.log(groups);
     const [a_columns, b_columns] = getGroupColumns(labels, groups);
 
     const { unique_a, unique_b, common_ab } = calculateSets(
