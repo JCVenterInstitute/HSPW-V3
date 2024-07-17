@@ -19,7 +19,16 @@ const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
           datafile,
           selectedSection
         );
-        setData(tsvData.slice(0, 20)); // Take the first 20 rows for plotting
+        // Remove double quotes from all relevant fields in the data
+        const cleanedData = tsvData.slice(0, 20).map((row) => {
+          const cleanedRow = {};
+          for (const [key, value] of Object.entries(row)) {
+            cleanedRow[key] = value.replaceAll(/^"|"$/g, "");
+          }
+          return cleanedRow;
+        });
+
+        setData(cleanedData); // Take the first 20 rows for plotting
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -169,7 +178,7 @@ const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
       .attr("id", "barChartLegend")
       .attr(
         "transform",
-        `translate(${width - 70},${height - legendHeight - 30})`
+        `translate(${width - 120},${height - legendHeight - 30})`
       );
 
     const defs = legend.append("defs");
