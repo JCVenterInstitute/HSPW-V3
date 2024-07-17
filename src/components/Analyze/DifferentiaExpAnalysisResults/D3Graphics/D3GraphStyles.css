@@ -268,6 +268,7 @@ body {
     width: 100%;
     border-left: 1px gray solid;
     border-right: 1px gray solid;
+    overflow-x: hidden;
   }
 
   div.ag-cell a {
