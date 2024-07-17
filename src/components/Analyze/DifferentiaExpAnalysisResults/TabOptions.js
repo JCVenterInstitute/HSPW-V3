@@ -100,7 +100,11 @@ const TabOptions = ({
       <ToggleButtonGroup
         value={tab}
         exclusive
-        onClick={(e) => setTab(e.target.value)}
+        onChange={(event, newTab) => {
+          if (newTab !== null) {
+            setTab(newTab);
+          }
+        }}
         sx={{ ...style.tabStyle, marginTop: "10px" }}
       >
         {tabButtons}
