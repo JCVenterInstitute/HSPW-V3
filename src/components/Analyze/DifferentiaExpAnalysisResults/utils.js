@@ -60,7 +60,7 @@ export const parseCSV = (csvText, selectedSection) => {
     if (currentLine.length === headers.length) {
       const row = {};
       for (let j = 0; j < headers.length; j++) {
-        row[headers[j].trim()] = currentLine[j].trim();
+        row[headers[j].trim()] = currentLine[j].trim().replaceAll(/^"|"$/g, "");
       }
       parsedData.push(row);
     }

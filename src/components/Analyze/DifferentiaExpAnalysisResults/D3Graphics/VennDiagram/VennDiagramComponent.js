@@ -90,7 +90,7 @@ const VennDiagramComponent = ({ jobId }) => {
 
   const getGroupLabels = (labelData) => {
     const uniqueVals = [...new Set(Object.values(labelData))];
-    return uniqueVals.filter((val) => val !== '"Label"');
+    return uniqueVals.filter((val) => val !== "Label");
   };
 
   const getGroupColumns = (labels, groups) => [
