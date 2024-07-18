@@ -19,13 +19,15 @@ const VolcanoPlot = ({
     svgRef = useRef(null),
     zoomRef = useRef(null);
 
-  const margin = { top: 20, right: 20, bottom: 40, left: 50 };
+  const margin = { top: 20, right: 20, bottom: 60, left: 80 };
 
   useEffect(() => {
     const SVGwidth = chartRef.current.offsetWidth;
     const SVGheight = 2 * (SVGwidth / 3.5);
     const innerWidth = SVGwidth - margin.left - margin.right;
     const innerHeight = SVGheight - margin.top - margin.bottom;
+
+    const parentContainer = d3.select(chartRef.current);
 
     // Creating the SVG container
     const svg = d3
@@ -39,6 +41,21 @@ const VolcanoPlot = ({
     svgRef.current = svg;
 
     svg.node().addEventListener("wheel", (event) => event.preventDefault());
+
+    // Append slider for zoom control
+    const slider = parentContainer
+      .append("div")
+      .attr("id", "zoom-slider-container")
+      .append("input")
+      .attr("type", "range")
+      .attr("id", "zoom-slider")
+      .attr("class", "sleek-slider")
+      .attr("min", "1")
+      .attr("max", "20")
+      .attr("step", "0.1")
+      .attr("value", "1")
+      .style("width", "50%");
+    document.getElementById("zoom-slider").disabled = true;
 
     // Defining the clip path to restrict drawing within the chart area
     svg
@@ -85,7 +102,7 @@ const VolcanoPlot = ({
     // Labeling x axis
     gX.append("text")
       .attr("class", "label")
-      .attr("transform", `translate(${innerWidth / 2},${margin.bottom - 6})`)
+      .attr("transform", `translate(${innerWidth / 2},${margin.bottom - 4})`)
       .attr("text-anchor", "middle")
       .text(xlabel === "" ? xValKey : xlabel);
 
@@ -97,7 +114,7 @@ const VolcanoPlot = ({
       .attr("class", "label")
       .attr(
         "transform",
-        `translate(${-margin.left / 1.25},${innerHeight / 2}) rotate(-90)`
+        `translate(${-margin.left/ 1.5},${innerHeight / 2}) rotate(-90)`
       )
       .attr("text-anchor", "middle")
       .text(ylabel === "" ? yValKey : ylabel);
@@ -163,7 +180,7 @@ const VolcanoPlot = ({
       .enter()
       .append("circle")
       .attr("class", circleClass)
-      .attr("r", 4)
+      .attr("r", 5)
       .attr("cx", (d) => xScale(d[xValKey]))
       .attr("cy", (d) => yScale(d[yValKey]))
       .attr("stroke", "black")
@@ -251,6 +268,8 @@ const VolcanoPlot = ({
             .tickFormat("")
             .scale(transform.rescaleY(yScale))
         );
+
+      document.getElementById("zoom-slider").value = event.transform.k;
     }
 
     function handleKeyDown(event) {
@@ -296,7 +315,7 @@ const VolcanoPlot = ({
       const legend = selection
         .append("g")
         .attr("class", "legend")
-        .attr("transform", "translate(20, 40)");
+        .attr("transform", "translate(20, 20)");
 
       const legendItems = Object.keys(legendDict).map((key) => ({
         key,
@@ -328,6 +347,9 @@ const VolcanoPlot = ({
 
     return () => {
       d3.select(chartRef.current).selectAll("*").remove();
+      d3.select(chartRef.current)
+        .selectAll("div#zoom-slider-container")
+        .remove();
       tooltip.remove();
       window.removeEventListener("keydown", handleKeyDown);
     };
