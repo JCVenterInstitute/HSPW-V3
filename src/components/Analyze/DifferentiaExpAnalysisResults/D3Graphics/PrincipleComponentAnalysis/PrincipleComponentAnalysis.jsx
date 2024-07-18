@@ -32,7 +32,7 @@ const PrincipleComponentAnalysis = ({
         : "dot sigfold";
     },
     tooltipHTML: (d) => {
-      return `<strong>Protein</strong>: ${d["Protein"]}
+      return `<strong>Sample</strong>: ${d["Protein"]}
               <br/><strong>Group</strong>: ${
                 groupMapping[d["Protein"].replaceAll('"', "")]
               }
