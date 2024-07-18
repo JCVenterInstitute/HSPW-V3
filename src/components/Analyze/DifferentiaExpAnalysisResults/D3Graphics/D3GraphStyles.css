@@ -38,7 +38,7 @@ body {
 
 .dot {
   fill: var(--dot-color);
-  stroke: none;
+  /* stroke: none; */
 }
 
 .dot.sigfold {
@@ -185,12 +185,13 @@ body {
 
   .tick text {
     fill: #000000;
+    font-size: 20px;
   }
 
   .label {
     fill: #000000;
     font-weight: 700;
-    font-size: 12px;
+    font-size: 20px;
   }
 }
 
