@@ -13,34 +13,31 @@ const RidgePlotComponent = ({
   const [data1, setData1] = useState([]);
   const [data2, setData2] = useState([]);
 
-  const margin = { top: 20, right: 30, bottom: 40, left: 150 };
+  const margin = { top: 70, right: 30, bottom: 0, left: 150 };
   const width = 900 - margin.left - margin.right;
   const height = 700 - margin.top - margin.bottom;
 
+  const cleanData = (data) => {
+    return data.map((d) => {
+      const cleanedData = {};
+      for (let key in d) {
+        cleanedData[key] = d[key].replaceAll(/^"|"$/g, "");
+      }
+      return cleanedData;
+    });
+  };
+
   useEffect(() => {
     const loadData = async () => {
+      console.log("Loading data...");
       const result1 = await fetchTSV(jobId, fileName1, selectedSection);
       const result2 = await fetchCSV(jobId, fileName2, selectedSection);
 
-      // Remove double quotes from all fields in result1.data and result2.data
-      const cleanData1 = result1.data.slice(0, 25).map((d) => {
-        const cleanedData = {};
-        for (let key in d) {
-          cleanedData[key] = d[key].replaceAll(/^"|"$/g, "");
-        }
-        return cleanedData;
-      });
+      console.log("Raw Data1:", result1.data);
+      console.log("Raw Data2:", result2.data);
 
-      const cleanData2 = result2.data.map((d) => {
-        const cleanedData = {};
-        for (let key in d) {
-          cleanedData[key] = d[key].replaceAll(/^"|"$/g, "");
-        }
-        return cleanedData;
-      });
-
-      setData1(cleanData1);
-      setData2(cleanData2);
+      setData1(cleanData(result1.data.slice(0, 25)));
+      setData2(cleanData(result2.data));
     };
 
     loadData();
@@ -48,6 +45,8 @@ const RidgePlotComponent = ({
 
   useEffect(() => {
     if (data1.length > 0 && data2.length > 0) {
+      console.log("Data1 and Data2 are available for processing.");
+
       const svg = d3.select(svgRef.current);
       svg.selectAll("*").remove();
 
@@ -65,26 +64,47 @@ const RidgePlotComponent = ({
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
       const setSizeValues = Array.from(new Set(data1.map((d) => d.setSize)));
+      console.log("Unique setSize values:", setSizeValues);
 
-      // Kernel density estimation function
-      const kde = (kernel, thresholds, data) => {
-        return thresholds.map((t) => [
-          t,
-          d3.mean(data, (d) => kernel(t - +d["Fold.Change"])),
-        ]);
+      const kernelDensityEstimator = (kernel, X) => (V) => {
+        console.log("X values for KDE:", X);
+        console.log("V values for KDE:", V);
+        const densities = X.map((x) => [x, d3.mean(V, (v) => kernel(x - v))]);
+
+        return densities;
       };
 
-      // Epanechnikov kernel function
       const kernelEpanechnikov = (k) => (v) =>
         Math.abs((v /= k)) <= 1 ? (0.75 * (1 - v * v)) / k : 0;
 
-      // Calculate xScale domain based on density values
-      const xDomain = [-100, 100];
+      const proteinFoldChange = {};
+      data2.forEach((d) => {
+        const protein = d["Protein"];
+        const foldChange = parseFloat(d["Fold.Change"]);
+        proteinFoldChange[protein] = foldChange;
+      });
+
+      // Calculate the dynamic x-axis domain based on Fold.Change values
+      const allFoldChanges = [
+        ...data1.map((d) => parseFloat(d["Fold.Change"])),
+        ...data2.map((d) => parseFloat(d["Fold.Change"])),
+      ].filter((d) => !isNaN(d));
+
+      const [minFoldChange, maxFoldChange] = d3.extent(allFoldChanges);
+      const padding = 0.2; // 10% padding on both sides
+
+      // Apply padding
+      const paddedMin =
+        minFoldChange - (maxFoldChange - minFoldChange) * padding;
+      const paddedMax =
+        maxFoldChange + (maxFoldChange - minFoldChange) * padding;
+
+      const xDomain = [paddedMin, paddedMax];
+      console.log("Padded xDomain:", xDomain);
+
       const xScale = d3.scaleLinear().domain(xDomain).range([0, width]);
 
-      // Reverse the setSizeValues to flip the order of y-axis
       const reversedSetSizeValues = [...setSizeValues].reverse();
-
       const yScale = d3
         .scaleBand()
         .domain(reversedSetSizeValues)
@@ -96,44 +116,55 @@ const RidgePlotComponent = ({
         .domain([0, 10]);
 
       const pAdjustScale = d3
-        .scaleSequential(d3.interpolateReds)
+        .scaleSequential(d3.interpolateRdBu)
         .domain(d3.extent(data1, (d) => +d["p.adjust"]));
+
+      const kde = kernelDensityEstimator(
+        kernelEpanechnikov(2000),
+        xScale.ticks(40)
+      );
 
       setSizeValues.forEach((setSize) => {
         const groupData1 = data1.filter((d) => d.setSize === setSize);
-        const matchedData2 = groupData1.map((d1) => {
-          const matched = data2.find((d2) => {
-            let cleanProtein = d2["Protein"].replace(`"`, "");
-            return d1["Unnamed Column"].includes(cleanProtein);
+        console.log(`Group Data1 for setSize ${setSize}:`, groupData1);
+
+        const matchedData2 = [];
+        groupData1.forEach((d1) => {
+          const proteins = d1["Unnamed Column"].split("/");
+          proteins.forEach((protein) => {
+            if (proteinFoldChange.hasOwnProperty(protein)) {
+              matchedData2.push({
+                ...d1,
+                "Fold.Change": proteinFoldChange[protein],
+              });
+            }
           });
-          return { ...d1, ...matched };
         });
+        console.log(`Matched Data2 for setSize ${setSize}:`, matchedData2);
 
         const validData = matchedData2.filter(
           (d) => !isNaN(d["Fold.Change"]) && d["Fold.Change"] !== undefined
         );
-        const density = kde(
-          kernelEpanechnikov(7),
-          d3.range(-100, 100),
-          validData
-        );
+        console.log(`Valid Data for setSize ${setSize}:`, validData);
+
+        const density = kde(validData.map((d) => d["Fold.Change"]));
+        console.log("Density for setSize:", setSize, density);
 
         const areaGenerator = d3
           .area()
           .curve(d3.curveBasis)
           .x((d) => xScale(d[0]))
           .y0(yScale(setSize) + yScale.bandwidth() / 2)
-          .y1((d) => yScale(setSize) + yScale.bandwidth() / 2 - d[1] * 200);
+          .y1((d) => yScale(setSize) + yScale.bandwidth() / 2 - d[1] * 200000);
 
         plot
           .append("path")
           .datum(density)
-          .attr("fill", pAdjustScale(groupData1[0]["p.adjust"])) // Use pAdjustScale for fill color
-          .attr("stroke", "black") // Darker stroke color
-          .attr("stroke-width", 1.5) // Darker stroke width
+          .attr("fill", pAdjustScale(groupData1[0]["p.adjust"]))
+          .attr("stroke", "black")
+          .attr("stroke-width", 1.5)
           .attr("d", areaGenerator)
           .on("mouseover", function (event, d) {
-            // Tooltip on mouseover
             const [x, y] = d3.pointer(event);
             d3.select("#tooltip")
               .style("display", "block")
@@ -145,7 +176,6 @@ const RidgePlotComponent = ({
               );
           })
           .on("mouseout", function () {
-            // Hide tooltip on mouseout
             d3.select("#tooltip").style("display", "none");
           });
       });
@@ -153,69 +183,71 @@ const RidgePlotComponent = ({
       plot
         .append("g")
         .attr("transform", `translate(0, ${height})`)
-        .call(d3.axisBottom(xScale));
+        .call(
+          d3
+            .axisBottom(xScale)
+            .tickSize(-height - 55)
+            .tickFormat(d3.format(".2f"))
+        )
+        .call((g) => g.selectAll(".tick line").attr("stroke-opacity", 0.2))
+        .call((g) => g.selectAll(".tick text").attr("y", 10));
+
       plot.append("g").call(d3.axisLeft(yScale));
 
-      // // Add Legend for p.adjust colors
-      // const legendHeight = 150;
-      // const legendWidth = 18;
+      // Add legend for p.adjust
+      const legendWidth = 300;
+      const legendHeight = 10;
 
-      // const legend = svg
-      //   .append("g")
-      //   .attr("id", "ridgePlotLegend")
-      //   .attr(
-      //     "transform",
-      //     `translate(${width - 0},${height - legendHeight - 0})`
-      //   );
+      const legend = plot
+        .append("g")
+        .attr(
+          "transform",
+          `translate(${(width - legendWidth) / 2}, ${height + margin.top})`
+        );
 
-      // const defs = legend.append("defs");
+      const legendScale = d3
+        .scaleLinear()
+        .domain(pAdjustScale.domain())
+        .range([0, legendWidth]);
 
-      // const linearGradient = defs
-      //   .append("linearGradient")
-      //   .attr("id", "linear-gradient")
-      //   .attr("x1", "0%")
-      //   .attr("y1", "100%")
-      //   .attr("x2", "0%")
-      //   .attr("y2", "0%");
+      const legendAxis = d3
+        .axisBottom(legendScale)
+        .ticks(5)
+        .tickSize(-legendHeight);
 
-      // linearGradient
-      //   .append("stop")
-      //   .attr("offset", "0%")
-      //   .attr("stop-color", "red");
+      legend
+        .selectAll("rect")
+        .data(pAdjustScale.ticks(legendWidth))
+        .enter()
+        .append("rect")
+        .attr("x", (d) => legendScale(d))
+        .attr("y", 0)
+        .attr("width", legendWidth / pAdjustScale.ticks(legendWidth).length)
+        .attr("height", legendHeight)
+        .attr("fill", (d) => pAdjustScale(d));
 
-      // linearGradient
-      //   .append("stop")
-      //   .attr("offset", "100%")
-      //   .attr("stop-color", "brown");
+      legend
+        .append("g")
+        .attr("transform", `translate(0, ${legendHeight})`)
+        .call(legendAxis)
+        .call((g) => g.select(".domain").remove())
+        .call((g) =>
+          g
+            .selectAll(".tick line")
+            .attr("stroke", "#777")
+            .attr("stroke-dasharray", "2,2")
+        )
+        .call((g) => g.selectAll(".tick text").attr("y", 10));
 
-      // legend
-      //   .append("rect")
-      //   .attr("width", legendWidth)
-      //   .attr("height", legendHeight)
-      //   .style("fill", "url(#linear-gradient)");
-
-      // // Add text labels to the legend
-      // legend
-      //   .append("text")
-      //   .attr("x", legendWidth / 2)
-      //   .attr("y", -5) // Adjust the y position for the text
-      //   .attr("text-anchor", "middle")
-      //   .text("p.adjust")
-      //   .style("font-size", "12px")
-      //   .style("fill", "#333"); // Adjust font size and color as needed
-
-      // const legendScale = d3
-      //   .scaleLinear()
-      //   .domain(d3.extent(data1, (d) => +d["p.adjust"]))
-      //   .range([legendHeight, 0]);
-
-      // const legendAxis = d3.axisRight(legendScale).ticks(5);
-
-      // legend
-      //   .append("g")
-      //   .attr("class", "axis legend-axis")
-      //   .attr("transform", `translate(${legendWidth}, 0)`)
-      //   .call(legendAxis);
+      // Add legend title
+      legend
+        .append("text")
+        .attr("x", legendWidth / 2)
+        .attr("y", -10)
+        .attr("text-anchor", "middle")
+        .style("font-size", "12px")
+        .style("font-weight", "bold")
+        .text("p.adjust");
     }
   }, [data1, data2]);
 
