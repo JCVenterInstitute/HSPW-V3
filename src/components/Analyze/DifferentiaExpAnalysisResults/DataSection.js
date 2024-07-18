@@ -179,7 +179,7 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
               yCol={5}
               details={["p.value", "Fold.Change"]}
               xlabel="Log2(FC)"
-              ylabel="Log10(p)"
+              ylabel="-Log10(p)"
             />
           );
         } else {
