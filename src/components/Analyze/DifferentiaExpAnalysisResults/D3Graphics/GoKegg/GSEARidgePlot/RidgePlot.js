@@ -13,7 +13,7 @@ const RidgePlotComponent = ({
   const [data1, setData1] = useState([]);
   const [data2, setData2] = useState([]);
 
-  const margin = { top: 70, right: 30, bottom: 0, left: 150 };
+  const margin = { top: 80, right: 30, bottom: 70, left: 180 };
   const width = 900 - margin.left - margin.right;
   const height = 700 - margin.top - margin.bottom;
 
@@ -84,16 +84,14 @@ const RidgePlotComponent = ({
         proteinFoldChange[protein] = foldChange;
       });
 
-      // Calculate the dynamic x-axis domain based on Fold.Change values
       const allFoldChanges = [
         ...data1.map((d) => parseFloat(d["Fold.Change"])),
         ...data2.map((d) => parseFloat(d["Fold.Change"])),
       ].filter((d) => !isNaN(d));
 
       const [minFoldChange, maxFoldChange] = d3.extent(allFoldChanges);
-      const padding = 0.2; // 10% padding on both sides
+      const padding = 0.2;
 
-      // Apply padding
       const paddedMin =
         minFoldChange - (maxFoldChange - minFoldChange) * padding;
       const paddedMax =
@@ -119,8 +117,14 @@ const RidgePlotComponent = ({
         .scaleSequential(d3.interpolateRdBu)
         .domain(d3.extent(data1, (d) => +d["p.adjust"]));
 
+      const foldChangeRange = maxFoldChange - minFoldChange;
+      console.log(">>>>>>>>>foldChangeRange:", foldChangeRange);
+      let kernelBandwidth =
+        foldChangeRange / (Math.sqrt(allFoldChanges.length) * 1.07);
+      const heightMultiplier = foldChangeRange * 7;
+
       const kde = kernelDensityEstimator(
-        kernelEpanechnikov(2000),
+        kernelEpanechnikov(kernelBandwidth),
         xScale.ticks(40)
       );
 
@@ -155,7 +159,10 @@ const RidgePlotComponent = ({
           .curve(d3.curveBasis)
           .x((d) => xScale(d[0]))
           .y0(yScale(setSize) + yScale.bandwidth() / 2)
-          .y1((d) => yScale(setSize) + yScale.bandwidth() / 2 - d[1] * 200000);
+          .y1(
+            (d) =>
+              yScale(setSize) + yScale.bandwidth() / 2 - d[1] * heightMultiplier
+          );
 
         plot
           .append("path")
@@ -192,9 +199,41 @@ const RidgePlotComponent = ({
         .call((g) => g.selectAll(".tick line").attr("stroke-opacity", 0.2))
         .call((g) => g.selectAll(".tick text").attr("y", 10));
 
-      plot.append("g").call(d3.axisLeft(yScale));
+      //plot.append("g").call(d3.axisLeft(yScale)).selectAll(".tick text");
 
-      // Add legend for p.adjust
+      plot
+        .append("g")
+        .call(d3.axisLeft(yScale))
+        .selectAll(".tick text")
+        .attr("x", -100)
+        .style("text-anchor", "end")
+        .call(wrap, margin.left - 10)
+        .attr("transform", "translate(-10, 0)");
+
+      // Wrap function if you need to wrap long y-axis labels
+      //plot.selectAll(".tick text").call(wrap, margin.left - 10); // Adjust width as needed
+
+      plot
+        .append("text")
+        .attr("text-anchor", "middle")
+        .attr(
+          "transform",
+          `translate(${width / 2}, ${height + margin.top - 10})`
+        )
+        .style("font-size", "12px")
+        .style("font-weight", "bold")
+        .text("Fold Change");
+
+      plot
+        .append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", "rotate(-90)")
+        .attr("y", -margin.left + 10)
+        .attr("x", -(height / 2))
+        .style("font-size", "12px")
+        .style("font-weight", "bold")
+        .text("setSize");
+
       const legendWidth = 300;
       const legendHeight = 10;
 
@@ -202,7 +241,7 @@ const RidgePlotComponent = ({
         .append("g")
         .attr(
           "transform",
-          `translate(${(width - legendWidth) / 2}, ${height + margin.top})`
+          `translate(${(width - legendWidth) / 2}, ${height + margin.top + 40})`
         );
 
       const legendScale = d3
@@ -239,7 +278,6 @@ const RidgePlotComponent = ({
         )
         .call((g) => g.selectAll(".tick text").attr("y", 10));
 
-      // Add legend title
       legend
         .append("text")
         .attr("x", legendWidth / 2)
@@ -250,6 +288,41 @@ const RidgePlotComponent = ({
         .text("p.adjust");
     }
   }, [data1, data2]);
+
+  function wrap(text, width) {
+    text.each(function () {
+      var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text
+          .text(null)
+          .append("tspan")
+          .attr("x", 0)
+          .attr("y", y)
+          .attr("dy", dy + "em");
+
+      while ((word = words.pop())) {
+        line.push(word);
+        tspan.text(line.join(" "));
+        if (tspan.node().getComputedTextLength() > width) {
+          line.pop();
+          tspan.text(line.join(" "));
+          line = [word];
+          tspan = text
+            .append("tspan")
+            .attr("x", 0)
+            .attr("y", y)
+            .attr("dy", ++lineNumber * lineHeight + dy + "em")
+            .text(word);
+        }
+      }
+    });
+  }
 
   return (
     <div className="ridgechart-container">
