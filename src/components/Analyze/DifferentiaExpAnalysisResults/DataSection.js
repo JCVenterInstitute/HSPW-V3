@@ -13,6 +13,7 @@ import DensityPlot from "./D3Graphics/Normalization Plot/DensityPlot";
 import PrincipleComponentAnalysis from "./D3Graphics/PrincipleComponentAnalysis/PrincipleComponentAnalysis.jsx";
 import BarChartComponent from "./D3Graphics/GoKegg/EncrichmentPlot/BarPlot";
 import RidgePlotComponent from "./D3Graphics/GoKegg/GSEARidgePlot/RidgePlot";
+import HeatmapComponent from "./D3Graphics/GoKegg/GSEAHeatmapPlot/GOHeatmap.js";
 import RandomForest from "./D3Graphics/RandomForest/RandomForest";
 import InputData from "./InputData";
 import {
@@ -323,6 +324,15 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
               selectedSection={selectedSection}
             />
           );
+        } else if (tab.endsWith("Heatmap plot")) {
+          displayResult = (
+            <HeatmapComponent
+              jobId={jobId}
+              fileName1={sectionFile}
+              fileName2={fileMapping["Result Data"]}
+              selectedSection={selectedSection}
+            />
+          );
         } else {
           displayResult = null;
         }
@@ -358,7 +368,6 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
       if (
         (data === null && isPngTab === true) ||
         tab.startsWith("Enriched terms ") ||
-        tab.startsWith("GSEA Heatmap ") ||
         tab.startsWith("GSEA Tree ")
       ) {
         displayResult = (
