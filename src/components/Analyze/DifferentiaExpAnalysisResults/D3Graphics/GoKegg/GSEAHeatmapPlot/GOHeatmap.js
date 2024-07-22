@@ -8,9 +8,9 @@
 //   const [data1, setData1] = useState([]);
 //   const [data2, setData2] = useState([]);
 
-//   const margin = { top: 80, right: 30, bottom: 70, left: 80 };
+//   const margin = { top: 20, right: 30, bottom: 150, left: 120 };
 //   const width = 900 - margin.left - margin.right;
-//   const height = 700 - margin.top - margin.bottom;
+//   const height = 900 - margin.top - margin.bottom;
 
 //   const cleanData = (data) => {
 //     return data.map((d) => {
@@ -77,9 +77,43 @@
 //         .range([height, 0])
 //         .padding(0.05);
 
+//       // Append grid lines
+//       plot
+//         .append("g")
+//         .attr("class", "grid")
+//         .selectAll("line")
+//         .data(xScale.domain())
+//         .enter()
+//         .append("line")
+//         .attr("x1", (d) => xScale(d))
+//         .attr("x2", (d) => xScale(d))
+//         .attr("y1", 0)
+//         .attr("y2", height)
+//         .attr("stroke", "#e0e0e0");
+
+//       plot
+//         .append("g")
+//         .attr("class", "grid")
+//         .selectAll("line")
+//         .data(yScale.domain())
+//         .enter()
+//         .append("line")
+//         .attr("x1", 0)
+//         .attr("x2", width)
+//         .attr("y1", (d) => yScale(d))
+//         .attr("y2", (d) => yScale(d))
+//         .attr("stroke", "#e0e0e0");
+
 //       plot
 //         .selectAll(".tile")
-//         .data(data2)
+//         .data(
+//           data2.filter((d) => {
+//             const matchedData = data1.find((d1) =>
+//               d1["Unnamed Column"].includes(d["Protein"])
+//             );
+//             return matchedData && matchedData["setSize"] !== "N/A";
+//           })
+//         )
 //         .enter()
 //         .append("rect")
 //         .attr("class", "tile")
@@ -120,8 +154,10 @@
 //         .attr("transform", `translate(0, ${height})`)
 //         .call(d3.axisBottom(xScale))
 //         .selectAll(".tick text")
-//         .attr("x", 5)
-//         .style("text-anchor", "start");
+//         .attr("transform", "rotate(-90)")
+//         .attr("x", -5)
+//         .attr("dy", "0.32em")
+//         .style("text-anchor", "end");
 
 //       plot
 //         .append("g")
@@ -129,14 +165,16 @@
 //         .call(d3.axisLeft(yScale))
 //         .selectAll(".tick text")
 //         .attr("x", -5)
-//         .style("text-anchor", "end");
+//         .style("text-anchor", "end")
+//         .call(wrap, margin.left - 10)
+//         .attr("transform", "translate(-10, 0)");
 
 //       plot
 //         .append("text")
 //         .attr("text-anchor", "middle")
 //         .attr(
 //           "transform",
-//           `translate(${width / 2}, ${height + margin.top - 10})`
+//           `translate(${width / 2}, ${height + margin.top + 40})`
 //         )
 //         .style("font-size", "12px")
 //         .style("font-weight", "bold")
@@ -159,7 +197,9 @@
 //         .append("g")
 //         .attr(
 //           "transform",
-//           `translate(${(width - legendWidth) / 2}, ${height + margin.top + 40})`
+//           `translate(${(width - legendWidth) / 2}, ${
+//             height + margin.top + 100
+//           })`
 //         );
 
 //       const legendScale = d3
@@ -194,29 +234,66 @@
 //             .attr("stroke", "#777")
 //             .attr("stroke-dasharray", "2,2")
 //         )
-//         .call((g) => g.selectAll(".tick text").attr("y", 10));
+//         .call((g) =>
+//           g
+//             .append("text")
+//             .attr("x", legendWidth / 2)
+//             .attr("y", legendHeight - 30)
+//             .attr("fill", "#000")
+//             .attr("text-anchor", "middle")
+//             .style("font-size", "12px")
+//             .style("font-weight", "bold")
+//             .text("Fold Change")
+//         );
 
-//       legend
-//         .append("text")
-//         .attr("x", legendWidth / 2)
-//         .attr("y", -10)
-//         .attr("text-anchor", "middle")
-//         .style("font-size", "12px")
-//         .style("font-weight", "bold")
-//         .text("Fold Change");
+//       function wrap(text, width) {
+//         text.each(function () {
+//           const text = d3.select(this);
+//           const words = text.text().split(/\s+/).reverse();
+//           const lineHeight = 1.1;
+//           const y = text.attr("y");
+//           const dy = parseFloat(text.attr("dy"));
+//           let tspan = text
+//             .text(null)
+//             .append("tspan")
+//             .attr("x", -5)
+//             .attr("y", y)
+//             .attr("dy", `${dy}em`);
+
+//           let line = [];
+//           let lineNumber = 0;
+//           let word;
+
+//           while ((word = words.pop())) {
+//             line.push(word);
+//             tspan.text(line.join(" "));
+//             if (tspan.node().getComputedTextLength() > width) {
+//               line.pop();
+//               tspan.text(line.join(" "));
+//               line = [word];
+//               tspan = text
+//                 .append("tspan")
+//                 .attr("x", -5)
+//                 .attr("y", y)
+//                 .attr("dy", `${++lineNumber * lineHeight + dy}em`)
+//                 .text(word);
+//             }
+//           }
+//         });
+//       }
 //     }
 //   }, [data1, data2]);
 
 //   return (
 //     <div className="heatmap-container">
-//       <svg id="heatmap" className="heatmap" ref={svgRef}></svg>
-//       <div id="tooltip" className="tooltip" style={{ display: "none" }}></div>
+//       <svg id="heatmap-chart" className="chart" ref={svgRef} />
+//       <div id="tooltip" className="tooltip" style={{ display: "none" }} />
 //     </div>
 //   );
 // };
-
 // export default HeatmapComponent;
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////
+
 import "../../D3GraphStyles.css";
 import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
@@ -235,7 +312,7 @@ const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
     return data.map((d) => {
       const cleanedData = {};
       for (let key in d) {
-        cleanedData[key] = d[key].replaceAll(/^"|"$/g, "");
+        cleanedData[key] = d[key].replace(/^"|"$/g, ""); // Adjust regex to remove only leading and trailing quotes
       }
       return cleanedData;
     });
@@ -265,8 +342,6 @@ const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
       svg.selectAll("*").remove();
 
       const plot = svg
-        .append("svg")
-        .attr("class", "chart")
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr(
           "viewBox",
@@ -279,6 +354,26 @@ const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
 
       const proteins = Array.from(new Set(data2.map((d) => d["Protein"])));
       const setSizes = Array.from(new Set(data1.map((d) => d["setSize"])));
+
+      const proteinFoldChange = {};
+      data2.forEach((d) => {
+        const protein = d["Protein"];
+        const foldChange = parseFloat(d["Fold.Change"]);
+        proteinFoldChange[protein] = foldChange;
+      });
+
+      const heatmapData = data1.flatMap((d) => {
+        const proteins = d["Unnamed Column"].split("/");
+        return proteins.map((protein) => ({
+          ...d,
+          Protein: protein,
+          "Fold.Change": proteinFoldChange[protein] || 0,
+        }));
+      });
+
+      const validData = heatmapData.filter((d) => !isNaN(d["Fold.Change"]));
+
+      console.log(`Valid Data:`, validData);
 
       const colorScale = d3
         .scaleSequential(d3.interpolateRdBu)
@@ -325,41 +420,24 @@ const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
 
       plot
         .selectAll(".tile")
-        .data(
-          data2.filter((d) => {
-            const matchedData = data1.find((d1) =>
-              d1["Unnamed Column"].includes(d["Protein"])
-            );
-            return matchedData && matchedData["setSize"] !== "N/A";
-          })
-        )
+        .data(validData)
         .enter()
         .append("rect")
         .attr("class", "tile")
         .attr("x", (d) => xScale(d["Protein"]))
-        .attr("y", (d) => {
-          const matchedData = data1.find((d1) =>
-            d1["Unnamed Column"].includes(d["Protein"])
-          );
-          return matchedData ? yScale(matchedData["setSize"]) : height; // Use height as a fallback
-        })
+        .attr("y", (d) => yScale(d["setSize"]))
         .attr("width", xScale.bandwidth())
         .attr("height", yScale.bandwidth())
         .attr("fill", (d) => colorScale(d["Fold.Change"]))
         .on("mouseover", function (event, d) {
           const [x, y] = d3.pointer(event);
-          const matchedData = data1.find((d1) =>
-            d1["Unnamed Column"].includes(d["Protein"])
-          );
           d3.select("#tooltip")
             .style("display", "block")
             .style("left", `${event.pageX + 10}px`)
             .style("top", `${event.pageY - 10}px`)
             .html(
               `<strong>Protein:</strong> ${d["Protein"]}<br>` +
-                `<strong>setSize:</strong> ${
-                  matchedData?.["setSize"] || "N/A"
-                }<br>` +
+                `<strong>setSize:</strong> ${d["setSize"] || "N/A"}<br>` +
                 `<strong>Fold Change:</strong> ${d["Fold.Change"]}`
             );
         })
@@ -512,4 +590,3 @@ const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
 };
 
 export default HeatmapComponent;
-// ///////////////////////////////////////////////////////////////////////
