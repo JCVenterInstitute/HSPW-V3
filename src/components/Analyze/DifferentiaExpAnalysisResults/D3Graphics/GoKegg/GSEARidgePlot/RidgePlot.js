@@ -38,6 +38,9 @@ const RidgePlotComponent = ({
 
       setData1(cleanData(result1.data.slice(0, 25)));
       setData2(cleanData(result2.data));
+
+      console.log("clean Data1:", data1);
+      console.log("clean Data2:", data2);
     };
 
     loadData();
@@ -63,8 +66,8 @@ const RidgePlotComponent = ({
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-      const setSizeValues = Array.from(new Set(data1.map((d) => d.setSize)));
-      console.log("Unique setSize values:", setSizeValues);
+      const setSizeValues = Array.from(new Set(data1.map((d) => {console.log(d); return d["Description"];})));
+      console.log("Unique description values:", setSizeValues);
 
       const kernelDensityEstimator = (kernel, X) => (V) => {
         console.log("X values for KDE:", X);
@@ -129,12 +132,12 @@ const RidgePlotComponent = ({
       );
 
       setSizeValues.forEach((setSize) => {
-        const groupData1 = data1.filter((d) => d.setSize === setSize);
+        const groupData1 = data1.filter((d) => d["Description"] === setSize);
         console.log(`Group Data1 for setSize ${setSize}:`, groupData1);
 
         const matchedData2 = [];
         groupData1.forEach((d1) => {
-          const proteins = d1["Unnamed Column"].split("/");
+          const proteins = d1["core_enrichment"].split("/");
           proteins.forEach((protein) => {
             if (proteinFoldChange.hasOwnProperty(protein)) {
               matchedData2.push({
@@ -167,7 +170,7 @@ const RidgePlotComponent = ({
         plot
           .append("path")
           .datum(density)
-          .attr("fill", pAdjustScale(groupData1[0]["p.adjust"]))
+          .attr("fill", pAdjustScale(groupData1[0]["pvalue"]))
           .attr("stroke", "black")
           .attr("stroke-width", 1.5)
           .attr("d", areaGenerator)
@@ -179,7 +182,7 @@ const RidgePlotComponent = ({
               .style("top", `${event.pageY - 10}px`)
               .html(
                 `<strong>setSize:</strong> ${setSize}<br>` +
-                  `<strong>p.adjust:</strong> ${groupData1[0]["p.adjust"]}`
+                  `<strong>p.adjust:</strong> ${groupData1[0]["pvalue"]}`
               );
           })
           .on("mouseout", function () {
@@ -285,7 +288,7 @@ const RidgePlotComponent = ({
         .attr("text-anchor", "middle")
         .style("font-size", "12px")
         .style("font-weight", "bold")
-        .text("p.adjust");
+        .text("pvalue");
     }
   }, [data1, data2]);
 
