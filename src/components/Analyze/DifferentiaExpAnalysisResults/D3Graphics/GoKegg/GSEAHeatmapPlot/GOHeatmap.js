@@ -354,7 +354,7 @@ const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
       const proteins = Array.from(new Set(data2.map((d) => d["Protein"])));
-      const setSizes = Array.from(new Set(data1.map((d) => d["setSize"])));
+      const setSizes = Array.from(new Set(data1.map((d) => d["Description"])));
 
       const proteinFoldChange = {};
       data2.forEach((d) => {
@@ -364,7 +364,7 @@ const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
       });
 
       const heatmapData = data1.flatMap((d) => {
-        const proteins = d["Unnamed Column"].split("/");
+        const proteins = d["core_enrichment"].split("/");
         return proteins.map((protein) => ({
           ...d,
           Protein: protein,
@@ -435,7 +435,7 @@ const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
         .append("rect")
         .attr("class", "tile")
         .attr("x", (d) => xScale(d["Protein"]))
-        .attr("y", (d) => yScale(d["setSize"]))
+        .attr("y", (d) => yScale(d["Description"]))
         .attr("width", xScale.bandwidth())
         .attr("height", yScale.bandwidth())
         .attr("fill", (d) => colorScale(d["Fold.Change"]))
@@ -447,7 +447,7 @@ const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
             .style("top", `${event.pageY - 10}px`)
             .html(
               `<strong>Protein:</strong> ${d["Protein"]}<br>` +
-                `<strong>setSize:</strong> ${d["setSize"] || "N/A"}<br>` +
+                `<strong>Description:</strong> ${d["Description"] || "N/A"}<br>` +
                 `<strong>Fold Change:</strong> ${d["Fold.Change"]}`
             );
         })

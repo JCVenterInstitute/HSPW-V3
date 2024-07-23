@@ -67,14 +67,14 @@ const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
     // Y scale (for bars)
     const y = d3
       .scaleBand()
-      .domain(data.map((d) => d.GeneRatio))
+      .domain(data.map((d) => d.Description))
       .range([0, height])
       .padding(0.2); // Increase the gap between bars
 
     // X scale (for counts)
     const x = d3
       .scaleLinear()
-      .domain([0, d3.max(data, (d) => +d["Unnamed Column"]) + 5])
+      .domain([0, d3.max(data, (d) => +d["Count"]) + 5])
       .nice()
       .range([0, width]);
 
@@ -107,7 +107,7 @@ const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
     // Define color scale based on p.adjust values
     const colorScale = d3
       .scaleLinear()
-      .domain(d3.extent(data, (d) => +d["p.adjust"]))
+      .domain(d3.extent(data, (d) => +d["qvalue"]))
       .range(["red", "blue"]);
 
     // Tooltip
@@ -116,15 +116,15 @@ const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
     function handleMouseOver(event, d) {
       d3.select(this).attr("fill-opacity", 0.5);
       tooltip.html(
-        `<strong>GeneRatio:</strong> ${d.GeneRatio}<br/>
-        <strong>ID:</strong> ${d.ID}<br/>
+        `<strong>ID:</strong> ${d.ID}<br/>
         <strong>Description:</strong> ${d.Description}<br/>
+        <strong>GeneRatio:</strong> ${d.GeneRatio}<br/>
         <strong>BgRatio:</strong> ${d.BgRatio}<br/>
-        <strong>Count:</strong> ${d["Unnamed Column"]}<br/>
         <strong>p-value:</strong> ${d.pvalue}<br/>
         <strong>p-adjust:</strong> ${d["p.adjust"]}<br/>
         <strong>q-value:</strong> ${d.qvalue}<br/>
-        <strong>geneID:</strong> ${d.geneID}`
+        <strong>geneID:</strong> ${d.geneID}<br/>
+        <strong>Count:</strong> ${d["Count"]}`
       );
       tooltip.style("visibility", "visible");
     }
@@ -147,11 +147,11 @@ const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
       .enter()
       .append("rect")
       .attr("class", "bar")
-      .attr("y", (d) => y(d.GeneRatio))
+      .attr("y", (d) => y(d.Description))
       .attr("height", y.bandwidth())
       .attr("x", 0)
-      .attr("width", (d) => x(+d["Unnamed Column"]))
-      .attr("fill", (d) => colorScale(+d["p.adjust"]))
+      .attr("width", (d) => x(+d["Count"]))
+      .attr("fill", (d) => colorScale(+d["qvalue"]))
       .on("mouseover", handleMouseOver)
       .on("mousemove", handleMouseMove)
       .on("mouseout", handleMouseOut);
@@ -163,7 +163,7 @@ const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
       .enter()
       .append("text")
       .attr("class", "bar-label")
-      .attr("y", (d) => y(d.GeneRatio) + y.bandwidth() / 2)
+      .attr("y", (d) => y(d.Description) + y.bandwidth() / 2)
       .attr("x", (d) => x(+d["Unnamed Column"]) + 5)
       .text((d) => d["Unnamed Column"])
       .attr("text-anchor", "start")
@@ -219,7 +219,7 @@ const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
 
     const legendScale = d3
       .scaleLinear()
-      .domain(d3.extent(data, (d) => +d["p.adjust"]))
+      .domain(d3.extent(data, (d) => +d["qvalue"]))
       .range([legendHeight, 0]);
 
     const legendAxis = d3.axisRight(legendScale).ticks(5);
