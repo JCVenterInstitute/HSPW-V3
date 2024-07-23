@@ -27,14 +27,14 @@ const PrincipleComponentAnalysis = ({
     xValue: (d) => +d["PC1"],
     yValue: (d) => +d["PC2"],
     circleClass: (d) => {
-      return groupMapping[d["Protein"].replaceAll('"', "")] === groupLabels[0]
+      return groupMapping[d["Sample"].replaceAll('"', "")] === groupLabels[0]
         ? "dot sig"
         : "dot sigfold";
     },
     tooltipHTML: (d) => {
-      return `<strong>Sample</strong>: ${d["Protein"]}
+      return `<strong>Sample</strong>: ${d["Sample"]}
               <br/><strong>Group</strong>: ${
-                groupMapping[d["Protein"].replaceAll('"', "")]
+                groupMapping[d["Sample"].replaceAll('"', "")]
               }
               <br/><strong>PC1</strong>: ${d3.format(".2f")(d["PC1"])}
               <br/><strong>PC2</strong>: ${d3.format(".2f")(d["PC2"])}`;
@@ -116,7 +116,7 @@ const PrincipleComponentAnalysis = ({
     // Calculate the maximum extents of the ellipses
     const groupData = d3.groups(
       data,
-      (d) => groupMapping[d["Protein"].replaceAll('"', "")]
+      (d) => groupMapping[d["Sample"].replaceAll('"', "")]
     );
 
     const maxExtent = getMaxExtents(groupData, xValue, yValue);
@@ -390,12 +390,6 @@ const PrincipleComponentAnalysis = ({
       .on("mouseout", () => {
         tooltip.style("visibility", "hidden");
       })
-      .on("click", (_, d) =>
-        window.open(
-          "https://salivaryproteome.org/protein/" +
-            d["Protein"].replace(/^"(.*)"$/, "$1")
-        )
-      )
       .style("stroke", "black")
       .style("opacity", "80%");
   };
