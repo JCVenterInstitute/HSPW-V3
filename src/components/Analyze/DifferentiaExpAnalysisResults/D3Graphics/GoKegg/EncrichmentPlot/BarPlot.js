@@ -234,7 +234,11 @@ const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
 
   return (
     <div className="barchart-container">
-      <div id="barChart" className="barchart" ref={svgRef}></div>
+      <div
+        id="barChart"
+        className="barchart graph-container"
+        ref={svgRef}
+      ></div>
     </div>
   );
 };

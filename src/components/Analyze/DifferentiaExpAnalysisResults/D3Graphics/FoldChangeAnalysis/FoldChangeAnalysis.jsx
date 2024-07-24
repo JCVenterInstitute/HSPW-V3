@@ -348,7 +348,7 @@ const FoldChangePlot = ({ data, fc }) => {
   };
 
   return (
-    <div id="FoldChangeGraph" ref={containerRef}>
+    <div id="FoldChangeGraph" className="graph-container" ref={containerRef}>
       <div className="reset-button-container" style={resetButtonMargin}>
         <button onClick={resetZoom} className="reset-button">
           Reset

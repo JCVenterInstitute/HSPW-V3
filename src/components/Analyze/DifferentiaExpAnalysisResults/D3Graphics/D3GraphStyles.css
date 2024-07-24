@@ -18,6 +18,11 @@
 }
 .d3Graph {
   font-family: Lato;
+  width: 100%;
+}
+
+.graph-container {
+  background-color: white;
 }
 
 body {

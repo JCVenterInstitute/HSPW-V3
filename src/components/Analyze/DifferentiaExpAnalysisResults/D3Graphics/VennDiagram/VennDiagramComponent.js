@@ -331,7 +331,7 @@ const VennDiagramComponent = ({ jobId }) => {
 
   return (
     <div id="vennContainer">
-      <div id="venn"></div>
+      <div id="venn" className="graph-container"></div>
       {selectedSet && (
         <div>
           <h2>

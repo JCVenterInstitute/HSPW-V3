@@ -121,14 +121,34 @@ const TabOptions = ({
       </Box>
       {selectedSection !== "Download" && (
         <Box sx={style.downloadButton}>
-          <Button
-            variant="contained"
-            onClick={() => {
-              handleDownload(jobId, fileName);
-            }}
-          >
-            Download
-          </Button>
+          {tab == "Visualization" ||
+          tab == "GSEA Ridge plot" ||
+          tab == "Enrichment Plot" ? (
+            <Button
+              variant="contained"
+              onClick={() => {
+                const d3ToPng = require("d3-svg-to-png");
+                d3ToPng(".graph-container", selectedSection, {
+                  scale: 5,
+                  format: "png",
+                  quality: 1,
+                  download: true,
+                  ignore: ".download-ignored",
+                });
+              }}
+            >
+              Download
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              onClick={() => {
+                handleDownload(jobId, fileName);
+              }}
+            >
+              Download
+            </Button>
+          )}
         </Box>
       )}
     </Box>

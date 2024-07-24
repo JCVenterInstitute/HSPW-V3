@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+// import { saveSvgAsPng } from "save-svg-as-png";
 import * as d3 from "d3v7";
 import "../D3GraphStyles.css";
 import { create } from "@mui/material/styles/createTransitions";
@@ -358,8 +359,11 @@ const StatisticalParametricPlot = ({ data, pval }) => {
   };
 
   return (
-    <div id="statParaTest" ref={containerRef}>
-      <div className="reset-button-container" style={resetButtonMargin}>
+    <div className="graph-container" id="statParaTest" ref={containerRef}>
+      <div
+        className="reset-button-container download-ignored"
+        style={resetButtonMargin}
+      >
         <button onClick={resetZoom} className="reset-button">
           Reset
         </button>
