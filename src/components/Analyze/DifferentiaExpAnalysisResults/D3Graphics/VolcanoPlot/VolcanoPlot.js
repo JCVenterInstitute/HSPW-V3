@@ -347,7 +347,7 @@ const VolcanoPlot = ({
   };
 
   return (
-    <div ref={chartRef} id="chart" className="volcano">
+    <div ref={chartRef} id="chart" className="volcano graph-container">
       <div className="reset-button-container" style={resetButtonMargin}>
         <button onClick={resetZoom} className="reset-button">
           Reset

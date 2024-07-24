@@ -220,7 +220,7 @@ const RidgePlotComponent = ({
   }, [data1, data2]);
 
   return (
-    <div className="ridgechart-container">
+    <div className="ridgechart-container graph-container">
       <svg id="ridgeChart" className="ridgechart" ref={svgRef}></svg>
       <div id="tooltip" className="tooltip" style={{ display: "none" }}></div>
     </div>

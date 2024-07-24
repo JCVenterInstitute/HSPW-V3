@@ -478,7 +478,7 @@ const PrincipleComponentAnalysis = ({
   };
 
   return (
-    <div id="PCATest" ref={containerRef}>
+    <div id="PCATest" className="graph-container" ref={containerRef}>
       <div className="reset-button-container" style={resetButtonMargin}>
         <button onClick={resetZoom} className="reset-button">
           Reset
