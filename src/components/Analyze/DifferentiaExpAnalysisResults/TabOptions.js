@@ -121,7 +121,9 @@ const TabOptions = ({
       </Box>
       {selectedSection !== "Download" && (
         <Box sx={style.downloadButton}>
-          {tab == "Visualization" ? (
+          {tab == "Visualization" ||
+          tab == "GSEA Ridge plot" ||
+          tab == "Enrichment Plot" ? (
             <Button
               variant="contained"
               onClick={() => {
