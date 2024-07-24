@@ -307,7 +307,11 @@ const Boxplot = ({ containerId, jobId, datafile }) => {
         max={40}
         className="input-number"
       />
-      <div id={containerId} className="box-plot" ref={boxplotRef} />
+      <div
+        id={containerId}
+        className="box-plot graph-container"
+        ref={boxplotRef}
+      />
     </div>
   );
 };
