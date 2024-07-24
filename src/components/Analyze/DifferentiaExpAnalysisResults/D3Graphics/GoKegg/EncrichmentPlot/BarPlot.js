@@ -44,6 +44,7 @@ const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
   }, [data]);
 
   const drawBarChart = (data) => {
+    console.log(">>data", data);
     // Clear existing SVG content
     d3.select(svgRef.current).selectAll("*").remove();
 
@@ -107,7 +108,7 @@ const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
     // Define color scale based on p.adjust values
     const colorScale = d3
       .scaleLinear()
-      .domain(d3.extent(data, (d) => +d["qvalue"]))
+      .domain(d3.extent(data, (d) => +d["p.adjust"]))
       .range(["red", "blue"]);
 
     // Tooltip
@@ -151,7 +152,7 @@ const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
       .attr("height", y.bandwidth())
       .attr("x", 0)
       .attr("width", (d) => x(+d["Count"]))
-      .attr("fill", (d) => colorScale(+d["qvalue"]))
+      .attr("fill", (d) => colorScale(+d["p.adjust"]))
       .on("mouseover", handleMouseOver)
       .on("mousemove", handleMouseMove)
       .on("mouseout", handleMouseOut);
@@ -164,8 +165,8 @@ const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
       .append("text")
       .attr("class", "bar-label")
       .attr("y", (d) => y(d.Description) + y.bandwidth() / 2)
-      .attr("x", (d) => x(+d["Unnamed Column"]) + 5)
-      .text((d) => d["Unnamed Column"])
+      .attr("x", (d) => x(+d["Count"]) + 5)
+      .text((d) => d["Count"])
       .attr("text-anchor", "start")
       .attr("alignment-baseline", "middle");
 
@@ -219,7 +220,7 @@ const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
 
     const legendScale = d3
       .scaleLinear()
-      .domain(d3.extent(data, (d) => +d["qvalue"]))
+      .domain(d3.extent(data, (d) => +d["p.adjust"]))
       .range([legendHeight, 0]);
 
     const legendAxis = d3.axisRight(legendScale).ticks(5);

@@ -66,8 +66,15 @@ const RidgePlotComponent = ({
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-      const setSizeValues = Array.from(new Set(data1.map((d) => {console.log(d); return d["Description"];})));
-      console.log("Unique description values:", setSizeValues);
+      const DescriptionValues = Array.from(
+        new Set(
+          data1.map((d) => {
+            console.log(d);
+            return d["Description"];
+          })
+        )
+      );
+      console.log("Unique description values:", DescriptionValues);
 
       const kernelDensityEstimator = (kernel, X) => (V) => {
         console.log("X values for KDE:", X);
@@ -105,7 +112,7 @@ const RidgePlotComponent = ({
 
       const xScale = d3.scaleLinear().domain(xDomain).range([0, width]);
 
-      const reversedSetSizeValues = [...setSizeValues].reverse();
+      const reversedSetSizeValues = [...DescriptionValues].reverse();
       const yScale = d3
         .scaleBand()
         .domain(reversedSetSizeValues)
@@ -131,9 +138,11 @@ const RidgePlotComponent = ({
         xScale.ticks(40)
       );
 
-      setSizeValues.forEach((setSize) => {
-        const groupData1 = data1.filter((d) => d["Description"] === setSize);
-        console.log(`Group Data1 for setSize ${setSize}:`, groupData1);
+      DescriptionValues.forEach((Description) => {
+        const groupData1 = data1.filter(
+          (d) => d["Description"] === Description
+        );
+        console.log(`Group Data1 for Description ${Description}:`, groupData1);
 
         const matchedData2 = [];
         groupData1.forEach((d1) => {
@@ -147,30 +156,35 @@ const RidgePlotComponent = ({
             }
           });
         });
-        console.log(`Matched Data2 for setSize ${setSize}:`, matchedData2);
+        console.log(
+          `Matched Data2 for Description ${Description}:`,
+          matchedData2
+        );
 
         const validData = matchedData2.filter(
           (d) => !isNaN(d["Fold.Change"]) && d["Fold.Change"] !== undefined
         );
-        console.log(`Valid Data for setSize ${setSize}:`, validData);
+        console.log(`Valid Data for Description ${Description}:`, validData);
 
         const density = kde(validData.map((d) => d["Fold.Change"]));
-        console.log("Density for setSize:", setSize, density);
+        console.log("Density for Description:", Description, density);
 
         const areaGenerator = d3
           .area()
           .curve(d3.curveBasis)
           .x((d) => xScale(d[0]))
-          .y0(yScale(setSize) + yScale.bandwidth() / 2)
+          .y0(yScale(Description) + yScale.bandwidth() / 2)
           .y1(
             (d) =>
-              yScale(setSize) + yScale.bandwidth() / 2 - d[1] * heightMultiplier
+              yScale(Description) +
+              yScale.bandwidth() / 2 -
+              d[1] * heightMultiplier
           );
 
         plot
           .append("path")
           .datum(density)
-          .attr("fill", pAdjustScale(groupData1[0]["pvalue"]))
+          .attr("fill", pAdjustScale(groupData1[0]["p.adjust"]))
           .attr("stroke", "black")
           .attr("stroke-width", 1.5)
           .attr("d", areaGenerator)
@@ -181,8 +195,8 @@ const RidgePlotComponent = ({
               .style("left", `${event.pageX + 10}px`)
               .style("top", `${event.pageY - 10}px`)
               .html(
-                `<strong>setSize:</strong> ${setSize}<br>` +
-                  `<strong>p.adjust:</strong> ${groupData1[0]["pvalue"]}`
+                `<strong>Description:</strong> ${Description}<br>` +
+                  `<strong>p.adjust:</strong> ${groupData1[0]["p.adjust"]}`
               );
           })
           .on("mouseout", function () {
@@ -235,7 +249,7 @@ const RidgePlotComponent = ({
         .attr("x", -(height / 2))
         .style("font-size", "12px")
         .style("font-weight", "bold")
-        .text("setSize");
+        .text("Description");
 
       const legendWidth = 300;
       const legendHeight = 10;
@@ -288,7 +302,7 @@ const RidgePlotComponent = ({
         .attr("text-anchor", "middle")
         .style("font-size", "12px")
         .style("font-weight", "bold")
-        .text("pvalue");
+        .text("p.adjust");
     }
   }, [data1, data2]);
 
