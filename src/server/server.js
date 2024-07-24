@@ -10,7 +10,7 @@ const path = require("path");
 
 const { processGroupData } = require("./utils/processGroupData");
 const { processFile } = require("./utils/processFile");
-const { s3Download } = require("./utils/s3Download");
+const { s3Download, checkFileExists } = require("./utils/s3Download");
 const { formQuery } = require("./utils/formQuery");
 const { generatePresignedUrls } = require("./utils/generatePresignedUrls");
 const { createContact } = require("./utils/createContact");
@@ -1525,8 +1525,9 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
     command = `docker run --rm -v ~/.aws:/root/.aws go_keg_local -i ${inputFile} -p 0.65 -q 0.25`;
     console.log("> Go/KEGG Command", command);
 
-    const goKeggAnalysis = await execCommand(command);
-    console.log("> Go/Kegg output:", goKeggAnalysis);
+    // Run GO/KEGG Docker, don't wait for it to finish running before returning complete
+    // Secondary results loaded afterwards
+    const goKeggAnalysis = execCommand(command);
 
     res.status(200).send("Docker run complete");
   } catch (error) {
@@ -1578,8 +1579,8 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
     command = `docker run --rm -v ~/.aws:/root/.aws go_keg_local -i ${inputFile} -p 0.65 -q 0.25`;
     console.log("> Go/KEGG Command", command);
 
-    const goKeggAnalysis = await execCommand(command);
-    console.log("> Go/Kegg output:", goKeggAnalysis);
+    const goKeggAnalysis = execCommand(command);
+    // console.log("> Go/Kegg output:", goKeggAnalysis);
 
     res.status(200).send("Docker run complete");
   } catch (error) {
@@ -1648,6 +1649,25 @@ app.get("/api/download-data-standard", async (req, res) => {
 
   const presignedUrl = await s3Download(params);
   res.send({ url: presignedUrl });
+});
+
+app.get("/api/go-kegg-check/:jobId/:fileName", async (req, res) => {
+  const jobId = req.params.jobId;
+  const fileName = req.params.fileName;
+
+  const datePart = jobId.split("-")[2];
+  const year = datePart.substring(0, 4);
+  const month = datePart.substring(4, 6);
+  const day = datePart.substring(6, 8);
+  const s3Key = `jobs/${year}-${month}-${day}/${jobId}/${fileName}`;
+
+  const fileExists = await checkFileExists(
+    process.env.DIFFERENTIAL_S3_BUCKET,
+    s3Key
+  );
+
+  console.log("> File Exists", fileExists);
+  return res.send({ exists: fileExists });
 });
 
 app.get("/api/s3Download/:jobId/:fileName", async (req, res) => {

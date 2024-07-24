@@ -1,4 +1,10 @@
-import { Box, Container, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Container,
+  CircularProgress,
+  Typography,
+  Stack,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 
 import { fileMapping } from "./Constants";
@@ -35,6 +41,29 @@ const style = {
   },
 };
 
+const CheckbackLater = () => {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "50vh",
+      }}
+    >
+      <Stack
+        id="stack"
+        sx={{ alignItems: "center" }}
+      >
+        <CircularProgress />
+        <Typography sx={{ marginY: "10px" }}>
+          Results not ready. Analysis still running. Please check back later
+        </Typography>
+      </Stack>
+    </Box>
+  );
+};
+
 const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
   const [image, setImage] = useState(null);
   const [data, setData] = useState(null);
@@ -44,6 +73,48 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
   const [allData, setAllData] = useState(null);
   const [files, setFiles] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+
+  const [goResultsReady, setGoResultsReady] = useState(false);
+  const [intervalId, setIntervalId] = useState(null);
+
+  console.log("> Job Id", jobId);
+
+  const checkGoStatus = async () => {
+    console.log("> Calling Go Status Check");
+
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/go-kegg-check/${jobId}/gsemf.tsv`
+      );
+
+      const { exists } = await res.json();
+
+      console.log("> Res", data);
+
+      setGoResultsReady(exists);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    const intervalCall = setInterval(() => {
+      checkGoStatus();
+    }, 15000);
+
+    setIntervalId(intervalCall);
+
+    return () => {
+      // clean up
+      clearInterval(intervalCall);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (goResultsReady) {
+      clearInterval(intervalId);
+    }
+  }, [goResultsReady, intervalId]);
 
   const getDataFile = async (
     dataFile = files["Data Matrix"],
@@ -307,7 +378,9 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
       case "KEGG Pathway/Module":
         const sectionFile = fileMapping[selectedSection][`${tab} Data`];
 
-        if (tab === "Enrichment Plot") {
+        if (!goResultsReady) {
+          displayResult = <CheckbackLater />;
+        } else if (tab === "Enrichment Plot") {
           displayResult = (
             <BarChartComponent
               jobId={jobId}
@@ -346,17 +419,28 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
                 width: "100%",
               }}
             >
-              <CsvTable data={allData.data} selectedSection={selectedSection} />
+              <CsvTable
+                data={allData.data}
+                selectedSection={selectedSection}
+              />
             </Box>
           </Container>
         );
         break;
       case "Input Data":
-        displayResult = <InputData searchParams={searchParams} jobId={jobId} />;
+        displayResult = (
+          <InputData
+            searchParams={searchParams}
+            jobId={jobId}
+          />
+        );
         break;
       case "Download":
         displayResult = (
-          <ResultDownload jobId={jobId} handleDownload={handleDownload} />
+          <ResultDownload
+            jobId={jobId}
+            handleDownload={handleDownload}
+          />
         );
         break;
       default:
@@ -386,7 +470,10 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
                 width: "100%",
               }}
             >
-              <CsvTable data={data} selectedSection={selectedSection} />
+              <CsvTable
+                data={data}
+                selectedSection={selectedSection}
+              />
             </Box>
           </Container>
         );
@@ -408,7 +495,10 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
       <CircularProgress />
     </Box>
   ) : (
-    <Box sx={style.dataBox} className="d3Graph">
+    <Box
+      sx={style.dataBox}
+      className="d3Graph"
+    >
       {getSection()}
     </Box>
   );

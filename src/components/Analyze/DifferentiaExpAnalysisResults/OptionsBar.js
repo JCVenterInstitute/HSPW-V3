@@ -1,6 +1,8 @@
 import { Box, Typography } from "@mui/material";
 
-const OptionsBar = ({ selectedSection, option, setSelectedSection }) => {
+import { option } from "./Constants";
+
+const OptionsBar = ({ selectedSection, setSelectedSection }) => {
   const customStyle = {
     box: {
       backgroundColor: "#f9f8f7",

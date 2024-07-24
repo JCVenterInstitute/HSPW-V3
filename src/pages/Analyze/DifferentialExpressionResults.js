@@ -5,7 +5,6 @@ import { useParams, useSearchParams } from "react-router-dom";
 import OptionsBar from "../../components/Analyze/DifferentiaExpAnalysisResults/OptionsBar";
 import PageHeader from "../../components/PageHeader";
 import ResultSection from "../../components/Analyze/DifferentiaExpAnalysisResults/ResultSection";
-import { option } from "../../components/Analyze/DifferentiaExpAnalysisResults/Constants";
 
 const breadcrumbPath = [
   { path: "Home", link: "/" },
@@ -42,7 +41,6 @@ const DifferentialExpressionResults = () => {
       >
         <OptionsBar
           selectedSection={selectedSection}
-          option={option}
           setSelectedSection={setSelectedSection}
         />
         <Container
