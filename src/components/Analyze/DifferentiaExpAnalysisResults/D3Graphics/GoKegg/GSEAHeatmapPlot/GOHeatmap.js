@@ -1,7 +1,7 @@
 import "../../D3GraphStyles.css";
 import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
-import { fetchTSV, fetchCSV } from "../../../utils";
+import { fetchDataFile } from "../../../utils";
 
 const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
   const svgRef = useRef();
@@ -25,8 +25,8 @@ const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
   useEffect(() => {
     const loadData = async () => {
       console.log("Loading data...");
-      const result1 = await fetchTSV(jobId, fileName1, selectedSection);
-      const result2 = await fetchCSV(jobId, fileName2, selectedSection);
+      const result1 = await fetchDataFile(jobId, fileName1, selectedSection);
+      const result2 = await fetchDataFile(jobId, fileName2, selectedSection);
 
       console.log("Raw Data1:", result1.data);
       console.log("Raw Data2:", result2.data);
@@ -302,7 +302,7 @@ export default HeatmapComponent;
 // import "../../D3GraphStyles.css";
 // import React, { useEffect, useState, useRef } from "react";
 // import * as d3 from "d3v7";
-// import { fetchTSV, fetchCSV } from "../../../utils";
+// import { fetchDataFile } from "../../../utils";
 
 // const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
 //   const svgRef = useRef();
@@ -326,8 +326,8 @@ export default HeatmapComponent;
 //   useEffect(() => {
 //     const loadData = async () => {
 //       console.log("Loading data...");
-//       const result1 = await fetchTSV(jobId, fileName1, selectedSection);
-//       const result2 = await fetchCSV(jobId, fileName2, selectedSection);
+//       const result1 = await fetchDataFile(jobId, fileName1, selectedSection);
+//       const result2 = await fetchDataFile(jobId, fileName2, selectedSection);
 
 //       console.log("Raw Data1:", result1.data);
 //       console.log("Raw Data2:", result2.data);

@@ -2,7 +2,7 @@ import { Box, Container, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 
 import AnalysisOptionsTable from "../DifferentialExpressionAnalysis/AnalysisOptionsTable";
-import { fetchCSV } from "./utils";
+import { fetchDataFile } from "./utils";
 import CSVDataTable from "../../../pages/Analyze/CSVDataTable";
 
 const InputData = ({ searchParams, jobId }) => {
@@ -11,14 +11,13 @@ const InputData = ({ searchParams, jobId }) => {
   useEffect(() => {
     const fetchOriginalInput = async () => {
       try {
-        const { data, downloadUrl, textUrl } = await fetchCSV(
+        const { data, downloadUrl } = await fetchDataFile(
           jobId,
           "data_original.csv"
         );
         setData({
           data,
           downloadUrl,
-          textUrl,
         });
 
         console.log("> Data", data);
@@ -32,10 +31,7 @@ const InputData = ({ searchParams, jobId }) => {
 
   return data !== null ? (
     <Container sx={{ margin: "0px" }}>
-      <Typography
-        variant="h5"
-        sx={{ fontFamily: "Lato" }}
-      >
+      <Typography variant="h5" sx={{ fontFamily: "Lato" }}>
         Analysis Options:
       </Typography>
       <AnalysisOptionsTable searchParams={searchParams} />
@@ -51,10 +47,7 @@ const InputData = ({ searchParams, jobId }) => {
           width: "100%",
         }}
       >
-        <CSVDataTable
-          data={data["data"]}
-          selected={"Input Data"}
-        />
+        <CSVDataTable data={data["data"]} selected={"Input Data"} />
       </Box>
     </Container>
   ) : null;
