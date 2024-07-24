@@ -389,7 +389,7 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
       }
     }
 
-    return <div className="d3Graph">{displayResult}</div>;
+    return displayResult;
   };
 
   return isLoading ? (
