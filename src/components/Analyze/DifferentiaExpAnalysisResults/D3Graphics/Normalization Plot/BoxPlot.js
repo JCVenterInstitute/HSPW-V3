@@ -67,7 +67,7 @@ const Boxplot = ({ containerId, jobId, datafile }) => {
     // Sort the sumstats by median value in descending order and take the top N
     sumstats.sort((a, b) => b.median - a.median);
     const topSumstats = sumstats.slice(1, topN + 1);
-
+    console.log("sumstats", sumstats);
     const topLabels = topSumstats.map((d) => d.label);
     const allValues = topSumstats.flatMap((d) => d.values);
     // Calculate dynamic padding
