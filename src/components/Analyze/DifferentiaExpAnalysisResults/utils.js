@@ -44,6 +44,7 @@ export const getImageStyle = (selectedItem) => {
  * Returns the data file & the download link for the file
  * @param {*} jobId Id of analysis submission job, used to help locate s3 file
  * @param {*} fileName Name of the s3 file
+ * @returns {Object} Object containing parsed TSV data, download URL
  */
 export const fetchDataFile = async (
   jobId,
@@ -76,81 +77,6 @@ export const fetchDataFile = async (
     };
   } catch (error) {
     console.error("Error fetching data file:", error);
-  }
-};
-
-/**
- * Returns the csv data & the download link for the file
- * @param {*} jobId Id of analysis submission job, used to help locate s3 file
- * @param {*} fileName Name of the s3 file
- */
-export const fetchCSV = async (jobId, fileName) => {
-  try {
-    let response = await axios.get(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
-    );
-
-    const csvText = await axios.get(response.data.url).then((res) => res.data);
-
-    return {
-      data: Papa.parse(csvText, {
-        header: true,
-        skipEmptyLines: true,
-        transformHeader: (header, index) => {
-          if (index === 0 && (header === "" || header === "rn")) {
-            return fileName.startsWith("pca") ? "Sample" : "Protein";
-          } else {
-            return header;
-          }
-        },
-      }).data,
-      downloadUrl: response.data.url,
-    };
-  } catch (error) {
-    console.error("Error fetching csv:", error);
-  }
-};
-
-/**
- * Returns the TSV data & the download link for the file
- * @param {string} jobId Id of analysis submission job, used to help locate s3 file
- * @param {string} fileName Name of the s3 file
- * @returns {Object} Object containing parsed TSV data, download URL, and text URL
- */
-export const fetchTSV = async (jobId, fileName, selectedSection = null) => {
-  try {
-    // Fetch the response object containing the URL to download the file
-    let response = await axios.get(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
-    );
-
-    // Fetch the actual TSV data using the URL obtained from the response
-    const tsvText = await axios.get(response.data.url).then((res) => res.data);
-
-    // Parse the TSV data using parseTSV function (assumed to be defined elsewhere)
-    const parsedData = Papa.parse(
-      tsvText.startsWith('"ID"') ? '" "'.concat("\t", tsvText) : tsvText,
-      {
-        header: true,
-        skipEmptyLines: true,
-        transformHeader: (header, index) => {
-          if (index === 0 && (header === "" || header === "rn")) {
-            return "Protein";
-          } else {
-            return header;
-          }
-        },
-      }
-    ).data;
-
-    // Return an object with parsed data, download URL, and text URL for Blob
-    return {
-      data: parsedData,
-      downloadUrl: response.data.url,
-      textUrl: URL.createObjectURL(new Blob([tsvText], { type: "text/tsv" })),
-    };
-  } catch (error) {
-    console.error("Error fetching TSV:", error);
   }
 };
 

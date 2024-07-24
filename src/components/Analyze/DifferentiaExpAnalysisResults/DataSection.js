@@ -23,7 +23,7 @@ import HeatmapComponent from "./D3Graphics/GoKegg/GSEAHeatmapPlot/GOHeatmap.js";
 import RandomForest from "./D3Graphics/RandomForest/RandomForest";
 import InputData from "./InputData";
 import {
-  fetchCSV,
+  fetchDataFile,
   fetchData,
   fetchImage,
   getImageStyle,
@@ -165,7 +165,7 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
    */
   const getAllDataFile = async () => {
     try {
-      const { data, downloadUrl } = await fetchCSV(jobId, "all_data.tsv");
+      const { data, downloadUrl } = await fetchDataFile(jobId, "all_data.tsv");
 
       setAllData({
         data,
