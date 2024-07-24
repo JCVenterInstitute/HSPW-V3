@@ -121,7 +121,7 @@ const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
         <strong>Description:</strong> ${d.Description}<br/>
         <strong>GeneRatio:</strong> ${d.GeneRatio}<br/>
         <strong>BgRatio:</strong> ${d.BgRatio}<br/>
-        <strong>p-value:</strong> ${d.pvalue}<br/>
+        <strong>p-value:</strong> ${d.p.adjust}<br/>
         <strong>p-adjust:</strong> ${d["p.adjust"]}<br/>
         <strong>q-value:</strong> ${d.qvalue}<br/>
         <strong>geneID:</strong> ${d.geneID}<br/>
