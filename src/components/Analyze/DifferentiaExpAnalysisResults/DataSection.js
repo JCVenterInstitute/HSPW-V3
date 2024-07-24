@@ -94,15 +94,11 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
    */
   const getAllDataFile = async () => {
     try {
-      const { data, downloadUrl, textUrl } = await fetchCSV(
-        jobId,
-        "all_data.tsv"
-      );
+      const { data, downloadUrl } = await fetchCSV(jobId, "all_data.tsv");
 
       setAllData({
         data,
         downloadUrl,
-        textUrl,
       });
     } catch (err) {
       console.error("> Error fetching all data file", err);

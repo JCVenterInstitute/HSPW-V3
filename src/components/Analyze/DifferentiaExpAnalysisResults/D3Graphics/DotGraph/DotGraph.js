@@ -1,7 +1,7 @@
 // import "../D3GraphStyles.css";
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
-import { fetchCSV } from "../../utils.js";
+import { fetchDataFile } from "../../utils.js";
 import "./DotGraph.css";
 
 const DotGraph = ({ jobId }) => {
@@ -11,7 +11,10 @@ const DotGraph = ({ jobId }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csvData = await fetchCSV(jobId, "randomforests_sigfeatures.csv");
+        const csvData = await fetchDataFile(
+          jobId,
+          "randomforests_sigfeatures.csv"
+        );
         console.log("Fetched CSV Data:", csvData.data);
         const jsonData = csvData.data.map((d) => ({
           type: d.Protein.replace(/"/g, ""),

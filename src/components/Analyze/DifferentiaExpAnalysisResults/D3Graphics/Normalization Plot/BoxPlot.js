@@ -1,7 +1,7 @@
 import "../D3GraphStyles.css";
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3v7";
-import { fetchCSV } from "../../utils.js"; // Import fetchCSV from utils.js
+import { fetchDataFile } from "../../utils.js"; // Import fetchDataFile from utils.js
 
 const Boxplot = ({ containerId, jobId, datafile }) => {
   const boxplotRef = useRef(null);
@@ -11,7 +11,7 @@ const Boxplot = ({ containerId, jobId, datafile }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csvData = await fetchCSV(jobId, datafile);
+        const csvData = await fetchDataFile(jobId, datafile);
         // console.log("Fetched CSV Data:", csvData); // Log fetched CSV data
         setData(csvData.data);
       } catch (error) {

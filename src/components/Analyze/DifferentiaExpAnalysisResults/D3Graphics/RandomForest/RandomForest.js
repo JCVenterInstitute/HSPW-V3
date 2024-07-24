@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fileMapping } from "../../Constants";
-import { fetchCSV, fetchImage } from "../../utils";
+import { fetchDataFile, fetchImage } from "../../utils";
 import CSVDataTable from "../../../../../pages/Analyze/CSVDataTable";
 // import DotGraph from "../DotGraph/DotGraph";
 import { Box, CircularProgress, Container } from "@mui/material";
@@ -17,7 +17,7 @@ const RandomForest = ({ selectedSection, tab, jobId }) => {
 
       // Classification & Feature tabs have additional table to display
       if (tab === "Classification" || tab === "Feature") {
-        const { data } = await fetchCSV(jobId, files[tab][1]);
+        const { data } = await fetchDataFile(jobId, files[tab][1]);
         setTable(data);
       } else {
         setTable(null);

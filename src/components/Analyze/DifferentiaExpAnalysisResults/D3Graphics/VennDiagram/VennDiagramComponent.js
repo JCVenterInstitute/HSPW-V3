@@ -2,7 +2,7 @@ import "../D3GraphStyles.css";
 import React, { useEffect, useState } from "react";
 import * as d3 from "d3v7";
 import { VennDiagram } from "venn.js";
-import { fetchCSV } from "../../utils.js";
+import { fetchDataFile } from "../../utils.js";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
@@ -20,7 +20,7 @@ const VennDiagramComponent = ({ jobId }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csvData = await fetchCSV(jobId, "data_original.csv");
+        const csvData = await fetchDataFile(jobId, "data_original.csv");
         setData(csvData);
       } catch (error) {
         console.error("Error fetching data:", error);

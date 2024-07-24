@@ -1,7 +1,7 @@
 import "../D3GraphStyles.css";
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3v7";
-import { fetchCSV } from "../../utils.js";
+import { fetchDataFile } from "../../utils.js";
 
 const DensityPlot = ({ containerId, jobId, datafile }) => {
   const svgRef = useRef();
@@ -12,7 +12,7 @@ const DensityPlot = ({ containerId, jobId, datafile }) => {
     // Fetch CSV data
     const fetchData = async () => {
       try {
-        const csvData = await fetchCSV(jobId, datafile);
+        const csvData = await fetchDataFile(jobId, datafile);
         setData(csvData.data);
       } catch (error) {
         console.error("Error fetching data:", error);

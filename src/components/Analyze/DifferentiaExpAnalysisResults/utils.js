@@ -41,6 +41,45 @@ export const getImageStyle = (selectedItem) => {
 };
 
 /**
+ * Returns the data file & the download link for the file
+ * @param {*} jobId Id of analysis submission job, used to help locate s3 file
+ * @param {*} fileName Name of the s3 file
+ */
+export const fetchDataFile = async (
+  jobId,
+  fileName,
+  selectedSection = null
+) => {
+  try {
+    let response = await axios.get(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
+    );
+
+    const dataText = await axios.get(response.data.url).then((res) => res.data);
+
+    return {
+      data: Papa.parse(
+        dataText.startsWith('"ID"\t') ? '" "'.concat("\t", dataText) : dataText,
+        {
+          header: true,
+          skipEmptyLines: true,
+          transformHeader: (header, index) => {
+            if (index === 0 && (header === "" || header === "rn")) {
+              return fileName.startsWith("pca") ? "Sample" : "Protein";
+            } else {
+              return header;
+            }
+          },
+        }
+      ).data,
+      downloadUrl: response.data.url,
+    };
+  } catch (error) {
+    console.error("Error fetching data file:", error);
+  }
+};
+
+/**
  * Returns the csv data & the download link for the file
  * @param {*} jobId Id of analysis submission job, used to help locate s3 file
  * @param {*} fileName Name of the s3 file
@@ -58,12 +97,14 @@ export const fetchCSV = async (jobId, fileName) => {
         header: true,
         skipEmptyLines: true,
         transformHeader: (header, index) => {
-          if (index === 0 && (header === "" || header === "rn")) {return fileName.startsWith("pca") ? "Sample" : "Protein";}
-          else {return header;}
+          if (index === 0 && (header === "" || header === "rn")) {
+            return fileName.startsWith("pca") ? "Sample" : "Protein";
+          } else {
+            return header;
+          }
         },
       }).data,
       downloadUrl: response.data.url,
-      textUrl: URL.createObjectURL(new Blob([csvText], { type: "text/csv" })),
     };
   } catch (error) {
     console.error("Error fetching csv:", error);
@@ -87,7 +128,9 @@ export const fetchTSV = async (jobId, fileName, selectedSection = null) => {
     const tsvText = await axios.get(response.data.url).then((res) => res.data);
 
     // Parse the TSV data using parseTSV function (assumed to be defined elsewhere)
-    const parsedData = Papa.parse(tsvText.startsWith('"ID"') ? '" "'.concat("\t", tsvText) : tsvText, {
+    const parsedData = Papa.parse(
+      tsvText.startsWith('"ID"') ? '" "'.concat("\t", tsvText) : tsvText,
+      {
         header: true,
         skipEmptyLines: true,
         transformHeader: (header, index) => {
@@ -97,7 +140,8 @@ export const fetchTSV = async (jobId, fileName, selectedSection = null) => {
             return header;
           }
         },
-      }).data;
+      }
+    ).data;
 
     // Return an object with parsed data, download URL, and text URL for Blob
     return {
