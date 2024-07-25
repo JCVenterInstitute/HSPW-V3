@@ -3,24 +3,9 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3v7";
 import { fetchDataFile } from "../../utils.js";
 
-const DensityPlot = ({ containerId, jobId, datafile }) => {
+const DensityPlot = ({ containerId, data }) => {
   const svgRef = useRef();
-  const [data, setData] = useState(null);
   const densityTooltip = useRef(null);
-
-  useEffect(() => {
-    // Fetch CSV data
-    const fetchData = async () => {
-      try {
-        const csvData = await fetchDataFile(jobId, datafile);
-        setData(csvData.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, [jobId, datafile]);
 
   useEffect(() => {
     if (!data) return;

@@ -9,8 +9,7 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import * as testCSS from "../../../../Table.css";
 
 console.log(testCSS);
-const VennDiagramComponent = ({ jobId }) => {
-  const [data, setData] = useState(null);
+const VennDiagramComponent = ({ data }) => {
   const [selectedSet, setSelectedSet] = useState(null);
 
   const width = 600;
@@ -18,22 +17,9 @@ const VennDiagramComponent = ({ jobId }) => {
   const margin = { top: 20, right: 20, bottom: 20, left: 20 };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const csvData = await fetchDataFile(jobId, "data_original.csv");
-        setData(csvData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, [jobId]);
-
-  useEffect(() => {
     if (!data) return;
 
-    const graphData = data.data;
+    const graphData = data;
     const labels = graphData[0];
     const df = graphData.slice(1);
 
