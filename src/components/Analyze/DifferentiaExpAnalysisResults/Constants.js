@@ -48,6 +48,7 @@ export const fileMapping = {
     "GSEA Heatmap plot": "gsebp_heat.jpeg",
     "GSEA Heatmap plot Data": "gsebp.tsv",
     "GSEA Tree cluster plot": "gobp_tree.jpeg",
+    "GSEA Tree cluster Data": "gsecc_tree.tsv",
   },
   "GO Molecular Function": {
     "Enrichment Plot": "gomf_bar.jpeg",
@@ -58,6 +59,7 @@ export const fileMapping = {
     "GSEA Heatmap plot": "gsemf_heat.jpeg",
     "GSEA Heatmap plot Data": "gsemf.tsv",
     "GSEA Tree cluster plot": "gomf_tree.jpeg",
+    "GSEA Tree cluster Data": "gsecc_tree.tsv",
   },
   "GO Cellular Component": {
     "Enrichment Plot": "gocc_bar.jpeg",
@@ -68,6 +70,7 @@ export const fileMapping = {
     "GSEA Heatmap plot": "gsecc_heat.jpeg",
     "GSEA Heatmap plot Data": "gsecc.tsv",
     "GSEA Tree cluster plot": "gocc_tree.jpeg",
+    "GSEA Tree cluster Data": "gsecc_tree.tsv",
   },
   "KEGG Pathway/Module": {
     "Enrichment Plot": "kegg_pathway_bar.jpeg",
@@ -78,6 +81,7 @@ export const fileMapping = {
     "GSEA Heatmap plot": "kegg_heat.jpeg",
     "GSEA Heatmap plot Data": "gsemkk.tsv",
     "GSEA Tree cluster plot": "kegg_tree.jpeg",
+    "GSEA Tree cluster plot Data": "gsecc_tree.tsv",
   },
 };
 

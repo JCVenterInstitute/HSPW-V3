@@ -13,6 +13,7 @@ import DensityPlot from "./D3Graphics/Normalization Plot/DensityPlot";
 import PrincipleComponentAnalysis from "./D3Graphics/PrincipleComponentAnalysis/PrincipleComponentAnalysis.jsx";
 import BarChartComponent from "./D3Graphics/GoKegg/EncrichmentPlot/BarPlot";
 import RidgePlotComponent from "./D3Graphics/GoKegg/GSEARidgePlot/RidgePlot";
+import TreeClusterPlotComponent from "./D3Graphics/GoKegg/GSEATree Cluster Plot/TreeClusterPlot.js";
 import HeatmapComponent from "./D3Graphics/GoKegg/GSEAHeatmapPlot/GOHeatmap.js";
 import RandomForest from "./D3Graphics/RandomForest/RandomForest";
 import InputData from "./InputData";
@@ -326,6 +327,14 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
               jobId={jobId}
               fileName1={sectionFile}
               fileName2={fileMapping["Result Data"]}
+              selectedSection={selectedSection}
+            />
+          );
+        } else if (tab.endsWith("Tree cluster plot")) {
+          displayResult = (
+            <TreeClusterPlotComponent
+              jobId={jobId}
+              fileName1={sectionFile}
               selectedSection={selectedSection}
             />
           );
