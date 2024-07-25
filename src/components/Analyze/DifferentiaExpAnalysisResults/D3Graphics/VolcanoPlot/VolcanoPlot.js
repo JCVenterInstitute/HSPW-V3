@@ -152,7 +152,7 @@ const VolcanoPlot = ({
       thresholdLines
         .append("svg:line")
         .attr("class", threshold === 0 ? "threshold bold" : "threshold")
-        .attr("x1", innerWidth * -2)
+        .attr("x1", -innerWidth)
         .attr("x2", innerWidth * 2)
         .attr("y1", yScale(threshold))
         .attr("y2", yScale(threshold))
@@ -166,7 +166,7 @@ const VolcanoPlot = ({
         .attr("class", threshold === 0 ? "threshold bold" : "threshold")
         .attr("x1", xScale(threshold))
         .attr("x2", xScale(threshold))
-        .attr("y1", innerHeight * -2)
+        .attr("y1", -innerHeight)
         .attr("y2", innerHeight * 2)
         .attr("stroke-dasharray", threshold === 0 ? "none" : "5, 5");
     });
