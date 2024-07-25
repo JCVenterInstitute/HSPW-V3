@@ -100,7 +100,7 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
   useEffect(() => {
     const intervalCall = setInterval(() => {
       checkGoStatus();
-    }, 15000);
+    }, 30000);
 
     setIntervalId(intervalCall);
 

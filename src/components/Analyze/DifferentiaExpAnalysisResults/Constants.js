@@ -47,7 +47,7 @@ export const fileMapping = {
     "GSEA Ridge plot Data": "gsebp.tsv",
     "GSEA Heatmap plot": "gsebp_heat.jpeg",
     "GSEA Heatmap plot Data": "gsebp.tsv",
-    "GSEA Tree cluster plot": "gobp_tree.jpeg",
+    "GSEA Tree cluster plot": "gsebp_tree.jpeg",
   },
   "GO Molecular Function": {
     "Enrichment Plot": "gomf_bar.jpeg",
@@ -57,7 +57,7 @@ export const fileMapping = {
     "GSEA Ridge plot Data": "gsemf.tsv",
     "GSEA Heatmap plot": "gsemf_heat.jpeg",
     "GSEA Heatmap plot Data": "gsemf.tsv",
-    "GSEA Tree cluster plot": "gomf_tree.jpeg",
+    "GSEA Tree cluster plot": "gsemf_tree.jpeg",
   },
   "GO Cellular Component": {
     "Enrichment Plot": "gocc_bar.jpeg",
@@ -67,7 +67,7 @@ export const fileMapping = {
     "GSEA Ridge plot Data": "gsecc.tsv",
     "GSEA Heatmap plot": "gsecc_heat.jpeg",
     "GSEA Heatmap plot Data": "gsecc.tsv",
-    "GSEA Tree cluster plot": "gocc_tree.jpeg",
+    "GSEA Tree cluster plot": "gsecc_tree.jpeg",
   },
   "KEGG Pathway/Module": {
     "Enrichment Plot": "kegg_pathway_bar.jpeg",
