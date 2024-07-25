@@ -112,10 +112,10 @@ const RidgePlotComponent = ({
 
       const xScale = d3.scaleLinear().domain(xDomain).range([0, width]);
 
-      const reversedSetSizeValues = [...DescriptionValues].reverse();
+      const reversedDescriptionValues = [...DescriptionValues].reverse();
       const yScale = d3
         .scaleBand()
-        .domain(reversedSetSizeValues)
+        .domain(reversedDescriptionValues)
         .range([height, 0])
         .padding(0.1);
 

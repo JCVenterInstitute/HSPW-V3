@@ -114,7 +114,7 @@ const VolcanoPlot = ({
       .attr("class", "label")
       .attr(
         "transform",
-        `translate(${-margin.left/ 1.5},${innerHeight / 2}) rotate(-90)`
+        `translate(${-margin.left / 1.5},${innerHeight / 2}) rotate(-90)`
       )
       .attr("text-anchor", "middle")
       .text(ylabel === "" ? yValKey : ylabel);
@@ -152,8 +152,8 @@ const VolcanoPlot = ({
       thresholdLines
         .append("svg:line")
         .attr("class", threshold === 0 ? "threshold bold" : "threshold")
-        .attr("x1", 0)
-        .attr("x2", innerWidth)
+        .attr("x1", -innerWidth)
+        .attr("x2", innerWidth * 2)
         .attr("y1", yScale(threshold))
         .attr("y2", yScale(threshold))
         .attr("stroke-dasharray", threshold === 0 ? "none" : "5, 5");
@@ -166,8 +166,8 @@ const VolcanoPlot = ({
         .attr("class", threshold === 0 ? "threshold bold" : "threshold")
         .attr("x1", xScale(threshold))
         .attr("x2", xScale(threshold))
-        .attr("y1", 0)
-        .attr("y2", innerHeight)
+        .attr("y1", -innerHeight)
+        .attr("y2", innerHeight * 2)
         .attr("stroke-dasharray", threshold === 0 ? "none" : "5, 5");
     });
 
@@ -216,7 +216,7 @@ const VolcanoPlot = ({
 
     const zoom = d3
       .zoom()
-      .scaleExtent([1, 2000])
+      .scaleExtent([0.5, 2000])
       .translateExtent([
         [0, 0],
         [SVGwidth, SVGheight],
