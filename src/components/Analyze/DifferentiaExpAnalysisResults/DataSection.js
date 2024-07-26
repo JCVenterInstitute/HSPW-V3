@@ -27,6 +27,7 @@ import {
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
+import e from "cors";
 
 const style = {
   dataBox: {
@@ -59,6 +60,9 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
     "pca_variance.csv",
     "randomforest_confusion.csv",
     "randomforests_sigfeatures.csv",
+    "rf_cls_0_dpi150.png",
+    "rf_imp_0_dpi150.png",
+    "rf_outlier_0_dpi150.png",
     "statistical_parametric_test.csv",
     "venn_out_data.txt",
     "volcano.csv",
@@ -281,7 +285,7 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
 
           break;
         case "Venn-Diagram":
-          if (tab !== "Data Matrix") {
+          if (tab === "Visualization") {
             displayResult = (
               <VennDiagramComponent data={allFiles["data_original.csv"].data} />
             );
@@ -338,6 +342,21 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
           //   />
           // );
           if (tab === "Classification") {
+            displayResult = (
+              <>
+                {displayImg(allFiles["rf_cls_0_dpi150.png"].downloadUrl)}
+                {displayTable(allFiles["randomforest_confusion.csv"].data)}
+              </>
+            );
+          }else if (tab === "Feature"){
+            displayResult = (
+              <>
+                {displayImg(allFiles["rf_imp_0_dpi150.png"].downloadUrl)}
+                {displayTable(allFiles["randomforests_sigfeatures.csv"].data)}
+              </>
+            );
+          }else if (tab === "Outlier"){
+            displayResult = displayImg(allFiles["rf_outlier_0_dpi150.png"].downloadUrl);
           }
           break;
         case "GO Biological Process":
