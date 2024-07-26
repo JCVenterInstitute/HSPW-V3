@@ -11,9 +11,6 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
   const width = 900 - margin.left - margin.right;
   const height = 850 - margin.top - margin.bottom;
 
-  console.log(">numbVolcanoSamples", numbVolcanoSamples);
-  console.log(">tab", tab);
-
   const cleanData = (data) => {
     return data.slice(1).map((d) => {
       // Slice to remove the first row
@@ -37,9 +34,11 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
     };
 
     loadData();
-  }, [jobId, fileName]);
+  }, [jobId, fileName, tab]);
 
   useEffect(() => {
+    console.log(">numbVolcanoSamples", numbVolcanoSamples);
+    console.log(">tab", tab);
     if (data.length > 0) {
       const svg = d3.select(svgRef.current);
       svg.selectAll("*").remove();
