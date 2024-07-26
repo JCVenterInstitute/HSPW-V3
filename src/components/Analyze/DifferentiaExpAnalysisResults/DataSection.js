@@ -45,11 +45,20 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
   const [files, setFiles] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [allFiles, setAllFiles] = useState(null);
+  const goKeggDict = {
+    "GO Biological Process": ["egobp.tsv"],
+    "GO Molecular Function": ["egomf.tsv"],
+    "GO Cellular Component": ["egocc.tsv"],
+    "KEGG Pathway/Module": ["kegg.tsv"],
+  };
   const fileNames = [
     "all_data.tsv",
     "data_normalized.csv",
     "data_original.csv",
     "data_processed.csv",
+    "egobp.tsv",
+    "egomf.tsv",
+    "egocc.tsv",
     "fold_change.csv",
     "gsekk.tsv",
     "heatmap_0_dpi150.png",
@@ -148,11 +157,6 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
       setIsLoading(false);
     }
   };
-
-  // Fetch all needed files for the current selected section
-  // useEffect(() => {
-  //   fetchFiles(selectedSection, jobId);
-  // }, [selectedSection]);
 
   // Get all_data.tsv, shared across all tab sections
   useEffect(() => {
@@ -334,13 +338,6 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
           }
           break;
         case "Random Forest":
-          // displayResult = (
-          //   <RandomForest
-          //     selectedSection={selectedSection}
-          //     jobId={jobId}
-          //     tab={tab}
-          //   />
-          // );
           if (tab === "Classification") {
             displayResult = (
               <>
@@ -360,41 +357,46 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
           }
           break;
         case "GO Biological Process":
-        case "GO Molecular Function":
-        case "GO Molecular Function":
-        case "GO Cellular Component":
+        case "GO Molecular Function":         
+        case "GO Cellular Component":          
         case "KEGG Pathway/Module":
-          const sectionFile = fileMapping[selectedSection][`${tab} Data`];
-
           if (tab === "Enrichment Plot") {
             displayResult = (
-              <BarChartComponent
-                jobId={jobId}
-                datafile={sectionFile}
-                selectedSection={selectedSection}
-              />
+              <BarChartComponent tableData={allFiles[goKeggDict[selectedSection][0]].data} />
             );
-          } else if (tab.endsWith("Ridge plot")) {
-            displayResult = (
-              <RidgePlotComponent
-                jobId={jobId}
-                fileName1={sectionFile}
-                fileName2={fileMapping["Result Data"]}
-                selectedSection={selectedSection}
-              />
-            );
-          } else if (tab.endsWith("Heatmap plot")) {
-            displayResult = (
-              <HeatmapComponent
-                jobId={jobId}
-                fileName1={sectionFile}
-                fileName2={fileMapping["Result Data"]}
-                selectedSection={selectedSection}
-              />
-            );
-          } else {
-            displayResult = null;
           }
+          break;
+          // const sectionFile = fileMapping[selectedSection][`${tab} Data`];
+
+          // if (tab === "Enrichment Plot") {
+          //   displayResult = (
+          //     <BarChartComponent
+          //       jobId={jobId}
+          //       datafile={sectionFile}
+          //       selectedSection={selectedSection}
+          //     />
+          //   );
+          // } else if (tab.endsWith("Ridge plot")) {
+          //   displayResult = (
+          //     <RidgePlotComponent
+          //       jobId={jobId}
+          //       fileName1={sectionFile}
+          //       fileName2={fileMapping["Result Data"]}
+          //       selectedSection={selectedSection}
+          //     />
+          //   );
+          // } else if (tab.endsWith("Heatmap plot")) {
+          //   displayResult = (
+          //     <HeatmapComponent
+          //       jobId={jobId}
+          //       fileName1={sectionFile}
+          //       fileName2={fileMapping["Result Data"]}
+          //       selectedSection={selectedSection}
+          //     />
+          //   );
+          // } else {
+            displayResult = null;
+          // }
           break;
         case "Result Data":
           displayResult = (
