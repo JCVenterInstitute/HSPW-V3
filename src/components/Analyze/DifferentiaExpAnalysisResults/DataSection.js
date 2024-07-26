@@ -37,7 +37,13 @@ const style = {
   },
 };
 
-const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
+const DataSection = ({
+  selectedSection,
+  searchParams,
+  tab,
+  jobId,
+  numbOfTopVolcanoSamples,
+}) => {
   const [image, setImage] = useState(null);
   const [data, setData] = useState(null);
   const [plotData, setPlotData] = useState(null);
@@ -187,11 +193,13 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
         }
         break;
       case "Heatmap":
-        if (tab === "Top 25 Samples" || tab === "Top 10 Samples") {
+        if (tab.endsWith("Samples")) {
           displayResult = (
             <HeatmapComponent
               jobId={jobId}
               fileName={fileMapping["Heatmap"]["Top Samples"]}
+              numbVolcanoSamples={numbOfTopVolcanoSamples}
+              tab={tab}
             />
           );
         } else {

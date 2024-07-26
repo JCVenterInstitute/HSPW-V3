@@ -3,13 +3,16 @@ import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
 import { fetchDataFile } from "../../utils";
 
-const HeatmapComponent = ({ jobId, fileName }) => {
+const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
   const svgRef = useRef();
   const [data, setData] = useState([]);
 
   const margin = { top: 20, right: 30, bottom: 150, left: 135 };
   const width = 900 - margin.left - margin.right;
   const height = 850 - margin.top - margin.bottom;
+
+  console.log(">numbVolcanoSamples", numbVolcanoSamples);
+  console.log(">tab", tab);
 
   const cleanData = (data) => {
     return data.slice(1).map((d) => {
@@ -26,8 +29,10 @@ const HeatmapComponent = ({ jobId, fileName }) => {
     const loadData = async () => {
       const result = await fetchDataFile(jobId, fileName);
 
-      const cleanedData = cleanData(result.data);
-
+      let cleanedData = cleanData(result.data);
+      if (tab.startsWith("Top")) {
+        cleanedData = cleanedData.slice(0, numbVolcanoSamples);
+      }
       setData(cleanedData);
     };
 
@@ -144,7 +149,6 @@ const HeatmapComponent = ({ jobId, fileName }) => {
                 `<strong>Column:</strong> ${d.Column}<br>` +
                 `<strong>Value:</strong> ${d.Value}`
             );
-          console.log(`Tooltip for ${d.Protein} displayed.`);
         })
         .on("mouseout", function () {
           d3.select("#tooltip").style("display", "none");
