@@ -5,7 +5,7 @@ export const fileMapping = {
     "Data Matrix": "volcano.csv",
   },
   Heatmap: {
-    "Top Samples": "heatmap_1_dpi150.png",
+    "Top Samples": "data_normalized.csv",
     "All Samples": "heatmap_0_dpi150.png",
   },
   "Statistical Parametric Test": {

@@ -14,8 +14,9 @@ import PrincipleComponentAnalysis from "./D3Graphics/PrincipleComponentAnalysis/
 import BarChartComponent from "./D3Graphics/GoKegg/EncrichmentPlot/BarPlot";
 import RidgePlotComponent from "./D3Graphics/GoKegg/GSEARidgePlot/RidgePlot";
 import TreeClusterPlotComponent from "./D3Graphics/GoKegg/GSEATree Cluster Plot/TreeClusterPlot.js";
-import HeatmapComponent from "./D3Graphics/GoKegg/GSEAHeatmapPlot/GOHeatmap.js";
+import GOHeatmapComponent from "./D3Graphics/GoKegg/GSEAHeatmapPlot/GOHeatmap.js";
 import RandomForest from "./D3Graphics/RandomForest/RandomForest";
+import HeatmapComponent from "./D3Graphics/Heatmap/Heatmap.js";
 import InputData from "./InputData";
 import {
   fetchDataFile,
@@ -185,6 +186,19 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
           isPngTab = false;
         }
         break;
+      case "Heatmap":
+        if (tab === "Top 25 Samples" || tab === "Top 10 Samples") {
+          displayResult = (
+            <HeatmapComponent
+              jobId={jobId}
+              fileName={fileMapping["Heatmap"]["Top Samples"]}
+            />
+          );
+        } else {
+          displayResult = null;
+          isPngTab = false;
+        }
+        break;
       case "Statistical Parametric Test":
         if (allData && tab !== "Data Matrix") {
           displayResult = (
@@ -323,7 +337,7 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
           );
         } else if (tab.endsWith("Heatmap plot")) {
           displayResult = (
-            <HeatmapComponent
+            <GOHeatmapComponent
               jobId={jobId}
               fileName1={sectionFile}
               fileName2={fileMapping["Result Data"]}

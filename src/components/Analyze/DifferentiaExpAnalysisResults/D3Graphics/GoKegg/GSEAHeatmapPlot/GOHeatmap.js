@@ -4,7 +4,12 @@ import * as d3 from "d3v7";
 import { fetchDataFile } from "../../../utils";
 import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
-const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
+const GOHeatmapComponent = ({
+  jobId,
+  fileName1,
+  fileName2,
+  selectedSection,
+}) => {
   const svgRef = useRef();
   const [data1, setData1] = useState([]);
   const [data2, setData2] = useState([]);
@@ -361,4 +366,4 @@ const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
   );
 };
 
-export default HeatmapComponent;
+export default GOHeatmapComponent;
