@@ -1,4 +1,4 @@
-.graph-container {
+.graphContainer {
   width: 100%;
   max-width: 1000px;
   margin: auto;
@@ -22,7 +22,7 @@ svg {
   fill: #333;
 }
 
-circle {
+.circle {
   fill: #1800b6;
   opacity: 1;
   stroke: #2c3e50;
@@ -38,7 +38,7 @@ circle {
   stroke-dasharray: 4 2;
 }
 
-.border-line {
+.borderLine {
   stroke: #333;
   stroke-width: 1px;
 }
@@ -59,7 +59,7 @@ circle {
   transition: opacity 0.3s;
 }
 
-.axis-label {
+.axisLabel {
   font-size: 14px;
   fill: #333;
   font-weight: bold;
