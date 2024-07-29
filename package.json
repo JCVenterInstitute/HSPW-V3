@@ -31,7 +31,7 @@
     "material-ui-popup-state": "^5.0.4",
     "mobx": "^6.13.1",
     "mobx-react": "^9.1.1",
-    "mobx-state-tree": "^6.0.1",
+    "mobx-state-tree": "^5.0.0,
     "numeric": "^1.2.6",
     "papaparse": "^5.4.1",
     "primeflex": "^3.3.0",
