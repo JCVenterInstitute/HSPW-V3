@@ -369,41 +369,21 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
             );
           }else if (tab.endsWith("Ridge plot")) {
             displayResult = (
-              <RidgePlotComponent tableData={allFiles[goKeggDict[selectedSection][1]].data} allData={allFiles["all_data.tsv"].data}/>
+              <RidgePlotComponent 
+                tableData={allFiles[goKeggDict[selectedSection][1]].data} 
+                allData={allFiles["all_data.tsv"].data}
+              />
             );
-          }
-          break;
-          // const sectionFile = fileMapping[selectedSection][`${tab} Data`];
-
-          // if (tab === "Enrichment Plot") {
-          //   displayResult = (
-          //     <BarChartComponent
-          //       jobId={jobId}
-          //       datafile={sectionFile}
-          //       selectedSection={selectedSection}
-          //     />
-          //   );
-          // } else if (tab.endsWith("Ridge plot")) {
-          //   displayResult = (
-          //     <RidgePlotComponent
-          //       jobId={jobId}
-          //       fileName1={sectionFile}
-          //       fileName2={fileMapping["Result Data"]}
-          //       selectedSection={selectedSection}
-          //     />
-          //   );
-          // } else if (tab.endsWith("Heatmap plot")) {
-          //   displayResult = (
-          //     <HeatmapComponent
-          //       jobId={jobId}
-          //       fileName1={sectionFile}
-          //       fileName2={fileMapping["Result Data"]}
-          //       selectedSection={selectedSection}
-          //     />
-          //   );
-          // } else {
+          }else if (tab.endsWith("Heatmap plot")) {
+            displayResult = (
+              <HeatmapComponent
+                tableData={allFiles[goKeggDict[selectedSection][1]].data} 
+                allData={allFiles["all_data.tsv"].data}
+              />
+            );
+          } else {
             displayResult = null;
-          // }
+          }
           break;
         case "Result Data":
           displayResult = (
