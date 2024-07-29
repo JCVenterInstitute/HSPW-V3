@@ -110,7 +110,7 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
         columns.forEach((column) => {
           flattenedData.push({
             Protein: d.Protein,
-            Column: column,
+            Class: column,
             Value: d[column], // Access the value for each column
           });
         });
@@ -123,7 +123,7 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
         .enter()
         .append("rect")
         .attr("class", "tile")
-        .attr("x", (d) => xScale(d.Column)) // Set x based on the column name
+        .attr("x", (d) => xScale(d.Class)) // Set x based on the column name
         .attr("y", (d) => yScale(d.Protein)) // Set y based on the protein
         .attr("width", xScale.bandwidth())
         .attr("height", yScale.bandwidth())
@@ -145,7 +145,7 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
             )
             .html(
               `<strong>Protein:</strong> ${d.Protein}<br>` +
-                `<strong>Column:</strong> ${d.Column}<br>` +
+                `<strong>Class:</strong> ${d.Class}<br>` +
                 `<strong>Value:</strong> ${d.Value}`
             );
         })
