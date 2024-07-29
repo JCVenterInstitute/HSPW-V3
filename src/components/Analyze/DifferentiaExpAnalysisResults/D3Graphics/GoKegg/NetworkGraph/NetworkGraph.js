@@ -66,6 +66,8 @@ const NetworkGraph = ({ jobId }) => {
           color: getRandomColor(), // Default color if not provided
         }));
         setData(jsonData);
+        const allProperties = jsonData.map((item) => item.property);
+        setSelectedProperties(allProperties);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
