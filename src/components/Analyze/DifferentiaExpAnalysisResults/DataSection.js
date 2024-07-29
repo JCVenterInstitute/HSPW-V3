@@ -46,10 +46,10 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [allFiles, setAllFiles] = useState(null);
   const goKeggDict = {
-    "GO Biological Process": ["egobp.tsv"],
-    "GO Molecular Function": ["egomf.tsv"],
-    "GO Cellular Component": ["egocc.tsv"],
-    "KEGG Pathway/Module": ["kegg.tsv"],
+    "GO Biological Process": ["egobp.tsv", "gsebp.tsv",],
+    "GO Molecular Function": ["egomf.tsv", "gsemf.tsv",],
+    "GO Cellular Component": ["egocc.tsv", "gsecc.tsv",],
+    "KEGG Pathway/Module": ["kegg.tsv", "gsekk.tsv",],
   };
   const fileNames = [
     "all_data.tsv",
@@ -60,6 +60,9 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
     "egomf.tsv",
     "egocc.tsv",
     "fold_change.csv",
+    "gsebp.tsv",
+    "gsemf.tsv",
+    "gsecc.tsv",
     "gsekk.tsv",
     "heatmap_0_dpi150.png",
     "heatmap_1_dpi150.png",
@@ -363,6 +366,10 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
           if (tab === "Enrichment Plot") {
             displayResult = (
               <BarChartComponent tableData={allFiles[goKeggDict[selectedSection][0]].data} />
+            );
+          }else if (tab.endsWith("Ridge plot")) {
+            displayResult = (
+              <RidgePlotComponent tableData={allFiles[goKeggDict[selectedSection][1]].data} allData={allFiles["all_data.tsv"].data}/>
             );
           }
           break;
