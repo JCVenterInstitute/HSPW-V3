@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { fileMapping } from "../../Constants";
 import { fetchDataFile, fetchImage } from "../../utils";
 import CSVDataTable from "../../../../../pages/Analyze/CSVDataTable";
-// import DotGraph from "../DotGraph/DotGraph";
+import DotGraph from "../DotGraph/DotGraph";
 import { Box, CircularProgress, Container } from "@mui/material";
 
 const RandomForest = ({ selectedSection, tab, jobId }) => {
@@ -73,7 +73,7 @@ const RandomForest = ({ selectedSection, tab, jobId }) => {
                 width: "100%",
               }}
             >
-              {/* {tab === "Feature" && <DotGraph jobId={jobId} />} */}
+               {tab === "Feature" && <DotGraph jobId={jobId} />}
               <CSVDataTable
                 data={tableData}
                 selectedSection={selectedSection}
