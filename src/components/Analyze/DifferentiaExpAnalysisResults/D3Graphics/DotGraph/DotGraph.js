@@ -2,21 +2,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { fetchDataFile } from "../../utils.js";
-import styles from "./DotGraph.module.css"; 
+import styles from "./DotGraph.module.css";
 
-const DotGraph = ({ jobId }) => {
+const DotGraph = ({ plotData }) => {
   const ref = useRef();
   const [data, setData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csvData = await fetchDataFile(
-          jobId,
-          "randomforests_sigfeatures.csv"
-        );
-        console.log("Fetched CSV Data:", csvData.data);
-        const jsonData = csvData.data.map((d) => ({
+        console.log("Loaded CSV Data:", plotData);
+        const jsonData = plotData.map((d) => ({
           type: d.Protein.replace(/"/g, ""),
           mean_degrees_accuracy: +d.MeanDecreaseAccuracy,
         }));
@@ -27,12 +23,12 @@ const DotGraph = ({ jobId }) => {
         console.log("Processed Top Data:", topData);
         setData(topData);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error loading data:", error);
       }
     };
 
     fetchData();
-  }, [jobId]);
+  }, [plotData]);
 
   useEffect(() => {
     if (data.length === 0) return;

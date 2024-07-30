@@ -79,6 +79,7 @@ export const fetchDataFile = async (
     };
   } catch (error) {
     console.error("Error fetching data file:", error);
+    return { data: null, downloadUrl: null };
   }
 };
 

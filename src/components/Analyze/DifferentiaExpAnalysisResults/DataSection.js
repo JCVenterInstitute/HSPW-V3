@@ -1,4 +1,10 @@
-import { Box, Container, CircularProgress, Typography } from "@mui/material";
+import {
+  Box,
+  Container,
+  CircularProgress,
+  Typography,
+  tabsClasses,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { fileMapping } from "./Constants";
 import ResultDownload from "./ResultSections/ResultDownload";
@@ -13,8 +19,9 @@ import BarChartComponent from "./D3Graphics/GoKegg/EncrichmentPlot/BarPlot";
 import RidgePlotComponent from "./D3Graphics/GoKegg/GSEARidgePlot/RidgePlot";
 import TreeClusterPlotComponent from "./D3Graphics/GoKegg/GSEATree Cluster Plot/TreeClusterPlot.js";
 import GOHeatmapComponent from "./D3Graphics/GoKegg/GSEAHeatmapPlot/GOHeatmap.js";
-import RandomForest from "./D3Graphics/RandomForest/RandomForest";
+import DotGraph from "./D3Graphics/DotGraph/DotGraph";
 import HeatmapComponent from "./D3Graphics/Heatmap/Heatmap.js";
+import NetworkGraph from "./D3Graphics/GoKegg/NetworkGraph/NetworkGraph";
 import { fetchDataFile, getImageStyle, handleDownload } from "./utils";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -40,19 +47,23 @@ const DataSection = ({
   const [isLoading, setIsLoading] = useState(true);
   const [allFiles, setAllFiles] = useState(null);
   const goKeggDict = {
-    "GO Biological Process": ["egobp.tsv", "gsebp.tsv"],
-    "GO Molecular Function": ["egomf.tsv", "gsemf.tsv"],
-    "GO Cellular Component": ["egocc.tsv", "gsecc.tsv"],
-    "KEGG Pathway/Module": ["kegg.tsv", "gsekk.tsv"],
+    "GO Biological Process": ["egobp.tsv", "gsebp.tsv", "egobp_gene_net.tsv"],
+    "GO Molecular Function": ["egomf.tsv", "gsemf.tsv", "egomf_gene_net.tsv"],
+    "GO Cellular Component": ["egocc.tsv", "gsecc.tsv", "egocc_gene_net.tsv"],
+    "KEGG Pathway/Module": ["kegg.tsv", "gsekk.tsv", "kegg_gene_net.tsv"],
   };
   const fileNames = [
     "all_data.tsv",
     "data_normalized.csv",
     "data_original.csv",
     "data_processed.csv",
+    "egobp_gene_net.tsv",
     "egobp.tsv",
+    "egomf_gene_net.tsv",
     "egomf.tsv",
+    "egocc_gene_net.tsv",
     "egocc.tsv",
+    "kegg_gene_net.tsv",
     "fold_change.csv",
     "gsebp.tsv",
     "gsemf.tsv",
@@ -176,8 +187,10 @@ const DataSection = ({
   }, []);
 
   const getSection = () => {
+    console.log("Tab: ", tab);
     let displayResult = null;
-    if (allFiles && goKeggDict) {
+    if (allFiles) {
+      console.log(allFiles);
       switch (selectedSection) {
         case "Volcano Plot":
           if (tab === "Visualization") {
@@ -325,7 +338,10 @@ const DataSection = ({
           } else if (tab === "Feature") {
             displayResult = (
               <div>
-                {displayImg(allFiles["rf_imp_0_dpi150.png"].downloadUrl)}
+                <DotGraph
+                  jobId={jobId}
+                  plotData={allFiles["randomforests_sigfeatures.csv"].data}
+                />
                 {displayTable(allFiles["randomforests_sigfeatures.csv"].data)}
               </div>
             );
@@ -339,11 +355,18 @@ const DataSection = ({
         case "GO Molecular Function":
         case "GO Cellular Component":
         case "KEGG Pathway/Module":
-          if (tab && tab === "Enrichment Plot") {
+          if (tab === "Enrichment Plot") {
             console.log("Test data", goKeggDict[selectedSection][0]);
             displayResult = (
               <BarChartComponent
-                tableData={allFiles[goKeggDict[selectedSection][0]].data}
+                plotData={allFiles[goKeggDict[selectedSection][0]].data}
+              />
+            );
+          } else if (tab && tab.endsWith("connected genes")) {
+            displayResult = (
+              <NetworkGraph
+                jobId={jobId}
+                plotData={allFiles[goKeggDict[selectedSection][2]].data}
               />
             );
           } else if (tab && tab.endsWith("Ridge plot")) {
