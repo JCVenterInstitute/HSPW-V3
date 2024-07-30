@@ -46,11 +46,7 @@ export const getImageStyle = (selectedItem) => {
  * @param {*} fileName Name of the s3 file
  * @returns {Object} Object containing parsed TSV data, download URL
  */
-export const fetchDataFile = async (
-  jobId,
-  fileName,
-  selectedSection = null
-) => {
+export const fetchDataFile = async (jobId, fileName) => {
   try {
     let response = await axios.get(
       `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
@@ -78,7 +74,7 @@ export const fetchDataFile = async (
       downloadUrl: response.data.url,
     };
   } catch (error) {
-    console.error("Error fetching data file:", error);
+    console.error("Error fetching data file:", fileName);
     return { data: null, downloadUrl: null };
   }
 };

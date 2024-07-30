@@ -19,8 +19,6 @@ const InputData = ({ searchParams, jobId }) => {
           data,
           downloadUrl,
         });
-
-        console.log("> Data", data);
       } catch (err) {
         console.error("> Error fetching all data file", err);
       }

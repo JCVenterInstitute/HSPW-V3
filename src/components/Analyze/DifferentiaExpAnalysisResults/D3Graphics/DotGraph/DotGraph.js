@@ -11,7 +11,6 @@ const DotGraph = ({ plotData }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log("Loaded CSV Data:", plotData);
         const jsonData = plotData.map((d) => ({
           type: d.Protein.replace(/"/g, ""),
           mean_degrees_accuracy: +d.MeanDecreaseAccuracy,
@@ -20,7 +19,6 @@ const DotGraph = ({ plotData }) => {
         const topData = jsonData
           .sort((a, b) => b.mean_degrees_accuracy - a.mean_degrees_accuracy)
           .slice(0, 15);
-        console.log("Processed Top Data:", topData);
         setData(topData);
       } catch (error) {
         console.error("Error loading data:", error);
@@ -69,8 +67,6 @@ const DotGraph = ({ plotData }) => {
       .attr("class", "circle")
       .on("mouseover", function (d) {
         const event = d3.event;
-        console.log("Hovered Data:", d);
-        console.log("Mouse Event on Mouse Over:", event);
         tooltip.transition().duration(200).style("opacity", 0.9);
         tooltip
           .html(
@@ -80,23 +76,15 @@ const DotGraph = ({ plotData }) => {
           )
           .style("left", `${event.pageX + 5}px`)
           .style("top", `${event.pageY - 28}px`);
-        console.log(
-          `Tooltip show: left=${event.pageX + 5}px, top=${event.pageY - 28}px`
-        );
       })
       .on("mousemove", function () {
         const event = d3.event;
-        console.log("Mouse Move Event:", event);
         tooltip
           .style("left", `${event.pageX + 5}px`)
           .style("top", `${event.pageY - 28}px`);
-        console.log(
-          `Tooltip move: left=${event.pageX + 5}px, top=${event.pageY - 28}px`
-        );
       })
       .on("mouseout", function () {
         tooltip.transition().duration(500).style("opacity", 0);
-        console.log("Tooltip hide");
       });
 
     svg

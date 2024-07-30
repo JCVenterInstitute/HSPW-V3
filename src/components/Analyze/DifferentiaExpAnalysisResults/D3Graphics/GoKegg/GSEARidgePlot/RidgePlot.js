@@ -2,10 +2,7 @@ import "../../D3GraphStyles.css";
 import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
 
-const RidgePlotComponent = ({
-  tableData,
-  allData,
-}) => {
+const RidgePlotComponent = ({ tableData, allData }) => {
   const svgRef = useRef();
   const [data1, setData1] = useState([]);
   const [data2, setData2] = useState([]);
@@ -28,10 +25,6 @@ const RidgePlotComponent = ({
     try {
       setData1(cleanData(tableData.slice(0, 25)));
       setData2(cleanData(allData));
-
-      console.log("clean Data1:", data1);
-      console.log("clean Data2:", data2);
-
     } catch (error) {
       console.error("Incorrect File:", error);
     }
@@ -39,8 +32,6 @@ const RidgePlotComponent = ({
 
   useEffect(() => {
     if (data1.length > 0 && data2.length > 0) {
-      console.log("Data1 and Data2 are available for processing.");
-
       const svg = d3.select(svgRef.current);
       svg.selectAll("*").remove();
 
@@ -60,16 +51,12 @@ const RidgePlotComponent = ({
       const DescriptionValues = Array.from(
         new Set(
           data1.map((d) => {
-            console.log(d);
             return d["Description"];
           })
         )
       );
-      console.log("Unique description values:", DescriptionValues);
 
       const kernelDensityEstimator = (kernel, X) => (V) => {
-        console.log("X values for KDE:", X);
-        console.log("V values for KDE:", V);
         const densities = X.map((x) => [x, d3.mean(V, (v) => kernel(x - v))]);
 
         return densities;
@@ -99,7 +86,6 @@ const RidgePlotComponent = ({
         maxFoldChange + (maxFoldChange - minFoldChange) * padding;
 
       const xDomain = [paddedMin, paddedMax];
-      console.log("Padded xDomain:", xDomain);
 
       const xScale = d3.scaleLinear().domain(xDomain).range([0, width]);
 
@@ -119,7 +105,6 @@ const RidgePlotComponent = ({
         .domain(d3.extent(data1, (d) => +d["p.adjust"]));
 
       const foldChangeRange = maxFoldChange - minFoldChange;
-      console.log(">>>>>>>>>foldChangeRange:", foldChangeRange);
       let kernelBandwidth =
         foldChangeRange / (Math.sqrt(allFoldChanges.length) * 1.07);
       const heightMultiplier = foldChangeRange * 7;
@@ -133,7 +118,6 @@ const RidgePlotComponent = ({
         const groupData1 = data1.filter(
           (d) => d["Description"] === Description
         );
-        console.log(`Group Data1 for Description ${Description}:`, groupData1);
 
         const matchedData2 = [];
         groupData1.forEach((d1) => {
@@ -147,18 +131,12 @@ const RidgePlotComponent = ({
             }
           });
         });
-        console.log(
-          `Matched Data2 for Description ${Description}:`,
-          matchedData2
-        );
 
         const validData = matchedData2.filter(
           (d) => !isNaN(d["Fold.Change"]) && d["Fold.Change"] !== undefined
         );
-        console.log(`Valid Data for Description ${Description}:`, validData);
 
         const density = kde(validData.map((d) => d["Fold.Change"]));
-        console.log("Density for Description:", Description, density);
 
         const areaGenerator = d3
           .area()

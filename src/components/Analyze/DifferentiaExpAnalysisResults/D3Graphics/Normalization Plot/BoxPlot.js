@@ -10,7 +10,6 @@ const Boxplot = ({ containerId, data }) => {
 
   useEffect(() => {
     if (!data) return;
-    console.log("> Box plot data:", data);
 
     // Clear existing SVG elements inside the container
     d3.select(boxplotRef.current).selectAll("*").remove();
@@ -25,9 +24,6 @@ const Boxplot = ({ containerId, data }) => {
     const boxValues = data.map((d) =>
       labels.slice(1).map((key) => parseFloat(d[key].replace(/"/g, "")))
     );
-    console.log("> labels:", labels);
-    console.log("> boxValues:", boxValues);
-
     const sumstats = boxValues.map((rowValues, i) => {
       const sortedValues = rowValues.sort(d3.ascending);
       const q1 = d3.quantile(sortedValues, 0.25);
@@ -53,7 +49,6 @@ const Boxplot = ({ containerId, data }) => {
     // Sort the sumstats by median value in descending order and take the top N
     sumstats.sort((a, b) => b.median - a.median);
     const topSumstats = sumstats.slice(1, topN + 1);
-    console.log("sumstats", sumstats);
     const topLabels = topSumstats.map((d) => d.label);
     const allValues = topSumstats.flatMap((d) => d.values);
     // Calculate dynamic padding

@@ -152,10 +152,8 @@ const DataSection = ({
   }, []);
 
   const getSection = () => {
-    console.log("Tab: ", tab);
     let displayResult = null;
     if (allFiles) {
-      console.log(allFiles);
       switch (selectedSection) {
         case "Volcano Plot":
           if (tab === "Visualization") {
@@ -320,7 +318,6 @@ const DataSection = ({
         case "GO Cellular Component":
         case "KEGG Pathway/Module":
           if (tab === "Enrichment Plot") {
-            console.log("Test data", goKeggDict[selectedSection][0]);
             displayResult = (
               <BarChartComponent
                 plotData={allFiles[goKeggDict[selectedSection][0]].data}
@@ -347,10 +344,6 @@ const DataSection = ({
               />
             );
           } else if (tab && tab.endsWith("cluster plot")) {
-            console.log(
-              "hello World",
-              allFiles[goKeggDict[selectedSection][3]]
-            );
             displayResult = (
               <TreeClusterPlotComponent
                 plotData={allFiles[goKeggDict[selectedSection][3]]}

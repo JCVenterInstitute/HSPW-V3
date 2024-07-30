@@ -35,7 +35,6 @@ const BarChartComponent = ({ plotData }) => {
   }, [data]);
 
   const drawBarChart = (data) => {
-    console.log(">>data", data);
     // Clear existing SVG content
     d3.select(svgRef.current).selectAll("*").remove();
 

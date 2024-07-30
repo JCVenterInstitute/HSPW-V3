@@ -77,8 +77,6 @@ const TabOptions = ({
 
     let graphs = document.getElementsByClassName("graph-container");
 
-    console.log(graphs);
-
     const downloadSVG = (graph) =>
       d3ToPng(graph, selectedSection, {
         scale: 5,

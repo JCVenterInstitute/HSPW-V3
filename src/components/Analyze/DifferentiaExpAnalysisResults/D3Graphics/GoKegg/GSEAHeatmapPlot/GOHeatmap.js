@@ -28,9 +28,6 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
     try {
       setData1(cleanData(tableData.slice(0, 25)));
       setData2(cleanData(allData));
-
-      console.log("clean Data1:", data1);
-      console.log("clean Data2:", data2);
     } catch (error) {
       console.error("Incorrect File:", error);
     }
@@ -38,8 +35,6 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
 
   useEffect(() => {
     if (data1.length > 0 && data2.length > 0) {
-      console.log("Data1 and Data2 are available for processing.");
-
       const svg = d3.select(svgRef.current);
       svg.selectAll("*").remove();
 
@@ -76,7 +71,6 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
       });
 
       const validData = heatmapData.filter((d) => !isNaN(d["Fold.Change"]));
-      console.log(`Valid Data:`, validData);
 
       let filteredProteins = proteins;
 
@@ -88,7 +82,6 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
         finalValidData = validData.filter((d) =>
           filteredProteins.has(d["Protein"])
         );
-        console.log(">>>>>>>>Final Compresse data:", finalValidData);
       }
 
       const colorScale = d3

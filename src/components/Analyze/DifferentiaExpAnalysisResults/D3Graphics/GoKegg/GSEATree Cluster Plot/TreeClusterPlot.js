@@ -11,7 +11,6 @@ const TreeClusterPlotComponent = ({ plotData }) => {
   const height = 900 - margin.top - margin.bottom;
 
   const cleanData = (data) => {
-    console.log("Cleaning data...");
     return data.map((d) => {
       const cleanedData = {};
       for (let key in d) {
@@ -34,19 +33,14 @@ const TreeClusterPlotComponent = ({ plotData }) => {
 
   useEffect(() => {
     if (data.length > 0) {
-      console.log("Data is available for processing:", data);
-
       const svg = d3.select(svgRef.current);
       svg.selectAll("*").remove();
-      console.log("SVG container selected and cleared.");
 
       const tree = d3.tree().size([height, width]);
       const root = createHierarchy(data);
       tree(root);
-      console.log("Tree layout created with root:", root);
 
       const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
-      console.log("Color scale created.");
 
       svg
         .selectAll(".link")
@@ -60,7 +54,6 @@ const TreeClusterPlotComponent = ({ plotData }) => {
         .attr("y2", (d) => d.target.x)
         .attr("stroke", "#999")
         .attr("stroke-width", "2px");
-      console.log("Tree links rendered.");
 
       svg
         .selectAll(".node")
@@ -72,7 +65,6 @@ const TreeClusterPlotComponent = ({ plotData }) => {
         .attr("cy", (d) => d.x)
         .attr("r", 5)
         .style("fill", (d) => colorScale(d.data.color || "default"));
-      console.log("Tree nodes rendered.");
 
       svg
         .selectAll(".label")
@@ -84,12 +76,10 @@ const TreeClusterPlotComponent = ({ plotData }) => {
         .attr("y", (d) => d.x + 5)
         .text((d) => d.data.label || "")
         .style("font-size", "12px");
-      console.log("Node labels rendered.");
     }
   }, [data]);
 
   const createHierarchy = (data) => {
-    console.log("Creating hierarchy from data...");
     const nodes = {};
     const root = { name: "root", children: [] };
 
@@ -118,7 +108,6 @@ const TreeClusterPlotComponent = ({ plotData }) => {
       }
     });
 
-    console.log("Hierarchy created:", root);
     return d3.hierarchy(root);
   };
 

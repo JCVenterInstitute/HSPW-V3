@@ -10,9 +10,6 @@ const DensityPlot = ({ containerId, data }) => {
   useEffect(() => {
     if (!data) return;
 
-    console.log("> Density plot id:", containerId);
-    console.log("> Density plot data:", data);
-
     // Extract numeric columns
     const numericColumns = Object.keys(data[0]).filter(
       (column) => column !== "" && column !== "Label" && column !== "Protein"
@@ -26,7 +23,6 @@ const DensityPlot = ({ containerId, data }) => {
       const meanValue = d3.mean(numericValues);
       return meanValue;
     });
-    console.log("> densityValues:", densityValues);
 
     // Set up dimensions and margins for density plot
     const densityMargin = { top: 20, right: 14, bottom: 60, left: 60 };

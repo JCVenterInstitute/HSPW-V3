@@ -24,12 +24,9 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
 
   useEffect(() => {
     const loadData = async () => {
-      //   const result = await fetchDataFile(jobId, fileName);
-      //   console.log(">>result data:", result);
       let cleanedData = cleanData(fileName);
       if (tab.startsWith("Top")) {
         cleanedData = cleanedData.slice(0, numbVolcanoSamples);
-        console.log("cleanedData", cleanedData);
       }
       setData(cleanedData);
     };
@@ -38,8 +35,6 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
   }, [jobId, fileName, tab]);
 
   useEffect(() => {
-    console.log(">numbVolcanoSamples", numbVolcanoSamples);
-    console.log(">tab", tab);
     if (data.length > 0) {
       const svg = d3.select(svgRef.current);
       svg.selectAll("*").remove();
@@ -62,10 +57,6 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
       const colorScale = d3
         .scaleSequential(d3.interpolateRdBu)
         .domain(d3.extent(data, (d) => +d[columns[0]]));
-      console.log(
-        "Color scale domain:",
-        d3.extent(data, (d) => +d[columns[0]])
-      );
 
       const xScale = d3
         .scaleBand()
