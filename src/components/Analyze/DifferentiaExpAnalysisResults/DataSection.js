@@ -12,8 +12,9 @@ import PrincipleComponentAnalysis from "./D3Graphics/PrincipleComponentAnalysis/
 import BarChartComponent from "./D3Graphics/GoKegg/EncrichmentPlot/BarPlot";
 import RidgePlotComponent from "./D3Graphics/GoKegg/GSEARidgePlot/RidgePlot";
 import TreeClusterPlotComponent from "./D3Graphics/GoKegg/GSEATree Cluster Plot/TreeClusterPlot.js";
-import HeatmapComponent from "./D3Graphics/GoKegg/GSEAHeatmapPlot/GOHeatmap.js";
+import GOHeatmapComponent from "./D3Graphics/GoKegg/GSEAHeatmapPlot/GOHeatmap.js";
 import RandomForest from "./D3Graphics/RandomForest/RandomForest";
+import HeatmapComponent from "./D3Graphics/Heatmap/Heatmap.js";
 import { fetchDataFile, getImageStyle, handleDownload } from "./utils";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -29,14 +30,20 @@ const style = {
   },
 };
 
-const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
+const DataSection = ({
+  selectedSection,
+  searchParams,
+  tab,
+  jobId,
+  numbOfTopVolcanoSamples,
+}) => {
   const [isLoading, setIsLoading] = useState(true);
   const [allFiles, setAllFiles] = useState(null);
   const goKeggDict = {
-    "GO Biological Process": ["egobp.tsv", "gsebp.tsv",],
-    "GO Molecular Function": ["egomf.tsv", "gsemf.tsv",],
-    "GO Cellular Component": ["egocc.tsv", "gsecc.tsv",],
-    "KEGG Pathway/Module": ["kegg.tsv", "gsekk.tsv",],
+    "GO Biological Process": ["egobp.tsv", "gsebp.tsv"],
+    "GO Molecular Function": ["egomf.tsv", "gsemf.tsv"],
+    "GO Cellular Component": ["egocc.tsv", "gsecc.tsv"],
+    "KEGG Pathway/Module": ["kegg.tsv", "gsekk.tsv"],
   };
   const fileNames = [
     "all_data.tsv",
@@ -170,7 +177,7 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
 
   const getSection = () => {
     let displayResult = null;
-    if (allFiles) {
+    if (allFiles && goKeggDict) {
       switch (selectedSection) {
         case "Volcano Plot":
           if (tab === "Visualization") {
@@ -192,9 +199,13 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
 
           break;
         case "Heatmap":
-          if (tab === "Top 25 Samples") {
-            displayResult = displayImg(
-              allFiles["heatmap_1_dpi150.png"].downloadUrl
+          if (tab.endsWith("Samples")) {
+            displayResult = (
+              <HeatmapComponent
+                fileName={allFiles["data_normalized.csv"].data}
+                numbVolcanoSamples={numbOfTopVolcanoSamples}
+                tab={tab}
+              />
             );
           } else {
             displayResult = displayImg(
@@ -311,35 +322,40 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
                 {displayTable(allFiles["randomforest_confusion.csv"].data)}
               </div>
             );
-          }else if (tab === "Feature"){
+          } else if (tab === "Feature") {
             displayResult = (
               <div>
                 {displayImg(allFiles["rf_imp_0_dpi150.png"].downloadUrl)}
                 {displayTable(allFiles["randomforests_sigfeatures.csv"].data)}
               </div>
             );
-          }else if (tab === "Outlier"){
-            displayResult = displayImg(allFiles["rf_outlier_0_dpi150.png"].downloadUrl);
+          } else if (tab === "Outlier") {
+            displayResult = displayImg(
+              allFiles["rf_outlier_0_dpi150.png"].downloadUrl
+            );
           }
           break;
         case "GO Biological Process":
-        case "GO Molecular Function":         
-        case "GO Cellular Component":          
+        case "GO Molecular Function":
+        case "GO Cellular Component":
         case "KEGG Pathway/Module":
-          if (tab === "Enrichment Plot") {
+          if (tab && tab === "Enrichment Plot") {
+            console.log("Test data", goKeggDict[selectedSection][0]);
             displayResult = (
-              <BarChartComponent tableData={allFiles[goKeggDict[selectedSection][0]].data} />
+              <BarChartComponent
+                tableData={allFiles[goKeggDict[selectedSection][0]].data}
+              />
             );
-          }else if (tab && tab.endsWith("Ridge plot")) {
+          } else if (tab && tab.endsWith("Ridge plot")) {
             displayResult = (
-              <RidgePlotComponent 
-                tableData={allFiles[goKeggDict[selectedSection][1]].data} 
+              <RidgePlotComponent
+                tableData={allFiles[goKeggDict[selectedSection][1]].data}
                 allData={allFiles["all_data.tsv"].data}
               />
             );
-          }else if (tab && tab.endsWith("Heatmap plot")) {
+          } else if (tab && tab.endsWith("Heatmap plot")) {
             displayResult = (
-              <HeatmapComponent
+              <GOHeatmapComponent
                 tableData={allFiles[goKeggDict[selectedSection][1]].data}
                 allData={allFiles["all_data.tsv"].data}
               />

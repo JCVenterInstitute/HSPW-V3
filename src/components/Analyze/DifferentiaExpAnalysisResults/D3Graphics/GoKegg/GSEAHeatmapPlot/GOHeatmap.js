@@ -4,7 +4,7 @@ import * as d3 from "d3v7";
 import { fetchDataFile } from "../../../utils";
 import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
-const HeatmapComponent = ({ tableData, allData}) => {
+const GOHeatmapComponent = ({ tableData, allData }) => {
   const svgRef = useRef();
   const [data1, setData1] = useState([]);
   const [data2, setData2] = useState([]);
@@ -24,17 +24,17 @@ const HeatmapComponent = ({ tableData, allData}) => {
     });
   };
 
- useEffect(() => {
-   try {
-     setData1(cleanData(tableData.slice(0, 25)));
-     setData2(cleanData(allData));
+  useEffect(() => {
+    try {
+      setData1(cleanData(tableData.slice(0, 25)));
+      setData2(cleanData(allData));
 
-     console.log("clean Data1:", data1);
-     console.log("clean Data2:", data2);
-   } catch (error) {
-     console.error("Incorrect File:", error);
-   }
- }, [tableData, allData]);
+      console.log("clean Data1:", data1);
+      console.log("clean Data2:", data2);
+    } catch (error) {
+      console.error("Incorrect File:", error);
+    }
+  }, [tableData, allData]);
 
   useEffect(() => {
     if (data1.length > 0 && data2.length > 0) {
@@ -357,4 +357,4 @@ const HeatmapComponent = ({ tableData, allData}) => {
   );
 };
 
-export default HeatmapComponent;
+export default GOHeatmapComponent;

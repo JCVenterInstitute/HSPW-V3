@@ -28,6 +28,7 @@ const ResultSection = ({ selectedSection, jobId, searchParams }) => {
         searchParams={searchParams}
         jobId={jobId}
         tab={tab}
+        numbOfTopVolcanoSamples={numbVolcanoSamples}
       />
     </>
   );
