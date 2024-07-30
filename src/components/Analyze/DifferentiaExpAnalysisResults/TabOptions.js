@@ -146,7 +146,8 @@ const TabOptions = ({
         <Box sx={style.downloadButton}>
           {tab == "Visualization" ||
           tab == "GSEA Ridge plot" ||
-          tab == "Enrichment Plot" ? (
+          tab == "Enrichment Plot" ||
+          tab.startsWith("Top ") ? (
             <Button variant="contained" onClick={downloadD3Plots}>
               Download
             </Button>
