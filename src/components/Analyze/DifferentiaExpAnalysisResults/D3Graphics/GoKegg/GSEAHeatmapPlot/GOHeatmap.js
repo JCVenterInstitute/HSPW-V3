@@ -4,7 +4,7 @@ import * as d3 from "d3v7";
 import { fetchDataFile } from "../../../utils";
 import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
-const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
+const HeatmapComponent = ({ tableData, allData}) => {
   const svgRef = useRef();
   const [data1, setData1] = useState([]);
   const [data2, setData2] = useState([]);
@@ -24,21 +24,17 @@ const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
     });
   };
 
-  useEffect(() => {
-    const loadData = async () => {
-      console.log("Loading data...");
-      const result1 = await fetchDataFile(jobId, fileName1, selectedSection);
-      const result2 = await fetchDataFile(jobId, fileName2, selectedSection);
+ useEffect(() => {
+   try {
+     setData1(cleanData(tableData.slice(0, 25)));
+     setData2(cleanData(allData));
 
-      console.log("Raw Data1:", result1.data);
-      console.log("Raw Data2:", result2.data);
-
-      setData1(cleanData(result1.data.slice(0, 25)));
-      setData2(cleanData(result2.data));
-    };
-
-    loadData();
-  }, [jobId, fileName1, fileName2, selectedSection]);
+     console.log("clean Data1:", data1);
+     console.log("clean Data2:", data2);
+   } catch (error) {
+     console.error("Incorrect File:", error);
+   }
+ }, [tableData, allData]);
 
   useEffect(() => {
     if (data1.length > 0 && data2.length > 0) {

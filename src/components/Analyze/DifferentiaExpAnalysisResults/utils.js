@@ -60,12 +60,14 @@ export const fetchDataFile = async (
 
     return {
       data: Papa.parse(
+        // Files with ID at the start have a duplicate, unnamed ID column so we add a blank header at the beginning
         dataText.startsWith('"ID"\t') ? '" "'.concat("\t", dataText) : dataText,
         {
           header: true,
           skipEmptyLines: true,
           transformHeader: (header, index) => {
             if (index === 0 && (header === "" || header === "rn")) {
+              // PCA files contain Sample instead of Proteins unlike all other files
               return fileName.startsWith("pca") ? "Sample" : "Protein";
             } else {
               return header;

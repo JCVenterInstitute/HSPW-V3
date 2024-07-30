@@ -1,13 +1,10 @@
 import "../../D3GraphStyles.css";
 import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
-import { fetchDataFile } from "../../../utils";
 
 const RidgePlotComponent = ({
-  jobId,
-  fileName1,
-  fileName2,
-  selectedSection,
+  tableData,
+  allData,
 }) => {
   const svgRef = useRef();
   const [data1, setData1] = useState([]);
@@ -28,23 +25,17 @@ const RidgePlotComponent = ({
   };
 
   useEffect(() => {
-    const loadData = async () => {
-      console.log("Loading data...");
-      const result1 = await fetchDataFile(jobId, fileName1, selectedSection);
-      const result2 = await fetchDataFile(jobId, fileName2, selectedSection);
-
-      console.log("Raw Data1:", result1.data);
-      console.log("Raw Data2:", result2.data);
-
-      setData1(cleanData(result1.data.slice(0, 25)));
-      setData2(cleanData(result2.data));
+    try {
+      setData1(cleanData(tableData.slice(0, 25)));
+      setData2(cleanData(allData));
 
       console.log("clean Data1:", data1);
       console.log("clean Data2:", data2);
-    };
 
-    loadData();
-  }, [jobId, fileName1, fileName2, selectedSection]);
+    } catch (error) {
+      console.error("Incorrect File:", error);
+    }
+  }, [tableData, allData]);
 
   useEffect(() => {
     if (data1.length > 0 && data2.length > 0) {

@@ -3,24 +3,10 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3v7";
 import { fetchDataFile } from "../../utils.js"; // Import fetchDataFile from utils.js
 
-const Boxplot = ({ containerId, jobId, datafile }) => {
+const Boxplot = ({ containerId, data }) => {
   const boxplotRef = useRef(null);
   const [topN, setTopN] = useState(30); // State to manage the number of top boxplots
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const csvData = await fetchDataFile(jobId, datafile);
-        // console.log("Fetched CSV Data:", csvData); // Log fetched CSV data
-        setData(csvData.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, [jobId, datafile]);
+  // const [data, setData] = useState(null);
 
   useEffect(() => {
     if (!data) return;

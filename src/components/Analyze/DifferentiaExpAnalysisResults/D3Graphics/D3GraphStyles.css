@@ -282,6 +282,17 @@ body {
   }
 }
 
+div.ag-theme-alpine {
+  /* disable all borders */
+  --ag-borders: none;
+  /* then add back a border between rows */
+  --ag-row-border-style: dashed;
+  --ag-row-border-width: 2px;
+  --ag-row-border-color: rgb(150, 150, 200);
+  /* and between columns */
+  --ag-cell-horizontal-border: solid rgb(150, 150, 200);
+}
+
 #FoldChangeGraph {
   position: relative;
   display: flex;
