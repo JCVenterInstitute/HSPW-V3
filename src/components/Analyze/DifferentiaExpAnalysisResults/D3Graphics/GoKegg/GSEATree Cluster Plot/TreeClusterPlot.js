@@ -1,15 +1,8 @@
 import "../../D3GraphStyles.css";
 import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
-import { fetchDataFile } from "../../../utils";
-import localData from "./gsecc_tree.tsv";
 
-const TreeClusterPlotComponent = ({
-  jobId,
-  fileName1,
-  selectedSection,
-  plotData,
-}) => {
+const TreeClusterPlotComponent = ({ plotData }) => {
   const svgRef = useRef();
   const [data, setData] = useState([]);
 
@@ -28,28 +21,12 @@ const TreeClusterPlotComponent = ({
     });
   };
 
-  const loadLocalData = () => {
-    console.log("Loading local data...");
-    d3.tsv(localData)
-      .then((parsedData) => {
-        console.log("Loaded Local Data:", parsedData);
-        setData(cleanData(parsedData));
-      })
-      .catch((error) => {
-        console.error("Error loading local data:", error);
-      });
-  };
-
   useEffect(() => {
-    const loadData = async () => {
+    const loadData = () => {
       try {
-        // console.log("Loading data from server...");
-        // const result = await fetchDataFile(jobId, fileName1, selectedSection);
-        // console.log("Raw Data from Server:", result.data);
         setData(cleanData(plotData));
       } catch (error) {
-        console.error("Error fetching remote data:", error);
-        loadLocalData(); // Fallback to local data if fetchDataFile fails
+        console.error("Error loading data:", error);
       }
     };
     loadData();

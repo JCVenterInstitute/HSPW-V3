@@ -1,12 +1,6 @@
-import {
-  Box,
-  Container,
-  CircularProgress,
-  Typography,
-  tabsClasses,
-} from "@mui/material";
+import { Box, Container, CircularProgress, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { fileMapping } from "./Constants";
+import { fileNames, goKeggDict } from "./Constants.js";
 import ResultDownload from "./ResultSections/ResultDownload";
 import VolcanoPlot from "./D3Graphics/VolcanoPlot/VolcanoPlot";
 import StatisticalParametricPlot from "./D3Graphics/StatisticalParametricTest/StatisticalParametricTest";
@@ -46,66 +40,12 @@ const DataSection = ({
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [allFiles, setAllFiles] = useState(null);
-  const goKeggDict = {
-    "GO Biological Process": [
-      "egobp.tsv",
-      "egobp_gene_net.tsv",
-      "gsebp.tsv",
-      "gsecc_tree.tsv",
-    ],
-    "GO Molecular Function": [
-      "egomf.tsv",
-      "egomf_gene_net.tsv",
-      "gsemf.tsv",
-      "gsecc_tree.tsv",
-    ],
-    "GO Cellular Component": [
-      "egocc.tsv",
-      "egocc_gene_net.tsv",
-      "gsecc.tsv",
-      "gsecc_tree.tsv",
-    ],
-    "KEGG Pathway/Module": [
-      "kegg.tsv",
-      "kegg_gene_net.tsv",
-      "gsekk.tsv",
-      "gsecc_tree.tsv",
-    ],
-  };
-  const fileNames = [
-    "all_data.tsv",
-    "data_normalized.csv",
-    "data_original.csv",
-    "data_processed.csv",
-    "egobp_gene_net.tsv",
-    "egobp.tsv",
-    "egomf_gene_net.tsv",
-    "egomf.tsv",
-    "egocc_gene_net.tsv",
-    "egocc.tsv",
-    "kegg_gene_net.tsv",
-    "fold_change.csv",
-    "gsebp.tsv",
-    "gsemf.tsv",
-    "gsecc.tsv",
-    "gsekk.tsv",
-    "gsecc_tree.tsv",
-    "heatmap_0_dpi150.png",
-    "heatmap_1_dpi150.png",
-    "kegg.tsv",
-    "pca_loadings.csv",
-    "pca_score.csv",
-    "pca_variance.csv",
-    "randomforest_confusion.csv",
-    "randomforests_sigfeatures.csv",
-    "rf_cls_0_dpi150.png",
-    "rf_imp_0_dpi150.png",
-    "rf_outlier_0_dpi150.png",
-    "statistical_parametric_test.csv",
-    "venn_out_data.txt",
-    "volcano.csv",
-  ];
 
+  /**
+   * takes and array of dictionaries and converts it into a agGridReact component for display
+   * @param {*} data
+   * @returns a <agGridReact> component
+   */
   const displayTable = (data) => {
     var columnDefs = [];
     Object.keys(data[0]).forEach((header) =>
@@ -148,6 +88,11 @@ const DataSection = ({
     );
   };
 
+  /**
+   * Creates a html image from download link
+   * @param {*} image
+   * @returns
+   */
   const displayImg = (image) => (
     <img
       src={image}
@@ -157,9 +102,8 @@ const DataSection = ({
   );
 
   /**
-   * Get & return all files contents
+   * Gets all files listed in fileNames const
    */
-
   const getAllFiles = async () => {
     try {
       const fileDict = {};
@@ -385,7 +329,6 @@ const DataSection = ({
           } else if (tab && tab.endsWith("connected genes")) {
             displayResult = (
               <NetworkGraph
-                jobId={jobId}
                 plotData={allFiles[goKeggDict[selectedSection][1]].data}
               />
             );
@@ -404,6 +347,10 @@ const DataSection = ({
               />
             );
           } else if (tab && tab.endsWith("cluster plot")) {
+            console.log(
+              "hello World",
+              allFiles[goKeggDict[selectedSection][3]]
+            );
             displayResult = (
               <TreeClusterPlotComponent
                 plotData={allFiles[goKeggDict[selectedSection][3]]}
