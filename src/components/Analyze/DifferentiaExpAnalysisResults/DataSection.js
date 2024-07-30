@@ -47,10 +47,30 @@ const DataSection = ({
   const [isLoading, setIsLoading] = useState(true);
   const [allFiles, setAllFiles] = useState(null);
   const goKeggDict = {
-    "GO Biological Process": ["egobp.tsv", "gsebp.tsv", "egobp_gene_net.tsv"],
-    "GO Molecular Function": ["egomf.tsv", "gsemf.tsv", "egomf_gene_net.tsv"],
-    "GO Cellular Component": ["egocc.tsv", "gsecc.tsv", "egocc_gene_net.tsv"],
-    "KEGG Pathway/Module": ["kegg.tsv", "gsekk.tsv", "kegg_gene_net.tsv"],
+    "GO Biological Process": [
+      "egobp.tsv",
+      "egobp_gene_net.tsv",
+      "gsebp.tsv",
+      "gsecc_tree.tsv",
+    ],
+    "GO Molecular Function": [
+      "egomf.tsv",
+      "egomf_gene_net.tsv",
+      "gsemf.tsv",
+      "gsecc_tree.tsv",
+    ],
+    "GO Cellular Component": [
+      "egocc.tsv",
+      "egocc_gene_net.tsv",
+      "gsecc.tsv",
+      "gsecc_tree.tsv",
+    ],
+    "KEGG Pathway/Module": [
+      "kegg.tsv",
+      "kegg_gene_net.tsv",
+      "gsekk.tsv",
+      "gsecc_tree.tsv",
+    ],
   };
   const fileNames = [
     "all_data.tsv",
@@ -69,6 +89,7 @@ const DataSection = ({
     "gsemf.tsv",
     "gsecc.tsv",
     "gsekk.tsv",
+    "gsecc_tree.tsv",
     "heatmap_0_dpi150.png",
     "heatmap_1_dpi150.png",
     "kegg.tsv",
@@ -339,7 +360,6 @@ const DataSection = ({
             displayResult = (
               <div>
                 <DotGraph
-                  jobId={jobId}
                   plotData={allFiles["randomforests_sigfeatures.csv"].data}
                 />
                 {displayTable(allFiles["randomforests_sigfeatures.csv"].data)}
@@ -366,21 +386,27 @@ const DataSection = ({
             displayResult = (
               <NetworkGraph
                 jobId={jobId}
-                plotData={allFiles[goKeggDict[selectedSection][2]].data}
+                plotData={allFiles[goKeggDict[selectedSection][1]].data}
               />
             );
           } else if (tab && tab.endsWith("Ridge plot")) {
             displayResult = (
               <RidgePlotComponent
-                tableData={allFiles[goKeggDict[selectedSection][1]].data}
+                tableData={allFiles[goKeggDict[selectedSection][2]].data}
                 allData={allFiles["all_data.tsv"].data}
               />
             );
           } else if (tab && tab.endsWith("Heatmap plot")) {
             displayResult = (
               <GOHeatmapComponent
-                tableData={allFiles[goKeggDict[selectedSection][1]].data}
+                tableData={allFiles[goKeggDict[selectedSection][2]].data}
                 allData={allFiles["all_data.tsv"].data}
+              />
+            );
+          } else if (tab && tab.endsWith("cluster plot")) {
+            displayResult = (
+              <TreeClusterPlotComponent
+                plotData={allFiles[goKeggDict[selectedSection][3]]}
               />
             );
           } else {

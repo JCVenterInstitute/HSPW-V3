@@ -7,8 +7,8 @@ import localData from "./gsecc_tree.tsv";
 const TreeClusterPlotComponent = ({
   jobId,
   fileName1,
-  fileName2,
   selectedSection,
+  plotData,
 }) => {
   const svgRef = useRef();
   const [data, setData] = useState([]);
@@ -43,17 +43,17 @@ const TreeClusterPlotComponent = ({
   useEffect(() => {
     const loadData = async () => {
       try {
-        console.log("Loading data from server...");
-        const result = await fetchDataFile(jobId, fileName1, selectedSection);
-        console.log("Raw Data from Server:", result.data);
-        setData(cleanData(result.data));
+        // console.log("Loading data from server...");
+        // const result = await fetchDataFile(jobId, fileName1, selectedSection);
+        // console.log("Raw Data from Server:", result.data);
+        setData(cleanData(plotData));
       } catch (error) {
         console.error("Error fetching remote data:", error);
         loadLocalData(); // Fallback to local data if fetchDataFile fails
       }
     };
     loadData();
-  }, [jobId, fileName1, fileName2, selectedSection]);
+  }, [plotData]);
 
   useEffect(() => {
     if (data.length > 0) {
