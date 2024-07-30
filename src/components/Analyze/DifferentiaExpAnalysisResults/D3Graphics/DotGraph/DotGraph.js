@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { fetchDataFile } from "../../utils.js";
-import "./DotGraph.css";
+import styles from "./DotGraph.module.css"; 
 
 const DotGraph = ({ jobId }) => {
   const ref = useRef();

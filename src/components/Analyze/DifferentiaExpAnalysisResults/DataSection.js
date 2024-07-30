@@ -31,6 +31,7 @@ import {
   handleDownload,
   getFileUrl,
 } from "./utils";
+import NetworkGraph from "./D3Graphics/GoKegg/NetworkGraph/NetworkGraph";
 
 const style = {
   dataBox: {
@@ -385,6 +386,8 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
               selectedSection={selectedSection}
             />
           );
+        }else if (tab.endsWith("connected genes")) {
+          displayResult = <NetworkGraph jobId={jobId} />;
         } else if (tab.endsWith("Ridge plot")) {
           displayResult = (
             <RidgePlotComponent
