@@ -70,8 +70,6 @@ const Boxplot = ({ containerId, data }) => {
       .select(boxplotRef.current)
       .append("svg")
       .attr("class", "box-plot")
-      .attr("width", boxWidth + boxMargin.left + boxMargin.right)
-      .attr("height", boxHeight + boxMargin.top + boxMargin.bottom)
       .attr("preserveAspectRatio", "xMinYMin meet")
       .attr(
         "viewBox",

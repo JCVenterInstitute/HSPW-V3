@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { handleDownload } from "./utils";
 import { fileMapping } from "./Constants";
 import { getTabOptions } from "./utils";
+import { DockOutlined, GraphicEq } from "@mui/icons-material";
+import { map } from "d3v7";
 
 const TabOptions = ({
   tab = null,
@@ -70,6 +72,27 @@ const TabOptions = ({
     setTab(tabOptions ? tabOptions[0] : null);
   }, [selectedSection]);
 
+  const downloadD3Plots = () => {
+    const d3ToPng = require("d3-svg-to-png");
+
+    let graphs = document.getElementsByClassName("graph-container");
+
+    console.log(graphs);
+
+    const downloadSVG = (graph) =>
+      d3ToPng(graph, selectedSection, {
+        scale: 5,
+        format: "webp",
+        quality: 1,
+        download: true,
+        ignore: ".download-ignored",
+      });
+
+    for (let i of graphs) {
+      downloadSVG(i);
+    }
+  };
+
   const createTabGroup = (selectedSection) => {
     let tabOptions = getTabOptions(selectedSection, numbOfTopVolcanoSamples);
 
@@ -124,19 +147,7 @@ const TabOptions = ({
           {tab == "Visualization" ||
           tab == "GSEA Ridge plot" ||
           tab == "Enrichment Plot" ? (
-            <Button
-              variant="contained"
-              onClick={() => {
-                const d3ToPng = require("d3-svg-to-png");
-                d3ToPng(".graph-container", selectedSection, {
-                  scale: 5,
-                  format: "png",
-                  quality: 1,
-                  download: true,
-                  ignore: ".download-ignored",
-                });
-              }}
-            >
+            <Button variant="contained" onClick={downloadD3Plots}>
               Download
             </Button>
           ) : (

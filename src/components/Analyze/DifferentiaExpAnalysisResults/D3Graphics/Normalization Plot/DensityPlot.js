@@ -209,7 +209,7 @@ const DensityPlot = ({ containerId, data }) => {
   }, [data, containerId]);
 
   return (
-    <div id={containerId} className="chart">
+    <div id={containerId} className="chart graph-container">
       <svg ref={svgRef}></svg>
     </div>
   );
