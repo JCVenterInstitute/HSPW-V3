@@ -2,10 +2,14 @@ import "../D3GraphStyles.css";
 import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
 import { fetchDataFile } from "../../utils";
+import rowTsv from "./heat_row.tsv";
+import colTsv from "./heat_col.tsv";
 
 const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
   const svgRef = useRef();
   const [data, setData] = useState([]);
+  const [cleanedrowOrder, setCleanedrowOrder] = useState([]); // Add state for cleaned row order
+  const [cleanedcolOrder, setCleanedcolOrder] = useState([]); // Add state for cleaned column order
 
   const margin = { top: 20, right: 30, bottom: 150, left: 135 };
   const width = 900 - margin.left - margin.right;
@@ -22,15 +26,31 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
     });
   };
 
+  const cleanTsvData = (data) => {
+    if (!Array.isArray(data) || data.length === 0) return [];
+
+    return data.map((d) => +d.x).filter((value) => value); // Parse as number and filter out any undefined/null
+  };
+
   useEffect(() => {
     const loadData = async () => {
       const result = await fetchDataFile(jobId, fileName);
+      const rowOrder = await d3.tsv(rowTsv);
+      const colOrder = await d3.tsv(colTsv);
 
+      let cleanedrowOrder = cleanTsvData(rowOrder);
+      let cleanedcolOrder = cleanTsvData(colOrder);
+
+      console.log("rowOrder", cleanedrowOrder);
+      console.log("colOrder", cleanedcolOrder);
       let cleanedData = cleanData(result.data);
       if (tab.startsWith("Top")) {
         cleanedData = cleanedData.slice(0, numbVolcanoSamples);
       }
+
       setData(cleanedData);
+      setCleanedrowOrder(cleanedrowOrder);
+      setCleanedcolOrder(cleanedcolOrder);
     };
 
     loadData();
@@ -66,16 +86,30 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
         d3.extent(data, (d) => +d[columns[0]])
       );
 
+      // const xScale = d3
+      //   .scaleBand()
+      //   .domain(columns)
+      //   .range([0, width])
+      //   .padding(0.05);
+      // const yScale = d3
+      //   .scaleBand()
+      //   .domain(labels) // Set y-axis domain to cleaned row order
+      //   .range([height, 0])
+      //   .padding(0.05);
       const xScale = d3
         .scaleBand()
-        .domain(columns)
+        .domain(cleanedcolOrder.map((index) => columns[index])) // Map indices to column names
         .range([0, width])
         .padding(0.05);
+
+      console.log(">>>>>columns[3]:", columns[49]);
+
       const yScale = d3
         .scaleBand()
-        .domain(labels)
+        .domain(cleanedrowOrder.map((index) => labels[index])) // Map indices to protein names
         .range([height, 0])
         .padding(0.05);
+      console.log(">>>>>labels[134]:", labels[134]);
 
       // Append grid lines
       plot
@@ -115,6 +149,34 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
           });
         });
       });
+      // Flatten the data to create a suitable structure for the heatmap
+      // const flattenedData = [];
+      // cleanedrowOrder.forEach((rowIndex) => {
+      //   if (rowIndex >= 0 && rowIndex < data.length) {
+      //     // Check if rowIndex is valid
+      //     const protein = labels[rowIndex]; // Get the protein name using the index
+      //     cleanedcolOrder.forEach((colIndex) => {
+      //       if (colIndex >= 0 && colIndex < columns.length) {
+      //         // Check if colIndex is valid
+      //         const column = columns[colIndex]; // Get the column name using the index
+      //         const value = data[rowIndex] ? data[rowIndex][column] : undefined; // Safe access
+      //         if (value !== undefined) {
+      //           flattenedData.push({
+      //             Protein: protein,
+      //             Class: column,
+      //             Value: value,
+      //           });
+      //         } else {
+      //           console.warn(
+      //             `Value is undefined for Protein: ${protein}, Class: ${column}`
+      //           );
+      //         }
+      //       }
+      //     });
+      //   } else {
+      //     console.warn(`Invalid rowIndex: ${rowIndex}`);
+      //   }
+      // });
 
       // Create heatmap tiles
       plot
@@ -196,7 +258,7 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
         .attr(
           "transform",
           `translate(${(width - legendWidth) / 2}, ${
-            height + margin.top + 100
+            height + margin.top + 110
           })`
         );
 
@@ -239,7 +301,7 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
         .attr("text-anchor", "middle")
         .attr(
           "transform",
-          `translate(${width / 2}, ${height + margin.top + 90})`
+          `translate(${width / 2}, ${height + margin.top + 150})`
         )
         .style("font-size", "12px")
         .style("font-weight", "bold")
