@@ -249,7 +249,7 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
   }, [data]);
 
   return (
-    <div className="heatmap-container">
+    <div className="heatmap-container graph-container">
       <svg
         ref={svgRef}
         width={width + margin.left + margin.right}
