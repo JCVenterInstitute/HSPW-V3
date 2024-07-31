@@ -296,7 +296,7 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
   }
 
   return (
-    <div className="heatmap-container">
+    <div className="GOheatmap-container">
       <div className="tabs">
         <ToggleButtonGroup
           value={activeTab}

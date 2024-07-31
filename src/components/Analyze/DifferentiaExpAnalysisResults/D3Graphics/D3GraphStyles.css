@@ -442,7 +442,33 @@ div.ag-theme-alpine {
   height: 800px;
 }
 
-.heatmap-container svg {
+.GOheatmap-container svg {
   width: 900px;
   height: 900px;
+}
+
+.heatmap-container svg {
+  .heatmap-reset-button {
+    position: absolute;
+    top: 10px;
+    right: 100px;
+    padding: 6% 14%;
+    font-size: 1em;
+    background-color: var(--button-background-color);
+    color: var(--button-text-color);
+    border: 1px solid var(--button-border-color);
+    border-radius: 5px; /* Reduced border-radius for a more compact shape */
+    cursor: pointer;
+    z-index: -1;
+  }
+
+  .heatmap-reset-button:hover {
+    background-color: var(--button-hover-background-color);
+  }
+
+  .heatmap-container {
+    position: relative;
+    padding: 0; /* Ensure no additional padding around the container */
+    margin: 0; /* Ensure no additional margin around the container */
+  }
 }
