@@ -56,10 +56,12 @@ const DataSection = ({
         cellStyle: {
           textAlign: "left",
           width: "200%",
+
           borderLeftWidth: columnDefs.length === 0 ? "0px" : "1px",
         },
-        resizable:
-          columnDefs.length === Object.keys(data[0]).length - 1 ? false : true,
+        resizable: true,
+        // columnDefs.length === Object.keys(data[0]).length - 1 ? false : true,
+        flex: Object.keys(data[0]).length <= 5 ? 1 : 0,
       });
     });
     console.log(columnDefs);
@@ -70,7 +72,7 @@ const DataSection = ({
           style={{
             overflowX: "auto", // Enable horizontal scrolling
             overflowY: "hidden",
-            width: "100%",
+            width: "95%",
           }}
         >
           <AgGridReact
@@ -85,6 +87,7 @@ const DataSection = ({
             pagination={true}
             paginationPageSize={10}
             suppressFieldDotNotation={true}
+            suppressMovable={true}
             domLayout="autoHeight"
             colResizeDefault="shift"
           />

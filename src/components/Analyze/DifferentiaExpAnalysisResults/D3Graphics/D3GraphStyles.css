@@ -298,6 +298,9 @@ body {
   .ag-header-cell-text {
     padding: 10px;
   }
+  .ag-center-cols-container {
+    overflow: hidden;
+  }
   .ag-header-cell-resize {
     background-color: #3592e4;
   }
