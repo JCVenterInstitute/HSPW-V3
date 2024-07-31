@@ -1,17 +1,21 @@
-// import "../D3GraphStyles.css";
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { fetchDataFile } from "../../utils.js";
-import styles from "./DotGraph.module.css";
+import styles from "./DotGraph.module.css"; // Import CSS Module
 
-const DotGraph = ({ plotData }) => {
+const DotGraph = ({ jobId }) => {
   const ref = useRef();
   const [data, setData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const jsonData = plotData.map((d) => ({
+        const csvData = await fetchDataFile(
+          jobId,
+          "randomforests_sigfeatures.csv"
+        );
+        console.log("Fetched CSV Data:", csvData.data);
+        const jsonData = csvData.data.map((d) => ({
           type: d.Protein.replace(/"/g, ""),
           mean_degrees_accuracy: +d.MeanDecreaseAccuracy,
         }));
@@ -19,14 +23,15 @@ const DotGraph = ({ plotData }) => {
         const topData = jsonData
           .sort((a, b) => b.mean_degrees_accuracy - a.mean_degrees_accuracy)
           .slice(0, 15);
+        console.log("Processed Top Data:", topData);
         setData(topData);
       } catch (error) {
-        console.error("Error loading data:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
-  }, [plotData]);
+  }, [jobId]);
 
   useEffect(() => {
     if (data.length === 0) return;
@@ -52,9 +57,12 @@ const DotGraph = ({ plotData }) => {
       .range([margin.top, height])
       .padding(0.1);
 
-    d3.select("body").selectAll(".tooltip").remove();
+    d3.select("body").selectAll(`.${styles.tooltip}`).remove();
 
-    const tooltip = d3.select("body").append("div").attr("class", "tooltip");
+    const tooltip = d3
+      .select("body")
+      .append("div")
+      .attr("class", styles.tooltip);
 
     svg
       .append("g")
@@ -64,9 +72,11 @@ const DotGraph = ({ plotData }) => {
       .attr("cx", (d) => x(d.mean_degrees_accuracy))
       .attr("cy", (d) => y(d.type) + y.bandwidth() / 2)
       .attr("r", 5)
-      .attr("class", "circle")
+      .attr("class", styles.circle)
       .on("mouseover", function (d) {
         const event = d3.event;
+        console.log("Hovered Data:", d);
+        console.log("Mouse Event on Mouse Over:", event);
         tooltip.transition().duration(200).style("opacity", 0.9);
         tooltip
           .html(
@@ -76,27 +86,40 @@ const DotGraph = ({ plotData }) => {
           )
           .style("left", `${event.pageX + 5}px`)
           .style("top", `${event.pageY - 28}px`);
+        console.log(
+          `Tooltip show: left=${event.pageX + 5}px, top=${event.pageY - 28}px`
+        );
       })
       .on("mousemove", function () {
         const event = d3.event;
+        console.log("Mouse Move Event:", event);
         tooltip
           .style("left", `${event.pageX + 5}px`)
           .style("top", `${event.pageY - 28}px`);
+        console.log(
+          `Tooltip move: left=${event.pageX + 5}px, top=${event.pageY - 28}px`
+        );
       })
       .on("mouseout", function () {
         tooltip.transition().duration(500).style("opacity", 0);
+        console.log("Tooltip hide");
+      })
+      .on("click", function (d) {
+        // Construct URL using protein type
+        const url = `https://salivaryproteome.org/protein/${d.type}`;
+        window.open(url, "_blank");
       });
 
     svg
       .append("g")
       .attr("transform", `translate(0,${height})`)
-      .attr("class", "axis")
+      .attr("class", styles.axis)
       .call(d3.axisBottom(x));
 
     svg
       .append("g")
       .attr("transform", `translate(${margin.left},0)`)
-      .attr("class", "axis")
+      .attr("class", styles.axis)
       .call(d3.axisLeft(y));
 
     svg
@@ -108,7 +131,7 @@ const DotGraph = ({ plotData }) => {
       .attr("x2", width + margin.left)
       .attr("y1", (d) => y(d.type) + y.bandwidth() / 2)
       .attr("y2", (d) => y(d.type) + y.bandwidth() / 2)
-      .attr("class", "line");
+      .attr("class", styles.line);
 
     svg
       .append("line")
@@ -116,7 +139,7 @@ const DotGraph = ({ plotData }) => {
       .attr("x2", width + margin.left)
       .attr("y1", margin.top)
       .attr("y2", margin.top)
-      .attr("class", "border-line");
+      .attr("class", styles.borderLine);
 
     svg
       .append("line")
@@ -124,11 +147,11 @@ const DotGraph = ({ plotData }) => {
       .attr("x2", width + margin.left)
       .attr("y1", margin.top)
       .attr("y2", height)
-      .attr("class", "border-line");
+      .attr("class", styles.borderLine);
 
     svg
       .append("text")
-      .attr("class", "axis-label")
+      .attr("class", styles.axisLabel)
       .attr("text-anchor", "middle")
       .attr("x", (width + margin.left) / 2)
       .attr("y", height + margin.bottom - 10)
@@ -138,7 +161,7 @@ const DotGraph = ({ plotData }) => {
   }, [data]);
 
   return (
-    <div className="graph-container">
+    <div className={styles.graphContainer}>
       <svg ref={ref}></svg>
     </div>
   );
