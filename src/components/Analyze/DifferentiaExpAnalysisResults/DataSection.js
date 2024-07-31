@@ -20,6 +20,7 @@ import { fetchDataFile, getImageStyle, handleDownload } from "./utils";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
+import { BorderRight, BorderStyle, Margin } from "@mui/icons-material";
 
 const style = {
   dataBox: {
@@ -48,40 +49,44 @@ const DataSection = ({
    */
   const displayTable = (data) => {
     var columnDefs = [];
-    Object.keys(data[0]).forEach((header) =>
+    Object.keys(data[0]).forEach((header) => {
+      // console.log(columnDefs.length, " ", Object.keys(data[0]).length);
       columnDefs.push({
         field: header,
-        cellStyle: { textAlign: "left", lineHeight: "10%" },
-      })
-    );
+        cellStyle: {
+          textAlign: "left",
+          width: "200%",
+          borderLeftWidth: columnDefs.length === 0 ? "0px" : "1px",
+        },
+        resizable:
+          columnDefs.length === Object.keys(data[0]).length - 1 ? false : true,
+      });
+    });
+    console.log(columnDefs);
     return (
-      <Container sx={{ margin: "0px" }}>
+      <Container className="data-section-table" sx={{ margin: "0px" }}>
         <div
-          className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
+          className="ag-theme-material ag-theme-alpine"
           style={{
             overflowX: "auto", // Enable horizontal scrolling
+            overflowY: "hidden",
             width: "100%",
           }}
         >
-          {/* <CsvTable data={data} selectedSection={selectedSection} /> */}
           <AgGridReact
-            className="ag-cell-wrap-text"
             rowData={data}
+            rowStyle={{ BorderStyle: "solid" }}
             columnDefs={columnDefs}
+            defaultColDef={{
+              wrapHeaderText: true,
+              autoHeaderHeight: true,
+              resizable: true,
+            }}
             pagination={true}
             paginationPageSize={10}
             suppressFieldDotNotation={true}
             domLayout="autoHeight"
-            autoSizeStrategy={{
-              type: "fitGridWidth",
-              defaultMinWidth: 100,
-              columnLimits: [
-                {
-                  colId: "country",
-                  minWidth: 900,
-                },
-              ],
-            }}
+            colResizeDefault="shift"
           />
         </div>
       </Container>

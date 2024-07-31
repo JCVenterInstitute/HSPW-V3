@@ -281,18 +281,31 @@ body {
     margin-left: 1.5em;
   }
 }
-
-div.ag-theme-alpine {
-  /* disable all borders */
-  --ag-borders: none;
-  /* then add back a border between rows */
-  --ag-row-border-style: dashed;
-  --ag-row-border-width: 2px;
-  --ag-row-border-color: rgb(150, 150, 200);
-  /* and between columns */
-  --ag-cell-horizontal-border: solid rgb(150, 150, 200);
+.data-section-table {
+  .ag-center-cols-viewport {
+    border-style: solid;
+    border-width: 1px;
+  }
+  .ag-row {
+    border-width: 0px;
+  }
+  .ag-cell {
+    border-style: solid;
+    border-top-width: 0px;
+    border-color: black;
+    padding: 10px 0px 0px 20px !important;
+  }
+  .ag-header-cell-text {
+    padding: 10px;
+  }
+  .ag-header-cell-resize {
+    background-color: #3592e4;
+  }
+  .ag-body-horizontal-scroll-viewport {
+    border-top-style: solid;
+    border-top-width: 1px;
+  }
 }
-
 #FoldChangeGraph {
   position: relative;
   display: flex;
