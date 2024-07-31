@@ -6,10 +6,8 @@ import {
   Stack,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-
-import { fileMapping } from "./Constants";
+import { fileNames, goKeggDict } from "./Constants.js";
 import ResultDownload from "./ResultSections/ResultDownload";
-import CsvTable from "./CsvTable";
 import VolcanoPlot from "./D3Graphics/VolcanoPlot/VolcanoPlot";
 import StatisticalParametricPlot from "./D3Graphics/StatisticalParametricTest/StatisticalParametricTest";
 import FoldChangePlot from "./D3Graphics/FoldChangeAnalysis/FoldChangeAnalysis";
@@ -20,18 +18,15 @@ import PrincipleComponentAnalysis from "./D3Graphics/PrincipleComponentAnalysis/
 import BarChartComponent from "./D3Graphics/GoKegg/EncrichmentPlot/BarPlot";
 import RidgePlotComponent from "./D3Graphics/GoKegg/GSEARidgePlot/RidgePlot";
 import TreeClusterPlotComponent from "./D3Graphics/GoKegg/GSEATree Cluster Plot/TreeClusterPlot.js";
-import HeatmapComponent from "./D3Graphics/GoKegg/GSEAHeatmapPlot/GOHeatmap.js";
-import RandomForest from "./D3Graphics/RandomForest/RandomForest";
-import InputData from "./InputData";
-import {
-  fetchDataFile,
-  fetchData,
-  fetchImage,
-  getImageStyle,
-  handleDownload,
-  getFileUrl,
-} from "./utils";
+import GOHeatmapComponent from "./D3Graphics/GoKegg/GSEAHeatmapPlot/GOHeatmap.js";
+import DotGraph from "./D3Graphics/DotGraph/DotGraph";
+import HeatmapComponent from "./D3Graphics/Heatmap/Heatmap.js";
 import NetworkGraph from "./D3Graphics/GoKegg/NetworkGraph/NetworkGraph";
+import { fetchDataFile, getImageStyle, handleDownload } from "./utils";
+import { AgGridReact } from "ag-grid-react";
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-material.css";
+import { BorderRight, BorderStyle, Margin } from "@mui/icons-material";
 
 const style = {
   dataBox: {
@@ -66,20 +61,15 @@ const CheckbackLater = () => {
   );
 };
 
-const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
-  const [image, setImage] = useState(null);
-  const [data, setData] = useState(null);
-  const [plotData, setPlotData] = useState(null);
-  const [groupData, setGroupData] = useState(null);
-  const [pcaVariance, setPcaVariance] = useState(null);
-  const [allData, setAllData] = useState(null);
-  const [files, setFiles] = useState({});
+const DataSection = ({
+  selectedSection,
+  searchParams,
+  tab,
+  jobId,
+  numbOfTopVolcanoSamples,
+}) => {
   const [isLoading, setIsLoading] = useState(true);
-
-  const [goResultsReady, setGoResultsReady] = useState(false);
-  const [intervalId, setIntervalId] = useState(null);
-
-  console.log("> Job Id", jobId);
+  const [allFiles, setAllFiles] = useState(null);
 
   const checkGoStatus = async () => {
     console.log("> Calling Go Status Check");
@@ -118,61 +108,111 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
     }
   }, [goResultsReady, intervalId]);
 
-  const getDataFile = async (
-    dataFile = files["Data Matrix"],
-    setter = setData
-  ) => {
-    if (!dataFile) return;
-
-    const data = await fetchData(dataFile);
-
-    setter(data);
-  };
-
   /**
-   * Fetch all files associated with the selected results section
-   * @param {string} selectedSection Results section currently selected
-   * @param {string} jobId Id of analysis submission job
+   * takes and array of dictionaries and converts it into a agGridReact component for display
+   * @param {*} data
+   * @returns a <agGridReact> component
    */
-  const fetchFiles = async (selectedSection, jobId) => {
-    const mappedSectionFiles = fileMapping[selectedSection];
-
-    // No files to fetch
-    if (mappedSectionFiles === undefined || mappedSectionFiles === null) return;
-
-    try {
-      setIsLoading(true);
-      let files = {};
-
-      if (typeof mappedSectionFiles === "string") {
-        files = await getFileUrl(jobId, mappedSectionFiles);
-      } else {
-        for (const [tabName, fileName] of Object.entries(mappedSectionFiles)) {
-          const fileUrl = await getFileUrl(jobId, fileName);
-
-          files[tabName] = fileUrl;
-        }
-      }
-
-      setFiles(files);
-    } catch (err) {
-      console.error("> Failed trying to fetch all files", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * Get & return all_data.tsv download link & file contents
-   */
-  const getAllDataFile = async () => {
-    try {
-      const { data, downloadUrl } = await fetchDataFile(jobId, "all_data.tsv");
-
-      setAllData({
-        data,
-        downloadUrl,
+  const displayTable = (data) => {
+    var columnDefs = [];
+    Object.keys(data[0]).forEach((header) => {
+      // console.log(columnDefs.length, " ", Object.keys(data[0]).length);
+      columnDefs.push({
+        field: header,
+        cellStyle: {
+          textAlign: "left",
+          width: "200%",
+          borderLeftWidth: columnDefs.length === 0 ? "0px" : "1px",
+        },
+        resizable:
+          columnDefs.length === Object.keys(data[0]).length - 1 ? false : true,
       });
+    });
+    console.log(columnDefs);
+    return (
+      <Container
+        className="data-section-table"
+        sx={{ margin: "0px" }}
+      >
+        <div
+          className="ag-theme-material ag-theme-alpine"
+          style={{
+            overflowX: "auto", // Enable horizontal scrolling
+            overflowY: "hidden",
+            width: "100%",
+          }}
+        >
+          <AgGridReact
+            rowData={data}
+            rowStyle={{ BorderStyle: "solid" }}
+            columnDefs={columnDefs}
+            defaultColDef={{
+              wrapHeaderText: true,
+              autoHeaderHeight: true,
+              resizable: true,
+            }}
+            pagination={true}
+            paginationPageSize={10}
+            suppressFieldDotNotation={true}
+            domLayout="autoHeight"
+            colResizeDefault="shift"
+          />
+        </div>
+      </Container>
+    );
+  };
+
+  /**
+   * Creates a html image from download link
+   * @param {*} image
+   * @returns
+   */
+  const displayImg = (image) => (
+    <img
+      src={image}
+      alt={selectedSection}
+      style={getImageStyle(selectedSection)}
+    />
+  );
+
+  /**
+   * Gets all files listed in fileNames const
+   */
+  const getAllFiles = async () => {
+    try {
+      const fileDict = {};
+      for (const file of fileNames) {
+        fileDict[file] = await fetchDataFile(jobId, file);
+      }
+      fileDict["inputData"] = {};
+      searchParams.forEach((input, header) => {
+        switch (header) {
+          case "logNorm":
+            fileDict["inputData"]["Log Transformation"] = input;
+            break;
+          case "heatmap":
+            fileDict["inputData"][
+              "Number of Differentially Abundant Proteins in Heatmap"
+            ] = input;
+            break;
+          case "foldChange":
+            fileDict["inputData"]["Fold Change Threshold"] = input;
+            break;
+          case "pValue":
+            fileDict["inputData"]["P-Value Threshold"] = input;
+            break;
+          case "pType":
+            fileDict["inputData"]["P-Value Type"] =
+              input === "Raw" ? "RAW" : "FDR";
+            break;
+          case "parametricTest":
+            fileDict["inputData"]["Statistical Parametric Test"] =
+              input === "F" ? "T-Test" : "Wilcoxon Signed-rank Test";
+          default:
+            break;
+        }
+      });
+      setAllFiles(fileDict);
     } catch (err) {
       console.error("> Error fetching all data file", err);
     } finally {
@@ -180,314 +220,248 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
     }
   };
 
-  // Fetch all needed files for the current selected section
-  useEffect(() => {
-    fetchFiles(selectedSection, jobId);
-  }, [selectedSection]);
-
   // Get all_data.tsv, shared across all tab sections
   useEffect(() => {
-    getAllDataFile();
+    getAllFiles();
   }, []);
-
-  useEffect(() => {
-    if (tab === null) return;
-
-    if (tab === "Data Matrix") {
-      getDataFile();
-    } else if (
-      tab === "Visualization" ||
-      tab.includes("Top") ||
-      tab.includes("All")
-    ) {
-      let imageLink = files["Visualization"];
-
-      // Handle Heatmap tabs
-      if (tab.startsWith("Top")) imageLink = files["Top Samples"];
-      if (tab.startsWith("All")) imageLink = files["All Samples"];
-      if (tab.startsWith("Top") || tab.startsWith("All")) setData(null);
-
-      if (selectedSection === "Principal Component Analysis") {
-        // Handle PCA file
-        getDataFile(files["PCA Score"], setPlotData);
-        getDataFile(files["Group Labels"], setGroupData);
-        getDataFile(files["PCA Variance"], setPcaVariance);
-      } else {
-        setPlotData(null);
-        setGroupData(null);
-        setPcaVariance(null);
-      }
-
-      setImage(imageLink);
-    } else {
-      const getImage = async () => {
-        const imageUrl = await fetchImage(jobId, newRelevantFile);
-        setImage(imageUrl);
-      };
-
-      const newRelevantFile = fileMapping[selectedSection][tab];
-
-      if (newRelevantFile === undefined || tab === "Data Matrix") return;
-
-      getImage();
-    }
-  }, [tab, files]);
 
   const getSection = () => {
     let displayResult = null;
-    let isPngTab = true;
-
-    switch (selectedSection) {
-      case "Volcano Plot":
-        if (allData && tab !== "Data Matrix") {
-          displayResult = (
-            <VolcanoPlot
-              data={allData.data}
-              pval={searchParams.get("pValue")}
-              foldChange={searchParams.get("foldChange")}
-              xCol={8}
-              yCol={5}
-              details={["p.value", "Fold.Change"]}
-              xlabel="Log2(FC)"
-              ylabel="-Log10(p)"
-            />
-          );
-        } else {
-          displayResult = null;
-          isPngTab = false;
-        }
-        break;
-      case "Statistical Parametric Test":
-        if (allData && tab !== "Data Matrix") {
-          displayResult = (
-            <StatisticalParametricPlot
-              data={allData.data}
-              pval={searchParams.get("pValue")}
-              // TODO: make pval a user input
-            />
-          );
-        } else {
-          displayResult = null;
-          isPngTab = false;
-        }
-        break;
-      case "Fold Change Analysis":
-        if (allData && tab !== "Data Matrix") {
-          displayResult = (
-            <FoldChangePlot
-              data={allData.data}
-              fc={searchParams.get("foldChange")}
-            />
-          );
-        } else {
-          displayResult = null;
-          isPngTab = false;
-        }
-        break;
-      case "Principal Component Analysis":
-        if (plotData && groupData && pcaVariance && tab !== "Data Matrix") {
-          var cleanedGroupData = {};
-          var groupLabels = new Set();
-          for (const [key, value] of Object.entries(groupData[0])) {
-            if (key !== "Protein") {
-              cleanedGroupData[key] = value.replaceAll('"', "");
-              groupLabels.add(cleanedGroupData[key]);
-            }
+    if (allFiles) {
+      switch (selectedSection) {
+        case "Volcano Plot":
+          if (tab === "Visualization") {
+            displayResult = (
+              <VolcanoPlot
+                data={allFiles["all_data.tsv"].data}
+                pval={searchParams.get("pValue")}
+                foldChange={searchParams.get("foldChange")}
+                xCol={8}
+                yCol={5}
+                details={["p.value", "Fold.Change"]}
+                xlabel="Log2(FC)"
+                ylabel="-Log10(p)"
+              />
+            );
+          } else if (tab === "Data Matrix") {
+            displayResult = displayTable(allFiles["volcano.csv"].data);
           }
-          displayResult = (
-            <PrincipleComponentAnalysis
-              data={plotData}
-              groupMapping={cleanedGroupData}
-              groupLabels={[...groupLabels]}
-              pcaVariance={pcaVariance}
-              extension={"csv"}
-            />
-          );
-        } else {
-          displayResult = null;
-          isPngTab = false;
-        }
-        break;
-      case "Venn-Diagram":
-        if (tab !== "Data Matrix") {
-          displayResult = <VennDiagramComponent jobId={jobId} />;
-        } else {
-          displayResult = null;
-          isPngTab = false;
-        }
-        break;
-      case "Normalization":
-        if (tab !== "Data Matrix") {
-          const originalFile = fileMapping["Normalization"]["Data Original"];
-          const normalizedFile =
-            fileMapping["Normalization"]["Data Normalized"];
 
-          displayResult = (
-            <div id="normChart">
-              <Container sx={{ margin: "0px" }}>
-                <Box className="plot-section">
-                  <Box className="chart-section">
-                    <h2>Before Normalization</h2>
-                    <DensityPlot
-                      containerId="density-before"
-                      jobId={jobId}
-                      datafile={originalFile}
-                    />
-                    <BoxPlot
-                      containerId="box-before"
-                      jobId={jobId}
-                      datafile={originalFile}
-                    />
-                  </Box>
-                  <Box className="chart-section">
-                    <h2>After Normalization</h2>
-                    <DensityPlot
-                      containerId="density-after"
-                      jobId={jobId}
-                      datafile={normalizedFile}
-                    />
-                    <BoxPlot
-                      containerId="box-after"
-                      jobId={jobId}
-                      datafile={normalizedFile}
-                    />
-                  </Box>
-                </Box>
-              </Container>
-            </div>
-          );
-        } else {
-          displayResult = null;
-        }
-        break;
-      case "Random Forest":
-        displayResult = (
-          <RandomForest
-            selectedSection={selectedSection}
-            jobId={jobId}
-            tab={tab}
-          />
-        );
-        break;
-      case "GO Biological Process":
-      case "GO Molecular Function":
-      case "GO Molecular Function":
-      case "GO Cellular Component":
-      case "KEGG Pathway/Module":
-        const sectionFile = fileMapping[selectedSection][`${tab} Data`];
-
-        if (!goResultsReady) {
-          displayResult = <CheckbackLater />;
-        } else if (tab === "Enrichment Plot") {
-          displayResult = (
-            <BarChartComponent
-              jobId={jobId}
-              datafile={sectionFile}
-              selectedSection={selectedSection}
-            />
-          );
-        }else if (tab.endsWith("connected genes")) {
-          displayResult = <NetworkGraph jobId={jobId} />;
-        } else if (tab.endsWith("Ridge plot")) {
-          displayResult = (
-            <RidgePlotComponent
-              jobId={jobId}
-              fileName1={sectionFile}
-              fileName2={fileMapping["Result Data"]}
-              selectedSection={selectedSection}
-            />
-          );
-        } else if (tab.endsWith("Heatmap plot")) {
-          displayResult = (
-            <HeatmapComponent
-              jobId={jobId}
-              fileName1={sectionFile}
-              fileName2={fileMapping["Result Data"]}
-              selectedSection={selectedSection}
-            />
-          );
-        } else if (tab.endsWith("Tree cluster plot")) {
-          displayResult = (
-            <TreeClusterPlotComponent
-              jobId={jobId}
-              fileName1={sectionFile}
-              selectedSection={selectedSection}
-            />
-          );
-        } else {
-          displayResult = null;
-        }
-        break;
-      case "Result Data":
-        displayResult = (
-          <Container sx={{ margin: "0px" }}>
-            <Box
-              sx={{
-                overflowX: "auto", // Enable horizontal scrolling
-                width: "100%",
-              }}
-            >
-              <CsvTable
-                data={allData.data}
-                selectedSection={selectedSection}
+          break;
+        case "Heatmap":
+          if (tab.endsWith("Samples")) {
+            displayResult = (
+              <HeatmapComponent
+                fileName={allFiles["data_normalized.csv"].data}
+                numbVolcanoSamples={numbOfTopVolcanoSamples}
+                tab={tab}
               />
-            </Box>
-          </Container>
-        );
-        break;
-      case "Input Data":
-        displayResult = (
-          <InputData
-            searchParams={searchParams}
-            jobId={jobId}
-          />
-        );
-        break;
-      case "Download":
-        displayResult = (
-          <ResultDownload
-            jobId={jobId}
-            handleDownload={handleDownload}
-          />
-        );
-        break;
-      default:
-        displayResult = null;
-    }
+            );
+          } else {
+            displayResult = displayImg(
+              allFiles["heatmap_0_dpi150.png"].downloadUrl
+            );
+          }
 
-    if (displayResult === null) {
-      console.log(`tab: ${tab}`);
-      if (
-        (data === null && isPngTab === true) ||
-        tab.startsWith("Enriched terms ") ||
-        tab.startsWith("GSEA Tree ")
-      ) {
-        displayResult = (
-          <img
-            src={image}
-            alt={selectedSection}
-            style={getImageStyle(selectedSection)}
-          />
-        );
-      } else if (data) {
-        displayResult = (
-          <Container sx={{ margin: "0px" }}>
-            <Box
-              sx={{
-                overflowX: "auto", // Enable horizontal scrolling
-                width: "100%",
-              }}
-            >
-              <CsvTable
-                data={data}
-                selectedSection={selectedSection}
+          break;
+        case "Statistical Parametric Test":
+          if (tab === "Visualization") {
+            displayResult = (
+              <StatisticalParametricPlot
+                data={allFiles["all_data.tsv"].data}
+                pval={searchParams.get("pValue")}
+                // TODO: make pval a user input
               />
-            </Box>
-          </Container>
-        );
+            );
+          } else if (tab === "Data Matrix") {
+            displayResult = displayTable(
+              allFiles["statistical_parametric_test.csv"].data
+            );
+          }
+
+          break;
+        case "Fold Change Analysis":
+          if (tab !== "Data Matrix") {
+            displayResult = (
+              <FoldChangePlot
+                data={allFiles["all_data.tsv"].data}
+                fc={searchParams.get("foldChange")}
+              />
+            );
+          } else if (tab === "Data Matrix") {
+            displayResult = displayTable(allFiles["fold_change.csv"].data);
+          }
+
+          break;
+        case "Principal Component Analysis":
+          if (tab !== "Data Matrix") {
+            var cleanedGroupData = {};
+            var groupLabels = new Set();
+            for (const [key, value] of Object.entries(
+              allFiles["data_normalized.csv"].data[0]
+            )) {
+              if (key !== "Protein") {
+                cleanedGroupData[key] = value.replaceAll('"', "");
+                groupLabels.add(cleanedGroupData[key]);
+              }
+            }
+            displayResult = (
+              <PrincipleComponentAnalysis
+                data={allFiles["pca_score.csv"].data}
+                groupMapping={cleanedGroupData}
+                groupLabels={[...groupLabels]}
+                pcaVariance={allFiles["pca_variance.csv"].data}
+                extension={"csv"}
+              />
+            );
+          } else if (tab === "Data Matrix") {
+            displayResult = displayTable(allFiles["pca_score.csv"].data);
+          }
+
+          break;
+        case "Venn-Diagram":
+          if (tab === "Visualization") {
+            displayResult = (
+              <VennDiagramComponent data={allFiles["data_original.csv"].data} />
+            );
+          } else if (tab === "Data Matrix") {
+            displayResult = displayTable(allFiles["venn_out_data.txt"].data);
+          }
+          break;
+        case "Normalization":
+          if (tab === "Visualization") {
+            displayResult = (
+              <div id="normChart">
+                <Container sx={{ margin: "0px" }}>
+                  <Box className="plot-section">
+                    <Box className="chart-section">
+                      <h2>Before Normalization</h2>
+                      <DensityPlot
+                        containerId="density-before"
+                        data={allFiles["data_original.csv"].data}
+                      />
+                      <BoxPlot
+                        containerId="box-before"
+                        data={allFiles["data_original.csv"].data}
+                      />
+                    </Box>
+                    <Box className="chart-section">
+                      <h2>After Normalization</h2>
+                      <DensityPlot
+                        containerId="density-after"
+                        data={allFiles["data_normalized.csv"].data}
+                      />
+                      <BoxPlot
+                        containerId="box-after"
+                        data={allFiles["data_normalized.csv"].data}
+                      />
+                    </Box>
+                  </Box>
+                </Container>
+              </div>
+            );
+          } else if (tab === "Data Matrix") {
+            displayResult = displayTable(allFiles["data_normalized.csv"].data);
+          }
+          break;
+        case "Random Forest":
+          if (tab === "Classification") {
+            displayResult = (
+              <div>
+                {displayImg(allFiles["rf_cls_0_dpi150.png"].downloadUrl)}
+                {displayTable(allFiles["randomforest_confusion.csv"].data)}
+              </div>
+            );
+          } else if (tab === "Feature") {
+            displayResult = (
+              <div>
+                <DotGraph
+                  plotData={allFiles["randomforests_sigfeatures.csv"].data}
+                />
+                {displayTable(allFiles["randomforests_sigfeatures.csv"].data)}
+              </div>
+            );
+          } else if (tab === "Outlier") {
+            displayResult = displayImg(
+              allFiles["rf_outlier_0_dpi150.png"].downloadUrl
+            );
+          }
+          break;
+        case "GO Biological Process":
+        case "GO Molecular Function":
+        case "GO Cellular Component":
+        case "KEGG Pathway/Module":
+          if (tab === "Enrichment Plot") {
+            displayResult = (
+              <BarChartComponent
+                plotData={allFiles[goKeggDict[selectedSection][0]].data}
+              />
+            );
+          } else if (tab && tab.endsWith("connected genes")) {
+            displayResult = (
+              <NetworkGraph
+                plotData={allFiles[goKeggDict[selectedSection][1]].data}
+              />
+            );
+          } else if (tab && tab.endsWith("Ridge plot")) {
+            displayResult = (
+              <RidgePlotComponent
+                tableData={allFiles[goKeggDict[selectedSection][2]].data}
+                allData={allFiles["all_data.tsv"].data}
+              />
+            );
+          } else if (tab && tab.endsWith("Heatmap plot")) {
+            displayResult = (
+              <GOHeatmapComponent
+                tableData={allFiles[goKeggDict[selectedSection][2]].data}
+                allData={allFiles["all_data.tsv"].data}
+              />
+            );
+          } else if (tab && tab.endsWith("cluster plot")) {
+            displayResult = (
+              <TreeClusterPlotComponent
+                plotData={allFiles[goKeggDict[selectedSection][3]]}
+              />
+            );
+          } else {
+            displayResult = null;
+          }
+          break;
+        case "Result Data":
+          displayResult = displayTable(allFiles["all_data.tsv"].data);
+          break;
+        case "Input Data":
+          displayResult = (
+            <Container sx={{ margin: "0px" }}>
+              <Typography
+                variant="h5"
+                sx={{ fontFamily: "Lato" }}
+              >
+                Analysis Options:
+              </Typography>
+              {displayTable([allFiles["inputData"]])}
+              <Typography
+                variant="h5"
+                sx={{ fontFamily: "Lato" }}
+              >
+                Input Data:
+              </Typography>
+              {displayTable(allFiles["data_original.csv"].data)}
+            </Container>
+          );
+          break;
+        case "Download":
+          displayResult = (
+            <ResultDownload
+              jobId={jobId}
+              handleDownload={handleDownload}
+            />
+          );
+          break;
+        default:
+          displayResult = null;
       }
     }
-
     return displayResult;
   };
 
@@ -511,5 +485,4 @@ const DataSection = ({ selectedSection, searchParams, tab, jobId }) => {
     </Box>
   );
 };
-
 export default DataSection;

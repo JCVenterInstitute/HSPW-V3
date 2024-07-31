@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
 import { fetchDataFile } from "../../../utils";
 
-const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
+const BarChartComponent = ({ plotData }) => {
   const [data, setData] = useState(null);
   const svgRef = useRef();
 
@@ -12,30 +12,21 @@ const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
   const height = 700 - margin.top - margin.bottom;
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data: tsvData } = await fetchDataFile(
-          jobId,
-          datafile,
-          selectedSection
-        );
-        // Remove double quotes from all relevant fields in the data
-        const cleanedData = tsvData.slice(0, 20).map((row) => {
-          const cleanedRow = {};
-          for (const [key, value] of Object.entries(row)) {
-            cleanedRow[key] = value.replaceAll(/^"|"$/g, "");
-          }
-          return cleanedRow;
-        });
+    // Remove double quotes from all relevant fields in the data
+    try {
+      const cleanedData = plotData.slice(0, 20).map((row) => {
+        const cleanedRow = {};
+        for (const [key, value] of Object.entries(row)) {
+          cleanedRow[key] = value.replaceAll(/^"|"$/g, "");
+        }
+        return cleanedRow;
+      });
 
-        setData(cleanedData); // Take the first 20 rows for plotting
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, [jobId, datafile, selectedSection]);
+      setData(cleanedData); // Take the first 20 rows for plotting
+    } catch (error) {
+      console.error("Incorrect File:", error);
+    }
+  }, [plotData]);
 
   useEffect(() => {
     if (data) {
@@ -44,7 +35,6 @@ const BarChartComponent = ({ jobId, datafile, selectedSection }) => {
   }, [data]);
 
   const drawBarChart = (data) => {
-    console.log(">>data", data);
     // Clear existing SVG content
     d3.select(svgRef.current).selectAll("*").remove();
 

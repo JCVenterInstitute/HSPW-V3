@@ -4,7 +4,7 @@ import * as d3 from "d3v7";
 import { fetchDataFile } from "../../../utils";
 import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
-const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
+const GOHeatmapComponent = ({ tableData, allData }) => {
   const svgRef = useRef();
   const [data1, setData1] = useState([]);
   const [data2, setData2] = useState([]);
@@ -25,25 +25,16 @@ const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
   };
 
   useEffect(() => {
-    const loadData = async () => {
-      console.log("Loading data...");
-      const result1 = await fetchDataFile(jobId, fileName1, selectedSection);
-      const result2 = await fetchDataFile(jobId, fileName2, selectedSection);
-
-      console.log("Raw Data1:", result1.data);
-      console.log("Raw Data2:", result2.data);
-
-      setData1(cleanData(result1.data.slice(0, 25)));
-      setData2(cleanData(result2.data));
-    };
-
-    loadData();
-  }, [jobId, fileName1, fileName2, selectedSection]);
+    try {
+      setData1(cleanData(tableData.slice(0, 25)));
+      setData2(cleanData(allData));
+    } catch (error) {
+      console.error("Incorrect File:", error);
+    }
+  }, [tableData, allData]);
 
   useEffect(() => {
     if (data1.length > 0 && data2.length > 0) {
-      console.log("Data1 and Data2 are available for processing.");
-
       const svg = d3.select(svgRef.current);
       svg.selectAll("*").remove();
 
@@ -80,7 +71,6 @@ const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
       });
 
       const validData = heatmapData.filter((d) => !isNaN(d["Fold.Change"]));
-      console.log(`Valid Data:`, validData);
 
       let filteredProteins = proteins;
 
@@ -92,7 +82,6 @@ const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
         finalValidData = validData.filter((d) =>
           filteredProteins.has(d["Protein"])
         );
-        console.log(">>>>>>>>Final Compresse data:", finalValidData);
       }
 
       const colorScale = d3
@@ -361,4 +350,4 @@ const HeatmapComponent = ({ jobId, fileName1, fileName2, selectedSection }) => {
   );
 };
 
-export default HeatmapComponent;
+export default GOHeatmapComponent;

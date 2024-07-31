@@ -1,15 +1,8 @@
 import "../../D3GraphStyles.css";
 import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
-import { fetchDataFile } from "../../../utils";
-import localData from "./gsecc_tree.tsv";
 
-const TreeClusterPlotComponent = ({
-  jobId,
-  fileName1,
-  fileName2,
-  selectedSection,
-}) => {
+const TreeClusterPlotComponent = ({ plotData }) => {
   const svgRef = useRef();
   const [data, setData] = useState([]);
 
@@ -18,7 +11,6 @@ const TreeClusterPlotComponent = ({
   const height = 900 - margin.top - margin.bottom;
 
   const cleanData = (data) => {
-    console.log("Cleaning data...");
     return data.map((d) => {
       const cleanedData = {};
       for (let key in d) {
@@ -28,48 +20,27 @@ const TreeClusterPlotComponent = ({
     });
   };
 
-  const loadLocalData = () => {
-    console.log("Loading local data...");
-    d3.tsv(localData)
-      .then((parsedData) => {
-        console.log("Loaded Local Data:", parsedData);
-        setData(cleanData(parsedData));
-      })
-      .catch((error) => {
-        console.error("Error loading local data:", error);
-      });
-  };
-
   useEffect(() => {
-    const loadData = async () => {
+    const loadData = () => {
       try {
-        console.log("Loading data from server...");
-        const result = await fetchDataFile(jobId, fileName1, selectedSection);
-        console.log("Raw Data from Server:", result.data);
-        setData(cleanData(result.data));
+        setData(cleanData(plotData));
       } catch (error) {
-        console.error("Error fetching remote data:", error);
-        loadLocalData(); // Fallback to local data if fetchDataFile fails
+        console.error("Error loading data:", error);
       }
     };
     loadData();
-  }, [jobId, fileName1, fileName2, selectedSection]);
+  }, [plotData]);
 
   useEffect(() => {
     if (data.length > 0) {
-      console.log("Data is available for processing:", data);
-
       const svg = d3.select(svgRef.current);
       svg.selectAll("*").remove();
-      console.log("SVG container selected and cleared.");
 
       const tree = d3.tree().size([height, width]);
       const root = createHierarchy(data);
       tree(root);
-      console.log("Tree layout created with root:", root);
 
       const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
-      console.log("Color scale created.");
 
       svg
         .selectAll(".link")
@@ -83,7 +54,6 @@ const TreeClusterPlotComponent = ({
         .attr("y2", (d) => d.target.x)
         .attr("stroke", "#999")
         .attr("stroke-width", "2px");
-      console.log("Tree links rendered.");
 
       svg
         .selectAll(".node")
@@ -95,7 +65,6 @@ const TreeClusterPlotComponent = ({
         .attr("cy", (d) => d.x)
         .attr("r", 5)
         .style("fill", (d) => colorScale(d.data.color || "default"));
-      console.log("Tree nodes rendered.");
 
       svg
         .selectAll(".label")
@@ -107,12 +76,10 @@ const TreeClusterPlotComponent = ({
         .attr("y", (d) => d.x + 5)
         .text((d) => d.data.label || "")
         .style("font-size", "12px");
-      console.log("Node labels rendered.");
     }
   }, [data]);
 
   const createHierarchy = (data) => {
-    console.log("Creating hierarchy from data...");
     const nodes = {};
     const root = { name: "root", children: [] };
 
@@ -141,7 +108,6 @@ const TreeClusterPlotComponent = ({
       }
     });
 
-    console.log("Hierarchy created:", root);
     return d3.hierarchy(root);
   };
 

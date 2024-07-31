@@ -3,28 +3,13 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3v7";
 import { fetchDataFile } from "../../utils.js"; // Import fetchDataFile from utils.js
 
-const Boxplot = ({ containerId, jobId, datafile }) => {
+const Boxplot = ({ containerId, data }) => {
   const boxplotRef = useRef(null);
   const [topN, setTopN] = useState(30); // State to manage the number of top boxplots
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const csvData = await fetchDataFile(jobId, datafile);
-        // console.log("Fetched CSV Data:", csvData); // Log fetched CSV data
-        setData(csvData.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, [jobId, datafile]);
+  // const [data, setData] = useState(null);
 
   useEffect(() => {
     if (!data) return;
-    console.log("> Box plot data:", data);
 
     // Clear existing SVG elements inside the container
     d3.select(boxplotRef.current).selectAll("*").remove();
@@ -39,9 +24,6 @@ const Boxplot = ({ containerId, jobId, datafile }) => {
     const boxValues = data.map((d) =>
       labels.slice(1).map((key) => parseFloat(d[key].replace(/"/g, "")))
     );
-    console.log("> labels:", labels);
-    console.log("> boxValues:", boxValues);
-
     const sumstats = boxValues.map((rowValues, i) => {
       const sortedValues = rowValues.sort(d3.ascending);
       const q1 = d3.quantile(sortedValues, 0.25);
@@ -67,7 +49,6 @@ const Boxplot = ({ containerId, jobId, datafile }) => {
     // Sort the sumstats by median value in descending order and take the top N
     sumstats.sort((a, b) => b.median - a.median);
     const topSumstats = sumstats.slice(1, topN + 1);
-    console.log("sumstats", sumstats);
     const topLabels = topSumstats.map((d) => d.label);
     const allValues = topSumstats.flatMap((d) => d.values);
     // Calculate dynamic padding
@@ -84,8 +65,6 @@ const Boxplot = ({ containerId, jobId, datafile }) => {
       .select(boxplotRef.current)
       .append("svg")
       .attr("class", "box-plot")
-      .attr("width", boxWidth + boxMargin.left + boxMargin.right)
-      .attr("height", boxHeight + boxMargin.top + boxMargin.bottom)
       .attr("preserveAspectRatio", "xMinYMin meet")
       .attr(
         "viewBox",
