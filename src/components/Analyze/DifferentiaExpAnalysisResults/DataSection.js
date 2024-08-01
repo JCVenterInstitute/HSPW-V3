@@ -70,6 +70,8 @@ const DataSection = ({
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [allFiles, setAllFiles] = useState(null);
+  const [goResultsReady, setGoResultsReady] = useState(false);
+  const [intervalId, setIntervalId] = useState(null);
 
   const checkGoStatus = async () => {
     console.log("> Calling Go Status Check");
@@ -80,8 +82,6 @@ const DataSection = ({
       );
 
       const { exists } = await res.json();
-
-      console.log("> Res", data);
 
       setGoResultsReady(exists);
     } catch (e) {
