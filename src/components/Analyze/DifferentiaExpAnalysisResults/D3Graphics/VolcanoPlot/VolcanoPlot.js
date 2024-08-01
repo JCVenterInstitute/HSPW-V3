@@ -4,7 +4,7 @@ import "../D3GraphStyles.css";
 import * as d3 from "d3v7";
 
 const VolcanoPlot = ({
-  data = "",
+  data = null,
   foldChange = 2,
   pval = 0.05,
   xCol = 3,
@@ -23,6 +23,15 @@ const VolcanoPlot = ({
   const margin = { top: 20, right: 20, bottom: 60, left: 80 };
 
   useEffect(() => {
+    if (data === null) {
+      return () => {
+        d3.select(chartRef.current).selectAll("*").remove();
+        d3.select(chartRef.current)
+          .selectAll("div#zoom-slider-container")
+          .remove();
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
     const SVGwidth = 1600;
     const SVGheight = 800;
     const innerWidth = SVGwidth - margin.left - margin.right;
@@ -181,7 +190,7 @@ const VolcanoPlot = ({
       .enter()
       .append("circle")
       .attr("class", circleClass)
-      .attr("r", 5)
+      .attr("r", 7)
       .attr("cx", (d) => xScale(d[xValKey]))
       .attr("cy", (d) => yScale(d[yValKey]))
       .attr("stroke", "black")
@@ -233,7 +242,7 @@ const VolcanoPlot = ({
       svg
         .selectAll(".dot")
         .attr("transform", transform)
-        .attr("r", 4 / transform.k)
+        .attr("r", 7 / transform.k)
         .attr("stroke-width", 1 / transform.k);
 
       gX.call(xAxis.scale(transform.rescaleX(xScale)));
@@ -336,11 +345,17 @@ const VolcanoPlot = ({
 
   return (
     <div ref={chartRef} id="chart" className="volcano graph-container">
-      <div className="reset-button-container" style={resetButtonMargin}>
-        <button onClick={resetZoom} className="reset-button">
-          Reset
-        </button>
-      </div>
+      {data ? (
+        <div className="reset-button-container" style={resetButtonMargin}>
+          <button onClick={resetZoom} className="reset-button">
+            Reset
+          </button>
+        </div>
+      ) : (
+        <span style={{ fontSize: "20px", fontWeight: "bold" }}>
+          Error: Data Unavailable
+        </span>
+      )}
     </div>
   );
 };
