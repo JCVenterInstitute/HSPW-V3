@@ -57,7 +57,9 @@ export const fetchDataFile = async (jobId, fileName) => {
     return {
       data: Papa.parse(
         // Files with ID at the start have a duplicate, unnamed ID column so we add a blank header at the beginning
-        dataText.startsWith('"ID"\t') ? '" "'.concat("\t", dataText) : dataText,
+        dataText.startsWith('"ID"\t') || dataText.startsWith('"category"\t')
+          ? '" "'.concat("\t", dataText)
+          : dataText,
         {
           header: true,
           skipEmptyLines: true,

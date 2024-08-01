@@ -20,7 +20,7 @@ const PrincipleComponentAnalysis = ({
     width: 1600,
     height: 800,
     margin: { top: 10, right: 60, bottom: 60, left: 90 },
-    pointRadius: 5,
+    pointRadius: 7,
     xAxisLabel: `PC 1 (${d3.format(".1f")(pcaVariance[0]["x"] * 100)}%)`,
     yAxisLabel: `PC 2 (${d3.format(".1f")(
       (pcaVariance[1]["x"] - pcaVariance[0]["x"]) * 100
@@ -216,46 +216,6 @@ const PrincipleComponentAnalysis = ({
       .attr("class", "zoom")
       .attr("height", height)
       .attr("width", width);
-
-    // function createLegend(selection, legendDict) {
-    //   const legend = selection
-    //     .append("g")
-    //     .attr("class", "legend")
-    //     .attr("transform", "translate(15, 10)");
-    //   // .append("rect")
-    //   // .attr("width", "200")
-    //   // .attr("height", "80")
-    //   // .attr("fill", "white");
-
-    //   const legendItems = Object.keys(legendDict).map((key) => ({
-    //     key,
-    //     label: legendDict[key][0],
-    //     color: legendDict[key][1],
-    //   }));
-
-    //   const legendItem = legend
-    //     .selectAll(".legend-item")
-    //     .data(legendItems)
-    //     .enter()
-    //     .append("g")
-    //     .attr("class", "legend-item")
-    //     .attr("transform", (d, i) => `translate(0,${i * 30})`);
-
-    //   legendItem
-    //     .append("circle")
-    //     .attr("cx", 5)
-    //     .attr("cy", 5)
-    //     .attr("r", 10)
-    //     .attr("fill", (d) => d.color)
-    //     .attr("transform", (d, i) => `translate(0,${i + 1 * 4})`);
-
-    //   legendItem
-    //     .append("text")
-    //     .attr("x", 15)
-    //     .attr("y", 9)
-    //     .attr("transform", `translate(8, 8)`)
-    //     .text((d) => d.label);
-    // }
 
     createLegend(svg, plotConfig.legendDict, 25, 20, 20);
 

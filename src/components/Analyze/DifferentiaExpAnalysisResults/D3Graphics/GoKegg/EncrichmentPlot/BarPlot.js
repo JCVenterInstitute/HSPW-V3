@@ -1,7 +1,6 @@
 import "../../D3GraphStyles.css";
 import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
-import { fetchDataFile } from "../../../utils";
 
 const BarChartComponent = ({ plotData }) => {
   const [data, setData] = useState(null);
