@@ -20,7 +20,7 @@ module.exports = {
         INDEX_GENE: "genes",
         INDEX_PROTEIN_SIGNATURE: "protein_signature_013024",
         INDEX_CITATION: "citation_021324",
-        INDEX_SALIVARY_SUMMARY: "salivary_summary_020924",
+        INDEX_SALIVARY_SUMMARY: "salivary_summary_062624",
         INDEX_GO_NODES: "go_nodes",
         INDEX_GO_EDGES: "go_edges",
         INDEX_STUDY: "study",
