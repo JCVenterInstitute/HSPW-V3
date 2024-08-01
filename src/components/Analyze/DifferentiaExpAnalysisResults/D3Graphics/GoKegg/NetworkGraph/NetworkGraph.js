@@ -49,7 +49,7 @@ const processData = (data) => {
   return elements;
 };
 
-const NetworkGraph = ({ plotData }) => {
+const NetworkGraph = ({ jobId }) => {
   const [cy, setCy] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [message, setMessage] = useState("");
@@ -59,7 +59,8 @@ const NetworkGraph = ({ plotData }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const jsonData = plotData.map((d) => ({
+        const csvData = await fetchDataFile(jobId, "egomf_gene_net.tsv");
+        const jsonData = csvData.data.map((d) => ({
           property: d.Description,
           protein: d.geneID.replace(/"/g, "").replace(/\//g, ", "),
           color: getRandomColor(), // Default color if not provided
@@ -73,7 +74,7 @@ const NetworkGraph = ({ plotData }) => {
     };
 
     fetchData();
-  }, [plotData]);
+  }, [jobId]);
 
   useEffect(() => {
     if (data.length > 0 && selectedProperties.length > 0) {
@@ -139,7 +140,7 @@ const NetworkGraph = ({ plotData }) => {
         },
         userZoomingEnabled: true, // Enable zooming
         userPanningEnabled: true, // Enable panning
-        zoomingSpeed: 0.1,
+        zoomingSpeed: 0.1, // Reduce the zooming speed
       });
 
       setCy(cyInstance);
@@ -166,11 +167,14 @@ const NetworkGraph = ({ plotData }) => {
           node.removeClass("highlighted");
         }, 1500); // Keep the highlight for 1.5 seconds
 
-        // Calculate the pan to position the node at the top
+        // Reset zoom to a default level (e.g., 1) to avoid excessive zooming
+        cy.zoom(1);
+
+        // Pan the graph to center the node on the screen with slight offset to keep it visible
         const nodePosition = node.position();
         const newPan = {
           x: cy.width() / 2 - nodePosition.x,
-          y: cy.height() / 2 - nodePosition.y - (cy.height() / 2 - 40), // Adjust 40 to the margin you want from the top
+          y: cy.height() / 2 - nodePosition.y - 100, // Adjust this value to control vertical position
         };
         cy.pan(newPan);
 
@@ -178,6 +182,12 @@ const NetworkGraph = ({ plotData }) => {
       } else {
         setMessage("Protein not found.");
       }
+    }
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      handleSearch();
     }
   };
 
@@ -202,6 +212,7 @@ const NetworkGraph = ({ plotData }) => {
           placeholder="Search Protein ....."
           value={inputValue}
           onChange={handleInputChange}
+          onKeyPress={handleKeyPress} // Add the event listener here
           className="input-field"
         />
         <button onClick={handleSearch} className="search-button">
