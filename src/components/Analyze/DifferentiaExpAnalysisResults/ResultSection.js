@@ -22,7 +22,6 @@ const ResultSection = ({ selectedSection, jobId, searchParams }) => {
         selectedSection={selectedSection}
         numbOfTopVolcanoSamples={numbVolcanoSamples}
       />
-
       <DataSection
         selectedSection={selectedSection}
         searchParams={searchParams}

@@ -1,4 +1,10 @@
-import { Box, Container, CircularProgress, Typography } from "@mui/material";
+import {
+  Box,
+  Container,
+  CircularProgress,
+  Typography,
+  Stack,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { fileNames, goKeggDict } from "./Constants.js";
 import ResultDownload from "./ResultSections/ResultDownload";
@@ -32,6 +38,29 @@ const style = {
   },
 };
 
+const CheckbackLater = () => {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "50vh",
+      }}
+    >
+      <Stack
+        id="stack"
+        sx={{ alignItems: "center" }}
+      >
+        <CircularProgress />
+        <Typography sx={{ marginY: "10px" }}>
+          Results not ready. Analysis still running. Please check back later
+        </Typography>
+      </Stack>
+    </Box>
+  );
+};
+
 const DataSection = ({
   selectedSection,
   searchParams,
@@ -41,6 +70,43 @@ const DataSection = ({
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [allFiles, setAllFiles] = useState(null);
+  const [goResultsReady, setGoResultsReady] = useState(false);
+  const [intervalId, setIntervalId] = useState(null);
+
+  const checkGoStatus = async () => {
+    console.log("> Calling Go Status Check");
+
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/go-kegg-check/${jobId}/gsemf.tsv`
+      );
+
+      const { exists } = await res.json();
+
+      setGoResultsReady(exists);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    const intervalCall = setInterval(() => {
+      checkGoStatus();
+    }, 30000);
+
+    setIntervalId(intervalCall);
+
+    return () => {
+      // clean up
+      clearInterval(intervalCall);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (goResultsReady) {
+      clearInterval(intervalId);
+    }
+  }, [goResultsReady, intervalId]);
 
   /**
    * takes and array of dictionaries and converts it into a agGridReact component for display
@@ -66,7 +132,10 @@ const DataSection = ({
     });
     console.log(columnDefs);
     return (
-      <Container className="data-section-table" sx={{ margin: "0px" }}>
+      <Container
+        className="data-section-table"
+        sx={{ margin: "0px" }}
+      >
         <div
           className="ag-theme-material ag-theme-alpine"
           style={{
@@ -367,11 +436,17 @@ const DataSection = ({
         case "Input Data":
           displayResult = (
             <Container sx={{ margin: "0px" }}>
-              <Typography variant="h5" sx={{ fontFamily: "Lato" }}>
+              <Typography
+                variant="h5"
+                sx={{ fontFamily: "Lato" }}
+              >
                 Analysis Options:
               </Typography>
               {displayTable([allFiles["inputData"]])}
-              <Typography variant="h5" sx={{ fontFamily: "Lato" }}>
+              <Typography
+                variant="h5"
+                sx={{ fontFamily: "Lato" }}
+              >
                 Input Data:
               </Typography>
               {displayTable(allFiles["data_original.csv"].data)}
@@ -380,7 +455,10 @@ const DataSection = ({
           break;
         case "Download":
           displayResult = (
-            <ResultDownload jobId={jobId} handleDownload={handleDownload} />
+            <ResultDownload
+              jobId={jobId}
+              handleDownload={handleDownload}
+            />
           );
           break;
         default:
@@ -389,6 +467,7 @@ const DataSection = ({
     }
     return displayResult;
   };
+
   return isLoading ? (
     <Box
       sx={{
@@ -401,7 +480,10 @@ const DataSection = ({
       <CircularProgress />
     </Box>
   ) : (
-    <Box sx={style.dataBox} className="d3Graph">
+    <Box
+      sx={style.dataBox}
+      className="d3Graph"
+    >
       {getSection()}
     </Box>
   );

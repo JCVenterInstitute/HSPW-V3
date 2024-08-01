@@ -779,6 +779,9 @@ const DifferentialExpression = () => {
 
     Swal.fire({
       title: "Submitting the job, please wait...",
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
     });
     Swal.showLoading();
 
