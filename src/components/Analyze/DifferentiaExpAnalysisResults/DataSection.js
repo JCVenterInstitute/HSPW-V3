@@ -4,6 +4,7 @@ import {
   CircularProgress,
   Typography,
   Stack,
+  Tooltip,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { fileNames, goKeggDict } from "./Constants.js";
@@ -36,6 +37,15 @@ const style = {
     alignItems: "center",
     height: "auto",
   },
+};
+
+const inputTooltips = {
+  logNorm: "Log Transformation",
+  heatmap: "Number of Differentially Abundant Proteins in Heatmap",
+  foldChange: "Fold Change Threshold",
+  pValue: "P-Value Threshold",
+  pType: "P-Value Type",
+  parametricTest: "Statistical Parametric Test",
 };
 
 const CheckbackLater = () => {
@@ -113,9 +123,10 @@ const DataSection = ({
   const displayTable = (data) => {
     var columnDefs = [];
     Object.keys(data[0]).forEach((header) => {
-      // console.log(columnDefs.length, " ", Object.keys(data[0]).length);
+      console.log(inputTooltips[header]);
       columnDefs.push({
         field: header,
+        headerTooltip: inputTooltips[header],
         cellStyle: {
           textAlign: "left",
           width: "200%",
@@ -126,7 +137,6 @@ const DataSection = ({
         lockPosition: columnDefs.length === 0 ? "left" : "",
       });
     });
-    console.log(columnDefs);
     return (
       <Container className="data-section-table" sx={{ margin: "0px" }}>
         <div
@@ -152,6 +162,8 @@ const DataSection = ({
             suppressColumnMoveAnimation={true}
             domLayout="autoHeight"
             colResizeDefault="shift"
+            tooltipShowDelay={0}
+            tooltipMouseTrack={true}
           />
         </div>
       </Container>
@@ -190,28 +202,29 @@ const DataSection = ({
       fileDict["inputData"] = {};
       searchParams.forEach((input, header) => {
         switch (header) {
-          case "logNorm":
-            fileDict["inputData"]["Log Transformation"] = input;
-            break;
-          case "heatmap":
-            fileDict["inputData"][
-              "Number of Differentially Abundant Proteins in Heatmap"
-            ] = input;
-            break;
-          case "foldChange":
-            fileDict["inputData"]["Fold Change Threshold"] = input;
-            break;
-          case "pValue":
-            fileDict["inputData"]["P-Value Threshold"] = input;
-            break;
+          // case "logNorm":
+          //   fileDict["inputData"]["Log Transformation"] = input;
+          //   break;
+          // case "heatmap":
+          //   fileDict["inputData"][
+          //     "Number of Differentially Abundant Proteins in Heatmap"
+          //   ] = input;
+          //   break;
+          // case "foldChange":
+          //   fileDict["inputData"]["Fold Change Threshold"] = input;
+          //   break;
+          // case "pValue":
+          //   fileDict["inputData"]["P-Value Threshold"] = input;
+          //   break;
           case "pType":
-            fileDict["inputData"]["P-Value Type"] =
-              input === "Raw" ? "RAW" : "FDR";
+            fileDict["inputData"][header] = input === "Raw" ? "RAW" : "FDR";
             break;
           case "parametricTest":
-            fileDict["inputData"]["Statistical Parametric Test"] =
+            fileDict["inputData"][header] =
               input === "F" ? "T-Test" : "Wilcoxon Signed-rank Test";
+            break;
           default:
+            fileDict["inputData"][header] = input;
             break;
         }
       });
