@@ -7,9 +7,9 @@ const RidgePlotComponent = ({ tableData, allData }) => {
   const [data1, setData1] = useState([]);
   const [data2, setData2] = useState([]);
 
-  const margin = { top: 80, right: 30, bottom: 70, left: 180 };
+  const margin = { top: 80, right: 30, bottom: 70, left: 200 };
   const width = 900 - margin.left - margin.right;
-  const height = 700 - margin.top - margin.bottom;
+  const height = 800 - margin.top - margin.bottom;
 
   const cleanData = (data) => {
     return data.map((d) => {
