@@ -48,10 +48,7 @@ const CheckbackLater = () => {
         height: "50vh",
       }}
     >
-      <Stack
-        id="stack"
-        sx={{ alignItems: "center" }}
-      >
+      <Stack id="stack" sx={{ alignItems: "center" }}>
         <CircularProgress />
         <Typography sx={{ marginY: "10px" }}>
           Results not ready. Analysis still running. Please check back later
@@ -122,20 +119,16 @@ const DataSection = ({
         cellStyle: {
           textAlign: "left",
           width: "200%",
-
           borderLeftWidth: columnDefs.length === 0 ? "0px" : "1px",
         },
         resizable: true,
-        // columnDefs.length === Object.keys(data[0]).length - 1 ? false : true,
         flex: Object.keys(data[0]).length <= 5 ? 1 : 0,
+        lockPosition: columnDefs.length === 0 ? "left" : "",
       });
     });
     console.log(columnDefs);
     return (
-      <Container
-        className="data-section-table"
-        sx={{ margin: "0px" }}
-      >
+      <Container className="data-section-table" sx={{ margin: "0px" }}>
         <div
           className="ag-theme-material ag-theme-alpine"
           style={{
@@ -156,7 +149,7 @@ const DataSection = ({
             pagination={true}
             paginationPageSize={10}
             suppressFieldDotNotation={true}
-            suppressMovable={true}
+            suppressColumnMoveAnimation={true}
             domLayout="autoHeight"
             colResizeDefault="shift"
           />
@@ -184,9 +177,16 @@ const DataSection = ({
   const getAllFiles = async () => {
     try {
       const fileDict = {};
-      for (const file of fileNames) {
-        fileDict[file] = await fetchDataFile(jobId, file);
-      }
+      // for (const file of fileNames) {
+      //   fileDict[file] = await fetchDataFile(jobId, file);
+      // }
+      const fetchPromises = fileNames.map(async (file) => {
+        const data = await fetchDataFile(jobId, file);
+        fileDict[file] = data;
+      });
+
+      await Promise.all(fetchPromises);
+
       fileDict["inputData"] = {};
       searchParams.forEach((input, header) => {
         switch (header) {
@@ -436,17 +436,11 @@ const DataSection = ({
         case "Input Data":
           displayResult = (
             <Container sx={{ margin: "0px" }}>
-              <Typography
-                variant="h5"
-                sx={{ fontFamily: "Lato" }}
-              >
+              <Typography variant="h5" sx={{ fontFamily: "Lato" }}>
                 Analysis Options:
               </Typography>
               {displayTable([allFiles["inputData"]])}
-              <Typography
-                variant="h5"
-                sx={{ fontFamily: "Lato" }}
-              >
+              <Typography variant="h5" sx={{ fontFamily: "Lato" }}>
                 Input Data:
               </Typography>
               {displayTable(allFiles["data_original.csv"].data)}
@@ -455,10 +449,7 @@ const DataSection = ({
           break;
         case "Download":
           displayResult = (
-            <ResultDownload
-              jobId={jobId}
-              handleDownload={handleDownload}
-            />
+            <ResultDownload jobId={jobId} handleDownload={handleDownload} />
           );
           break;
         default:
@@ -480,10 +471,7 @@ const DataSection = ({
       <CircularProgress />
     </Box>
   ) : (
-    <Box
-      sx={style.dataBox}
-      className="d3Graph"
-    >
+    <Box sx={style.dataBox} className="d3Graph">
       {getSection()}
     </Box>
   );
