@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { createLegend } from "../../utils";
 import "../D3GraphStyles.css";
 import * as d3 from "d3v7";
 
@@ -22,8 +23,8 @@ const VolcanoPlot = ({
   const margin = { top: 20, right: 20, bottom: 60, left: 80 };
 
   useEffect(() => {
-    const SVGwidth = chartRef.current.offsetWidth;
-    const SVGheight = 2 * (SVGwidth / 3.5);
+    const SVGwidth = 1600;
+    const SVGheight = 800;
     const innerWidth = SVGwidth - margin.left - margin.right;
     const innerHeight = SVGheight - margin.top - margin.bottom;
 
@@ -212,7 +213,7 @@ const VolcanoPlot = ({
       3: ["UP", "var(--sig-dot-color)"],
     };
 
-    createLegend(svg, legendDict);
+    createLegend(svg, legendDict, 20, 20, 20);
 
     const zoom = d3
       .zoom()
@@ -308,41 +309,6 @@ const VolcanoPlot = ({
       } else {
         return "dot";
       }
-    }
-
-    // Function for creating a legend to be attached to a chart
-    function createLegend(selection, legendDict) {
-      const legend = selection
-        .append("g")
-        .attr("class", "legend")
-        .attr("transform", "translate(20, 20)");
-
-      const legendItems = Object.keys(legendDict).map((key) => ({
-        key,
-        label: legendDict[key][0],
-        color: legendDict[key][1],
-      }));
-
-      const legendItem = legend
-        .selectAll(".legend-item")
-        .data(legendItems)
-        .enter()
-        .append("g")
-        .attr("class", "legend-item")
-        .attr("transform", (d, i) => `translate(0,${i * 20})`);
-
-      legendItem
-        .append("circle")
-        .attr("cx", 5)
-        .attr("cy", 5)
-        .attr("r", 5)
-        .attr("fill", (d) => d.color);
-
-      legendItem
-        .append("text")
-        .attr("x", 15)
-        .attr("y", 9)
-        .text((d) => d.label);
     }
 
     return () => {

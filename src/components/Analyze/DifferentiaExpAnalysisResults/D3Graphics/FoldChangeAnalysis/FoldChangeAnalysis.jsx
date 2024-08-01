@@ -1,5 +1,7 @@
 import "../D3GraphStyles.css";
 import React, { useEffect, useRef } from "react";
+import { createLegend } from "../../utils";
+
 import * as d3 from "d3v7";
 // import data from "../../data/statistical_parametric_test.csv";
 
@@ -291,41 +293,8 @@ const FoldChangePlot = ({ data, fc }) => {
           ),
         "_blank"
       );
-    function createLegend(selection, legendDict) {
-      const legend = selection
-        .append("g")
-        .attr("class", "legend")
-        .attr("transform", "translate(25, 40)");
 
-      const legendItems = Object.keys(legendDict).map((key) => ({
-        key,
-        label: legendDict[key][0],
-        color: legendDict[key][1],
-      }));
-
-      const legendItem = legend
-        .selectAll(".legend-item")
-        .data(legendItems)
-        .enter()
-        .append("g")
-        .attr("class", "legend-item")
-        .attr("transform", (d, i) => `translate(0,${i * 40})`);
-
-      legendItem
-        .append("circle")
-        .attr("cx", 5)
-        .attr("cy", 5)
-        .attr("r", 10)
-        .attr("fill", (d) => d.color);
-
-      legendItem
-        .append("text")
-        .attr("x", 15)
-        .attr("y", 9)
-        .attr("transform", `translate(8, 6)`)
-        .text((d) => d.label);
-    }
-    createLegend(svg, config.legendDict);
+    createLegend(svg, plotConfig.legendDict, 25, 40, 20);
   };
 
   const containerRef = useRef(null);

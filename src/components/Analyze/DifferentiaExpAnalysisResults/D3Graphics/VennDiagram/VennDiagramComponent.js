@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import * as d3 from "d3v7";
 import { VennDiagram } from "venn.js";
 import { AgGridReact } from "ag-grid-react";
+import { createLegend } from "../../utils";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 
@@ -176,47 +177,17 @@ const VennDiagramComponent = ({ data }) => {
       .style("font-size", "15px")
       .text("Coincidental");
 
-    //Display group information and colored circles as legends in upper right corner
-    function createLegend(selection, legendDict) {
-      const legend = selection
-        .append("g")
-        .attr("class", "legend")
-        .attr("transform", "translate(480, 40)");
-
-      const legendItems = Object.keys(legendDict).map((key) => ({
-        key,
-        label: legendDict[key][0],
-        color: legendDict[key][1],
-      }));
-
-      const legendItem = legend
-        .selectAll(".legend-item")
-        .data(legendItems)
-        .enter()
-        .append("g")
-        .attr("class", "legend-item")
-        .attr("transform", (d, i) => `translate(0,${i * 40})`);
-
-      legendItem
-        .append("circle")
-        .attr("cx", 0)
-        .attr("cy", 0)
-        .attr("r", 7)
-        .attr("fill", (d) => d.color);
-
-      legendItem
-        .append("text")
-        .attr("x", 10)
-        .attr("y", 0)
-        .attr("transform", `translate(8, 6)`)
-        .style("font-size", "12px")
-        .text((d) => d.label);
-    }
-    createLegend(svg, {
-      1: [`Unique ${groups[0]}: ${sets[0].size}`, "#1f77b4"],
-      2: [`Unique ${groups[1]}: ${sets[1].size}`, "#ff7f0e"],
-      3: [`Common ${groups[0]} & ${groups[1]}: ${sets[2].size}`, "grey"],
-    });
+    createLegend(
+      svg,
+      {
+        1: [`Unique ${groups[0]}: ${sets[0].size}`, "#1f77b4"],
+        2: [`Unique ${groups[1]}: ${sets[1].size}`, "#ff7f0e"],
+        3: [`Common ${groups[0]} & ${groups[1]}: ${sets[2].size}`, "grey"],
+      },
+      480,
+      40,
+      12
+    );
   };
 
   const drawStandardVenn = (vennContainer, sets, groups, venntooltip) => {
@@ -277,47 +248,17 @@ const VennDiagramComponent = ({ data }) => {
         setSelectedSet(d); // Set selected set to state
       });
 
-    //Display group information and colored circles as legends in upper right corner
-    function createLegend(selection, legendDict) {
-      const legend = selection
-        .append("g")
-        .attr("class", "legend")
-        .attr("transform", "translate(480, 40)");
-
-      const legendItems = Object.keys(legendDict).map((key) => ({
-        key,
-        label: legendDict[key][0],
-        color: legendDict[key][1],
-      }));
-
-      const legendItem = legend
-        .selectAll(".legend-item")
-        .data(legendItems)
-        .enter()
-        .append("g")
-        .attr("class", "legend-item")
-        .attr("transform", (d, i) => `translate(0,${i * 40})`);
-
-      legendItem
-        .append("circle")
-        .attr("cx", 0)
-        .attr("cy", 0)
-        .attr("r", 7)
-        .attr("fill", (d) => d.color);
-
-      legendItem
-        .append("text")
-        .attr("x", 10)
-        .attr("y", 0)
-        .attr("transform", `translate(8, 6)`)
-        .style("font-size", "12px")
-        .text((d) => d.label);
-    }
-    createLegend(svg, {
-      1: [`Unique ${groups[0]}: ${sets[0].size}`, "#1f77b4"],
-      2: [`Unique ${groups[1]}: ${sets[1].size}`, "#ff7f0e"],
-      3: [`Common ${groups[0]} & ${groups[1]}: ${sets[2].size}`, "grey"],
-    });
+    createLegend(
+      svg,
+      {
+        1: [`Unique ${groups[0]}: ${sets[0].size}`, "#1f77b4"],
+        2: [`Unique ${groups[1]}: ${sets[1].size}`, "#ff7f0e"],
+        3: [`Common ${groups[0]} & ${groups[1]}: ${sets[2].size}`, "grey"],
+      },
+      480,
+      40,
+      12
+    );
   };
 
   return (
