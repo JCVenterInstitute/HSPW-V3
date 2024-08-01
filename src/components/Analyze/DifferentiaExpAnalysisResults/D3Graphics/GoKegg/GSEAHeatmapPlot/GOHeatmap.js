@@ -10,7 +10,7 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
   const [data2, setData2] = useState([]);
   const [activeTab, setActiveTab] = useState("All Samples");
 
-  const margin = { top: 20, right: 30, bottom: 150, left: 150 };
+  const margin = { top: 20, right: 30, bottom: 150, left: 200 };
   const width = 900 - margin.left - margin.right;
   const height = 950 - margin.top - margin.bottom;
 
