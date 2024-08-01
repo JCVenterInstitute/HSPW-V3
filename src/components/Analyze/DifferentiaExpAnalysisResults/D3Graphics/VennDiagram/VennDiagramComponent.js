@@ -11,7 +11,7 @@ const VennDiagramComponent = ({ data }) => {
 
   const width = 600;
   const height = 400;
-  const margin = { top: 20, right: 20, bottom: 20, left: 20 };
+  const margin = { top: 20, right: 40, bottom: 20, left: 20 };
 
   useEffect(() => {
     if (!data) return;
@@ -181,7 +181,7 @@ const VennDiagramComponent = ({ data }) => {
       const legend = selection
         .append("g")
         .attr("class", "legend")
-        .attr("transform", "translate(450, 40)");
+        .attr("transform", "translate(480, 40)");
 
       const legendItems = Object.keys(legendDict).map((key) => ({
         key,
@@ -199,16 +199,17 @@ const VennDiagramComponent = ({ data }) => {
 
       legendItem
         .append("circle")
-        .attr("cx", 5)
-        .attr("cy", 5)
-        .attr("r", 10)
+        .attr("cx", 0)
+        .attr("cy", 0)
+        .attr("r", 7)
         .attr("fill", (d) => d.color);
 
       legendItem
         .append("text")
-        .attr("x", 15)
-        .attr("y", 9)
+        .attr("x", 10)
+        .attr("y", 0)
         .attr("transform", `translate(8, 6)`)
+        .style("font-size", "12px")
         .text((d) => d.label);
     }
     createLegend(svg, {
@@ -276,11 +277,12 @@ const VennDiagramComponent = ({ data }) => {
         setSelectedSet(d); // Set selected set to state
       });
 
+    //Display group information and colored circles as legends in upper right corner
     function createLegend(selection, legendDict) {
       const legend = selection
         .append("g")
         .attr("class", "legend")
-        .attr("transform", "translate(450, 40)");
+        .attr("transform", "translate(480, 40)");
 
       const legendItems = Object.keys(legendDict).map((key) => ({
         key,
@@ -298,16 +300,17 @@ const VennDiagramComponent = ({ data }) => {
 
       legendItem
         .append("circle")
-        .attr("cx", 5)
-        .attr("cy", 5)
-        .attr("r", 10)
+        .attr("cx", 0)
+        .attr("cy", 0)
+        .attr("r", 7)
         .attr("fill", (d) => d.color);
 
       legendItem
         .append("text")
-        .attr("x", 15)
-        .attr("y", 9)
+        .attr("x", 10)
+        .attr("y", 0)
         .attr("transform", `translate(8, 6)`)
+        .style("font-size", "12px")
         .text((d) => d.label);
     }
     createLegend(svg, {
