@@ -142,7 +142,6 @@ body {
 .reset-button:hover {
   background-color: var(--button-hover-background-color);
 }
-
 #statParaTest {
   position: relative;
   display: flex;
@@ -458,7 +457,7 @@ body {
   height: 800px;
 }
 
-.heatmap-container svg {
-  width: 900px;
-  height: 900px;
+div.heatmap-container {
+  position: relative;
+  width: 90%;
 }

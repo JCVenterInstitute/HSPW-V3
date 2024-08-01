@@ -36,8 +36,10 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
 
   useEffect(() => {
     if (data.length > 0) {
-      const svg = d3.select(svgRef.current);
-      svg.selectAll("*").remove();
+      const parentContainer = d3.select(".heatmap-container");
+      parentContainer.selectAll("svg").remove();
+
+      const svg = parentContainer.append("svg");
 
       const plot = svg
         .attr("preserveAspectRatio", "xMinYMin meet")
@@ -261,17 +263,21 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
       }
     }
   }, [data, tab]);
-
+  const resetButtonMargin = {
+    top: `${margin.top + 10}px`,
+    right: `${margin.right + 400}px`,
+  };
   return (
     <div className="heatmap-container graph-container">
-      <button ref={resetButtonRef} className="heatmap-reset-button">
-        Reset Zoom
-      </button>
-      <svg
-        ref={svgRef}
-        width={width + margin.left + margin.right}
-        height={height + margin.top + margin.bottom}
-      ></svg>
+      <div className="reset-button-container">
+        <button
+          ref={resetButtonRef}
+          className="heatmap-reset-button reset-button"
+          style={resetButtonMargin}
+        >
+          Reset Zoom
+        </button>
+      </div>
       <div id="tooltip" className="tooltip"></div>
     </div>
   );
