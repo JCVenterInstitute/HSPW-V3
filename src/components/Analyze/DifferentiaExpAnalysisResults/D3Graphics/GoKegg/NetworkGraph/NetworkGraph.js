@@ -139,6 +139,7 @@ const NetworkGraph = ({ plotData }) => {
         },
         userZoomingEnabled: true, // Enable zooming
         userPanningEnabled: true, // Enable panning
+        zoomingSpeed: 0.1,
       });
 
       setCy(cyInstance);
