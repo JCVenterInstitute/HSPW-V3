@@ -181,7 +181,7 @@ const VennDiagramComponent = ({ data }) => {
       const legend = selection
         .append("g")
         .attr("class", "legend")
-        .attr("transform", "translate(25, 40)");
+        .attr("transform", "translate(450, 40)");
 
       const legendItems = Object.keys(legendDict).map((key) => ({
         key,
@@ -209,11 +209,12 @@ const VennDiagramComponent = ({ data }) => {
         .attr("x", 15)
         .attr("y", 9)
         .attr("transform", `translate(8, 6)`)
-        .text((d) => `${d.label}: ${sets[0].size}`);
+        .text((d) => d.label);
     }
     createLegend(svg, {
-      1: [`Unique ${groups[0]}`, "#1f77b4"],
-      2: ["B", "Gray"],
+      1: [`Unique ${groups[0]}: ${sets[0].size}`, "#1f77b4"],
+      2: [`Unique ${groups[1]}: ${sets[1].size}`, "#ff7f0e"],
+      3: [`Common ${groups[0]} & ${groups[1]}: ${sets[2].size}`, "grey"],
     });
   };
 
@@ -274,6 +275,46 @@ const VennDiagramComponent = ({ data }) => {
       .on("click", function (event, d) {
         setSelectedSet(d); // Set selected set to state
       });
+
+    function createLegend(selection, legendDict) {
+      const legend = selection
+        .append("g")
+        .attr("class", "legend")
+        .attr("transform", "translate(450, 40)");
+
+      const legendItems = Object.keys(legendDict).map((key) => ({
+        key,
+        label: legendDict[key][0],
+        color: legendDict[key][1],
+      }));
+
+      const legendItem = legend
+        .selectAll(".legend-item")
+        .data(legendItems)
+        .enter()
+        .append("g")
+        .attr("class", "legend-item")
+        .attr("transform", (d, i) => `translate(0,${i * 40})`);
+
+      legendItem
+        .append("circle")
+        .attr("cx", 5)
+        .attr("cy", 5)
+        .attr("r", 10)
+        .attr("fill", (d) => d.color);
+
+      legendItem
+        .append("text")
+        .attr("x", 15)
+        .attr("y", 9)
+        .attr("transform", `translate(8, 6)`)
+        .text((d) => d.label);
+    }
+    createLegend(svg, {
+      1: [`Unique ${groups[0]}: ${sets[0].size}`, "#1f77b4"],
+      2: [`Unique ${groups[1]}: ${sets[1].size}`, "#ff7f0e"],
+      3: [`Common ${groups[0]} & ${groups[1]}: ${sets[2].size}`, "grey"],
+    });
   };
 
   return (
