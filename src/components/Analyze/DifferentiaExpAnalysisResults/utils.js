@@ -151,3 +151,48 @@ export const fetchImage = async (jobId, fileName) => {
     console.error("Error downloading image:", error);
   }
 };
+
+// D3 UTILS
+
+export function createLegend(
+  selection,
+  legendDict,
+  offsetX,
+  offsetY,
+  fontSize = 12,
+  lineSpacing = 35
+) {
+  const legend = selection
+    .append("g")
+    .attr("class", "legend")
+    .attr("transform", `translate(${offsetX}, ${offsetY})`);
+
+  const legendItems = Object.keys(legendDict).map((key) => ({
+    key,
+    label: legendDict[key][0],
+    color: legendDict[key][1],
+  }));
+
+  const legendItem = legend
+    .selectAll(".legend-item")
+    .data(legendItems)
+    .enter()
+    .append("g")
+    .attr("class", "legend-item")
+    .attr("transform", (d, i) => `translate(0,${i * lineSpacing})`);
+
+  legendItem
+    .append("circle")
+    .attr("cx", 5)
+    .attr("cy", 5)
+    .attr("r", 8)
+    .attr("fill", (d) => d.color);
+
+  legendItem
+    .append("text")
+    .attr("x", 15)
+    .attr("y", 5)
+    .style("font-size", `${fontSize}px`)
+    .attr("transform", `translate(8, 6)`)
+    .text((d) => d.label);
+}

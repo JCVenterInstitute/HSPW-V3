@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 // import { saveSvgAsPng } from "save-svg-as-png";
 import * as d3 from "d3v7";
 import "../D3GraphStyles.css";
+import { createLegend } from "../../utils";
 import { create } from "@mui/material/styles/createTransitions";
 // import data from "../../data/statistical_parametric_test.csv";
 
@@ -213,41 +214,6 @@ const StatisticalParametricPlot = ({ data, pval }) => {
       .attr("height", height)
       .attr("width", width);
 
-    function createLegend(selection, legendDict) {
-      const legend = selection
-        .append("g")
-        .attr("class", "legend")
-        .attr("transform", "translate(25, 40)");
-
-      const legendItems = Object.keys(legendDict).map((key) => ({
-        key,
-        label: legendDict[key][0],
-        color: legendDict[key][1],
-      }));
-
-      const legendItem = legend
-        .selectAll(".legend-item")
-        .data(legendItems)
-        .enter()
-        .append("g")
-        .attr("class", "legend-item")
-        .attr("transform", (d, i) => `translate(0,${i * 40})`);
-
-      legendItem
-        .append("circle")
-        .attr("cx", 5)
-        .attr("cy", 5)
-        .attr("r", 10)
-        .attr("fill", (d) => d.color);
-
-      legendItem
-        .append("text")
-        .attr("x", 15)
-        .attr("y", 9)
-        .attr("transform", `translate(8, 6)`)
-        .text((d) => d.label);
-    }
-
     const zoom = d3
       .zoom()
       .scaleExtent([0.5, 20])
@@ -336,7 +302,7 @@ const StatisticalParametricPlot = ({ data, pval }) => {
           ),
         "_blank"
       );
-    createLegend(svg, plotConfig.legendDict);
+    createLegend(svg, plotConfig.legendDict, 25, 40, 20);
   };
 
   const containerRef = useRef(null);
