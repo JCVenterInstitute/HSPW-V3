@@ -311,3 +311,7 @@
   background: #fff;
   padding: 0px !important;
 }
+
+.ag-theme-alpine .ag-tooltip {
+  background-color: white;
+}

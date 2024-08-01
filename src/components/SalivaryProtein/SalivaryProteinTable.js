@@ -482,14 +482,14 @@ const SalivaryProteinTable = () => {
       cellClass: ["square_table", "salivary-proteins-colored-cell"],
     },
     {
-      headerName: "mRNA (NX)",
+      headerName: "mRNA Transcript Level in Salivary Glands",
       headerGroupComponent: CustomHeaderGroup,
       headerClass: ["header-border", "salivary-protein-header"],
       wrapText: true,
       cellClass: ["table-border"],
       children: [
         {
-          headerName: "Value",
+          headerName: "Minor Glands*",
           field: "mRNA",
           cellRenderer: "GreenComponent",
           cellRendererParams: {
@@ -498,28 +498,8 @@ const SalivaryProteinTable = () => {
           },
           maxWidth: 170,
           cellClass: ["square_table", "salivary-proteins-colored-cell"],
+          headerTooltip: "Data imported from Protein Atlas",
         },
-        {
-          headerName: "Specificity",
-          field: "specificity",
-          cellRenderer: "specificityComponent",
-          cellClass: ["table-border", "salivary-proteins-colored-cell"],
-        },
-        {
-          headerName: "Specificity Score",
-          field: "specificity_score",
-          cellRenderer: "specificityScoreComponent",
-          cellClass: ["table-border", "salivary-proteins-colored-cell"],
-        },
-      ],
-    },
-    {
-      headerName: "mRNA Large",
-      headerGroupComponent: CustomHeaderGroup,
-      headerClass: ["header-border", "salivary-protein-header"],
-      wrapText: true,
-      cellClass: ["table-border"],
-      children: [
         {
           headerName: "SM",
           field: "SM",
