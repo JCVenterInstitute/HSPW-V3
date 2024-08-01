@@ -1,22 +1,22 @@
 import "../D3GraphStyles.css";
 import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
-import { fetchDataFile } from "../../utils";
 
 const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
   const svgRef = useRef();
+  const resetButtonRef = useRef(null); // Reference for the reset button
+  const zoomRef = useRef(); // Reference for zoom behavior
   const [data, setData] = useState([]);
 
-  const margin = { top: 20, right: 30, bottom: 150, left: 135 };
-  const width = 900 - margin.left - margin.right;
-  const height = 850 - margin.top - margin.bottom;
+  const margin = { top: 20, right: 30, bottom: 200, left: 135 };
+  const width = 1000 - margin.left - margin.right;
+  const height = 1050 - margin.top - margin.bottom;
 
   const cleanData = (data) => {
     return data.slice(1).map((d) => {
-      // Slice to remove the first row
       const cleanedData = {};
       for (let key in d) {
-        cleanedData[key] = d[key].replace(/^"|"$/g, ""); // Adjust regex to remove only leading and trailing quotes
+        cleanedData[key] = d[key].replace(/^"|"$/g, "");
       }
       return cleanedData;
     });
@@ -52,7 +52,7 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
 
       // Extract unique labels and columns
       const labels = data.map((d) => d["Protein"]);
-      const columns = Object.keys(data[0]).slice(1); // Ignore "Label"
+      const columns = Object.keys(data[0]).slice(1);
 
       const colorScale = d3
         .scaleSequential(d3.interpolateRdBu)
@@ -63,11 +63,24 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
         .domain(columns)
         .range([0, width])
         .padding(0.05);
+      const reversedlabels = [...labels].reverse();
       const yScale = d3
         .scaleBand()
-        .domain(labels)
+        .domain(reversedlabels)
         .range([height, 0])
-        .padding(0.05);
+        .padding(0.1);
+
+      // Add zoom functionality
+      const zoomed = (event) => {
+        const { transform } = event;
+        plot.attr("transform", transform);
+        plot.attr("stroke-width", 1 / transform.k);
+      };
+
+      const zoom = d3.zoom().scaleExtent([1, 10]).on("zoom", zoomed);
+
+      svg.call(zoom);
+      zoomRef.current = zoom;
 
       // Append grid lines
       plot
@@ -103,7 +116,7 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
           flattenedData.push({
             Protein: d.Protein,
             Class: column,
-            Value: d[column], // Access the value for each column
+            Value: d[column],
           });
         });
       });
@@ -111,18 +124,15 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
       // Create heatmap tiles
       plot
         .selectAll(".tile")
-        .data(flattenedData) // Use the flattened data
+        .data(flattenedData)
         .enter()
         .append("rect")
         .attr("class", "tile")
-        .attr("x", (d) => xScale(d.Class)) // Set x based on the column name
-        .attr("y", (d) => yScale(d.Protein)) // Set y based on the protein
+        .attr("x", (d) => xScale(d.Class))
+        .attr("y", (d) => yScale(d.Protein))
         .attr("width", xScale.bandwidth())
         .attr("height", yScale.bandwidth())
-        .attr("fill", (d) => {
-          const value = +d.Value; // Use the value from the flattened data
-          return colorScale(value); // Adjust to color each tile based on value
-        })
+        .attr("fill", (d) => colorScale(+d.Value))
         .on("mouseover", function (event, d) {
           const [x, y] = d3.pointer(event);
           d3.select("#tooltip")
@@ -145,7 +155,7 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
           d3.select("#tooltip").style("display", "none");
         });
 
-      // Append axes and labels (similar to your original code)
+      // Append axes and labels
       plot
         .append("g")
         .attr("class", "x-axis")
@@ -164,7 +174,7 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
         .attr("text-anchor", "middle")
         .attr(
           "transform",
-          `translate(${width / 2}, ${height + margin.top + 40})`
+          `translate(${width / 2}, ${height + margin.top + 110})`
         )
         .style("font-size", "12px")
         .style("font-weight", "bold")
@@ -188,7 +198,7 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
         .attr(
           "transform",
           `translate(${(width - legendWidth) / 2}, ${
-            height + margin.top + 100
+            height + margin.top + 125
           })`
         );
 
@@ -231,16 +241,32 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
         .attr("text-anchor", "middle")
         .attr(
           "transform",
-          `translate(${width / 2}, ${height + margin.top + 90})`
+          `translate(${width / 2}, ${height + margin.top + 165})`
         )
         .style("font-size", "12px")
         .style("font-weight", "bold")
         .text("Legend");
+
+      // Reset zoom when the tab changes
+      if (resetButtonRef.current) {
+        resetButtonRef.current.addEventListener("click", () => {
+          svg
+            .transition()
+            .duration(750)
+            .call(zoom.transform, d3.zoomIdentity)
+            .on("end", () => {
+              plot.attr("transform", `translate(${margin.left},${margin.top})`);
+            });
+        });
+      }
     }
-  }, [data]);
+  }, [data, tab]);
 
   return (
     <div className="heatmap-container graph-container">
+      <button ref={resetButtonRef} className="heatmap-reset-button">
+        Reset Zoom
+      </button>
       <svg
         ref={svgRef}
         width={width + margin.left + margin.right}
