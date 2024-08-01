@@ -155,6 +155,7 @@ const DataSection = ({
               wrapHeaderText: true,
               autoHeaderHeight: true,
               resizable: true,
+              sortable: true,
             }}
             pagination={true}
             paginationPageSize={10}
