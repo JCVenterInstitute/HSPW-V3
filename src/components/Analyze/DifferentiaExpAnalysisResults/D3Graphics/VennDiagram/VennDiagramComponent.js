@@ -1,5 +1,5 @@
 import "../D3GraphStyles.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
 import { VennDiagram } from "venn.js";
 import { AgGridReact } from "ag-grid-react";
@@ -8,6 +8,7 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 
 const VennDiagramComponent = ({ data }) => {
+  const svgRef = useRef(); // Ref for the SVG element
   const [selectedSet, setSelectedSet] = useState(null);
 
   const width = 600;
@@ -30,7 +31,7 @@ const VennDiagramComponent = ({ data }) => {
       b_columns
     );
 
-    const vennContainer = d3.select("#venn");
+    const vennContainer = d3.select(svgRef.current);
     vennContainer.selectAll("*").remove(); // Clear any existing diagram
 
     const sets = [
@@ -128,7 +129,6 @@ const VennDiagramComponent = ({ data }) => {
     venntooltip
   ) => {
     const svg = vennContainer
-      .append("svg")
       .attr("preserveAspectRatio", "xMinYMin meet")
       .attr(
         "viewBox",
@@ -139,9 +139,9 @@ const VennDiagramComponent = ({ data }) => {
 
     svg
       .append("circle")
-      .attr("cx", 250)
-      .attr("cy", 250)
-      .attr("r", 188)
+      .attr("cx", width / 2)
+      .attr("cy", height / 2)
+      .attr("r", Math.min(width, height) / 2.5)
       .style("fill", "lightgrey")
       .style("stroke", "black")
       .style("stroke-width", 2)
@@ -169,8 +169,8 @@ const VennDiagramComponent = ({ data }) => {
 
     svg
       .append("text")
-      .attr("x", 250)
-      .attr("y", 250)
+      .attr("x", width / 2)
+      .attr("y", height / 2)
       .attr("text-anchor", "middle")
       .attr("dy", ".3em")
       .style("font-weight", "bold")
@@ -184,7 +184,7 @@ const VennDiagramComponent = ({ data }) => {
         2: [`Unique ${groups[1]}: ${sets[1].size}`, "#ff7f0e"],
         3: [`Common ${groups[0]} & ${groups[1]}: ${sets[2].size}`, "grey"],
       },
-      480,
+      width - 3 * margin.right,
       40,
       12
     );
@@ -192,7 +192,6 @@ const VennDiagramComponent = ({ data }) => {
 
   const drawStandardVenn = (vennContainer, sets, groups, venntooltip) => {
     const svg = vennContainer
-      .append("svg")
       .attr("preserveAspectRatio", "xMinYMin meet")
       .attr(
         "viewBox",
@@ -213,16 +212,11 @@ const VennDiagramComponent = ({ data }) => {
       .selectAll(".venn-circle text")
       .html((d, i) => `${sets[i].label}`)
       .style("font-weight", "bold")
-      .style("font-size", "15px") // Ensure this is set to 15px
+      .style("font-size", "15px")
       .style("fill", "black")
-      .attr("dx", (d) => {
-        return 5; // Adjust as needed
-      })
-      .attr("dy", (d) => {
-        return -32; // Adjust as needed
-      });
+      .attr("dx", (d) => 5)
+      .attr("dy", (d) => -32);
 
-    // Event handlers for .venn-area elements
     svg
       .selectAll(".venn-area")
       .on("mouseover", function (event, d) {
@@ -234,7 +228,6 @@ const VennDiagramComponent = ({ data }) => {
         );
         venntooltip.style("visibility", "visible");
       })
-
       .on("mousemove", function (event) {
         venntooltip
           .style("top", event.pageY + 10 + "px")
@@ -245,7 +238,7 @@ const VennDiagramComponent = ({ data }) => {
         venntooltip.style("visibility", "hidden");
       })
       .on("click", function (event, d) {
-        setSelectedSet(d); // Set selected set to state
+        setSelectedSet(d);
       });
 
     createLegend(
@@ -255,7 +248,7 @@ const VennDiagramComponent = ({ data }) => {
         2: [`Unique ${groups[1]}: ${sets[1].size}`, "#ff7f0e"],
         3: [`Common ${groups[0]} & ${groups[1]}: ${sets[2].size}`, "grey"],
       },
-      480,
+      width - 3 * margin.right,
       40,
       12
     );
@@ -263,7 +256,7 @@ const VennDiagramComponent = ({ data }) => {
 
   return (
     <div id="vennContainer">
-      <div id="venn" className="graph-container"></div>
+      <svg ref={svgRef} style={{ width: "90%", height: "auto" }}></svg>
       {selectedSet && (
         <div>
           <h2>
@@ -273,7 +266,6 @@ const VennDiagramComponent = ({ data }) => {
           </h2>
           <div className="ag-theme-material ag-cell-wrap-text ag-theme-alpine">
             <AgGridReact
-              // style="overflow-x: hidden;"
               className="ag-cell-wrap-text"
               rowData={[...selectedSet.data].map((protein) => ({
                 protein,

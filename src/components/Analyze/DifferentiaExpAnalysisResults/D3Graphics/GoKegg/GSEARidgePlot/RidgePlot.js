@@ -35,16 +35,16 @@ const RidgePlotComponent = ({ tableData, allData }) => {
       const svg = d3.select(svgRef.current);
       svg.selectAll("*").remove();
 
-      const plot = svg
-        .append("svg")
-        .attr("class", "chart")
+      svg
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr(
           "viewBox",
           `0 0 ${width + margin.left + margin.right} ${
             height + margin.top + margin.bottom
           }`
-        )
+        );
+
+      const plot = svg
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -312,7 +312,12 @@ const RidgePlotComponent = ({ tableData, allData }) => {
 
   return (
     <div className="ridgechart-container graph-container">
-      <svg id="ridgeChart" className="ridgechart" ref={svgRef}></svg>
+      <svg
+        id="ridgeChart"
+        className="ridgechart"
+        ref={svgRef}
+        style={{ width: "100%", height: "auto" }} // Optional for responsive design
+      ></svg>
       <div id="tooltip" className="tooltip" style={{ display: "none" }}></div>
     </div>
   );

@@ -226,6 +226,8 @@ body {
 }
 
 #vennContainer {
+  width: 90%;
+  height: 80%;
   #venn {
     width: 700px;
     height: 500px;
@@ -466,7 +468,16 @@ body {
   height: 800px;
 }
 
-.heatmap-container svg {
-  width: 900px;
-  height: 900px;
+.heatmap-container {
+  width: 90%;
+  height: 80%;
 }
+.ridgechart-container {
+  width: 90%;
+  height: 80%;
+}
+
+/* svg {
+  width: 100%;
+  height: auto;
+} */
