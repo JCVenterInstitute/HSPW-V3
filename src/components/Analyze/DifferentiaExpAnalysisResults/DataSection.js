@@ -24,10 +24,9 @@ import DotGraph from "./D3Graphics/DotGraph/DotGraph";
 import HeatmapComponent from "./D3Graphics/Heatmap/Heatmap.js";
 import NetworkGraph from "./D3Graphics/GoKegg/NetworkGraph/NetworkGraph";
 import { fetchDataFile, getImageStyle, handleDownload } from "./utils";
-import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import { BorderRight, BorderStyle, Margin } from "@mui/icons-material";
+import DataTable from "./DataTable.js";
 
 const style = {
   dataBox: {
@@ -39,14 +38,14 @@ const style = {
   },
 };
 
-const inputTooltips = {
-  logNorm: "Log Transformation",
-  heatmap: "Number of Differentially Abundant Proteins in Heatmap",
-  foldChange: "Fold Change Threshold",
-  pValue: "P-Value Threshold",
-  pType: "P-Value Type",
-  parametricTest: "Statistical Parametric Test",
-};
+// const inputTooltips = {
+//   logNorm: "Log Transformation",
+//   heatmap: "Number of Differentially Abundant Proteins in Heatmap",
+//   foldChange: "Fold Change Threshold",
+//   pValue: "P-Value Threshold",
+//   pType: "P-Value Type",
+//   parametricTest: "Statistical Parametric Test",
+// };
 
 const CheckbackLater = () => {
   return (
@@ -120,56 +119,56 @@ const DataSection = ({
    * @param {*} data
    * @returns a <agGridReact> component
    */
-  const displayTable = (data) => {
-    var columnDefs = [];
-    Object.keys(data[0]).forEach((header) => {
-      console.log(inputTooltips[header]);
-      columnDefs.push({
-        field: header,
-        headerTooltip: inputTooltips[header],
-        cellStyle: {
-          textAlign: "left",
-          width: "200%",
-          borderLeftWidth: columnDefs.length === 0 ? "0px" : "1px",
-        },
-        resizable: true,
-        flex: Object.keys(data[0]).length <= 5 ? 1 : 0,
-        lockPosition: columnDefs.length === 0 ? "left" : "",
-      });
-    });
-    return (
-      <Container className="data-section-table" sx={{ margin: "0px" }}>
-        <div
-          className="ag-theme-material ag-theme-alpine"
-          style={{
-            overflowX: "auto", // Enable horizontal scrolling
-            overflowY: "hidden",
-            width: "95%",
-          }}
-        >
-          <AgGridReact
-            rowData={data}
-            rowStyle={{ BorderStyle: "solid" }}
-            columnDefs={columnDefs}
-            defaultColDef={{
-              wrapHeaderText: true,
-              autoHeaderHeight: true,
-              resizable: true,
-              sortable: true,
-            }}
-            pagination={true}
-            paginationPageSize={10}
-            suppressFieldDotNotation={true}
-            suppressColumnMoveAnimation={true}
-            domLayout="autoHeight"
-            colResizeDefault="shift"
-            tooltipShowDelay={0}
-            tooltipMouseTrack={true}
-          />
-        </div>
-      </Container>
-    );
-  };
+  // const displayTable = (data) => {
+  //   var columnDefs = [];
+  //   Object.keys(data[0]).forEach((header) => {
+  //     console.log(inputTooltips[header]);
+  //     columnDefs.push({
+  //       field: header,
+  //       headerTooltip: inputTooltips[header],
+  //       cellStyle: {
+  //         textAlign: "left",
+  //         width: "200%",
+  //         borderLeftWidth: columnDefs.length === 0 ? "0px" : "1px",
+  //       },
+  //       resizable: true,
+  //       flex: Object.keys(data[0]).length <= 5 ? 1 : 0,
+  //       lockPosition: columnDefs.length === 0 ? "left" : "",
+  //     });
+  //   });
+  //   return (
+  //     <Container className="data-section-table" sx={{ margin: "0px" }}>
+  //       <div
+  //         className="ag-theme-material ag-theme-alpine"
+  //         style={{
+  //           overflowX: "auto", // Enable horizontal scrolling
+  //           overflowY: "hidden",
+  //           width: "95%",
+  //         }}
+  //       >
+  //         <AgGridReact
+  //           rowData={data}
+  //           rowStyle={{ BorderStyle: "solid" }}
+  //           columnDefs={columnDefs}
+  //           defaultColDef={{
+  //             wrapHeaderText: true,
+  //             autoHeaderHeight: true,
+  //             resizable: true,
+  //             sortable: true,
+  //           }}
+  //           pagination={true}
+  //           paginationPageSize={10}
+  //           suppressFieldDotNotation={true}
+  //           suppressColumnMoveAnimation={true}
+  //           domLayout="autoHeight"
+  //           colResizeDefault="shift"
+  //           tooltipShowDelay={0}
+  //           tooltipMouseTrack={true}
+  //         />
+  //       </div>
+  //     </Container>
+  //   );
+  // };
 
   /**
    * Creates a html image from download link
@@ -261,7 +260,7 @@ const DataSection = ({
               />
             );
           } else if (tab === "Data Matrix") {
-            displayResult = displayTable(allFiles["volcano.csv"].data);
+            displayResult = DataTable(allFiles["volcano.csv"].data);
           }
 
           break;
@@ -291,7 +290,7 @@ const DataSection = ({
               />
             );
           } else if (tab === "Data Matrix") {
-            displayResult = displayTable(
+            displayResult = DataTable(
               allFiles["statistical_parametric_test.csv"].data
             );
           }
@@ -306,7 +305,7 @@ const DataSection = ({
               />
             );
           } else if (tab === "Data Matrix") {
-            displayResult = displayTable(allFiles["fold_change.csv"].data);
+            displayResult = DataTable(allFiles["fold_change.csv"].data);
           }
 
           break;
@@ -332,7 +331,7 @@ const DataSection = ({
               />
             );
           } else if (tab === "Data Matrix") {
-            displayResult = displayTable(allFiles["pca_score.csv"].data);
+            displayResult = DataTable(allFiles["pca_score.csv"].data);
           }
 
           break;
@@ -342,7 +341,7 @@ const DataSection = ({
               <VennDiagramComponent data={allFiles["data_original.csv"].data} />
             );
           } else if (tab === "Data Matrix") {
-            displayResult = displayTable(allFiles["venn_out_data.txt"].data);
+            displayResult = DataTable(allFiles["venn_out_data.txt"].data);
           }
           break;
         case "Normalization":
@@ -378,7 +377,7 @@ const DataSection = ({
               </div>
             );
           } else if (tab === "Data Matrix") {
-            displayResult = displayTable(allFiles["data_normalized.csv"].data);
+            displayResult = DataTable(allFiles["data_normalized.csv"].data);
           }
           break;
         case "Random Forest":
@@ -386,7 +385,7 @@ const DataSection = ({
             displayResult = (
               <div>
                 {displayImg(allFiles["rf_cls_0_dpi150.png"].downloadUrl)}
-                {displayTable(allFiles["randomforest_confusion.csv"].data)}
+                {DataTable(allFiles["randomforest_confusion.csv"].data)}
               </div>
             );
           } else if (tab === "Feature") {
@@ -395,7 +394,7 @@ const DataSection = ({
                 <DotGraph
                   plotData={allFiles["randomforests_sigfeatures.csv"].data}
                 />
-                {displayTable(allFiles["randomforests_sigfeatures.csv"].data)}
+                {DataTable(allFiles["randomforests_sigfeatures.csv"].data)}
               </div>
             );
           } else if (tab === "Outlier") {
@@ -445,7 +444,7 @@ const DataSection = ({
           }
           break;
         case "Result Data":
-          displayResult = displayTable(allFiles["all_data.tsv"].data);
+          displayResult = DataTable(allFiles["all_data.tsv"].data);
           break;
         case "Input Data":
           displayResult = (
@@ -453,11 +452,11 @@ const DataSection = ({
               <Typography variant="h5" sx={{ fontFamily: "Lato" }}>
                 Analysis Options:
               </Typography>
-              {displayTable([allFiles["inputData"]])}
+              {DataTable([allFiles["inputData"]])}
               <Typography variant="h5" sx={{ fontFamily: "Lato" }}>
                 Input Data:
               </Typography>
-              {displayTable(allFiles["data_original.csv"].data)}
+              {DataTable(allFiles["data_original.csv"].data)}
             </Container>
           );
           break;
