@@ -4,8 +4,8 @@ import * as d3 from "d3v7";
 
 const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
   const svgRef = useRef();
-  const resetButtonRef = useRef(null); // Reference for the reset button
-  const zoomRef = useRef(); // Reference for zoom behavior
+  const resetButtonRef = useRef(null);
+  const zoomRef = useRef();
   const [data, setData] = useState([]);
 
   const margin = { top: 20, right: 30, bottom: 200, left: 135 };
@@ -39,14 +39,17 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
       const svg = d3.select(svgRef.current);
       svg.selectAll("*").remove();
 
-      const plot = svg
+      // Set up the SVG with viewBox and preserveAspectRatio
+      svg
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr(
           "viewBox",
           `0 0 ${width + margin.left + margin.right} ${
             height + margin.top + margin.bottom
           }`
-        )
+        );
+
+      const plot = svg
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -267,11 +270,7 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
       <button ref={resetButtonRef} className="heatmap-reset-button">
         Reset Zoom
       </button>
-      <svg
-        ref={svgRef}
-        width={width + margin.left + margin.right}
-        height={height + margin.top + margin.bottom}
-      ></svg>
+      <svg ref={svgRef} style={{ width: "100%", height: "auto" }}></svg>
       <div id="tooltip" className="tooltip"></div>
     </div>
   );

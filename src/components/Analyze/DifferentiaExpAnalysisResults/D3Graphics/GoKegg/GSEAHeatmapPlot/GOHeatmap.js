@@ -36,19 +36,24 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
   useEffect(() => {
     if (data1.length > 0 && data2.length > 0) {
       const svg = d3.select(svgRef.current);
+
+      // Clear any existing content
       svg.selectAll("*").remove();
 
-      const plot = svg
-        .attr("preserveAspectRatio", "xMinYMin meet")
+      // Set viewBox and preserveAspectRatio
+      svg
         .attr(
           "viewBox",
           `0 0 ${width + margin.left + margin.right} ${
             height + margin.top + margin.bottom
           }`
         )
+        .attr("preserveAspectRatio", "xMinYMin meet");
+
+      // Create the plot group
+      const plot = svg
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
-
       const proteins = Array.from(new Set(data2.map((d) => d["Protein"])));
       const Descriptions = Array.from(
         new Set(data1.map((d) => d["Description"]))
@@ -340,11 +345,7 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
           </ToggleButton>
         </ToggleButtonGroup>
       </div>
-      <svg
-        ref={svgRef}
-        width={width + margin.left + margin.right}
-        height={height + margin.top + margin.bottom}
-      ></svg>
+      <svg ref={svgRef}></svg>
       <div id="tooltip" className="tooltip"></div>
     </div>
   );
