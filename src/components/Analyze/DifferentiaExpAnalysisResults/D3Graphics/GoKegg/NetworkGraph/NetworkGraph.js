@@ -55,6 +55,7 @@ const NetworkGraph = ({ jobId }) => {
   const [message, setMessage] = useState("");
   const [data, setData] = useState([]);
   const [selectedProperties, setSelectedProperties] = useState([]);
+  const [selectedLayout, setSelectedLayout] = useState("circle");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -135,7 +136,7 @@ const NetworkGraph = ({ jobId }) => {
           },
         ],
         layout: {
-          name: "circle",
+          name: selectedLayout,
           fit: true,
         },
         userZoomingEnabled: true, // Enable zooming
@@ -151,7 +152,7 @@ const NetworkGraph = ({ jobId }) => {
         }
       };
     }
-  }, [data, selectedProperties]);
+  }, [data, selectedProperties, selectedLayout]);
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
@@ -196,6 +197,10 @@ const NetworkGraph = ({ jobId }) => {
     setSelectedProperties(selected);
   };
 
+  const handleLayoutChange = (selectedOption) => {
+    setSelectedLayout(selectedOption.value);
+  };
+
   // Extract unique properties for the dropdown options
   const propertyOptions = [...new Set(data.map((d) => d.property))].map(
     (property) => ({
@@ -204,22 +209,41 @@ const NetworkGraph = ({ jobId }) => {
     })
   );
 
+  const layoutOptions = [
+    { value: "circle", label: "Circle" },
+    { value: "grid", label: "Grid" },
+    { value: "breadthfirst", label: "Breadthfirst" },
+    { value: "concentric", label: "Concentric" },
+    { value: "random", label: "Random" },
+  ];
+
   return (
     <div style={{ width: "100%", height: "70%" }}>
-      <>
-        <input
-          type="text"
-          placeholder="Search Protein ....."
-          value={inputValue}
-          onChange={handleInputChange}
-          onKeyPress={handleKeyPress} // Add the event listener here
-          className="input-field"
-        />
-        <button onClick={handleSearch} className="search-button">
-          Search
-        </button>
-        {message && <p className="message">{message}</p>}
-      </>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div>
+          <input
+            type="text"
+            placeholder="Search Protein ....."
+            value={inputValue}
+            onChange={handleInputChange}
+            onKeyPress={handleKeyPress} // Add the event listener here
+            className="input-field"
+          />
+          <button onClick={handleSearch} className="search-button">
+            Search
+          </button>
+          {message && <p className="message">{message}</p>}
+        </div>
+        <div style={{ width: "200px" }}>
+          <Select
+            options={layoutOptions}
+            onChange={handleLayoutChange}
+            placeholder="Select Layout"
+            maxMenuHeight={150}
+            className="layout-dropdown"
+          />
+        </div>
+      </div>
       <Select
         isMulti
         options={propertyOptions}
