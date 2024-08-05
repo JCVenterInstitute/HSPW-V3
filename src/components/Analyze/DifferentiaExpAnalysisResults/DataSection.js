@@ -260,7 +260,7 @@ const DataSection = ({
               />
             );
           } else if (tab === "Data Matrix") {
-            displayResult = DataTable(allFiles["volcano.csv"].data);
+            displayResult = (<DataTable data={allFiles["volcano.csv"].data} />);
           }
 
           break;
@@ -290,8 +290,10 @@ const DataSection = ({
               />
             );
           } else if (tab === "Data Matrix") {
-            displayResult = DataTable(
-              allFiles["statistical_parametric_test.csv"].data
+            displayResult = (
+              <DataTable
+                data={allFiles["statistical_parametric_test.csv"].data}
+              />
             );
           }
 
@@ -305,7 +307,7 @@ const DataSection = ({
               />
             );
           } else if (tab === "Data Matrix") {
-            displayResult = DataTable(allFiles["fold_change.csv"].data);
+            displayResult = (<DataTable data={allFiles["fold_change.csv"].data} />);
           }
 
           break;
@@ -331,7 +333,7 @@ const DataSection = ({
               />
             );
           } else if (tab === "Data Matrix") {
-            displayResult = DataTable(allFiles["pca_score.csv"].data);
+            displayResult = (<DataTable data={allFiles["pca_score.csv"].data}/>);
           }
 
           break;
@@ -341,7 +343,9 @@ const DataSection = ({
               <VennDiagramComponent data={allFiles["data_original.csv"].data} />
             );
           } else if (tab === "Data Matrix") {
-            displayResult = DataTable(allFiles["venn_out_data.txt"].data);
+            displayResult = (
+              <DataTable data={allFiles["venn_out_data.txt"].data} />
+            );
           }
           break;
         case "Normalization":
@@ -377,7 +381,7 @@ const DataSection = ({
               </div>
             );
           } else if (tab === "Data Matrix") {
-            displayResult = DataTable(allFiles["data_normalized.csv"].data);
+            displayResult = (<DataTable data={allFiles["data_normalized.csv"].data}/>);
           }
           break;
         case "Random Forest":
@@ -385,7 +389,7 @@ const DataSection = ({
             displayResult = (
               <div>
                 {displayImg(allFiles["rf_cls_0_dpi150.png"].downloadUrl)}
-                {DataTable(allFiles["randomforest_confusion.csv"].data)}
+                <DataTable data={allFiles["randomforest_confusion.csv"].data}/>
               </div>
             );
           } else if (tab === "Feature") {
@@ -394,7 +398,7 @@ const DataSection = ({
                 <DotGraph
                   plotData={allFiles["randomforests_sigfeatures.csv"].data}
                 />
-                {DataTable(allFiles["randomforests_sigfeatures.csv"].data)}
+                <DataTable data={allFiles["randomforests_sigfeatures.csv"].data}/>
               </div>
             );
           } else if (tab === "Outlier") {
@@ -444,7 +448,7 @@ const DataSection = ({
           }
           break;
         case "Result Data":
-          displayResult = DataTable(allFiles["all_data.tsv"].data);
+          displayResult = <DataTable data={allFiles["all_data.tsv"].data} />;
           break;
         case "Input Data":
           displayResult = (
@@ -452,11 +456,11 @@ const DataSection = ({
               <Typography variant="h5" sx={{ fontFamily: "Lato" }}>
                 Analysis Options:
               </Typography>
-              {DataTable([allFiles["inputData"]])}
+              <DataTable data={[allFiles["inputData"]]}/>
               <Typography variant="h5" sx={{ fontFamily: "Lato" }}>
                 Input Data:
               </Typography>
-              {DataTable(allFiles["data_original.csv"].data)}
+              <DataTable data={allFiles["data_original.csv"].data}/>
             </Container>
           );
           break;

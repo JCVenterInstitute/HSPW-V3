@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
 import { VennDiagram } from "venn.js";
 import { AgGridReact } from "ag-grid-react";
+import DataTable from "../../DataTable";
 import { createLegend } from "../../utils";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
@@ -265,11 +266,10 @@ const VennDiagramComponent = ({ data }) => {
               : `Unique ${selectedSet.label}`}
           </h2>
           <div className="ag-theme-material ag-cell-wrap-text ag-theme-alpine">
-            <AgGridReact
+            {/* <AgGridReact
               className="ag-cell-wrap-text"
               rowData={[...selectedSet.data].map((protein) => ({
                 protein,
-                link: `https://salivaryproteome.org/protein/${protein}`,
               }))}
               columnDefs={[
                 {
@@ -277,7 +277,8 @@ const VennDiagramComponent = ({ data }) => {
                   field: "protein",
                   cellRenderer: (params) => (
                     <a
-                      href={params.data.link}
+                      // href={params.data.link}
+                      href={`https://salivaryproteome.org/protein/${params.value}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -290,6 +291,23 @@ const VennDiagramComponent = ({ data }) => {
               pagination={true}
               paginationPageSize={10}
               domLayout="autoHeight"
+            /> */}
+            <DataTable
+              data={[...selectedSet.data].map((protein) => ({
+                protein,
+              }))}
+              hasCustomCells={true}
+              customCells={[0]}
+              cellRenderer={[(params) => (
+                <a
+                  // href={params.data.link}
+                  href={`https://salivaryproteome.org/protein/${params.value}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {params.value}
+                </a>
+              )]}
             />
           </div>
         </div>
