@@ -3,19 +3,14 @@ import * as d3 from "d3";
 import { fetchDataFile } from "../../utils.js";
 import styles from "./DotGraph.module.css"; // Import CSS Module
 
-const DotGraph = ({ jobId }) => {
+const DotGraph = ({ plotData }) => {
   const ref = useRef();
   const [data, setData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csvData = await fetchDataFile(
-          jobId,
-          "randomforests_sigfeatures.csv"
-        );
-        console.log("Fetched CSV Data:", csvData.data);
-        const jsonData = csvData.data.map((d) => ({
+        const jsonData = plotData.map((d) => ({
           type: d.Protein.replace(/"/g, ""),
           mean_degrees_accuracy: +d.MeanDecreaseAccuracy,
         }));
@@ -31,7 +26,7 @@ const DotGraph = ({ jobId }) => {
     };
 
     fetchData();
-  }, [jobId]);
+  }, [plotData]);
 
   useEffect(() => {
     if (data.length === 0) return;
