@@ -1,6 +1,7 @@
 import List from "@mui/material/List";
 import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
+import InfoIcon from "@mui/icons-material/Info";
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -36,14 +37,10 @@ import "../Table.css";
 import Legend from "./Legend.js";
 import { Link } from "react-router-dom";
 import NormalizationSwitch from "./NormalizationSwitch.js";
+import Swal from "sweetalert2";
 
 const Accordion = styled((props) => (
-  <MuiAccordion
-    disableGutters
-    elevation={0}
-    square
-    {...props}
-  />
+  <MuiAccordion disableGutters elevation={0} square {...props} />
 ))(({ theme }) => ({
   marginBottom: "15px",
   "&:not(:last-child)": {
@@ -227,12 +224,46 @@ function IHCComponent(props) {
 function proteinLinkComponent(props) {
   return (
     <div>
-      <Link
-        to={`/protein/${props.value}`}
-        rel="noopener noreferrer"
-      >
+      <Link to={`/protein/${props.value}`} rel="noopener noreferrer">
         {props.value}
       </Link>
+    </div>
+  );
+}
+
+function CustomHeader(props) {
+  const onButtonClick = (event) => {
+    event.stopPropagation();
+    Swal.fire(props.tooltipText);
+  };
+  const onHeaderClick = () => {
+    props.progressSort();
+  };
+
+  return (
+    <div
+      className="custom-header"
+      onClick={onHeaderClick}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
+    >
+      <span style={{ flex: 1, cursor: "pointer" }}>{props.displayName}</span>
+      <InfoIcon
+        onClick={onButtonClick}
+        sx={{
+          color: "inherit",
+          "&:hover": {
+            color: "blue",
+          },
+          marginLeft: "auto", // Ensures the icon is pushed to the right
+        }}
+      />
+      <div className="custom-tooltip" style={{ display: "none" }}>
+        {props.tooltipText}
+      </div>
     </div>
   );
 }
@@ -422,6 +453,7 @@ const SalivaryProteinTable = () => {
     {
       headerName: "Expert Opinion",
       field: "expert_opinion",
+      minWidth: 100,
       cellRenderer: "opinionComponent",
       cellClass: ["table-border"],
     },
@@ -489,31 +521,37 @@ const SalivaryProteinTable = () => {
       cellClass: ["table-border"],
       children: [
         {
-          headerName: "Minor Glands*",
+          // headerName: "Minor Glands",
           field: "mRNA",
           cellRenderer: "GreenComponent",
           cellRendererParams: {
             normalizationSelected,
             max: salivaryMaxAndSum.mRNA_max,
           },
+          minWidth: 125,
           maxWidth: 170,
           cellClass: ["square_table", "salivary-proteins-colored-cell"],
-          headerTooltip: "Data imported from Protein Atlas",
+          sortable: true,
+          headerComponent: CustomHeader,
+          headerComponentParams: {
+            tooltipText: "Data from Protein Atlas",
+            displayName: "Minor Glands",
+          },
         },
         {
-          headerName: "SM",
+          headerName: "SM Glands",
           field: "SM",
           cellRenderer: "specificityComponent",
           cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
         {
-          headerName: "SL",
+          headerName: "SL Glands",
           field: "SL",
           cellRenderer: "specificityComponent",
           cellClass: ["table-border", "salivary-proteins-colored-cell"],
         },
         {
-          headerName: "PAR",
+          headerName: "Parotid Glands",
           field: "PAR",
           cellRenderer: "specificityComponent",
           cellClass: ["table-border", "salivary-proteins-colored-cell"],
@@ -1180,11 +1218,7 @@ const SalivaryProteinTable = () => {
             Reset Filters
           </Button>
           <FormGroup style={{ marginLeft: "18%" }}>
-            <Stack
-              direction="row"
-              spacing={1}
-              alignItems="center"
-            >
+            <Stack direction="row" spacing={1} alignItems="center">
               <Typography color="common.black">And</Typography>
               <Switch
                 checked={orFilterOn}
@@ -1314,10 +1348,7 @@ const SalivaryProteinTable = () => {
                   sx={{ border: "1px groove" }}
                 >
                   {opCount.map((child, key) => (
-                    <FormGroup
-                      key={key}
-                      sx={{ ml: "10px" }}
-                    >
+                    <FormGroup key={key} sx={{ ml: "10px" }}>
                       {child.key === "Unsubstantiated" ? (
                         <FormControlLabel
                           control={
@@ -1400,10 +1431,7 @@ const SalivaryProteinTable = () => {
                 >
                   {IHCCount.map((child, i) =>
                     child.key !== "?" ? (
-                      <FormGroup
-                        key={i}
-                        sx={{ ml: "10px" }}
-                      >
+                      <FormGroup key={i} sx={{ ml: "10px" }}>
                         <FormControlLabel
                           control={
                             <Checkbox
@@ -1651,11 +1679,7 @@ const SalivaryProteinTable = () => {
               </AccordionSummary>
               <AccordionDetails>
                 <FormGroup style={{ marginLeft: "2%" }}>
-                  <Stack
-                    direction="row"
-                    spacing={1}
-                    alignItems="center"
-                  >
+                  <Stack direction="row" spacing={1} alignItems="center">
                     <Typography color="common.black">Include</Typography>
                     <Switch
                       checked={msBExcludeOn}
@@ -1877,10 +1901,7 @@ const SalivaryProteinTable = () => {
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
               >
                 {recordsPerPageList.map((option) => (
-                  <MenuItem
-                    key={option.value}
-                    value={option.value}
-                  >
+                  <MenuItem key={option.value} value={option.value}>
                     {option.label}
                   </MenuItem>
                 ))}
@@ -1913,10 +1934,7 @@ const SalivaryProteinTable = () => {
                   {Array.from(
                     { length: Math.ceil(docCount / pageSize) },
                     (_, index) => (
-                      <MenuItem
-                        key={index + 1}
-                        value={index + 1}
-                      >
+                      <MenuItem key={index + 1} value={index + 1}>
                         {index + 1}
                       </MenuItem>
                     )
@@ -2096,10 +2114,7 @@ const SalivaryProteinTable = () => {
                 Show Legend
               </Button>
             </div>
-            <Modal
-              open={openLegend}
-              onClose={handleCloseLegend}
-            >
+            <Modal open={openLegend} onClose={handleCloseLegend}>
               <Box
                 sx={{
                   position: "absolute",
