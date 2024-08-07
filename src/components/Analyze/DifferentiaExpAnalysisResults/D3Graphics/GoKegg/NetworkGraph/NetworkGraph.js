@@ -49,7 +49,7 @@ const processData = (data) => {
   return elements;
 };
 
-const NetworkGraph = ({ jobId }) => {
+const NetworkGraph = ({ plotData }) => {
   const [cy, setCy] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [message, setMessage] = useState("");
@@ -60,8 +60,7 @@ const NetworkGraph = ({ jobId }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const csvData = await fetchDataFile(jobId, "egomf_gene_net.tsv");
-        const jsonData = csvData.data.map((d) => ({
+        const jsonData = plotData.map((d) => ({
           property: d.Description,
           protein: d.geneID.replace(/"/g, "").replace(/\//g, ", "),
           color: getRandomColor(), // Default color if not provided
@@ -75,7 +74,7 @@ const NetworkGraph = ({ jobId }) => {
     };
 
     fetchData();
-  }, [jobId]);
+  }, [plotData]);
 
   useEffect(() => {
     if (data.length > 0 && selectedProperties.length > 0) {
