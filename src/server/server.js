@@ -2272,6 +2272,36 @@ const getSalivaryMaxAndSum = async () => {
             field: "parotid_gland_abundance",
           },
         },
+        SM_max: {
+          max: {
+            field: "SM",
+          },
+        },
+        SM_sum: {
+          sum: {
+            field: "SM",
+          },
+        },
+        SL_max: {
+          max: {
+            field: "SL",
+          },
+        },
+        SL_sum: {
+          sum: {
+            field: "SL",
+          },
+        },
+        PAR_max: {
+          max: {
+            field: "PAR",
+          },
+        },
+        PAR_sum: {
+          sum: {
+            field: "PAR",
+          },
+        },
       },
     },
   });
