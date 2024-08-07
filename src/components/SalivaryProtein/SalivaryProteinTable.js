@@ -514,7 +514,7 @@ const SalivaryProteinTable = () => {
       cellClass: ["square_table", "salivary-proteins-colored-cell"],
     },
     {
-      headerName: "mRNA Transcript Level in Salivary Glands",
+      headerName: "mRNA Transcript Level in Salivary Glands (nTPM)",
       headerGroupComponent: CustomHeaderGroup,
       headerClass: ["header-border", "salivary-protein-header"],
       wrapText: true,
