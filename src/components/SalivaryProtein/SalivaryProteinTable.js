@@ -234,7 +234,7 @@ function proteinLinkComponent(props) {
 function CustomHeader(props) {
   const onButtonClick = (event) => {
     event.stopPropagation();
-    Swal.fire(props.tooltipText);
+    Swal.fire({ title: props.tooltipText, confirmButtonColor: "#1464b4" });
   };
   const onHeaderClick = () => {
     props.progressSort();
@@ -256,7 +256,7 @@ function CustomHeader(props) {
         sx={{
           color: "inherit",
           "&:hover": {
-            color: "blue",
+            color: "#e9e9e9",
           },
           marginLeft: "auto", // Ensures the icon is pushed to the right
         }}
