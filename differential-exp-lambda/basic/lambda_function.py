@@ -139,6 +139,7 @@ def main(event):
     fold_threshold = "1.0" # args.fold_threshold
     p_raw = event.get('p_raw')
     heat_map_number = event.get('heat_map_number')
+    file_name = os.path.basename(input_file) 
 
     print('> Input File', input_file)
     print("> Log Norm:", log_normalized)
@@ -164,8 +165,11 @@ def main(event):
     print("> Attempting to download input file from S3")
     s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
     print("> Bucket Name", s3_bucket_name)
-    file_name = os.path.basename(input_file) 
-    download_destination = f"/tmp/inputdata.txt"
+    
+     # Updated download_destination to include file_name in the path
+    download_destination = f"/tmp/{file_name}/inputdata.txt"
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(download_destination), exist_ok=True)
     print("> Download Destination", download_destination)
     download_file_from_s3(s3_bucket_name, input_file, download_destination)
     print("> Successfully downloaded input file from s3")
