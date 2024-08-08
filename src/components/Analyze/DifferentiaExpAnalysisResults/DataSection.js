@@ -70,7 +70,7 @@ const DataSection = ({
   const [intervalId, setIntervalId] = useState(null);
 
   const checkGoStatus = async () => {
-    console.log("> Calling Go Status Check");
+    // console.log("> Calling Go Status Check");
 
     try {
       const res = await fetch(
