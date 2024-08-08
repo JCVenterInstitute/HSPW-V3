@@ -4,7 +4,6 @@ import {
   CircularProgress,
   Typography,
   Stack,
-  Tooltip,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { fileNames, goKeggDict } from "./Constants.js";
@@ -37,15 +36,6 @@ const style = {
     height: "auto",
   },
 };
-
-// const inputTooltips = {
-//   logNorm: "Log Transformation",
-//   heatmap: "Number of Differentially Abundant Proteins in Heatmap",
-//   foldChange: "Fold Change Threshold",
-//   pValue: "P-Value Threshold",
-//   pType: "P-Value Type",
-//   parametricTest: "Statistical Parametric Test",
-// };
 
 const CheckbackLater = () => {
   return (
@@ -146,20 +136,6 @@ const DataSection = ({
       fileDict["inputData"] = {};
       searchParams.forEach((input, header) => {
         switch (header) {
-          // case "logNorm":
-          //   fileDict["inputData"]["Log Transformation"] = input;
-          //   break;
-          // case "heatmap":
-          //   fileDict["inputData"][
-          //     "Number of Differentially Abundant Proteins in Heatmap"
-          //   ] = input;
-          //   break;
-          // case "foldChange":
-          //   fileDict["inputData"]["Fold Change Threshold"] = input;
-          //   break;
-          // case "pValue":
-          //   fileDict["inputData"]["P-Value Threshold"] = input;
-          //   break;
           case "pType":
             fileDict["inputData"][header] = input === "Raw" ? "RAW" : "FDR";
             break;
