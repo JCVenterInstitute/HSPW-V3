@@ -128,151 +128,290 @@ def parseInput():
     args = parser.parse_args()
     return args
 
+# def main(event):
+#     print("> Event", event)
+#     # Use 1 for pval & threshold, values to be used for displaying graph data 
+#     # not for running analysis
+#     input_file = event.get('input_file')
+#     log_normalized = event.get('log_normalized')
+#     stat_test = event.get('stat_test')
+#     p_val = "1.0" # args.p_val
+#     fold_threshold = "1.0" # args.fold_threshold
+#     p_raw = event.get('p_raw')
+#     heat_map_number = event.get('heat_map_number')
+#     file_name = os.path.basename(input_file) 
+
+#     print('> Input File', input_file)
+#     print("> Log Norm:", log_normalized)
+#     print("> Stat Test:", stat_test)
+#     print("> P Value Raw:", p_raw)
+#     print("> Heat Map #:", heat_map_number)
+
+#     # Print the value of the flag parameter
+#     # logging.info(f"> Input File Name: {input_file}")
+#     # logging.info(f"> Log Normalized: {log_normalized}")
+#     # logging.info(f"> Fold Threshold: {fold_threshold}")
+#     # logging.info(f"> P Val: {p_val}")
+#     # logging.info(f"> P Raw: {p_raw}")
+#     # logging.info(f"> Stat Test: {stat_test}")
+#     # logging.info(f"> Heat Map #: {heat_map_number}")
+
+#     # Run Initial R Script
+#     print("> Attempting to run metab4script.R script")
+#     result = subprocess.run("Rscript ../metab4script.R", shell=True)
+#     print("> Successfully ran metab4script.R script")
+
+#     # Download input file from S3
+#     print("> Attempting to download input file from S3")
+#     s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
+#     print("> Bucket Name", s3_bucket_name)
+    
+#      # Updated download_destination to include file_name in the path
+#     download_destination = f"/tmp/{file_name}/inputdata.txt"
+#     # Ensure the directory exists
+#     os.makedirs(os.path.dirname(download_destination), exist_ok=True)
+#     print("> Download Destination", download_destination)
+#     download_file_from_s3(s3_bucket_name, input_file, download_destination)
+#     print("> Successfully downloaded input file from s3")
+
+#     return {
+#         'statusCode': 200,  # HTTP status code for successful response
+#         'body': json.dumps({'message': 'Basic Analysis Complete'}),  # JSON-encoded response body
+#         'headers': {
+#             'Content-Type': 'application/json'  # Indicates the type of content being returned
+#         },
+#         'isBase64Encoded': False  # Indicates that the response body is not base64 encoded
+#     }
+
+#     # For manual testing runs
+#     logging.info("> Copying Input file into tmp folder")
+#     source_path = '/home/inputdata.txt'
+#     target_directory = f'/tmp/{file_name}/'
+#     target_path = os.path.join(target_directory, 'inputdata.txt')
+#     shutil.copyfile(source_path, target_path)
+
+#     #Copy R Script to new dir (Create dir if it doesn't exist) 
+#     logging.info("> Attempting to copy R Script to input directory")
+#     source_path = '/home/script.R'
+#     target_directory = f'/tmp/{file_name}/'
+#     target_path = os.path.join(target_directory, 'script.R')
+#     os.makedirs(target_directory, exist_ok=True)
+#     shutil.copyfile(source_path, target_path)
+#     logging.info("> Successfully copied R Script to input directory")
+
+#     #Navigate to new dir & run R Script
+#     logging.info("> Attempting to run analysis")
+#     os.chdir(f"/tmp/{file_name}/")
+
+#     command = 'perl -pi -e "s/\\r//g" inputdata.txt'
+#     result = subprocess.run(command, shell=True)
+
+#     command = ["Rscript", "script.R", log_normalized, fold_threshold, p_val, p_raw, stat_test, heat_map_number]
+#     logging.info("> Command", command)
+
+#     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+#     logging.info(result.stdout.decode())
+#     logging.info(f"> Analysis ran. Process return code: {result.returncode}")
+
+#     # If R Script fails, send SES notification to support email
+#     if result.returncode == 0:
+#         logging.info("> Successfully ran R Script")
+#     else:
+#         logging.error(f"> Error running R Script for: {input_file}")
+#         logging.error(f"> Failed command: {command}")
+#         body = f"Input File: {input_file}\nFailed Command: {command}"
+#         support_email = os.environ.get("SUPPORT_EMAIL")
+#         send_email(support_email, support_email, body)
+#         return
+    
+#     # Rename stat test file
+#     if stat_test == "T":
+#         if os.path.exists("wilcox_rank.csv"):
+#             rename_file("./", "wilcox_rank.csv", "statistical_parametric_test.csv")
+#         else:
+#              statistical_test_path = Path('statistical_parametric_test.csv')
+#              x = Path()
+#              with statistical_test_path.open('w') as file:
+#                 file.write("A total of 0 significant features were found.")
+#     elif stat_test == "F":
+#         rename_file("./", "t_test.csv", "statistical_parametric_test.csv")
+#     else:
+#         logging.error(f"> Invalid stat test param: {stat_test}")
+
+#     files_to_zip = [
+#         "volcano_0_dpi72.png",
+#         "heatmap_0_dpi72.png",
+#         "heatmap_1_dpi72.png",
+#         "all_data.tsv",
+#         "data_normalized.csv",
+#         "data_original.csv",
+#         "norm_0_dpi72.png",
+#         "volcano.csv",
+#         "tt_0_dpi72.png",
+#         "statistical_parametric_test.csv",
+#         "fc_0_dpi72.png",
+#         "fold_change.csv",
+#         "pca_score2d_0_dpi72.png",
+#         "pca_score.csv",
+#         "venn-dimensions.png",
+#         "venn_out_data.txt",
+#         "pca_loadings.csv",
+#         "randomforests_sigfeatures.csv",
+#         "rf_cls_0_dpi72.png",
+#         "rf_imp_0_dpi72.png",
+#         "rf_outlier_0_dpi72.png",
+#         "snorm_0_dpi72.png",
+#         "data_processed.csv"
+#     ]
+
+#     # Create Zip file with the output files
+#     zip_files("./", files_to_zip, "data_set.zip")
+
+#     # Upload results generated by R Script
+#     logging.info("> Attempting to upload results to S3")
+#     directory_name = f"/tmp/{file_name}/"
+#     subdirectory = f"{input_file}"
+#     upload_files_to_s3(s3_bucket_name, directory_name, subdirectory)
+#     logging.info("> Successfully uploaded results to S3")
+
 def main(event):
-    print("> Event", event)
-    # Use 1 for pval & threshold, values to be used for displaying graph data 
-    # not for running analysis
-    input_file = event.get('input_file')
-    log_normalized = event.get('log_normalized')
-    stat_test = event.get('stat_test')
-    p_val = "1.0" # args.p_val
-    fold_threshold = "1.0" # args.fold_threshold
-    p_raw = event.get('p_raw')
-    heat_map_number = event.get('heat_map_number')
-    file_name = os.path.basename(input_file) 
+    try:
+        # Extract and log event information
+        logging.info("> Received Event: %s", event)
+        input_file = event.get('input_file')
+        log_normalized = event.get('log_normalized')
+        stat_test = event.get('stat_test')
+        p_val = "1.0"  # Default value for p_val used for display purposes
+        fold_threshold = "1.0"  # Default value for fold_threshold used for display purposes
+        p_raw = event.get('p_raw')
+        heat_map_number = event.get('heat_map_number')
+        file_name = os.path.basename(input_file)
 
-    print('> Input File', input_file)
-    print("> Log Norm:", log_normalized)
-    print("> Stat Test:", stat_test)
-    print("> P Value Raw:", p_raw)
-    print("> Heat Map #:", heat_map_number)
+        print(f"> Input File: {input_file}")
+        print(f"> Log Normalized: {log_normalized}")
+        print(f"> Stat Test: {stat_test}")
+        print(f"> P Value Raw: {p_raw}")
+        print(f"> Heat Map #: {heat_map_number}")
 
-    # Print the value of the flag parameter
-    # logging.info(f"> Input File Name: {input_file}")
-    # logging.info(f"> Log Normalized: {log_normalized}")
-    # logging.info(f"> Fold Threshold: {fold_threshold}")
-    # logging.info(f"> P Val: {p_val}")
-    # logging.info(f"> P Raw: {p_raw}")
-    # logging.info(f"> Stat Test: {stat_test}")
-    # logging.info(f"> Heat Map #: {heat_map_number}")
+        # Run Initial R Script
+        print("> Attempting to run metab4script.R script")
+        result = subprocess.run("Rscript ../metab4script.R", shell=True, check=True)
+        print("> Successfully ran metab4script.R script")
 
-    # Run Initial R Script
-    print("> Attempting to run metab4script.R script")
-    result = subprocess.run("Rscript ../metab4script.R", shell=True)
-    print("> Successfully ran metab4script.R script")
+        # Download input file from S3
+        print("> Attempting to download input file from S3")
+        s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
+        download_destination = f"/tmp/{file_name}/inputdata.txt"
+        os.makedirs(os.path.dirname(download_destination), exist_ok=True)
+        print(f"> Download Destination: {download_destination}")
+        download_file_from_s3(s3_bucket_name, input_file, download_destination)
+        print("> Successfully downloaded input file from S3")
 
-    # Download input file from S3
-    print("> Attempting to download input file from S3")
-    s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
-    print("> Bucket Name", s3_bucket_name)
-    
-     # Updated download_destination to include file_name in the path
-    download_destination = f"/tmp/{file_name}/inputdata.txt"
-    # Ensure the directory exists
-    os.makedirs(os.path.dirname(download_destination), exist_ok=True)
-    print("> Download Destination", download_destination)
-    download_file_from_s3(s3_bucket_name, input_file, download_destination)
-    print("> Successfully downloaded input file from s3")
+        # For manual testing runs
+        target_directory = f'/tmp/{file_name}/'
 
-    return {
-        'statusCode': 200,  # HTTP status code for successful response
-        'body': json.dumps({'message': 'Basic Analysis Complete'}),  # JSON-encoded response body
-        'headers': {
-            'Content-Type': 'application/json'  # Indicates the type of content being returned
-        },
-        'isBase64Encoded': False  # Indicates that the response body is not base64 encoded
-    }
+        print("> Copying R Script to input directory")
+        source_path = '/function/home/script.R'
+        target_path = os.path.join(target_directory, 'script.R')
+        shutil.copyfile(source_path, target_path)
+        print("> Successfully copied R Script to input directory")
 
-    # For manual testing runs
-    # logging.info("> Copying Input file into tmp folder")
-    # source_path = '/home/inputdata.txt'
-    # target_directory = f'/home/resources/users/{file_name}/'
-    # target_path = os.path.join(target_directory, 'inputdata.txt')
-    # shutil.copyfile(source_path, target_path)
+        # Navigate to new dir & run R Script
+        print("> Attempting to run analysis")
+        os.chdir(f"/tmp/{file_name}/")
 
-    # Copy R Script to new dir (Create dir if it doesn't exist) 
-    # logging.info("> Attempting to copy R Script to input directory")
-    # source_path = '/home/script.R'
-    # target_directory = f'/home/resources/users/{file_name}/'
-    # target_path = os.path.join(target_directory, 'script.R')
-    # os.makedirs(target_directory, exist_ok=True)
-    # shutil.copyfile(source_path, target_path)
-    # logging.info("> Successfully copied R Script to input directory")
+        command = 'perl -pi -e "s/\\r//g" inputdata.txt'
+        subprocess.run(command, shell=True, check=True)
 
-    # Navigate to new dir & run R Script
-    # logging.info("> Attempting to run analysis")
-    # os.chdir(f"/home/resources/users/{file_name}")
+        command = ["Rscript", "script.R", log_normalized, fold_threshold, p_val, p_raw, stat_test, heat_map_number]
+        print("> Running Command: %s", command)
+        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+        print(result.stdout.decode())
+        print(f"> Analysis completed. Process return code: {result.returncode}")
 
-    # command = 'perl -pi -e "s/\\r//g" inputdata.txt'
-    # result = subprocess.run(command, shell=True)
+        # Rename stat test file
+        if stat_test == "T":
+            if os.path.exists("wilcox_rank.csv"):
+                rename_file("./", "wilcox_rank.csv", "statistical_parametric_test.csv")
+            else:
+                with open("statistical_parametric_test.csv", 'w') as file:
+                    file.write("A total of 0 significant features were found.")
+        elif stat_test == "F":
+            rename_file("./", "t_test.csv", "statistical_parametric_test.csv")
+        else:
+            logging.error(f"> Invalid stat test param: {stat_test}")
 
-    # command = ["Rscript", "script.R", log_normalized, fold_threshold, p_val, p_raw, stat_test, heat_map_number]
-    # logging.info("> Command", command)
+        files_to_zip = [
+            "volcano_0_dpi72.png",
+            "heatmap_0_dpi72.png",
+            "heatmap_1_dpi72.png",
+            "all_data.tsv",
+            "data_normalized.csv",
+            "data_original.csv",
+            "norm_0_dpi72.png",
+            "volcano.csv",
+            "tt_0_dpi72.png",
+            "statistical_parametric_test.csv",
+            "fc_0_dpi72.png",
+            "fold_change.csv",
+            "pca_score2d_0_dpi72.png",
+            "pca_score.csv",
+            "venn-dimensions.png",
+            "venn_out_data.txt",
+            "pca_loadings.csv",
+            "randomforests_sigfeatures.csv",
+            "rf_cls_0_dpi72.png",
+            "rf_imp_0_dpi72.png",
+            "rf_outlier_0_dpi72.png",
+            "snorm_0_dpi72.png",
+            "data_processed.csv"
+        ]
 
-    # result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    # logging.info(result.stdout.decode())
-    # logging.info(f"> Analysis ran. Process return code: {result.returncode}")
+        # Create Zip file with the output files
+        zip_files("./", files_to_zip, "data_set.zip")
 
-    # If R Script fails, send SES notification to support email
-    # if result.returncode == 0:
-    #     logging.info("> Successfully ran R Script")
-    # else:
-    #     logging.error(f"> Error running R Script for: {input_file}")
-    #     logging.error(f"> Failed command: {command}")
-    #     body = f"Input File: {input_file}\nFailed Command: {command}"
-    #     support_email = os.environ.get("SUPPORT_EMAIL")
-    #     send_email(support_email, support_email, body)
-    #     return
-    
-    # Rename stat test file
-    # if stat_test == "T":
-    #     if os.path.exists("wilcox_rank.csv"):
-    #         rename_file("./", "wilcox_rank.csv", "statistical_parametric_test.csv")
-    #     else:
-    #          statistical_test_path = Path('statistical_parametric_test.csv')
-    #          x = Path()
-    #          with statistical_test_path.open('w') as file:
-    #             file.write("A total of 0 significant features were found.")
-    # elif stat_test == "F":
-    #     rename_file("./", "t_test.csv", "statistical_parametric_test.csv")
-    # else:
-    #     logging.error(f"> Invalid stat test param: {stat_test}")
+        # Upload results generated by R Script
+        print("> Attempting to upload results to S3")
+        directory_name = f"/tmp/{file_name}/"
+        subdirectory = f"{input_file}"
+        upload_files_to_s3(s3_bucket_name, directory_name, subdirectory)
+        print("> Successfully uploaded results to S3")
 
-    # files_to_zip = [
-    #     "volcano_0_dpi72.png",
-    #     "heatmap_0_dpi72.png",
-    #     "heatmap_1_dpi72.png",
-    #     "all_data.tsv",
-    #     "data_normalized.csv",
-    #     "data_original.csv",
-    #     "norm_0_dpi72.png",
-    #     "volcano.csv",
-    #     "tt_0_dpi72.png",
-    #     "statistical_parametric_test.csv",
-    #     "fc_0_dpi72.png",
-    #     "fold_change.csv",
-    #     "pca_score2d_0_dpi72.png",
-    #     "pca_score.csv",
-    #     "venn-dimensions.png",
-    #     "venn_out_data.txt",
-    #     "pca_loadings.csv",
-    #     "randomforests_sigfeatures.csv",
-    #     "rf_cls_0_dpi72.png",
-    #     "rf_imp_0_dpi72.png",
-    #     "rf_outlier_0_dpi72.png",
-    #     "snorm_0_dpi72.png",
-    #     "data_processed.csv"
-    # ]
+        return {
+            'statusCode': 200,  # HTTP status code for successful response
+            'body': json.dumps({'message': 'Basic Analysis Complete'}),  # JSON-encoded response body
+            'headers': {
+                'Content-Type': 'application/json'  # Indicates the type of content being returned
+            },
+            'isBase64Encoded': False  # Indicates that the response body is not base64 encoded
+        }
 
-    # # Create Zip file with the output files
-    # zip_files("./", files_to_zip, "data_set.zip")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"> Error running a command: {e}")
+        logging.error(f"> Command output: {e.output}")
+        body = f"Input File: {input_file}\nFailed Command: {e.cmd}\nError: {e.stderr.decode()}"
+        support_email = os.environ.get("SUPPORT_EMAIL")
+        send_email(support_email, support_email, body)
+        return {
+            'statusCode': 500,
+            'body': json.dumps({'message': 'Error during processing'}),
+            'headers': {
+                'Content-Type': 'application/json'
+            },
+            'isBase64Encoded': False
+        }
 
-    # # Upload results generated by R Script
-    # logging.info("> Attempting to upload results to S3")
-    # directory_name = f"/home/resources/users/{file_name}"
-    # subdirectory = f"{input_file}"
-    # upload_files_to_s3(s3_bucket_name, directory_name, subdirectory)
-    # logging.info("> Successfully uploaded results to S3")
+    except Exception as e:
+        logging.error(f"> Unexpected error: {e}")
+        return {
+            'statusCode': 500,
+            'body': json.dumps({'message': 'Internal Server Error'}),
+            'headers': {
+                'Content-Type': 'application/json'
+            },
+            'isBase64Encoded': False
+        }
+
 
 def handler(event, context):
     print('> Received event:', json.dumps(event, indent=2))
