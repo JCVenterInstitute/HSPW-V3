@@ -115,62 +115,6 @@ const DataSection = ({
   }, [goResultsReady, intervalId]);
 
   /**
-   * takes and array of dictionaries and converts it into a agGridReact component for display
-   * @param {*} data
-   * @returns a <agGridReact> component
-   */
-  // const displayTable = (data) => {
-  //   var columnDefs = [];
-  //   Object.keys(data[0]).forEach((header) => {
-  //     console.log(inputTooltips[header]);
-  //     columnDefs.push({
-  //       field: header,
-  //       headerTooltip: inputTooltips[header],
-  //       cellStyle: {
-  //         textAlign: "left",
-  //         width: "200%",
-  //         borderLeftWidth: columnDefs.length === 0 ? "0px" : "1px",
-  //       },
-  //       resizable: true,
-  //       flex: Object.keys(data[0]).length <= 5 ? 1 : 0,
-  //       lockPosition: columnDefs.length === 0 ? "left" : "",
-  //     });
-  //   });
-  //   return (
-  //     <Container className="data-section-table" sx={{ margin: "0px" }}>
-  //       <div
-  //         className="ag-theme-material ag-theme-alpine"
-  //         style={{
-  //           overflowX: "auto", // Enable horizontal scrolling
-  //           overflowY: "hidden",
-  //           width: "95%",
-  //         }}
-  //       >
-  //         <AgGridReact
-  //           rowData={data}
-  //           rowStyle={{ BorderStyle: "solid" }}
-  //           columnDefs={columnDefs}
-  //           defaultColDef={{
-  //             wrapHeaderText: true,
-  //             autoHeaderHeight: true,
-  //             resizable: true,
-  //             sortable: true,
-  //           }}
-  //           pagination={true}
-  //           paginationPageSize={10}
-  //           suppressFieldDotNotation={true}
-  //           suppressColumnMoveAnimation={true}
-  //           domLayout="autoHeight"
-  //           colResizeDefault="shift"
-  //           tooltipShowDelay={0}
-  //           tooltipMouseTrack={true}
-  //         />
-  //       </div>
-  //     </Container>
-  //   );
-  // };
-
-  /**
    * Creates a html image from download link
    * @param {*} image
    * @returns

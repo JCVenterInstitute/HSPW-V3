@@ -1,5 +1,4 @@
-import {
-  Container } from "@mui/material";
+import { Container } from "@mui/material";
 import { AgGridReact } from "ag-grid-react";
 
 const inputTooltips = {
@@ -12,20 +11,22 @@ const inputTooltips = {
 };
 
 /**
- * 
+ *
  * @param {[{}, {}, ...]} tableData data mattrix
  * @param {Boolean} hasCustomCells whether a table will have custom cells
  * @param {Array} customCells Array of numbers identifying which columns have custom cells
  * @param {Array} cellRenderer Array of functions for custom cells
  * @returns an AgGrid Component
  */
-const DataTable = ({data, hasCustomCells = false, customCells = [], cellRenderer = []}) => {
+const DataTable = ({
+  data,
+  hasCustomCells = false,
+  customCells = [],
+  cellRenderer = [],
+}) => {
   var columnDefs = [];
   var currentCellRenderer = 0;
-  console.log(data);
   Object.keys(data[0]).forEach((header) => {
-    console.log(inputTooltips[header]);
-    
     columnDefs.push({
       field: header,
       headerTooltip: inputTooltips[header],
@@ -46,10 +47,8 @@ const DataTable = ({data, hasCustomCells = false, customCells = [], cellRenderer
     ) {
       columnDefs[columnDefs.length - 1]["cellRenderer"] =
         cellRenderer[currentCellRenderer++];
-      console.log(columnDefs[columnDefs.length - 1]);
     }
   });
-
 
   return (
     <Container className="data-section-table" sx={{ margin: "0px" }}>
