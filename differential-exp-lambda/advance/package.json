@@ -1,0 +1,19 @@
+{
+  "name": "go-keg-docker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "ecr:login": "aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 552623730819.dkr.ecr.us-east-2.amazonaws.com",
+    "build:image": "docker build -t go-kegg .",
+    "tag:image": "docker tag go-kegg:latest 552623730819.dkr.ecr.us-east-2.amazonaws.com/go-kegg:latest",
+    "push:image": "docker push 552623730819.dkr.ecr.us-east-2.amazonaws.com/go-kegg:latest",
+    "deploy:dev": "npm run ecr:login && npm run build:image && npm run tag:image && npm run push:image",
+    "sam:build:core": "rm -rf .aws-sam && sam build --config-env core",
+    "deploy:app:core:dev": "sam deploy --config-env app-core-dev",
+    "complete:app:core:dev": "npm run sam:build:core && npm run deploy:app:core:dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
