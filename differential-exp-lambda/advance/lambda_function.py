@@ -10,30 +10,17 @@ import zipfile
 from botocore.exceptions import ClientError
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import logging
-
-
-def setup_logger(log_file):
-    logger = logging.getLogger(log_file)
-    logger.setLevel(logging.DEBUG)
-    fh = logging.FileHandler(log_file)
-    fh.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
-    return logger
-
 
 # Copy all files from src_dir to dest_dir.
 def copy_files(src_dir, dest_dir):
     # Check the source directory exists
     if not os.path.exists(src_dir):
-        logging.info(f"Source directory '{src_dir}' does not exist.")
+        print(f"Source directory '{src_dir}' does not exist.")
         return
 
     # Check the destination directory exists
     if not os.path.exists(dest_dir):
-        logging.info(
+        print(
             f"Destination directory '{dest_dir}' does not exist. Creating it..."
         )
         os.makedirs(dest_dir)
@@ -46,7 +33,7 @@ def copy_files(src_dir, dest_dir):
         # Copy the file to the destination directory
         shutil.copy(src_file, dest_file)
 
-        logging.info(f"Copied '{src_file}' to '{dest_file}'.")
+        print(f"Copied '{src_file}' to '{dest_file}'.")
 
 
 # Upload all files in the given directory to s3 except script.R file
@@ -67,7 +54,7 @@ def upload_files_to_s3(bucket_name, directory_name, subdirectory):
             s3_key = os.path.join(subdirectory, file_name)
             # Upload the file to S3
             s3.upload_file(file_path, bucket_name, s3_key)
-            logging.info(
+            print(
                 f"Uploaded '{file_name}' to S3 bucket '{bucket_name}' under subdirectory '{subdirectory}'."
             )
 
@@ -80,11 +67,11 @@ def download_file_from_s3(bucket_name, file_name, download_dest):
     try:
         # Download the file from S3
         s3_client.download_file(bucket_name, file_name, download_dest)
-        logging.info(
+        print(
             f"> File '{file_name}' downloaded successfully from S3 bucket '{bucket_name}'"
         )
     except Exception as e:
-        logging.info(
+        print(
             f"> Error downloading file '{file_name}' from S3 bucket '{bucket_name}': {e}"
         )
 
@@ -129,32 +116,32 @@ def send_email(sender_email, recipient_email, body):
 
 
 # Parse input params passed in to run R Script
-def parseInput():
-    # Parse inputs for all necessary variables for R Script
-    parser = argparse.ArgumentParser(description="Differential Expression Analysis")
-    parser.add_argument(
-        "-i", "--input", dest="input_file", type=str, help="Input File Name"
-    )
-    parser.add_argument(
-        "-p", "--pValueCutoff", dest="pValueCutoff", type=str, help="P Value Cutoff"
-    )
-    parser.add_argument(
-        "-q", "--qValueCutoff", dest="qValueCutoff", type=str, help="Q Value Cutoff"
-    )
-    args = parser.parse_args()
-    return args
+# def parseInput():
+#     # Parse inputs for all necessary variables for R Script
+#     parser = argparse.ArgumentParser(description="Differential Expression Analysis")
+#     parser.add_argument(
+#         "-i", "--input", dest="input_file", type=str, help="Input File Name"
+#     )
+#     parser.add_argument(
+#         "-p", "--pValueCutoff", dest="pValueCutoff", type=str, help="P Value Cutoff"
+#     )
+#     parser.add_argument(
+#         "-q", "--qValueCutoff", dest="qValueCutoff", type=str, help="Q Value Cutoff"
+#     )
+#     args = parser.parse_args()
+#     return args
 
 
-def run_command(command, logger):
+def run_command(command):
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
     returncode = process.returncode
 
     # Log stdout, stderr, and return code
-    logger.info(f"> Command: {' '.join(command)}")
-    logger.info(f"> stdout:\n{stdout.decode()}")
-    logger.error(f"> stderr:\n{stderr.decode()}")
-    logger.info(f"> returncode: {returncode}")
+    print(f"> Command: {' '.join(command)}")
+    print(f"> stdout:\n{stdout.decode()}")
+    print(f"> stderr:\n{stderr.decode()}")
+    print(f"> returncode: {returncode}")
 
     return subprocess.CompletedProcess(command, returncode, stdout, stderr)
 
@@ -164,15 +151,145 @@ def main(event):
     pValueCutoff = event.get("pValueCutoff")
     qValueCutoff = event.get("qValueCutoff")
 
-    logging.info("> Input Args:", args)
-    logging.info(f"> Input File Name: {input_file}")
+    print(f"> Input File Name: {input_file}")
     dirName = os.path.basename(input_file)
 
     try:
         os.mkdir(f"/tmp/{dirName}")
-        logging.info("> Temporary folder " + dirName + " created.")
-    except OSError:
-        logging.info("> Creation of the folder failed.")
+        print("> Temporary folder " + dirName + " created.")
+    except OSError as error:
+        print("> Creation of the folder failed: ", error)
+
+    # 3, Download input file from S3
+    print("> Attempting to download input file from S3")
+    s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
+    file_name = f"{input_file}/all_data.tsv"
+    download_destination = f"/tmp/{dirName}/all_data.tsv"
+
+    print("> Download File", file_name)
+    print("> Download Destination", download_destination)
+    download_file_from_s3(s3_bucket_name, file_name, download_destination)
+    print("> Successfully downloaded input file from s3")
+
+    # 4. Copy R Scripts to new dir (Create dir if it doesn't exist)
+    print("> Attempting to copy R Script to input directory")
+    target_directory = f"/tmp/{dirName}/"
+    # os.makedirs(target_directory, exist_ok=True)
+    print("> Target directory", target_directory)
+
+    source_path = "./go_bp.R"
+    target_path = os.path.join(target_directory, "go_bp.R")
+    shutil.copyfile(source_path, target_path)
+
+    source_path = "./go_cc.R"
+    target_path = os.path.join(target_directory, "go_cc.R")
+    shutil.copyfile(source_path, target_path)
+
+    source_path = "./go_mf.R"
+    target_path = os.path.join(target_directory, "go_mf.R")
+    shutil.copyfile(source_path, target_path)
+
+    source_path = "./kegg.R"
+    target_path = os.path.join(target_directory, "kegg.R")
+    shutil.copyfile(source_path, target_path)
+    print("> Successfully copied R Script to input directory")
+
+    # 5. Navigate to new dir & run R Script
+    print("> Attempting to run analysis")
+    os.chdir(f"/tmp/{dirName}")
+
+    script_commands = [
+        ["Rscript", "go_cc.R", pValueCutoff, qValueCutoff],
+        ["Rscript", "go_bp.R", pValueCutoff, qValueCutoff],
+        ["Rscript", "go_mf.R", pValueCutoff, qValueCutoff],
+        ["Rscript", "kegg.R", pValueCutoff, qValueCutoff]
+    ]
+
+    with ThreadPoolExecutor() as executor:
+        futures = [executor.submit(run_command, cmd) for cmd in zip(script_commands)]
+        results = [f.result() for f in as_completed(futures)]
+
+    for i, result in enumerate(results):
+        print(f"> Command {i + 1}:")
+        print("> stdout:", result.stdout.decode())
+        print("> stderr:", result.stderr.decode())
+        print("> returncode:", result.returncode)
+
+    command = ["Rscript", "go_cc.R", pValueCutoff, qValueCutoff]
+    result = subprocess.run(command)
+    result = run_command(command)
+    print(f"> Go_CC Analysis ran. Process return code: {result.returncode}")
+
+    # If Script fails, send SES notification to support email
+    if result.returncode == 0:
+        print("> Successfully ran Go_CC script")
+    else:
+        print(f"> Error running Go_CC R Script for: {input_file}")
+        print(f"> Failed command: {command}")
+        body = f"Input File: {input_file}\nFailed Command: {command}"
+        support_email = os.environ.get("SUPPORT_EMAIL")
+        send_email(support_email, support_email, body)
+        return
+
+    command = ["Rscript", "go_bp.R", pValueCutoff, qValueCutoff]
+    result = subprocess.run(command)
+    result = run_command(command)
+    print(f"> Go_Bp Analysis ran. Process return code: {result.returncode}")
+
+    if result.returncode == 0:
+        print("> Successfully ran Go_Bp script")
+    else:
+        print(f"> Error running Go_Bp R Script for: {input_file}")
+        print(f"> Failed command: {command}")
+        body = f"Input File: {input_file}\nFailed Command: {command}"
+        support_email = os.environ.get("SUPPORT_EMAIL")
+        send_email(support_email, support_email, body)
+        return
+
+    command = ["Rscript", "go_mf.R", pValueCutoff, qValueCutoff]
+    result = subprocess.run(command)
+    result = run_command(command)
+    print(f"> Go_Mf Analysis ran. Process return code: {result.returncode}")
+
+    if result.returncode == 0:
+        print("> Successfully ran Go_Mf script")
+    else:
+        print(f"> Error running Go_Mf R Script for: {input_file}")
+        print(f"> Failed command: {command}")
+        body = f"Input File: {input_file}\nFailed Command: {command}"
+        support_email = os.environ.get("SUPPORT_EMAIL")
+        send_email(support_email, support_email, body)
+        return
+
+    command = ["Rscript", "kegg.R", pValueCutoff, qValueCutoff]
+    result = subprocess.run(command)
+    result = run_command(command)
+    print(f"> Kegg Analysis ran. Process return code: {result.returncode}")
+
+    if result.returncode == 0:
+        print("> Successfully ran Kegg script")
+    else:
+        print(f"> Error running Kegg R Script for: {input_file}")
+        print(f"> Failed command: {command}")
+        body = f"Input File: {input_file}\nFailed Command: {command}"
+        support_email = os.environ.get("SUPPORT_EMAIL")
+        send_email(support_email, support_email, body)
+        return
+
+    files_to_zip = [
+        "egocc_gene_net.tsv",
+        "gsebp.tsv",
+        "kegg.tsv",
+        "egobp.tsv",
+        "egomf.tsv",
+        "all_data.tsv",
+        "egobp_gene_net.tsv",
+        "gsecc.tsv",
+        "gsekk.tsv",
+        "egocc.tsv",
+        "egomf_gene_net.tsv",
+        "gsemf.tsv",
+    ]
 
     return {
         "statusCode": 200,  # HTTP status code for successful response
@@ -185,168 +302,15 @@ def main(event):
         "isBase64Encoded": False,  # Indicates that the response body is not base64 encoded
     }
 
-    # 3, Download input file from S3
-    # logging.info("> Attempting to download input file from S3")
-    # s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
-    # file_name = f"{input_file}/all_data.tsv"
-    # download_destination = f"/tmp/{dirName}/all_data.tsv"
-    # logging.info("> Download File", file_name)
-    # logging.info("> Download Destination", download_destination)
-    # download_file_from_s3(s3_bucket_name, file_name, download_destination)
-    # logging.info("> Successfully downloaded input file from s3")
-
-    # 4. Copy R Scripts to new dir (Create dir if it doesn't exist)
-    # logging.info("> Attempting to copy R Script to input directory")
-    # target_directory = f"/tmp/{dirName}/"
-    # os.makedirs(target_directory, exist_ok=True)
-    # logging.info("> Target directory", target_directory)
-
-    # source_path = "./go_bp.R"
-    # target_path = os.path.join(target_directory, "go_bp.R")
-    # shutil.copyfile(source_path, target_path)
-
-    # source_path = "./go_cc.R"
-    # target_path = os.path.join(target_directory, "go_cc.R")
-    # shutil.copyfile(source_path, target_path)
-
-    # source_path = "./go_mf.R"
-    # target_path = os.path.join(target_directory, "go_mf.R")
-    # shutil.copyfile(source_path, target_path)
-
-    # source_path = "./kegg.R"
-    # target_path = os.path.join(target_directory, "kegg.R")
-    # shutil.copyfile(source_path, target_path)
-    # logging.info("> Successfully copied R Script to input directory")
-
-    # 5. Navigate to new dir & run R Script
-    # logging.info("> Attempting to run analysis")
-    # os.chdir(f"/tmp/{dirName}")
-
-    # log_files = [
-    #     "go_cc.log",
-    #     "go_bp.log",
-    #     "go_mf.log",
-    #     "kegg.log"
-    # ]
-
-    # loggers = [setup_logger(log_file) for log_file in log_files]
-
-    # script_commands = [
-    #     ["Rscript", "go_cc.R", pValueCutoff, qValueCutoff],
-    #     ["Rscript", "go_bp.R", pValueCutoff, qValueCutoff],
-    #     ["Rscript", "go_mf.R", pValueCutoff, qValueCutoff],
-    #     ["Rscript", "kegg.R", pValueCutoff, qValueCutoff]
-    # ]
-
-    # with ThreadPoolExecutor() as executor:
-    #     futures = [executor.submit(run_command, cmd, logger) for cmd, logger in zip(script_commands, loggers)]
-    #     results = [f.result() for f in as_completed(futures)]
-
-    # for i, result in enumerate(results):
-    #     print(f"> Command {i + 1}:")
-    #     print("> stdout:", result.stdout.decode())
-    #     print("> stderr:", result.stderr.decode())
-    #     print("> returncode:", result.returncode)
-
-    # command = ["Rscript", "go_cc.R", pValueCutoff, qValueCutoff]
-    # result = subprocess.run(command)
-    # result = run_command(command, setup_logger("go_cc.log"))
-    # logging.info(f"> Go_CC Analysis ran. Process return code: {result.returncode}")
-
-    # If Script fails, send SES notification to support email
-    # if result.returncode == 0:
-    #     print("> Successfully ran Go_CC script")
-    # else:
-    #     print(f"> Error running Go_CC R Script for: {input_file}")
-    #     print(f"> Failed command: {command}")
-    #     body = f"Input File: {input_file}\nFailed Command: {command}"
-    #     support_email = os.environ.get("SUPPORT_EMAIL")
-    #     send_email(support_email, support_email, body)
-    #     return
-
-    # command = ["Rscript", "go_bp.R", pValueCutoff, qValueCutoff]
-    # result = subprocess.run(command)
-    # result = run_command(command, setup_logger("go_bp.log"))
-    # logging.info(f"> Go_Bp Analysis ran. Process return code: {result.returncode}")
-
-    # if result.returncode == 0:
-    #     print("> Successfully ran Go_Bp script")
-    # else:
-    #     print(f"> Error running Go_Bp R Script for: {input_file}")
-    #     print(f"> Failed command: {command}")
-    #     body = f"Input File: {input_file}\nFailed Command: {command}"
-    #     support_email = os.environ.get("SUPPORT_EMAIL")
-    #     send_email(support_email, support_email, body)
-    #     return
-
-    # command = ["Rscript", "go_mf.R", pValueCutoff, qValueCutoff]
-    # result = subprocess.run(command)
-    # result = run_command(command, setup_logger("go_mf.log"))
-    # logging.info(f"> Go_Mf Analysis ran. Process return code: {result.returncode}")
-
-    # if result.returncode == 0:
-    #     print("> Successfully ran Go_Mf script")
-    # else:
-    #     print(f"> Error running Go_Mf R Script for: {input_file}")
-    #     print(f"> Failed command: {command}")
-    #     body = f"Input File: {input_file}\nFailed Command: {command}"
-    #     support_email = os.environ.get("SUPPORT_EMAIL")
-    #     send_email(support_email, support_email, body)
-    #     return
-
-    # command = ["Rscript", "kegg.R", pValueCutoff, qValueCutoff]
-    # result = subprocess.run(command)
-    # result = run_command(command, setup_logger("kegg.log"))
-    # logging.info(f"> Kegg Analysis ran. Process return code: {result.returncode}")
-
-    # if result.returncode == 0:
-    #     print("> Successfully ran Kegg script")
-    # else:
-    #     print(f"> Error running Kegg R Script for: {input_file}")
-    #     print(f"> Failed command: {command}")
-    #     body = f"Input File: {input_file}\nFailed Command: {command}"
-    #     support_email = os.environ.get("SUPPORT_EMAIL")
-    #     send_email(support_email, support_email, body)
-    #     return
-
-    # files_to_zip = [
-    #     "egocc_gene_net.tsv",
-    #     "gobp_gene_network.jpeg",
-    #     "gsebp.tsv",
-    #     "gsecc_ridge.jpeg",
-    #     "gsemf_heat.jpeg",
-    #     "kegg.tsv",
-    #     "egobp.tsv",
-    #     "egomf.tsv",
-    #     "gocc_bar.jpeg",
-    #     "gsebp_ridge.jpeg",
-    #     "gsecc_tree.jpeg",
-    #     "gsemf_ridge.jpeg",
-    #     "kegg_pathway_bar.jpeg",
-    #     "all_data.tsv",
-    #     "egobp_gene_net.tsv",
-    #     "egomf_bar.jpeg",
-    #     "gocc_gene_network.jpeg",
-    #     "gsecc.tsv",
-    #     "gsekk.tsv",
-    #     "gsemf_tree.jpeg",
-    #     "kegg_pathway_ridge.jpeg",
-    #     "egocc.tsv",
-    #     "egomf_gene_net.tsv",
-    #     "gobp_bar.jpeg",
-    #     "gomf_gene_network.jpeg" "gsecc_heat.jpeg",
-    #     "gsemf.tsv",
-    # ]
-
     # # 6. Create Zip file with the output files
     # zip_files("./", files_to_zip, "go_kegg_set.zip")
 
     # 7. Upload results generated by R Script
-    # logging.info("> Attempting to upload results to S3")
+    # print("> Attempting to upload results to S3")
     # directory_name = f"/tmp/{dirName}"
     # subdirectory = f"{input_file}"
     # upload_files_to_s3(s3_bucket_name, directory_name, subdirectory)
-    # logging.info("> Successfully uploaded results to S3")
+    # print("> Successfully uploaded results to S3")
 
 
 def handler(event, context):
