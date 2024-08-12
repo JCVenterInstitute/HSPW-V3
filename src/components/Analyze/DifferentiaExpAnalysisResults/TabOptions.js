@@ -145,8 +145,7 @@ const TabOptions = ({
           {tab &&
           (tab == "Visualization" ||
             tab == "GSEA Ridge plot" ||
-            tab == "Enrichment Plot" ||
-            tab.startsWith("Top ")) ? (
+            tab == "Enrichment Plot") ? (
             <Button variant="contained" onClick={downloadD3Plots}>
               Download
             </Button>
