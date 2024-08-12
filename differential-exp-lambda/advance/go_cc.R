@@ -13,18 +13,21 @@ pvalue=as.numeric(args[1])
 qvalue=as.numeric(args[2])
 
 #GO CC enrichment
+set.seed(1234)
 egocc <- enrichGO(gene = all_data$rn, OrgDb = org.Hs.eg.db, keyType = 'UNIPROT', ont = "CC", pAdjustMethod = "BH", pvalueCutoff  = pvalue, qvalueCutoff  = qvalue)
 write.table(as.data.frame(egocc),"egocc.tsv",sep="\t",row.names = TRUE)
 bc <- barplot(egocc,showCategory = 20)
 ggplot_alternative <- function(){bc+ theme_bw()}
 ggsave("gocc_bar.jpeg",ggplot_alternative(),width = 11.25,height = 6.25,dpi = 600)
+set.seed(1234)
 egoccx <- setReadable(egocc, 'org.Hs.eg.db', 'UNIPROT')
 p <- cnetplot(egoccx, foldChange=id_fc_sort, circular = TRUE, colorEdge = TRUE)
 ggplot_alternative <- function(){p+ theme_bw()}
 ggsave("gocc_gene_network.jpeg",ggplot_alternative(),width = 11.25,height = 6.25,dpi = 600)
 write.table(as.data.frame(egoccx),"egocc_gene_net.tsv",sep="\t",row.names = TRUE)
 #GO CC gsea
-gsecc <- gseGO(geneList = id_fc_sort, OrgDb = org.Hs.eg.db, keyType = 'UNIPROT', ont = "CC", minGSSize = 10, maxGSSize = 500, pvalueCutoff = pvalue, verbose = FALSE)
+set.seed(1234)
+gsecc <- gseGO(geneList = id_fc_sort, OrgDb = org.Hs.eg.db, keyType = 'UNIPROT', ont = "CC", minGSSize = 10, maxGSSize = 500, pvalueCutoff = pvalue, verbose = FALSE,seed = TRUE)
 write.table(as.data.frame(gsecc),"gsecc.tsv",sep="\t",row.names = TRUE)
 ridgecc <- ridgeplot(gsecc,25)
 ggplot_alternative <- function(){ridgecc+ theme_bw()}

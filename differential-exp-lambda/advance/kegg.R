@@ -20,21 +20,25 @@ eid_fc <- new_all$log2.FC.
 names(eid_fc) <- new_all$ENTREZID
 id_fc_sort <- eid_fc[order(-eid_fc)]
 #Converting ids to enrichKEGG for analysis
-kk <- enrichKEGG(gene = new_all$ENTREZID, organism = 'hsa', pvalueCutoff = pvalue, qvalueCutoff  = qvalue)
+set.seed(1234)
+kk <- enrichKEGG(gene = new_all$ENTREZID, organism = 'hsa', pvalueCutoff = pvalue, qvalueCutoff = qvalue)
 write.table(as.data.frame(kk),"kegg.tsv",sep="\t",row.names = TRUE)
 bkk <- barplot(kk)
 ggplot_alternative <- function(){bkk+ theme_bw()}
 ggsave("kegg_pathway_bar.jpeg",ggplot_alternative(),width = 11.25,height = 6.25,dpi = 600)
 #gsea kegg pathway for analysis
-gsekk <- gseKEGG(geneList = id_fc_sort, organism	= 'hsa', minGSSize	= 120, pvalueCutoff = pvalue, verbose	= FALSE)
+set.seed(1234)
+gsekk <- gseKEGG(geneList = id_fc_sort, organism = 'hsa', minGSSize = 120, pvalueCutoff = pvalue, verbose = FALSE,seed = TRUE)
 write.table(as.data.frame(gsekk),"gsekk.tsv",sep="\t",row.names = TRUE)
 bk <- ridgeplot(gsekk,25)
 ggplot_alternative <- function(){bk+ theme_bw()}
 ggsave("kegg_pathway_ridge.jpeg",ggplot_alternative(),width = 11.25,height = 6.25,dpi = 600)
+set.seed(1234)
 hc<-heatplot(gsekk,showCategory=25,foldChange=id_fc_sort)
 ggplot_alternative <- function(){hc+ theme_bw()}
 ggsave("kegg_pathway_heat.jpeg",ggplot_alternative(),width = 11.25,height = 6.25,dpi = 600)
 #Converting ids to enrichMKEGG for analysis
+set.seed(1234)
 mkk <- enrichMKEGG(gene = new_all$ENTREZID, organism = 'hsa', pvalueCutoff = pvalue, qvalueCutoff  = qvalue)
 write.table(as.data.frame(mkk),"kegg.tsv",sep="\t",row.names = TRUE)
 bmkk <- barplot(mkk)
@@ -42,7 +46,8 @@ ggplot_alternative <- function(){bmkk+ theme_bw()}
 ggsave("kegg_module_bar.jpeg",ggplot_alternative(),width = 11.25,height = 6.25,dpi = 600)
 write.table(as.data.frame(mkk),"kegg.tsv",sep="\t",row.names = TRUE)
 #gsea kegg pathway for analysis
-gsemkk <- gseKEGG(geneList = id_fc_sort, organism	= 'hsa', minGSSize	= 120, pvalueCutoff = pvalue, verbose	= FALSE)
+set.seed(1234)
+gsemkk <- gseKEGG(geneList = id_fc_sort, organism = 'hsa', minGSSize = 120, pvalueCutoff = pvalue, verbose = FALSE,seed = TRUE)
 write.table(as.data.frame(gsemkk),"gsemkk.tsv",sep="\t",row.names = TRUE)
 bc <- ridgeplot(gsemkk,25)
 ggplot_alternative <- function(){bc+ theme_bw()}
