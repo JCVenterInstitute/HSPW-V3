@@ -1522,12 +1522,12 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
     const initialAnalysis = await execCommand(command);
     console.log("> Initial Analysis output:", initialAnalysis);
 
-    command = `docker run --rm -v ~/.aws:/root/.aws go_keg_local -i ${inputFile} -p 0.65 -q 0.25`;
-    console.log("> Go/KEGG Command", command);
+    // command = `docker run --rm -v ~/.aws:/root/.aws go_keg_local -i ${inputFile} -p 0.65 -q 0.25`;
+    // console.log("> Go/KEGG Command", command);
 
     // Run GO/KEGG Docker, don't wait for it to finish running before returning complete
     // Secondary results loaded afterwards
-    const goKeggAnalysis = execCommand(command);
+    // const goKeggAnalysis = execCommand(command);
 
     res.status(200).send("Docker run complete");
   } catch (error) {
@@ -1576,10 +1576,10 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
     const initialAnalysis = await execCommand(command);
     console.log("> Initial Analysis output:", initialAnalysis);
 
-    command = `docker run --rm -v ~/.aws:/root/.aws go_keg_local -i ${inputFile} -p 0.65 -q 0.25`;
-    console.log("> Go/KEGG Command", command);
+    // command = `docker run --rm -v ~/.aws:/root/.aws go_keg_local -i ${inputFile} -p 0.65 -q 0.25`;
+    // console.log("> Go/KEGG Command", command);
 
-    const goKeggAnalysis = execCommand(command);
+    // const goKeggAnalysis = execCommand(command);
     // console.log("> Go/Kegg output:", goKeggAnalysis);
 
     res.status(200).send("Docker run complete");
