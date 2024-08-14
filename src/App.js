@@ -42,6 +42,7 @@ import PrivacyPolicyPage from "./pages/Footer/PrivacyPolicy.js";
 import CopyrightPage from "./pages/Footer/Copyright.js";
 import DisclaimerPage from "./pages/Footer/Disclaimer.js";
 import AccessibilityPage from "./pages/Footer/Accessibility.js";
+import Signup from "./components/Signup.js";
 
 // Google Analytics
 import ReactGA from "react-ga4";
@@ -73,47 +74,22 @@ function App() {
           <div className="main-content">
             <NavBar />
             <Routes>
-              <Route
-                exact
-                path="/"
-                element={<Home />}
-              />
-              <Route
-                path="/salivary-protein"
-                element={<SalivaryProtein />}
-              />
-              <Route
-                path="/protein/:proteinid"
-                element={<ProteinDetail />}
-              />
-              <Route
-                path="/protein-cluster"
-                element={<ProteinCluster />}
-              />
+              <Route exact path="/" element={<Home />} />
+              <Route path="/salivary-protein" element={<SalivaryProtein />} />
+              <Route path="/protein/:proteinid" element={<ProteinDetail />} />
+              <Route path="/protein-cluster" element={<ProteinCluster />} />
               <Route
                 path="/protein-cluster/:clusterid"
                 element={<ProteinClusterDetail />}
               />
-              <Route
-                path="/protein-signature"
-                element={<ProteinSignature />}
-              />
+              <Route path="/protein-signature" element={<ProteinSignature />} />
               <Route
                 path="/protein-signature/:interproid"
                 element={<ProteinSignatureDetail />}
               />
-              <Route
-                path="/gene"
-                element={<Gene />}
-              />
-              <Route
-                path="/gene/:geneid"
-                element={<GeneDetail />}
-              />
-              <Route
-                path="/global-search"
-                element={<GlobalSearch />}
-              ></Route>
+              <Route path="/gene" element={<Gene />} />
+              <Route path="/gene/:geneid" element={<GeneDetail />} />
+              <Route path="/global-search" element={<GlobalSearch />}></Route>
               <Route
                 path="/advanced-search"
                 element={<AdvancedSearch />}
@@ -126,10 +102,7 @@ function App() {
                 path="/experiment-search/:id"
                 element={<ExperimentSearchDetail />}
               />
-              <Route
-                path="/experiment-search"
-                element={<ExperimentSearch />}
-              />
+              <Route path="/experiment-search" element={<ExperimentSearch />} />
               <Route
                 path="/Protein-Set-Search"
                 element={<ProteinSetSearch />}
@@ -138,10 +111,7 @@ function App() {
                 path="/clustalo/results/:jobId"
                 element={<ClustalOmegaResults />}
               />
-              <Route
-                path="/clustalo"
-                element={<ClustalOmega />}
-              />
+              <Route path="/clustalo" element={<ClustalOmega />} />
               <Route
                 path="/differential-expression/results/:jobId"
                 element={<DifferentialExpressionResults />}
@@ -154,90 +124,40 @@ function App() {
                 path="/iprscan5/results/:jobId"
                 element={<InterProScanResults />}
               />
-              <Route
-                path="/iprscan5"
-                element={<InterProScan />}
-              />
+              <Route path="/iprscan5" element={<InterProScan />} />
               <Route
                 path="/psiblast/results/:jobId"
                 element={<PSIBlastResults />}
               />
-              <Route
-                path="/psiblast"
-                element={<PSIBlast />}
-              />
-              <Route
-                path="/citation"
-                element={<Citation />}
-              />
+              <Route path="/psiblast" element={<PSIBlast />} />
+              <Route path="/citation" element={<Citation />} />
               <Route
                 path="/citation/:citationid"
                 element={<CitationDetail />}
               />
-              <Route
-                path="/about"
-                element={<About />}
-              />
-              <Route
-                path="/download"
-                element={<Download />}
-              />
-              <Route
-                path="/team"
-                element={<Team />}
-              />
-              <Route
-                path="/contact"
-                element={<Contact />}
-              />
+              <Route path="/about" element={<About />} />
+              <Route path="/download" element={<Download />} />
+              <Route path="/team" element={<Team />} />
+              <Route path="/contact" element={<Contact />} />
               <Route
                 path="/protein-sequence/:proteinid"
                 element={<ProteinSequence />}
               />
-              <Route
-                path="go-nodes/:id"
-                element={<GoNodes />}
-              />
-              <Route
-                path="go-table"
-                element={<GoTable />}
-              />
-              <Route
-                path="/analysis-home"
-                element={<AnalysisHome />}
-              />
-              <Route
-                path="/upload-experiment"
-                element={<UploadExperiment />}
-              />
-              <Route
-                path="/api-description"
-                element={<ApiPage />}
-              />
+              <Route path="go-nodes/:id" element={<GoNodes />} />
+              <Route path="go-table" element={<GoTable />} />
+              <Route path="/analysis-home" element={<AnalysisHome />} />
+              <Route path="/upload-experiment" element={<UploadExperiment />} />
+              <Route path="/api-description" element={<ApiPage />} />
               {/* <Route
                 path="/analysis"
                 element={<Analysis />}
               /> */}
-              <Route
-                path="/privacy-policy"
-                element={<PrivacyPolicyPage />}
-              />
-              <Route
-                path="/copyrights"
-                element={<CopyrightPage />}
-              />
-              <Route
-                path="/disclaimers"
-                element={<DisclaimerPage />}
-              />
-              <Route
-                path="/accessibility"
-                element={<AccessibilityPage />}
-              />
-              <Route
-                path="*"
-                element={<NotFoundPage />}
-              />
+              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="/copyrights" element={<CopyrightPage />} />
+              <Route path="/disclaimers" element={<DisclaimerPage />} />
+              <Route path="/accessibility" element={<AccessibilityPage />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
             <Footer />
           </div>

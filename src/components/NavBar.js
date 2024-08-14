@@ -69,10 +69,7 @@ export const NavBar = () => {
                 >
                   Home
                 </Button>
-                <PopupState
-                  popupId="BrowseMenu"
-                  variant="popover"
-                >
+                <PopupState popupId="BrowseMenu" variant="popover">
                   {(popupState) => (
                     <React.Fragment>
                       <Button
@@ -94,44 +91,26 @@ export const NavBar = () => {
                           horizontal: "left",
                         }}
                       >
-                        <MenuItem
-                          component={Link}
-                          to="/salivary-protein"
-                        >
+                        <MenuItem component={Link} to="/salivary-protein">
                           Salivary Proteins
                         </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/protein-cluster"
-                        >
+                        <MenuItem component={Link} to="/protein-cluster">
                           Protein Clusters
                         </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/protein-signature"
-                        >
+                        <MenuItem component={Link} to="/protein-signature">
                           Protein Signatures
                         </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/gene"
-                        >
+                        <MenuItem component={Link} to="/gene">
                           Genes
                         </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/citation"
-                        >
+                        <MenuItem component={Link} to="/citation">
                           Publications
                         </MenuItem>
                       </HoverMenu>
                     </React.Fragment>
                   )}
                 </PopupState>
-                <PopupState
-                  popupId="SearchMenu"
-                  variant="popover"
-                >
+                <PopupState popupId="SearchMenu" variant="popover">
                   {(popupState) => (
                     <React.Fragment>
                       <Button
@@ -154,38 +133,23 @@ export const NavBar = () => {
                           horizontal: "left",
                         }}
                       >
-                        <MenuItem
-                          component={Link}
-                          to="/global-search"
-                        >
+                        <MenuItem component={Link} to="/global-search">
                           Global Search
                         </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/advanced-search"
-                        >
+                        <MenuItem component={Link} to="/advanced-search">
                           Advanced Search
                         </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/experiment-search"
-                        >
+                        <MenuItem component={Link} to="/experiment-search">
                           Experiment Search
                         </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/protein-set-search"
-                        >
+                        <MenuItem component={Link} to="/protein-set-search">
                           Protein Search By Identifiers
                         </MenuItem>
                       </HoverMenu>
                     </React.Fragment>
                   )}
                 </PopupState>
-                <PopupState
-                  popupId="AnalyzeMenu"
-                  variant="popover"
-                >
+                <PopupState popupId="AnalyzeMenu" variant="popover">
                   {(popupState) => (
                     <React.Fragment>
                       <Button
@@ -207,10 +171,7 @@ export const NavBar = () => {
                           horizontal: "left",
                         }}
                       >
-                        <MenuItem
-                          component={Link}
-                          to="/clustalo"
-                        >
+                        <MenuItem component={Link} to="/clustalo">
                           Multiple Sequence Alignment
                         </MenuItem>
                         <MenuItem
@@ -219,26 +180,17 @@ export const NavBar = () => {
                         >
                           Differential Expression Analysis
                         </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/iprscan5"
-                        >
+                        <MenuItem component={Link} to="/iprscan5">
                           Protein Signature Search
                         </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/psiblast"
-                        >
+                        <MenuItem component={Link} to="/psiblast">
                           Protein Similarity Search (BLAST)
                         </MenuItem>
                       </HoverMenu>
                     </React.Fragment>
                   )}
                 </PopupState>
-                <PopupState
-                  popupId="HelpMenu"
-                  variant="popover"
-                >
+                <PopupState popupId="HelpMenu" variant="popover">
                   {(popupState) => (
                     <React.Fragment>
                       <Button
@@ -260,34 +212,31 @@ export const NavBar = () => {
                           horizontal: "left",
                         }}
                       >
-                        <MenuItem
-                          component={Link}
-                          to="/about"
-                        >
+                        <MenuItem component={Link} to="/about">
                           About
                         </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/download"
-                        >
+                        <MenuItem component={Link} to="/download">
                           Download
                         </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/team"
-                        >
+                        <MenuItem component={Link} to="/team">
                           Team
                         </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/contact"
-                        >
+                        <MenuItem component={Link} to="/contact">
                           Contact Us
                         </MenuItem>
                       </HoverMenu>
                     </React.Fragment>
                   )}
                 </PopupState>
+                <Button
+                  color="primary"
+                  size="large"
+                  style={navMenuStyles}
+                  component={Link}
+                  to="/signup"
+                >
+                  Sign in
+                </Button>
               </>
             )}
           </div>
