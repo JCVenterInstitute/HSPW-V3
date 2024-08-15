@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { Button, TextField } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Button, TextField, Box, Grid, Typography, Paper } from "@mui/material";
+import { useNavigate, Link } from "react-router-dom";
 import { AuthenticationDetails, CognitoUser } from "amazon-cognito-identity-js";
 import userpool from "../userpool";
-import { Link } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -38,11 +37,20 @@ const Login = () => {
   };
 
   return (
-    <div className="login">
-      <div className="form">
-        <h2>Login</h2>
-        <form onSubmit={handleLogin}>
-          <div className="formfield">
+    <Grid
+      container
+      justifyContent="center"
+      alignItems="center"
+      sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}
+    >
+      <Grid item xs={12} sm={8} md={5}>
+        <Paper elevation={3} sx={{ padding: "2rem", borderRadius: "10px" }}>
+          <Box textAlign="center" mb={3}>
+            <Typography variant="h4" component="h1" gutterBottom>
+              Login
+            </Typography>
+          </Box>
+          <form onSubmit={handleLogin}>
             <TextField
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -50,9 +58,8 @@ const Login = () => {
               type="email"
               required
               fullWidth
+              margin="normal"
             />
-          </div>
-          <div className="formfield">
             <TextField
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -60,23 +67,41 @@ const Login = () => {
               type="password"
               required
               fullWidth
+              margin="normal"
             />
-          </div>
-          {error && <p style={{ color: "red" }}>{error}</p>}
-          <div className="formfield">
-            <Button type="submit" variant="contained" color="primary">
-              Login
-            </Button>
-          </div>
-          <div>
-            No account?
-            <Button color="primary" size="large" component={Link} to="/signup">
-              Create one
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
+            {error && (
+              <Typography
+                color="error"
+                variant="body2"
+                align="center"
+                sx={{ marginTop: "1rem" }}
+              >
+                {error}
+              </Typography>
+            )}
+            <Box textAlign="center" mt={2}>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                size="large"
+                fullWidth
+              >
+                Login
+              </Button>
+            </Box>
+            <Box textAlign="center" mt={3}>
+              <Typography variant="body2">
+                No account?{" "}
+                <Button color="primary" component={Link} to="/signup">
+                  Create one
+                </Button>
+              </Typography>
+            </Box>
+          </form>
+        </Paper>
+      </Grid>
+    </Grid>
   );
 };
 
