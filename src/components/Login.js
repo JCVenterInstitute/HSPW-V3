@@ -3,6 +3,7 @@ import { Button, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { AuthenticationDetails, CognitoUser } from "amazon-cognito-identity-js";
 import userpool from "../userpool";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -65,6 +66,12 @@ const Login = () => {
           <div className="formfield">
             <Button type="submit" variant="contained" color="primary">
               Login
+            </Button>
+          </div>
+          <div>
+            No account?
+            <Button color="primary" size="large" component={Link} to="/signup">
+              Create one
             </Button>
           </div>
         </form>

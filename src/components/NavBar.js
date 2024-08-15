@@ -233,15 +233,6 @@ export const NavBar = () => {
                   size="large"
                   style={navMenuStyles}
                   component={Link}
-                  to="/signup"
-                >
-                  Sign in
-                </Button>
-                <Button
-                  color="primary"
-                  size="large"
-                  style={navMenuStyles}
-                  component={Link}
                   to="/login"
                 >
                   Log in

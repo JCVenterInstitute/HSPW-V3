@@ -156,6 +156,7 @@ const Signup = () => {
   return (
     <div className="signup">
       <div className="form">
+        <h2>Register</h2>
         <div className="formfield">
           <TextField
             value={formData.title}
@@ -169,6 +170,7 @@ const Signup = () => {
             onChange={(e) => formDataUpdate("givenName", e.target.value)}
             label="First Name*"
             helperText={formData.givenNameErr}
+            required
           />
         </div>
         <div className="formfield">
@@ -184,6 +186,7 @@ const Signup = () => {
             onChange={(e) => formDataUpdate("familyName", e.target.value)}
             label="Last Name*"
             helperText={formData.familyNameErr}
+            required
           />
         </div>
         <div className="formfield">
@@ -201,6 +204,7 @@ const Signup = () => {
             }}
             label="Email*"
             helperText={formData.emailErr}
+            required
           />
         </div>
         <div className="formfield">
@@ -212,6 +216,7 @@ const Signup = () => {
             type="password"
             label="Password*"
             helperText={formData.passwordErr}
+            required
           />
         </div>
         <div className="formfield">
