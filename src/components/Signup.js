@@ -22,121 +22,95 @@ const Signup = () => {
   });
 
   const formDataUpdate = (formField, value) => {
-    setFormData({ ...formData, [formField]: value });
+    setFormData((prevData) => ({ ...prevData, [formField]: value }));
   };
 
   const validation = () => {
-    let resolution = { email: "", password: "", givenName: "", familyName: "" };
-    return new Promise((resolve, reject) => {
-      if (formData.email === "") {
-        formDataUpdate("emailErr", "Email is Required");
-        resolution.email = "Email is Required";
-      }
+    let errors = {
+      emailErr: "",
+      passwordErr: "",
+      givenNameErr: "",
+      familyNameErr: "",
+    };
 
-      if (formData.givenName === "") {
-        formDataUpdate("givenNameErr", "First Name is Required");
-        resolution.givenName = "First Name is Required";
-      }
+    let isValid = true;
 
-      if (formData.familyName === "") {
-        formDataUpdate("familyNameErr", "Last Name is Required");
-        resolution.familyName = "Last Name is Required";
-      }
+    if (formData.email === "") {
+      errors.emailErr = "Email is Required";
+      isValid = false;
+    }
 
-      if (formData.password === "") {
-        formDataUpdate("passwordErr", "Password is required");
-        resolution.password = "Password is required";
-      } else if (formData.password.length < 8) {
-        formDataUpdate(
-          "passwordErr",
-          "Password must be at least 8 characters long"
-        );
-        resolution.password = "Password must be at least 8 characters long";
-      }
+    if (formData.givenName === "") {
+      errors.givenNameErr = "First Name is Required";
+      isValid = false;
+    }
 
-      resolve(resolution);
-      reject("");
-    });
+    if (formData.familyName === "") {
+      errors.familyNameErr = "Last Name is Required";
+      isValid = false;
+    }
+
+    if (formData.password === "") {
+      errors.passwordErr = "Password is required";
+      isValid = false;
+    } else if (formData.password.length < 8) {
+      errors.passwordErr = "Password must be at least 8 characters long";
+      isValid = false;
+    }
+
+    setFormData((prevData) => ({ ...prevData, ...errors }));
+
+    return isValid;
   };
 
   const handleClick = (e) => {
-    formDataUpdate("emailErr", "");
-    formDataUpdate("passwordErr", "");
-    formDataUpdate("familyNameErr", "");
-    formDataUpdate("givenNameErr", "");
+    e.preventDefault(); // Prevent the default form submission behavior
 
-    validation()
-      .then((res) => {
-        if (
-          res.email === "" &&
-          res.password === "" &&
-          res.givenName === "" &&
-          res.familyName === ""
-        ) {
-          const attributeList = [];
-          attributeList.push(
-            new CognitoUserAttribute({
-              Name: "email",
-              Value: formData.email,
-            })
-          );
-          attributeList.push(
-            new CognitoUserAttribute({
-              Name: "given_name",
-              Value: formData.givenName,
-            })
-          );
-          attributeList.push(
-            new CognitoUserAttribute({
-              Name: "family_name",
-              Value: formData.familyName,
-            })
-          );
-          attributeList.push(
-            new CognitoUserAttribute({
-              Name: "custom:title",
-              Value: formData.title,
-            })
-          );
-          attributeList.push(
-            new CognitoUserAttribute({
-              Name: "custom:middle_initial",
-              Value: formData.middleInitial,
-            })
-          );
-          attributeList.push(
-            new CognitoUserAttribute({
-              Name: "custom:institution",
-              Value: formData.institution,
-            })
-          );
-          let username = formData.email;
-          userpool.signUp(
-            username,
-            formData.password,
-            attributeList,
-            null, // ValidationData (if any)
-            (err, result) => {
-              if (err) {
-                console.log("Sign Up Error: ", err);
-                alert("Couldn't sign up");
-              } else {
-                console.log(result);
-                alert("User Added Successfully");
-                navigate("/dashboard");
-              }
-            }
-          );
-        }
-      })
-      .catch((err) => console.log(err));
+    if (!validation()) {
+      return;
+    }
+
+    const attributeList = [
+      new CognitoUserAttribute({ Name: "email", Value: formData.email }),
+      new CognitoUserAttribute({
+        Name: "given_name",
+        Value: formData.givenName,
+      }),
+      new CognitoUserAttribute({
+        Name: "family_name",
+        Value: formData.familyName,
+      }),
+      new CognitoUserAttribute({ Name: "custom:title", Value: formData.title }),
+      new CognitoUserAttribute({
+        Name: "custom:middle_initial",
+        Value: formData.middleInitial,
+      }),
+      new CognitoUserAttribute({
+        Name: "custom:institution",
+        Value: formData.institution,
+      }),
+    ];
+
+    const username = formData.email;
+    const password = formData.password;
+
+    userpool.signUp(username, password, attributeList, null, (err, result) => {
+      if (err) {
+        console.error("Sign Up Error: ", err);
+        alert("Couldn't sign up");
+        return;
+      }
+      console.log(result);
+      alert("User Added Successfully");
+      navigate("/dashboard");
+    });
   };
 
   return (
     <Grid
       container
       justifyContent="center"
-      // alignItems="center"
+      //alignItems="center"
       sx={{ backgroundColor: "#f5f5f5" }}
     >
       <Grid item xs={12} sm={8} md={5}>
@@ -165,6 +139,7 @@ const Signup = () => {
               required
               fullWidth
               margin="normal"
+              error={Boolean(formData.givenNameErr)}
             />
             <TextField
               value={formData.middleInitial}
@@ -181,6 +156,7 @@ const Signup = () => {
               required
               fullWidth
               margin="normal"
+              error={Boolean(formData.familyNameErr)}
             />
             <TextField
               value={formData.institution}
@@ -197,6 +173,7 @@ const Signup = () => {
               required
               fullWidth
               margin="normal"
+              error={Boolean(formData.emailErr)}
             />
             <TextField
               value={formData.password}
@@ -207,6 +184,7 @@ const Signup = () => {
               required
               fullWidth
               margin="normal"
+              error={Boolean(formData.passwordErr)}
             />
             <Box textAlign="center" mt={2}>
               <Button

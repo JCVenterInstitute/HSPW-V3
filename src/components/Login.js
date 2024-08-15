@@ -37,12 +37,7 @@ const Login = () => {
   };
 
   return (
-    <Grid
-      container
-      justifyContent="center"
-      alignItems="center"
-      sx={{ backgroundColor: "#f5f5f5" }}
-    >
+    <Grid container sx={{ backgroundColor: "#f5f5f5" }}>
       <Grid item xs={12} sm={8} md={5}>
         <Paper
           elevation={3}
