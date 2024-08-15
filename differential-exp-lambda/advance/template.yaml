@@ -38,7 +38,7 @@ Resources:
       FunctionName: "Differential-Analysis-Advance"
       Description: Differential Analysis Advance
       Role: arn:aws:iam::552623730819:role/HSP-Api-Execution-Role
-      MemorySize: 512
+      MemorySize: 2048
       Environment:
         Variables:
           S3_BUCKET_NAME: !Ref S3BucketName
