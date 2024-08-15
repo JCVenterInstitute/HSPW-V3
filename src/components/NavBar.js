@@ -237,6 +237,15 @@ export const NavBar = () => {
                 >
                   Sign in
                 </Button>
+                <Button
+                  color="primary"
+                  size="large"
+                  style={navMenuStyles}
+                  component={Link}
+                  to="/login"
+                >
+                  Log in
+                </Button>
               </>
             )}
           </div>
