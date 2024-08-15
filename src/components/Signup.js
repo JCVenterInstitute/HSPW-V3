@@ -8,63 +8,80 @@ import { generateSecretHash } from "../services/authenticate";
 const Signup = () => {
   const Navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [givenName, setGivenName] = useState("");
-  const [familyName, setFamilyName] = useState("");
-  const [emailErr, setEmailErr] = useState("");
-  const [passwordErr, setPasswordErr] = useState("");
-  const [givenNameErr, setGivenNameErr] = useState("");
-  const [familyNameErr, setFamilyNameErr] = useState("");
+  //   const [email, setEmail] = useState("");
+  //   const [password, setPassword] = useState("");
+  //   const [givenName, setGivenName] = useState("");
+  //   const [familyName, setFamilyName] = useState("");
+  //   const [emailErr, setEmailErr] = useState("");
+  //   const [passwordErr, setPasswordErr] = useState("");
+  //   const [givenNameErr, setGivenNameErr] = useState("");
+  //   const [familyNameErr, setFamilyNameErr] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    title: "",
+    givenName: "",
+    middleInitial: "",
+    familyName: "",
+    institution: "",
+    emailErr: "",
+    passwordErr: "",
+    givenNameErr: "",
+    familyNameErr: "",
+  });
 
-  const formInputChange = (formField, value) => {
-    if (formField === "givenName") {
-      setGivenName(value);
-    }
-    if (formField === "familyName") {
-      setFamilyName(value);
-    }
-    if (formField === "email") {
-      setEmail(value);
-    }
-    if (formField === "password") {
-      setPassword(value);
-    }
+  const formDataUpdate = (formField, value) => {
+    setFormData({ ...formData, [formField]: value });
+    // if (formField === "givenName") {
+    //   setGivenName(value);
+    // }
+    // if (formField === "familyName") {
+    //   setFamilyName(value);
+    // }
+    // if (formField === "email") {
+    //   setEmail(value);
+    // }
+    // if (formField === "password") {
+    //   setPassword(value);
+    // }
   };
 
   const validation = () => {
     let resolution = { email: "", password: "", givenName: "", familyName: "" };
     return new Promise((resolve, reject) => {
-      if (email === "") {
-        setEmailErr("Email is Required");
+      if (formData.email === "") {
+        formDataUpdate("emailErr", "Email is Required");
         resolution.email = "Email is Required";
       }
-      if (givenName === "") {
-        setGivenNameErr("First Name is Required");
+
+      if (formData.givenName === "") {
+        formDataUpdate("givenNameErr", "First Name is Required");
         resolution.givenName = "First Name is Required";
       }
-      if (familyName === "") {
-        setFamilyNameErr("Last Name is Required");
+
+      if (formData.familyName === "") {
+        formDataUpdate("familyNameErr", "Last Name is Required");
         resolution.familyName = "Last Name is Required";
       }
-      if (password === "") {
-        setPasswordErr("Password is required");
+
+      if (formData.password === "") {
+        formDataUpdate("passwordErr", "Password is required");
         resolution.password = "Password is required";
-      } else if (password.length < 8) {
-        setPasswordErr("must be at least 8 characters long");
+      } else if (formData.password.length < 8) {
+        formDataUpdate("passwordErr", "must be at least 8 characters long");
         resolution.password = "must be at least 8 characters long";
       }
-      resolve(resolution);
 
+      resolve(resolution);
       reject("");
     });
   };
 
   const handleClick = (e) => {
-    setEmailErr("");
-    setPasswordErr("");
-    setFamilyNameErr("");
-    setGivenNameErr("");
+    formDataUpdate("emailErr", "");
+    formDataUpdate("passwordErr", "");
+    formDataUpdate("familyNameErr", "");
+    formDataUpdate("givenNameErr", "");
 
     validation()
       .then(
@@ -79,25 +96,43 @@ const Signup = () => {
             attributeList.push(
               new CognitoUserAttribute({
                 Name: "email",
-                Value: email,
+                Value: formData.email,
               })
             );
             attributeList.push(
               new CognitoUserAttribute({
                 Name: "given_name",
-                Value: givenName,
+                Value: formData.givenName,
               })
             );
             attributeList.push(
               new CognitoUserAttribute({
                 Name: "family_name",
-                Value: familyName,
+                Value: formData.familyName,
               })
             );
-            let username = email;
+            attributeList.push(
+              new CognitoUserAttribute({
+                Name: "custom:title",
+                Value: formData.title,
+              })
+            );
+            attributeList.push(
+              new CognitoUserAttribute({
+                Name: "custom:middle_initial",
+                Value: formData.middleInitial,
+              })
+            );
+            attributeList.push(
+              new CognitoUserAttribute({
+                Name: "custom:institution",
+                Value: formData.institution,
+              })
+            );
+            let username = formData.email;
             userpool.signUp(
               username,
-              password,
+              formData.password,
               attributeList,
               null, // ValidationData (if any)
               (err, result) => {
@@ -123,37 +158,60 @@ const Signup = () => {
       <div className="form">
         <div className="formfield">
           <TextField
-            value={givenName}
-            onChange={(e) => formInputChange("givenName", e.target.value)}
-            label="First Name"
-            helperText={givenNameErr}
+            value={formData.title}
+            onChange={(e) => formDataUpdate("title", e.target.value)}
+            label="Title"
           />
         </div>
         <div className="formfield">
           <TextField
-            value={familyName}
-            onChange={(e) => formInputChange("familyName", e.target.value)}
-            label="Last Name"
-            helperText={familyNameErr}
+            value={formData.givenName}
+            onChange={(e) => formDataUpdate("givenName", e.target.value)}
+            label="First Name*"
+            helperText={formData.givenNameErr}
           />
         </div>
         <div className="formfield">
           <TextField
-            value={email}
-            onChange={(e) => formInputChange("email", e.target.value)}
-            label="Email"
-            helperText={emailErr}
+            value={formData.middleInitial}
+            onChange={(e) => formDataUpdate("middleInitial", e.target.value)}
+            label="Middle Initial"
           />
         </div>
         <div className="formfield">
           <TextField
-            value={password}
+            value={formData.familyName}
+            onChange={(e) => formDataUpdate("familyName", e.target.value)}
+            label="Last Name*"
+            helperText={formData.familyNameErr}
+          />
+        </div>
+        <div className="formfield">
+          <TextField
+            value={formData.institution}
+            onChange={(e) => formDataUpdate("institution", e.target.value)}
+            label="Institution"
+          />
+        </div>
+        <div className="formfield">
+          <TextField
+            value={formData.email}
             onChange={(e) => {
-              formInputChange("password", e.target.value);
+              formDataUpdate("email", e.target.value);
+            }}
+            label="Email*"
+            helperText={formData.emailErr}
+          />
+        </div>
+        <div className="formfield">
+          <TextField
+            value={formData.password}
+            onChange={(e) => {
+              formDataUpdate("password", e.target.value);
             }}
             type="password"
-            label="Password"
-            helperText={passwordErr}
+            label="Password*"
+            helperText={formData.passwordErr}
           />
         </div>
         <div className="formfield">
