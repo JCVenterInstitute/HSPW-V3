@@ -41,10 +41,13 @@ const Login = () => {
       container
       justifyContent="center"
       alignItems="center"
-      sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}
+      sx={{ backgroundColor: "#f5f5f5" }}
     >
       <Grid item xs={12} sm={8} md={5}>
-        <Paper elevation={3} sx={{ padding: "2rem", borderRadius: "10px" }}>
+        <Paper
+          elevation={3}
+          sx={{ padding: "2rem", borderRadius: "10px", marginY: "20px" }}
+        >
           <Box textAlign="center" mb={3}>
             <Typography variant="h4" component="h1" gutterBottom>
               Login
