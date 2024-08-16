@@ -24,10 +24,19 @@ const Signup = () => {
   });
 
   const formRegex = {
-    email: [{ regex: /^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, errMsg: (<span>Invalid Email Address</span>) }],
-    password: [],
-    givenName: [],
-    middleInitial: [],
+    email: [
+      {
+        regex: /^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        errMsg: <span>Invalid Email Address</span>,
+      },
+    ],
+    password: [{}, {}, {}, {}],
+    givenName: [
+      { regex: /^[a-zA-Z.]+$/, errMsg: <span>Name may only contain letters and .</span> },
+    ],
+    middleInitial: [
+      { regex: /^[a-zA-Z]{0,1}$/, errMsg: <span>Middle initial must be a letter</span> },
+    ],
     familyName: [],
     institution: [],
   };
@@ -174,6 +183,7 @@ const Signup = () => {
               value={formData.middleInitial}
               onChange={(e) => formDataUpdate("middleInitial", e.target.value)}
               label="Middle Initial"
+              inputProps={{maxlength: 1, style: { textTransform: 'uppercase' }}}
               fullWidth
               margin="normal"
             />
