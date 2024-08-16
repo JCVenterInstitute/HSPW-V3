@@ -1,18 +1,28 @@
 import React, { useState } from "react";
-import { Button, TextField, Box, Grid, Typography, Paper } from "@mui/material";
-import { useNavigate, Link } from "react-router-dom";
+import {
+  Button,
+  TextField,
+  Box,
+  Grid,
+  Typography,
+  Paper,
+  CircularProgress,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { AuthenticationDetails, CognitoUser } from "amazon-cognito-identity-js";
 import userpool from "../userpool";
 
 const Login = () => {
   const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
     const user = new CognitoUser({
       Username: email,
@@ -27,17 +37,22 @@ const Login = () => {
     user.authenticateUser(authDetails, {
       onSuccess: (result) => {
         console.log("Login successful!", result);
-        navigate("/dashboard"); // Redirect to dashboard or other route after successful login
+        localStorage.setItem("accessToken", result.getAccessToken().getJwtToken());
+        localStorage.setItem("idToken", result.getIdToken().getJwtToken());
+        localStorage.setItem("refreshToken", result.getRefreshToken().getToken());
+        setLoading(false);
+        navigate("/dashboard"); // Redirect to the desired page after login
       },
       onFailure: (err) => {
         console.error("Login failed: ", err);
+        setLoading(false);
         setError("Login failed. Please check your credentials and try again.");
       },
     });
   };
 
   return (
-    <Grid container sx={{ backgroundColor: "#f5f5f5" }}>
+    <Grid container justifyContent="center" sx={{ backgroundColor: "#f5f5f5" }}>
       <Grid item xs={12} sm={8} md={5}>
         <Paper
           elevation={3}
@@ -68,12 +83,7 @@ const Login = () => {
               margin="normal"
             />
             {error && (
-              <Typography
-                color="error"
-                variant="body2"
-                align="center"
-                sx={{ marginTop: "1rem" }}
-              >
+              <Typography color="error" variant="body2" mt={2}>
                 {error}
               </Typography>
             )}
@@ -84,17 +94,10 @@ const Login = () => {
                 color="primary"
                 size="large"
                 fullWidth
+                disabled={loading}
               >
-                Login
+                {loading ? <CircularProgress size={24} /> : "Login"}
               </Button>
-            </Box>
-            <Box textAlign="center" mt={3}>
-              <Typography variant="body2">
-                No account?{" "}
-                <Button color="primary" component={Link} to="/signup">
-                  Create one
-                </Button>
-              </Typography>
             </Box>
           </form>
         </Paper>
