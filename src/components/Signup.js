@@ -1,4 +1,4 @@
-import { Button, TextField, Box, Grid, Typography, Paper } from "@mui/material";
+import { Button, TextField, Select, MenuItem, Box, Grid, Typography, Paper, FormControl, InputLabel } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
@@ -18,14 +18,26 @@ const Signup = () => {
     emailErr: "",
     passwordErr: "",
     givenNameErr: "",
+    middleInitialErr: "",
     familyNameErr: "",
+    institutionErr: "",
   });
+
+  const formRegex = {
+    email: [{ regex: /^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, errMsg: (<span>Invalid Email Address</span>) }],
+    password: [],
+    givenName: [],
+    middleInitial: [],
+    familyName: [],
+    institution: [],
+  };
 
   const formDataUpdate = (formField, value) => {
     setFormData((prevData) => ({ ...prevData, [formField]: value }));
+    console.log(formData[formField]);
   };
 
-  const validation = () => {
+  const submitValidation = () => {
     let errors = {
       emailErr: "",
       passwordErr: "",
@@ -36,7 +48,13 @@ const Signup = () => {
     let isValid = true;
 
     if (formData.email === "") {
-      errors.emailErr = "Email is Required";
+      errors.emailErr = (
+        <>
+          <span>"Email is Required"</span>
+          <br />
+          <span>"Email is Required"</span>
+        </>
+      );
       isValid = false;
     }
 
@@ -66,7 +84,7 @@ const Signup = () => {
   const handleClick = (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
 
-    if (!validation()) {
+    if (!submitValidation()) {
       return;
     }
 
@@ -124,18 +142,29 @@ const Signup = () => {
             </Typography>
           </Box>
           <form>
-            <TextField
-              value={formData.title}
-              onChange={(e) => formDataUpdate("title", e.target.value)}
-              label="Title"
-              fullWidth
-              margin="normal"
-            />
+            <FormControl fullWidth>
+              <InputLabel id="form-box-title-field">Title</InputLabel>
+              <Select
+                labelId="form-box-title-field"
+                value={formData.title}
+                onChange={(e) => formDataUpdate("title", e.target.value)}
+                label="Title"
+                fullWidth
+                margin="normal"
+              >
+                <MenuItem value={""}>Title</MenuItem>
+                <MenuItem value={"Dr."}>Dr.</MenuItem>
+                <MenuItem value={"Mrs."}>Mrs.</MenuItem>
+                <MenuItem value={"Ms."}>Ms.</MenuItem>
+                <MenuItem value={"Mr."}>Mr.</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               value={formData.givenName}
               onChange={(e) => formDataUpdate("givenName", e.target.value)}
-              label="First Name*"
+              label="First Name"
               helperText={formData.givenNameErr}
+              onBlur={submitValidation}
               required
               fullWidth
               margin="normal"
@@ -151,7 +180,7 @@ const Signup = () => {
             <TextField
               value={formData.familyName}
               onChange={(e) => formDataUpdate("familyName", e.target.value)}
-              label="Last Name*"
+              label="Last Name"
               helperText={formData.familyNameErr}
               required
               fullWidth
@@ -168,7 +197,7 @@ const Signup = () => {
             <TextField
               value={formData.email}
               onChange={(e) => formDataUpdate("email", e.target.value)}
-              label="Email*"
+              label="Email"
               helperText={formData.emailErr}
               required
               fullWidth
@@ -179,7 +208,7 @@ const Signup = () => {
               value={formData.password}
               onChange={(e) => formDataUpdate("password", e.target.value)}
               type="password"
-              label="Password*"
+              label="Password"
               helperText={formData.passwordErr}
               required
               fullWidth
