@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   AppBar,
   Toolbar,
@@ -6,15 +7,13 @@ import {
   Box,
   useMediaQuery,
   Container,
+  Avatar,
 } from "@mui/material";
-import logo from "../assets/hspw-logo.png";
-import React from "react";
-import PopupState from "material-ui-popup-state";
-import { bindHover, bindMenu } from "material-ui-popup-state/hooks";
+import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
 import HoverMenu from "material-ui-popup-state/HoverMenu";
-import { ArrowDropDownIcon } from "@mui/x-date-pickers";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import logo from "../assets/hspw-logo.png";
 import MobileNavBar from "./MobileNavBar";
-import { Link } from "react-router-dom";
 
 const navMenuStyles = {
   marginRight: "20px",
@@ -23,6 +22,28 @@ const navMenuStyles = {
 
 export const NavBar = () => {
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down("lg"));
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation(); // Hook to track location changes
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [location]); // Run useEffect whenever the location changes
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("idToken");
+    localStorage.removeItem("refreshToken");
+    setIsLoggedIn(false);
+    navigate("/");
+  };
+
+  console.log("Rendering NavBar with isLoggedIn:", isLoggedIn);
 
   return (
     <Container maxWidth="xl">
@@ -69,14 +90,14 @@ export const NavBar = () => {
                 >
                   Home
                 </Button>
+
                 <PopupState popupId="BrowseMenu" variant="popover">
                   {(popupState) => (
-                    <React.Fragment>
+                    <>
                       <Button
                         size="large"
                         style={navMenuStyles}
-                        {...bindHover(popupState)}
-                        endIcon={<ArrowDropDownIcon />}
+                        {...bindTrigger(popupState)}
                       >
                         Browse
                       </Button>
@@ -107,18 +128,17 @@ export const NavBar = () => {
                           Publications
                         </MenuItem>
                       </HoverMenu>
-                    </React.Fragment>
+                    </>
                   )}
                 </PopupState>
                 <PopupState popupId="SearchMenu" variant="popover">
                   {(popupState) => (
-                    <React.Fragment>
+                    <>
                       <Button
                         variant="text"
                         size="large"
                         style={navMenuStyles}
-                        {...bindHover(popupState)}
-                        endIcon={<ArrowDropDownIcon />}
+                        {...bindTrigger(popupState)}
                       >
                         Search
                       </Button>
@@ -146,17 +166,16 @@ export const NavBar = () => {
                           Protein Search By Identifiers
                         </MenuItem>
                       </HoverMenu>
-                    </React.Fragment>
+                    </>
                   )}
                 </PopupState>
                 <PopupState popupId="AnalyzeMenu" variant="popover">
                   {(popupState) => (
-                    <React.Fragment>
+                    <>
                       <Button
                         size="large"
                         style={navMenuStyles}
-                        {...bindHover(popupState)}
-                        endIcon={<ArrowDropDownIcon />}
+                        {...bindTrigger(popupState)}
                       >
                         Analyze
                       </Button>
@@ -187,17 +206,16 @@ export const NavBar = () => {
                           Protein Similarity Search (BLAST)
                         </MenuItem>
                       </HoverMenu>
-                    </React.Fragment>
+                    </>
                   )}
                 </PopupState>
                 <PopupState popupId="HelpMenu" variant="popover">
                   {(popupState) => (
-                    <React.Fragment>
+                    <>
                       <Button
                         size="large"
                         style={navMenuStyles}
-                        {...bindHover(popupState)}
-                        endIcon={<ArrowDropDownIcon />}
+                        {...bindTrigger(popupState)}
                       >
                         Help
                       </Button>
@@ -225,18 +243,55 @@ export const NavBar = () => {
                           Contact Us
                         </MenuItem>
                       </HoverMenu>
-                    </React.Fragment>
+                    </>
                   )}
                 </PopupState>
-                <Button
-                  color="primary"
-                  size="large"
-                  style={navMenuStyles}
-                  component={Link}
-                  to="/login"
-                >
-                  Log in
-                </Button>
+
+                {isLoggedIn ? (
+                  <PopupState variant="popover" popupId="account-menu">
+                    {(popupState) => (
+                      <>
+                        <Button
+                          {...bindTrigger(popupState)}
+                          size="large"
+                          style={navMenuStyles}
+                          startIcon={<Avatar alt="User Avatar" />}
+                        >
+                          Account
+                        </Button>
+                        <HoverMenu
+                          {...bindMenu(popupState)}
+                          anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "left",
+                          }}
+                          transformOrigin={{
+                            vertical: "top",
+                            horizontal: "left",
+                          }}
+                        >
+                          <MenuItem component={Link} to="/profile">
+                            Profile
+                          </MenuItem>
+                          <MenuItem component={Link} to="/submissions">
+                            Submissions
+                          </MenuItem>
+                          <MenuItem onClick={handleLogout}>Log out</MenuItem>
+                        </HoverMenu>
+                      </>
+                    )}
+                  </PopupState>
+                ) : (
+                  <Button
+                    color="primary"
+                    size="large"
+                    style={navMenuStyles}
+                    component={Link}
+                    to="/login"
+                  >
+                    Log in
+                  </Button>
+                )}
               </>
             )}
           </div>
