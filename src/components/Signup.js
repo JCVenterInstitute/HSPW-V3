@@ -9,42 +9,101 @@ const Signup = () => {
 
   const [formData, setFormData] = useState({
     email: "",
-    password: "",
-    title: "",
-    givenName: "",
-    middleInitial: "",
-    familyName: "",
-    institution: "",
     emailErr: "",
+
+    password: "",
     passwordErr: "",
+
+    title: "",
+
+    givenName: "",
     givenNameErr: "",
+
+    middleInitial: "",
     middleInitialErr: "",
+
+    familyName: "",
     familyNameErr: "",
+
+    institution: "",
     institutionErr: "",
   });
 
   const formRegex = {
     email: [
       {
-        regex: /^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        regex: /^[a-zA-Z0-9._%]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
         errMsg: <span>Invalid Email Address</span>,
+      },
+      {
+        regex: /.+/,
+        errMsg: <span>Email is required</span>,
       },
     ],
     password: [{}, {}, {}, {}],
     givenName: [
-      { regex: /^[a-zA-Z.]+$/, errMsg: <span>Name may only contain letters and .</span> },
+      {
+        regex: /^[a-zA-Z]+[a-zA-Z.]*$/,
+        errMsg: <span>Invalid first name</span>,
+      },
+      {
+        regex: /^[a-zA-Z.]*$/,
+        errMsg: <span>First name may only contain letters and/or periods</span>,
+      },
+      {
+        regex: /.+/,
+        errMsg: <span>First name is required</span>,
+      },
     ],
     middleInitial: [
-      { regex: /^[a-zA-Z]{0,1}$/, errMsg: <span>Middle initial must be a letter</span> },
+      {
+        regex: /^[a-zA-Z]{0,1}$/,
+        errMsg: <span>Middle initial must be a letter</span>,
+      },
     ],
-    familyName: [],
-    institution: [],
+    familyName: [
+      {
+        regex: /^[a-zA-Z]+[a-zA-Z.]*$/,
+        errMsg: <span>Invalid last name</span>,
+      },
+      {
+        regex: /^[a-zA-Z.]*$/,
+        errMsg: <span>Last name may only contain letters and/or periods</span>,
+      },
+      {
+        regex: /.+/,
+        errMsg: <span>Last name is required</span>,
+      },
+    ],
+    institution: [
+      {
+        regex: /^[a-zA-Z0-9 ,.]*$/,
+        errMsg: (
+          <span>
+            Institution name may only contain letters, commas, spaces, and/or
+            periods
+          </span>
+        ),
+      },
+    ],
   };
 
   const formDataUpdate = (formField, value) => {
     setFormData((prevData) => ({ ...prevData, [formField]: value }));
     console.log(formData[formField]);
   };
+
+  const fieldValidation = (field, fieldErr) => {
+    let isValid = true;
+    formRegex[field].forEach(element => {
+      if(!element.regex.test(formData[field])){
+        console.log(element.errMsg.props.children);
+        formDataUpdate(fieldErr, element.errMsg);
+        isValid = false;
+      }
+    });
+    if(isValid)formDataUpdate(fieldErr, "");
+  }
 
   const submitValidation = () => {
     let errors = {
@@ -58,22 +117,18 @@ const Signup = () => {
 
     if (formData.email === "") {
       errors.emailErr = (
-        <>
-          <span>"Email is Required"</span>
-          <br />
-          <span>"Email is Required"</span>
-        </>
+          <span>Email is required</span>
       );
       isValid = false;
     }
 
     if (formData.givenName === "") {
-      errors.givenNameErr = "First Name is Required";
+      errors.givenNameErr = "First Name is required";
       isValid = false;
     }
 
     if (formData.familyName === "") {
-      errors.familyNameErr = "Last Name is Required";
+      errors.familyNameErr = "Last Name is required";
       isValid = false;
     }
 
@@ -173,7 +228,7 @@ const Signup = () => {
               onChange={(e) => formDataUpdate("givenName", e.target.value)}
               label="First Name"
               helperText={formData.givenNameErr}
-              onBlur={submitValidation}
+              onBlur={() => fieldValidation("givenName", "givenNameErr")}
               required
               fullWidth
               margin="normal"
@@ -183,15 +238,24 @@ const Signup = () => {
               value={formData.middleInitial}
               onChange={(e) => formDataUpdate("middleInitial", e.target.value)}
               label="Middle Initial"
-              inputProps={{maxlength: 1, style: { textTransform: 'uppercase' }}}
+              helperText={formData.middleInitialErr}
+              onBlur={() =>
+                fieldValidation("middleInitial", "middleInitialErr")
+              }
+              inputProps={{
+                maxlength: 1,
+                style: { textTransform: "uppercase" },
+              }}
               fullWidth
               margin="normal"
+              error={Boolean(formData.middleInitialErr)}
             />
             <TextField
               value={formData.familyName}
               onChange={(e) => formDataUpdate("familyName", e.target.value)}
               label="Last Name"
               helperText={formData.familyNameErr}
+              onBlur={() => fieldValidation("familyName", "familyNameErr")}
               required
               fullWidth
               margin="normal"
@@ -201,14 +265,18 @@ const Signup = () => {
               value={formData.institution}
               onChange={(e) => formDataUpdate("institution", e.target.value)}
               label="Institution"
+              helperText={formData.institutionErr}
+              onBlur={() => fieldValidation("institution", "institutionErr")}
               fullWidth
               margin="normal"
+              error={Boolean(formData.institutionErr)}
             />
             <TextField
               value={formData.email}
               onChange={(e) => formDataUpdate("email", e.target.value)}
               label="Email"
               helperText={formData.emailErr}
+              onBlur={() => fieldValidation("email", "emailErr")}
               required
               fullWidth
               margin="normal"
