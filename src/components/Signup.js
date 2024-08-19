@@ -1,11 +1,35 @@
-import { Button, TextField, Select, MenuItem, Box, Grid, Typography, Paper, FormControl, InputLabel } from "@mui/material";
+import { Button, TextField, Select, MenuItem, Box, Grid, Typography, Paper, FormControl, InputLabel, Collapse, List, ListItem} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
 import userpool from "../userpool";
 
+
+
 const Signup = () => {
   const navigate = useNavigate();
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const [passwordRequirements, setPasswordRequirements] = useState([
+    { regex: /.{8,}/, requirement: "At least 8 characters", isMet: false },
+    { regex: /[0-9]+/, requirement: "At least one number", isMet: false },
+    {
+      regex: /[\^$*.[\]{}()?\-"!@#%&/\\,><':;|_~`+=]+/,
+      requirement: "At least one special character",
+      isMet: false,
+    },
+    {
+      regex: /[A-Z]+/,
+      requirement: "At least one uppercase letter",
+      isMet: false,
+    },
+    {
+      regex: /[a-z]+/,
+      requirement: "At least one lowercase letter",
+      isMet: false,
+    },
+  ]);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -90,8 +114,16 @@ const Signup = () => {
 
   const formDataUpdate = (formField, value) => {
     setFormData((prevData) => ({ ...prevData, [formField]: value }));
-    console.log(formData[formField]);
   };
+
+  const passwordUpdate = (value) => {
+    setFormData((prevData) => ({ ...prevData, ['password']: value }));
+    let tempPassReqs = passwordRequirements;
+    passwordRequirements.map((req, index) => {
+      tempPassReqs[index].isMet = req.regex.test(value);
+    });
+    console.log(tempPassReqs);
+  }
 
   const fieldValidation = (field, fieldErr) => {
     let isValid = true;
@@ -284,7 +316,9 @@ const Signup = () => {
             />
             <TextField
               value={formData.password}
-              onChange={(e) => formDataUpdate("password", e.target.value)}
+              onChange={(e) =>  passwordUpdate(e.target.value)}
+              onFocus={() => setIsExpanded(true)}
+              onBlur={() => setIsExpanded(false)}
               type="password"
               label="Password"
               helperText={formData.passwordErr}
@@ -293,6 +327,26 @@ const Signup = () => {
               margin="normal"
               error={Boolean(formData.passwordErr)}
             />
+            <Collapse in={isExpanded}>
+              <Box
+                sx={{
+                  mt: 1, // Margin top to separate from the TextField
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  padding: "8px",
+                  backgroundColor: "#f9f9f9",
+                }}
+              >
+                <Typography variant="body1" sx={{fontWeight: 'bold' }}>Password must contain:</Typography>
+                <List>
+                  {passwordRequirements.map((requirement, index) => (
+                    <ListItem key={index}>
+                      <Typography variant="body2" sx={{color: requirement.isMet ? 'blue' : 'red'}}>{requirement.requirement}</Typography>
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+            </Collapse>
             <Box textAlign="center" mt={2}>
               <Button
                 type="submit"
