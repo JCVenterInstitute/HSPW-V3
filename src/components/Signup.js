@@ -136,14 +136,12 @@ const Signup = () => {
     passwordRequirements.map((req, index) => {
       tempPassReqs[index].isMet = req.regex.test(value);
     });
-    console.log(tempPassReqs);
   };
 
   const fieldValidation = (field, fieldErr) => {
     let isValid = true;
     formRegex[field].forEach((element) => {
       if (!element.regex.test(formData[field])) {
-        console.log(element.errMsg.props.children);
         formDataUpdate(fieldErr, element.errMsg);
         isValid = false;
       }
@@ -236,7 +234,6 @@ const Signup = () => {
         alert("Couldn't sign up");
         return;
       }
-      console.log(result);
       alert("User Added Successfully");
       navigate("/dashboard");
     });
