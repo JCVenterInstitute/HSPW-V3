@@ -8,7 +8,7 @@ import {
   Paper,
   CircularProgress,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { AuthenticationDetails, CognitoUser } from "amazon-cognito-identity-js";
 import userpool from "../userpool";
 
@@ -37,9 +37,15 @@ const Login = () => {
     user.authenticateUser(authDetails, {
       onSuccess: (result) => {
         console.log("Login successful!", result);
-        localStorage.setItem("accessToken", result.getAccessToken().getJwtToken());
+        localStorage.setItem(
+          "accessToken",
+          result.getAccessToken().getJwtToken()
+        );
         localStorage.setItem("idToken", result.getIdToken().getJwtToken());
-        localStorage.setItem("refreshToken", result.getRefreshToken().getToken());
+        localStorage.setItem(
+          "refreshToken",
+          result.getRefreshToken().getToken()
+        );
         setLoading(false);
         navigate("/dashboard"); // Redirect to the desired page after login
       },
@@ -98,6 +104,14 @@ const Login = () => {
               >
                 {loading ? <CircularProgress size={24} /> : "Login"}
               </Button>
+            </Box>
+            <Box textAlign="center" mt={3}>
+              <Typography variant="body2">
+                No account?{" "}
+                <Button color="primary" component={Link} to="/signup">
+                  Create one
+                </Button>
+              </Typography>
             </Box>
           </form>
         </Paper>
