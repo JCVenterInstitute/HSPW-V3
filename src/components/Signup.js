@@ -189,7 +189,7 @@ const Signup = () => {
       isValid = false;
     }
 
-    if (!formData.confirmPassword === formData.password) {
+    if (!(formData.confirmPassword === formData.password)) {
       errors.confirmPasswordErr = "Does not match password";
       isValid = false;
     }
