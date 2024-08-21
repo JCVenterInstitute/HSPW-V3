@@ -264,13 +264,8 @@ def main(event):
 
 
 def handler(event, context):
+    print("> Event", event)
     print("> Received event:", json.dumps(event, indent=2))
-
-    if event.get("httpMethod") != "POST":
-        return {
-            "statusCode": 405,
-            "body": json.dumps({"message": "Only POST Request Allowed"}),
-        }
 
     event = base64.b64decode(event["body"]).decode("utf-8")
     event = json.loads(event)  # Convert body to JSON
