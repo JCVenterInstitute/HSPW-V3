@@ -52,7 +52,15 @@ const Login = () => {
       onFailure: (err) => {
         console.error("Login failed: ", err);
         setLoading(false);
-        setError("Login failed. Please check your credentials and try again.");
+        if (err.message === "User is not confirmed.") {
+          setError(
+            "Login failed. Account is not verified, please check email for verification instructions."
+          );
+        } else {
+          setError(
+            "Login failed. Please check your credentials and try again."
+          );
+        }
       },
     });
   };
