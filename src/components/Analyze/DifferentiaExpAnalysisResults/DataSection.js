@@ -47,7 +47,10 @@ const CheckbackLater = () => {
         height: "50vh",
       }}
     >
-      <Stack id="stack" sx={{ alignItems: "center" }}>
+      <Stack
+        id="stack"
+        sx={{ alignItems: "center" }}
+      >
         <CircularProgress />
         <Typography sx={{ marginY: "10px" }}>
           Results not ready. Analysis still running. Please check back later
@@ -198,7 +201,7 @@ const DataSection = ({
           //     allFiles["heatmap_0_dpi150.png"].downloadUrl
           //   );
           // }
-          if (tab.startsWith("Top")) {
+          if (tab === null || tab.startsWith("Top")) {
             displayResult = displayImg(
               allFiles["heatmap_1_dpi150.png"].downloadUrl
             );
@@ -388,11 +391,17 @@ const DataSection = ({
         case "Input Data":
           displayResult = (
             <Container sx={{ margin: "0px" }}>
-              <Typography variant="h5" sx={{ fontFamily: "Lato" }}>
+              <Typography
+                variant="h5"
+                sx={{ fontFamily: "Lato" }}
+              >
                 Analysis Options:
               </Typography>
               <DataTable data={[allFiles["inputData"]]} />
-              <Typography variant="h5" sx={{ fontFamily: "Lato" }}>
+              <Typography
+                variant="h5"
+                sx={{ fontFamily: "Lato" }}
+              >
                 Input Data:
               </Typography>
               <DataTable data={allFiles["data_original.csv"].data} />
@@ -401,7 +410,10 @@ const DataSection = ({
           break;
         case "Download":
           displayResult = (
-            <ResultDownload jobId={jobId} handleDownload={handleDownload} />
+            <ResultDownload
+              jobId={jobId}
+              handleDownload={handleDownload}
+            />
           );
           break;
         default:
@@ -423,7 +435,10 @@ const DataSection = ({
       <CircularProgress />
     </Box>
   ) : (
-    <Box sx={style.dataBox} className="d3Graph">
+    <Box
+      sx={style.dataBox}
+      className="d3Graph"
+    >
       {getSection()}
     </Box>
   );

@@ -14,7 +14,7 @@ const TabOptions = ({
   jobId,
 }) => {
   const [fileName, setFileName] = useState(
-    tab && fileMapping[selectedSection]
+    tab !== null && fileMapping[selectedSection]
       ? fileMapping[selectedSection][tab]
       : fileMapping[selectedSection]
   );
@@ -134,7 +134,10 @@ const TabOptions = ({
   };
 
   return (
-    <Box id="option-tab-box" sx={{ display: "flex" }}>
+    <Box
+      id="option-tab-box"
+      sx={{ display: "flex" }}
+    >
       <Box style={{ display: "flex", width: "100%", maxWidth: "950px" }}>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           {createTabGroup(selectedSection)}
@@ -146,7 +149,10 @@ const TabOptions = ({
           (tab == "Visualization" ||
             tab == "GSEA Ridge plot" ||
             tab == "Enrichment Plot") ? (
-            <Button variant="contained" onClick={downloadD3Plots}>
+            <Button
+              variant="contained"
+              onClick={downloadD3Plots}
+            >
               Download
             </Button>
           ) : (
