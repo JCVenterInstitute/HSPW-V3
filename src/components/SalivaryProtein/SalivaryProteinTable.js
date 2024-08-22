@@ -234,7 +234,11 @@ function proteinLinkComponent(props) {
 function CustomHeader(props) {
   const onButtonClick = (event) => {
     event.stopPropagation();
-    Swal.fire({ title: props.tooltipText, confirmButtonColor: "#1464b4" });
+    Swal.fire({
+      title: props.tooltipText,
+      html: props.tooltipHTML,
+      confirmButtonColor: "#1464b4",
+    });
   };
   const onHeaderClick = () => {
     props.progressSort();
@@ -261,9 +265,9 @@ function CustomHeader(props) {
           marginLeft: "auto", // Ensures the icon is pushed to the right
         }}
       />
-      <div className="custom-tooltip" style={{ display: "none" }}>
+      {/* <div className="custom-tooltip" style={{ display: "none" }}>
         {props.tooltipText}
-      </div>
+      </div> */}
     </div>
   );
 }
@@ -436,6 +440,7 @@ const SalivaryProteinTable = () => {
     {
       headerName: "Gene Symbol",
       field: "Gene Symbol",
+      minWidth: 90,
       cellClass: ["table-border", "salivary-protein-cell"],
       cellStyle: {
         wordBreak: "break-word",
@@ -444,6 +449,7 @@ const SalivaryProteinTable = () => {
     {
       headerName: "Protein Name",
       field: "Protein Name",
+      minWidth: 90,
       cellClass: ["table-border", "salivary-protein-protein-name-cell"],
       cellStyle: {
         wordBreak: "break-word",
@@ -453,9 +459,112 @@ const SalivaryProteinTable = () => {
     {
       headerName: "Expert Opinion",
       field: "expert_opinion",
-      minWidth: 100,
+      minWidth: 125,
       cellRenderer: "opinionComponent",
       cellClass: ["table-border"],
+      headerComponent: CustomHeader,
+      headerComponentParams: {
+        displayName: "Expert Opinion",
+        tooltipHTML: `
+          <div style="width: 100%; box-sizing: border-box;">
+            <div
+              style="
+                border-radius: 10px 10px 0 0;
+                background-color: #B0B0B0;
+                border: hidden;
+                padding: 10px;
+              "
+            >
+              <div style="color: #424242; text-align: center; font-weight: bold;">
+                Expert Opinion
+              </div>
+            </div>
+            <div
+              style="
+                padding: 10px;
+                border: 1px solid #757575;
+                border-radius: 4px;
+                background-color: #E0E0E0;
+              "
+            >
+              <table aria-label="simple table" style="width: 100%; border-collapse: collapse;">
+                <tbody>
+                  <tr>
+                    <td
+                      style="
+                        font-weight: bold;
+                        word-break: break-word;
+                        padding: 8px;
+                        border-bottom: 1px solid #757575;
+                        border-right: 1px solid #757575;
+                        color: #212121;
+                      "
+                    >
+                      Acronym
+                    </td>
+                    <td
+                      style="
+                        font-weight: bold;
+                        padding: 8px;
+                        border-bottom: 1px solid #757575;
+                        color: #212121;
+                      "
+                    >
+                      Definition
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding-right: 5px;
+                        padding: 8px;
+                        border-bottom: 1px solid #757575;
+                        border-right: 1px solid #757575;
+                        color: #424242;
+                      "
+                    >
+                      US
+                    </td>
+                    <td
+                      style="
+                        padding-right: 5px;
+                        padding: 8px;
+                        border-bottom: 1px solid #757575;
+                        color: #424242;
+                      "
+                    >
+                      Unsubstantiated
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding-right: 5px;
+                        padding: 8px;
+                        border-bottom: none;
+                        border-right: 1px solid #757575;
+                        color: #424242;
+                      "
+                    >
+                      C
+                    </td>
+                    <td
+                      style="
+                        padding-right: 5px;
+                        padding: 8px;
+                        border-bottom: none;
+                        color: #424242;
+                      "
+                    >
+                      Confirmed
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `,
+      },
     },
     {
       headerName: "MS (obs.)",
@@ -476,6 +585,7 @@ const SalivaryProteinTable = () => {
         {
           headerName: "Parotid Glands",
           field: "parotid_gland_abundance",
+          minWidth: 90,
           cellRenderer: "GreenComponent",
           cellRendererParams: {
             normalizationSelected,
@@ -547,12 +657,14 @@ const SalivaryProteinTable = () => {
         {
           headerName: "SL Glands",
           field: "SL",
+          minWidth: 90,
           cellRenderer: "specificityComponent",
           cellClass: ["table-border", "salivary-proteins-colored-cell"],
         },
         {
           headerName: "Parotid Glands",
           field: "PAR",
+          minWidth: 90,
           cellRenderer: "specificityComponent",
           cellClass: ["table-border", "salivary-proteins-colored-cell"],
         },
