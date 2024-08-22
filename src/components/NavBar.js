@@ -9,11 +9,20 @@ import {
   Container,
   Avatar,
 } from "@mui/material";
-import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
+import PopupState, {
+  bindTrigger,
+  bindMenu,
+  bindHover,
+} from "material-ui-popup-state";
 import HoverMenu from "material-ui-popup-state/HoverMenu";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"; // Importing the icon
 import logo from "../assets/hspw-logo.png";
 import MobileNavBar from "./MobileNavBar";
+import {
+  getCurrentUser,
+  logout as cognitoLogout,
+} from "../services/authenticate"; // Import the logout method
 
 const navMenuStyles = {
   marginRight: "20px",
@@ -35,12 +44,17 @@ export const NavBar = () => {
     }
   }, [location]); // Run useEffect whenever the location changes
 
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("idToken");
-    localStorage.removeItem("refreshToken");
-    setIsLoggedIn(false);
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await cognitoLogout(); // Call the Cognito sign out method
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("idToken");
+      localStorage.removeItem("refreshToken");
+      setIsLoggedIn(false);
+      navigate("/");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
 
   console.log("Rendering NavBar with isLoggedIn:", isLoggedIn);
@@ -90,14 +104,14 @@ export const NavBar = () => {
                 >
                   Home
                 </Button>
-
                 <PopupState popupId="BrowseMenu" variant="popover">
                   {(popupState) => (
                     <>
                       <Button
                         size="large"
                         style={navMenuStyles}
-                        {...bindTrigger(popupState)}
+                        {...bindHover(popupState)}
+                        endIcon={<ArrowDropDownIcon />}
                       >
                         Browse
                       </Button>
@@ -138,7 +152,8 @@ export const NavBar = () => {
                         variant="text"
                         size="large"
                         style={navMenuStyles}
-                        {...bindTrigger(popupState)}
+                        {...bindHover(popupState)}
+                        endIcon={<ArrowDropDownIcon />}
                       >
                         Search
                       </Button>
@@ -175,7 +190,8 @@ export const NavBar = () => {
                       <Button
                         size="large"
                         style={navMenuStyles}
-                        {...bindTrigger(popupState)}
+                        {...bindHover(popupState)}
+                        endIcon={<ArrowDropDownIcon />}
                       >
                         Analyze
                       </Button>
@@ -215,7 +231,8 @@ export const NavBar = () => {
                       <Button
                         size="large"
                         style={navMenuStyles}
-                        {...bindTrigger(popupState)}
+                        {...bindHover(popupState)}
+                        endIcon={<ArrowDropDownIcon />}
                       >
                         Help
                       </Button>
@@ -246,7 +263,6 @@ export const NavBar = () => {
                     </>
                   )}
                 </PopupState>
-
                 {isLoggedIn ? (
                   <PopupState variant="popover" popupId="account-menu">
                     {(popupState) => (
