@@ -1,5 +1,3 @@
-import React, { useState } from "react";
-import ReCAPTCHA from "react-google-recaptcha";
 import {
   Button,
   TextField,
@@ -15,18 +13,15 @@ import {
   List,
   ListItem,
 } from "@mui/material";
-import Swal from "sweetalert2";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
 import userpool from "../userpool";
 
-const RECAPTCHA_SITE_KEY = process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY;
-
 const Signup = () => {
   const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState(null);
 
   const [passwordRequirements, setPasswordRequirements] = useState([
     { regex: /.{8,}/, requirement: "At least 8 characters", isMet: false },
@@ -83,12 +78,7 @@ const Signup = () => {
         errMsg: <span>Email is required</span>,
       },
     ],
-    password: [
-      {
-        regex: /.+/,
-        errMsg: <span>Password is required</span>,
-      },
-    ],
+    password: [{}, {}, {}, {}],
     givenName: [
       {
         regex: /^[a-zA-Z]+[a-zA-Z.]*$/,
@@ -202,15 +192,6 @@ const Signup = () => {
       isValid = false;
     }
 
-    if (!captchaToken) {
-      Swal.fire({
-        title: "Registration failed",
-        text: "Please complete the reCAPTCHA",
-        icon: "warning",
-      });
-      isValid = false;
-    }
-
     setFormData((prevData) => ({ ...prevData, ...errors }));
 
     return isValid;
@@ -250,18 +231,11 @@ const Signup = () => {
     userpool.signUp(username, password, attributeList, null, (err, result) => {
       if (err) {
         console.error("Sign Up Error: ", err);
-        Swal.fire({
-          title: "Registration Failed",
-          text: err.message,
-          icon: "error",
-        });
+        alert("Couldn't sign up");
         return;
       }
-      Swal.fire({
-        title: "Account Successfully Created",
-        text: "A verification link has been sent to the provided email\n\nPlease verify before logging in",
-        icon: "success",
-      }).then(() => navigate("/login"));
+      alert("User Added Successfully");
+      navigate("/dashboard");
     });
   };
 
@@ -363,16 +337,7 @@ const Signup = () => {
               value={formData.password}
               onChange={(e) => passwordUpdate(e.target.value)}
               onFocus={() => setIsExpanded(true)}
-              onBlur={() => {
-                setIsExpanded(false);
-                fieldValidation("password", "passwordErr");
-                formDataUpdate(
-                  "confirmPasswordErr",
-                  formData.confirmPassword === formData.password
-                    ? ""
-                    : "Does not match password"
-                );
-              }}
+              onBlur={() => setIsExpanded(false)}
               type="password"
               label="Password"
               helperText={formData.passwordErr}
@@ -428,10 +393,6 @@ const Signup = () => {
               fullWidth
               margin="normal"
               error={Boolean(formData.confirmPasswordErr)}
-            />
-            <ReCAPTCHA
-              sitekey={RECAPTCHA_SITE_KEY}
-              onChange={(token) => setCaptchaToken(token)}
             />
             <Box textAlign="center" mt={2}>
               <Button
