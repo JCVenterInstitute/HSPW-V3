@@ -113,17 +113,6 @@ const Login = () => {
                 </Button>
               </Typography>
             </Box>
-            <Box textAlign="center" mt={3}>
-              <Typography variant="body2">
-                <Button
-                  color="secondary"
-                  component={Link}
-                  to="/forgot-password"
-                >
-                  Forgot Password?
-                </Button>
-              </Typography>
-            </Box>
           </form>
         </Paper>
       </Grid>
