@@ -1,7 +1,7 @@
 import InfoIcon from "@mui/icons-material/Info";
 import Swal from "sweetalert2";
 
-export default (props) => {
+const CustomHeader = (props) => {
   const onButtonClick = (event) => {
     event.stopPropagation();
     Swal.fire({
@@ -40,3 +40,5 @@ export default (props) => {
     </div>
   );
 };
+
+export default CustomHeader;

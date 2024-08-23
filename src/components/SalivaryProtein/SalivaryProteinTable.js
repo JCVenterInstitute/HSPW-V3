@@ -1,7 +1,6 @@
 import List from "@mui/material/List";
 import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
-import InfoIcon from "@mui/icons-material/Info";
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
