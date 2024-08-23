@@ -2,15 +2,48 @@ import "../../D3GraphStyles.css";
 import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
 
-const RidgePlotComponent = ({ tableData, allData }) => {
-  const svgRef = useRef();
-  const [data1, setData1] = useState([]);
-  const [data2, setData2] = useState([]);
+/**
+ * RidgePlotComponent
+ *
+ * A React component that renders a ridge plot (density plot) using D3.js. The plot displays density curves for various descriptions based on provided data,
+ * and includes tooltips with detailed information about each density curve. It also features a color gradient legend representing the range of p.adjust values.
+ *
+ * Props:
+ * - tableData (Array): An array of objects containing the first dataset to be used for the plot. Each object should have:
+ *   - Description (string): The description or label for the density curve.
+ *   - Fold.Change (number): The fold change value used for density estimation.
+ *   - core_enrichment (string): A list of proteins related to the description, separated by slashes.
+ *   - p.adjust (number): The p.adjust value used for coloring the density curve.
+ *
+ * - allData (Array): An array of objects containing the second dataset for matching proteins and fold change values. Each object should have:
+ *   - Protein (string): The protein name.
+ *   - Fold.Change (number): The fold change value for the protein.
+ *
+ * Usage:
+ * <RidgePlotComponent tableData={tableData} allData={allData} />
+ *
+ * Where `tableData` and `allData` are arrays of objects with fields such as Description, Fold.Change, core_enrichment, Protein, and p.adjust.
+ *
+ * Behavior:
+ * - Cleans data by removing quotes from relevant fields.
+ * - Limits the number of rows from `tableData` to the first 25.
+ * - Renders a ridge plot with density curves for each unique description.
+ * - Adds a tooltip displaying detailed information when hovering over density curves.
+ * - Includes a color gradient legend representing the range of p.adjust values.
+ * - Implements x-axis and y-axis scales and labels for the plot.
+ */
 
-  const margin = { top: 80, right: 30, bottom: 70, left: 200 };
+const RidgePlotComponent = ({ tableData, allData }) => {
+  const svgRef = useRef(); // Reference to the SVG element
+  const [data1, setData1] = useState([]); // State to store cleaned data1
+  const [data2, setData2] = useState([]); // State to store cleaned data2
+
+  // Margins and dimensions for the SV
+  const margin = { top: 80, right: 30, bottom: 150, left: 200 };
   const width = 900 - margin.left - margin.right;
   const height = 800 - margin.top - margin.bottom;
 
+  // Function to clean data by removing quotes
   const cleanData = (data) => {
     return data.map((d) => {
       const cleanedData = {};
@@ -21,6 +54,7 @@ const RidgePlotComponent = ({ tableData, allData }) => {
     });
   };
 
+  // Update data1 and data2 when tableData or allData change
   useEffect(() => {
     try {
       setData1(cleanData(tableData.slice(0, 25)));
@@ -30,6 +64,7 @@ const RidgePlotComponent = ({ tableData, allData }) => {
     }
   }, [tableData, allData]);
 
+  // Render the Ridge Plot when data1 and data2 are available
   useEffect(() => {
     if (data1.length > 0 && data2.length > 0) {
       const svg = d3.select(svgRef.current);
@@ -48,6 +83,7 @@ const RidgePlotComponent = ({ tableData, allData }) => {
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
+      // Extract unique Description values for y-axis
       const DescriptionValues = Array.from(
         new Set(
           data1.map((d) => {
@@ -55,16 +91,18 @@ const RidgePlotComponent = ({ tableData, allData }) => {
           })
         )
       );
-
+      // Kernel density estimator function
       const kernelDensityEstimator = (kernel, X) => (V) => {
         const densities = X.map((x) => [x, d3.mean(V, (v) => kernel(x - v))]);
 
         return densities;
       };
 
+      // Epanechnikov kernel function
       const kernelEpanechnikov = (k) => (v) =>
         Math.abs((v /= k)) <= 1 ? (0.75 * (1 - v * v)) / k : 0;
 
+      // Map proteins to their fold change values
       const proteinFoldChange = {};
       data2.forEach((d) => {
         const protein = d["Protein"];
@@ -72,6 +110,7 @@ const RidgePlotComponent = ({ tableData, allData }) => {
         proteinFoldChange[protein] = foldChange;
       });
 
+      // Combine all fold change values for scaling
       const allFoldChanges = [
         ...data1.map((d) => parseFloat(d["Fold.Change"])),
         ...data2.map((d) => parseFloat(d["Fold.Change"])),
@@ -87,8 +126,10 @@ const RidgePlotComponent = ({ tableData, allData }) => {
 
       const xDomain = [paddedMin, paddedMax];
 
+      // Create x-axis scale
       const xScale = d3.scaleLinear().domain(xDomain).range([0, width]);
 
+      // Create y-axis scale with reversed Description values
       const reversedDescriptionValues = [...DescriptionValues].reverse();
       const yScale = d3
         .scaleBand()
@@ -109,16 +150,19 @@ const RidgePlotComponent = ({ tableData, allData }) => {
         foldChangeRange / (Math.sqrt(allFoldChanges.length) * 1.07);
       const heightMultiplier = foldChangeRange * 7;
 
+      // Kernel density estimator
       const kde = kernelDensityEstimator(
         kernelEpanechnikov(kernelBandwidth),
         xScale.ticks(40)
       );
 
+      // Iterate over each Description to plot densities
       DescriptionValues.forEach((Description) => {
         const groupData1 = data1.filter(
           (d) => d["Description"] === Description
         );
 
+        // Find matching data from data2
         const matchedData2 = [];
         groupData1.forEach((d1) => {
           const proteins = d1["core_enrichment"].split("/");
@@ -132,12 +176,15 @@ const RidgePlotComponent = ({ tableData, allData }) => {
           });
         });
 
+        // Filter out invalid fold change values
         const validData = matchedData2.filter(
           (d) => !isNaN(d["Fold.Change"]) && d["Fold.Change"] !== undefined
         );
 
+        // Calculate density for the current Description
         const density = kde(validData.map((d) => d["Fold.Change"]));
 
+        // Define area generator for the density plot
         const areaGenerator = d3
           .area()
           .curve(d3.curveBasis)
@@ -150,6 +197,7 @@ const RidgePlotComponent = ({ tableData, allData }) => {
               d[1] * heightMultiplier
           );
 
+        // Append the path for the density plot
         plot
           .append("path")
           .datum(density)
@@ -185,8 +233,6 @@ const RidgePlotComponent = ({ tableData, allData }) => {
         .call((g) => g.selectAll(".tick line").attr("stroke-opacity", 0.2))
         .call((g) => g.selectAll(".tick text").attr("y", 10));
 
-      //plot.append("g").call(d3.axisLeft(yScale)).selectAll(".tick text");
-
       plot
         .append("g")
         .call(d3.axisLeft(yScale))
@@ -195,9 +241,6 @@ const RidgePlotComponent = ({ tableData, allData }) => {
         .style("text-anchor", "end")
         .call(wrap, margin.left - 10)
         .attr("transform", "translate(-10, 0)");
-
-      // Wrap function if you need to wrap long y-axis labels
-      //plot.selectAll(".tick text").call(wrap, margin.left - 10); // Adjust width as needed
 
       plot
         .append("text")
@@ -220,6 +263,7 @@ const RidgePlotComponent = ({ tableData, allData }) => {
         .style("font-weight", "bold")
         .text("Description");
 
+      // Create legend for p.adjust values
       const legendWidth = 300;
       const legendHeight = 10;
 
@@ -275,6 +319,7 @@ const RidgePlotComponent = ({ tableData, allData }) => {
     }
   }, [data1, data2]);
 
+  // Function to wrap text in y-axis labels
   function wrap(text, width) {
     text.each(function () {
       var text = d3.select(this),
