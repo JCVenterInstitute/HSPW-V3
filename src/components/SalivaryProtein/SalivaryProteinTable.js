@@ -30,14 +30,14 @@ import { styled } from "@mui/material/styles";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CustomLoadingOverlay from "../CustomLoadingOverlay";
-import CustomHeaderGroup from "../CustomHeaderGroup";
+import CustomGroupHeader from "../AgGrid/CustomGroupHeader.jsx";
+import CustomHeader from "../AgGrid/CustomHeader.jsx";
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 import "../Filter.css";
 import "../Table.css";
-import Legend from "./Legend.js";
 import { Link } from "react-router-dom";
 import NormalizationSwitch from "./NormalizationSwitch.js";
-import Swal from "sweetalert2";
+import { expertOpinionHTML, MSHTML } from "./HeaderTooltips.js";
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -231,47 +231,6 @@ function proteinLinkComponent(props) {
   );
 }
 
-function CustomHeader(props) {
-  const onButtonClick = (event) => {
-    event.stopPropagation();
-    Swal.fire({
-      title: props.tooltipText,
-      html: props.tooltipHTML,
-      confirmButtonColor: "#1464b4",
-    });
-  };
-  const onHeaderClick = () => {
-    props.progressSort();
-  };
-
-  return (
-    <div
-      className="custom-header"
-      onClick={onHeaderClick}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-      }}
-    >
-      <span style={{ flex: 1, cursor: "pointer" }}>{props.displayName}</span>
-      <InfoIcon
-        onClick={onButtonClick}
-        sx={{
-          color: "inherit",
-          "&:hover": {
-            color: "#e9e9e9",
-          },
-          marginLeft: "auto", // Ensures the icon is pushed to the right
-        }}
-      />
-      {/* <div className="custom-tooltip" style={{ display: "none" }}>
-        {props.tooltipText}
-      </div> */}
-    </div>
-  );
-}
-
 function GreenComponent(props) {
   const data = typeof props.value === "number" ? props.value : 0;
   const dataMax = props.max.value;
@@ -421,7 +380,6 @@ const SalivaryProteinTable = () => {
   const [columnApi, setColumnApi] = useState(null);
   const [gridApi, setGridApi] = useState(null);
   const [sortedColumn, setSortedColumn] = useState(null);
-  const [openLegend, setOpenLegend] = useState(false);
   const [normalizationSelected, setNormalizationSelected] = useState(false);
   const [salivaryMaxAndSum, setSalivaryMaxAndSum] = useState({});
 
@@ -459,122 +417,30 @@ const SalivaryProteinTable = () => {
     {
       headerName: "Expert Opinion",
       field: "expert_opinion",
-      minWidth: 125,
+      minWidth: 135,
       cellRenderer: "opinionComponent",
       cellClass: ["table-border"],
       headerComponent: CustomHeader,
       headerComponentParams: {
         displayName: "Expert Opinion",
-        tooltipHTML: `
-          <div style="width: 100%; box-sizing: border-box;">
-            <div
-              style="
-                border-radius: 10px 10px 0 0;
-                background-color: #B0B0B0;
-                border: hidden;
-                padding: 10px;
-              "
-            >
-              <div style="color: #424242; text-align: center; font-weight: bold;">
-                Expert Opinion
-              </div>
-            </div>
-            <div
-              style="
-                padding: 10px;
-                border: 1px solid #757575;
-                border-radius: 4px;
-                background-color: #E0E0E0;
-              "
-            >
-              <table aria-label="simple table" style="width: 100%; border-collapse: collapse;">
-                <tbody>
-                  <tr>
-                    <td
-                      style="
-                        font-weight: bold;
-                        word-break: break-word;
-                        padding: 8px;
-                        border-bottom: 1px solid #757575;
-                        border-right: 1px solid #757575;
-                        color: #212121;
-                      "
-                    >
-                      Acronym
-                    </td>
-                    <td
-                      style="
-                        font-weight: bold;
-                        padding: 8px;
-                        border-bottom: 1px solid #757575;
-                        color: #212121;
-                      "
-                    >
-                      Definition
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style="
-                        padding-right: 5px;
-                        padding: 8px;
-                        border-bottom: 1px solid #757575;
-                        border-right: 1px solid #757575;
-                        color: #424242;
-                      "
-                    >
-                      US
-                    </td>
-                    <td
-                      style="
-                        padding-right: 5px;
-                        padding: 8px;
-                        border-bottom: 1px solid #757575;
-                        color: #424242;
-                      "
-                    >
-                      Unsubstantiated
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style="
-                        padding-right: 5px;
-                        padding: 8px;
-                        border-bottom: none;
-                        border-right: 1px solid #757575;
-                        color: #424242;
-                      "
-                    >
-                      C
-                    </td>
-                    <td
-                      style="
-                        padding-right: 5px;
-                        padding: 8px;
-                        border-bottom: none;
-                        color: #424242;
-                      "
-                    >
-                      Confirmed
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        `,
+        tooltipHTML: expertOpinionHTML,
       },
     },
     {
       headerName: "MS (obs.)",
-      headerGroupComponent: CustomHeaderGroup,
+      headerGroupComponent: CustomGroupHeader,
+      headerGroupComponentParams: {
+        tooltipText: "",
+        displayName: "MS (obs.)",
+        tooltipHTML: MSHTML,
+      },
       headerClass: ["header-border", "salivary-protein-header"],
       cellClass: ["table-border"],
       children: [
         {
           headerName: "Whole Saliva",
           field: "saliva_abundance",
+          minWidth: 90,
           cellRenderer: "GreenComponent",
           cellRendererParams: {
             normalizationSelected,
@@ -596,6 +462,7 @@ const SalivaryProteinTable = () => {
         {
           headerName: "SM/SL Glands",
           field: "sm/sl_abundance",
+          minWidth: 90,
           cellRenderer: "GreenComponent",
           cellRendererParams: {
             normalizationSelected,
@@ -606,6 +473,7 @@ const SalivaryProteinTable = () => {
         {
           headerName: "Blood",
           field: "plasma_abundance",
+          minWidth: 85,
           cellRenderer: "RedComponent",
           cellRendererParams: {
             normalizationSelected,
@@ -619,13 +487,13 @@ const SalivaryProteinTable = () => {
     {
       headerName: "IHC",
       field: "IHC",
+      minWidth: 70,
       wrapText: true,
       cellRenderer: "IHCComponent",
       cellClass: ["square_table", "salivary-proteins-colored-cell"],
     },
     {
       headerName: "mRNA Transcript Level in Salivary Glands (nTPM)",
-      headerGroupComponent: CustomHeaderGroup,
       headerClass: ["header-border", "salivary-protein-header"],
       wrapText: true,
       cellClass: ["table-border"],
@@ -638,7 +506,7 @@ const SalivaryProteinTable = () => {
             normalizationSelected,
             max: salivaryMaxAndSum.mRNA_max,
           },
-          minWidth: 125,
+          minWidth: 130,
           maxWidth: 170,
           cellClass: ["square_table", "salivary-proteins-colored-cell"],
           sortable: true,
@@ -651,6 +519,7 @@ const SalivaryProteinTable = () => {
         {
           headerName: "SM Glands",
           field: "SM",
+          minWidth: 90,
           cellRenderer: "specificityComponent",
           cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
@@ -696,9 +565,6 @@ const SalivaryProteinTable = () => {
         "</div>",
     },
   };
-
-  const handleOpenLegend = () => setOpenLegend(true);
-  const handleCloseLegend = () => setOpenLegend(false);
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
@@ -2209,49 +2075,7 @@ const SalivaryProteinTable = () => {
                 />
                 Download Spreadsheet
               </Button>
-              <Button
-                sx={{
-                  fontWeight: "bold",
-                  textDecoration: "none",
-                  textTransform: "unset",
-                  color: "#F6921E",
-                  background: "white",
-                  fontSize: "20",
-                  "&:hover": {
-                    backgroundColor: "inherit", // Keeps the same background color on hover
-                  },
-                }}
-                onClick={handleOpenLegend}
-              >
-                Show Legend
-              </Button>
             </div>
-            <Modal open={openLegend} onClose={handleCloseLegend}>
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: "15%",
-                  left: "50%",
-                  transform: "translate(-50%, -15%)",
-                  bgcolor: "background.paper",
-                  boxShadow: 24,
-                  p: 2,
-                  width: "60vw",
-                  overflow: "scroll",
-                  borderRadius: "16px",
-                }}
-              >
-                <Typography
-                  id="legend-modal-title"
-                  variant="h6"
-                  component="h2"
-                  sx={{ textAlign: "center" }}
-                >
-                  Table Legend
-                </Typography>
-                <Legend />
-              </Box>
-            </Modal>
           </Box>
         </Container>
       </Container>
