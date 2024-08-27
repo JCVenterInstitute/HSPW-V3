@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Button,
   TextField,
@@ -9,73 +9,27 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useNavigate, Link } from "react-router-dom";
-import { AuthenticationDetails, CognitoUser } from "amazon-cognito-identity-js";
-import userpool from "../userpool";
+import { AuthContext } from "../services/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(null);
 
   const handleLogin = (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    const cognitoUser = new CognitoUser({
-      Username: email,
-      Pool: userpool,
-    }); 
-    
-    setUser(cognitoUser);
-
-    const authDetails = new AuthenticationDetails({
-      Username: email,
-      Password: password,
-    });
-
-    user.authenticateUser(authDetails, {
-      onSuccess: (result) => {
-        console.log("Login successful!", result);
-  //       localStorage.setItem(
-  //         "accessToken",
-  //         result.getAccessToken().getJwtToken()
-  //       );
-  //       localStorage.setItem("idToken", result.getIdToken().getJwtToken());
-  //       localStorage.setItem(
-  //         "refreshToken",
-  //         result.getRefreshToken().getToken()
-  //       );
-
-        setLoading(false);
-        navigate("/dashboard"); // Redirect to the desired page after login
-      },
-      onFailure: (err) => {
-        console.error("Login failed: ", err);
-        setLoading(false);
+    login(email, password, (err, result) => {
+      if (err)
         setError("Login failed. Please check your credentials and try again.");
-      },
+      setLoading(false);
+      if (result) navigate("/");
     });
-  };
-
-  const getSessionData = () => {
-    if (user) {
-      user.getSession((err, session) => {
-        if (err) {
-          console.error("Failed to get session: ", err);
-          return;
-        }
-        console.log("Session validity: ", session.isValid());
-        console.log("Access Token: ", session.getAccessToken().getJwtToken());
-        console.log("ID Token: ", session.getIdToken().getJwtToken());
-        console.log("Refresh Token: ", session.getRefreshToken().getToken());
-      });
-    } else {
-      console.log("User not logged in");
-    }
   };
 
   return (

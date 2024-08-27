@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   AppBar,
   Toolbar,
@@ -19,10 +19,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"; // Importing the icon
 import logo from "../assets/hspw-logo.png";
 import MobileNavBar from "./MobileNavBar";
-import {
-  getCurrentUser,
-  logout as cognitoLogout,
-} from "../services/AuthContext"; // Import the logout method
+import { AuthContext, AuthProvider } from "../services/AuthContext"; // Import the logout method
 
 const navMenuStyles = {
   marginRight: "20px",
@@ -34,28 +31,23 @@ export const NavBar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
   const location = useLocation(); // Hook to track location changes
+  const { user, session, logout } = useContext(AuthContext);
 
   useEffect(() => {
-    user.getSession((err, session) => {
-      if (err) {
-        console.error("Failed to get session: ", err);
-        return;
-      }
-      if(session.isValid()){
-        setIsLoggedIn(true);
-      } else {
-        setIsLoggedIn(false);
-      }
+    if (session && session.isValid()) {
+      setIsLoggedIn(true);
       console.log("Session validity: ", session.isValid());
       console.log("Access Token: ", session.getAccessToken().getJwtToken());
       console.log("ID Token: ", session.getIdToken().getJwtToken());
       console.log("Refresh Token: ", session.getRefreshToken().getToken());
-    });
+    } else {
+      setIsLoggedIn(false);
+    }
   }, [location]); // Run useEffect whenever the location changes
 
   const handleLogout = async () => {
     try {
-      await cognitoLogout(); // Call the Cognito sign out method
+      await logout(); // Call the Cognito sign out method
       setIsLoggedIn(false);
       navigate("/");
     } catch (error) {
