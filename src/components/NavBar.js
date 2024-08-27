@@ -22,7 +22,7 @@ import MobileNavBar from "./MobileNavBar";
 import {
   getCurrentUser,
   logout as cognitoLogout,
-} from "../services/authenticate"; // Import the logout method
+} from "../services/AuthContext"; // Import the logout method
 
 const navMenuStyles = {
   marginRight: "20px",
@@ -36,20 +36,26 @@ export const NavBar = () => {
   const location = useLocation(); // Hook to track location changes
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
+    user.getSession((err, session) => {
+      if (err) {
+        console.error("Failed to get session: ", err);
+        return;
+      }
+      if(session.isValid()){
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+      console.log("Session validity: ", session.isValid());
+      console.log("Access Token: ", session.getAccessToken().getJwtToken());
+      console.log("ID Token: ", session.getIdToken().getJwtToken());
+      console.log("Refresh Token: ", session.getRefreshToken().getToken());
+    });
   }, [location]); // Run useEffect whenever the location changes
 
   const handleLogout = async () => {
     try {
       await cognitoLogout(); // Call the Cognito sign out method
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("idToken");
-      localStorage.removeItem("refreshToken");
       setIsLoggedIn(false);
       navigate("/");
     } catch (error) {

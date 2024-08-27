@@ -18,16 +18,19 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
 
   const handleLogin = (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    const user = new CognitoUser({
+    const cognitoUser = new CognitoUser({
       Username: email,
       Pool: userpool,
-    });
+    }); 
+    
+    setUser(cognitoUser);
 
     const authDetails = new AuthenticationDetails({
       Username: email,
@@ -37,15 +40,16 @@ const Login = () => {
     user.authenticateUser(authDetails, {
       onSuccess: (result) => {
         console.log("Login successful!", result);
-        localStorage.setItem(
-          "accessToken",
-          result.getAccessToken().getJwtToken()
-        );
-        localStorage.setItem("idToken", result.getIdToken().getJwtToken());
-        localStorage.setItem(
-          "refreshToken",
-          result.getRefreshToken().getToken()
-        );
+  //       localStorage.setItem(
+  //         "accessToken",
+  //         result.getAccessToken().getJwtToken()
+  //       );
+  //       localStorage.setItem("idToken", result.getIdToken().getJwtToken());
+  //       localStorage.setItem(
+  //         "refreshToken",
+  //         result.getRefreshToken().getToken()
+  //       );
+
         setLoading(false);
         navigate("/dashboard"); // Redirect to the desired page after login
       },
@@ -55,6 +59,23 @@ const Login = () => {
         setError("Login failed. Please check your credentials and try again.");
       },
     });
+  };
+
+  const getSessionData = () => {
+    if (user) {
+      user.getSession((err, session) => {
+        if (err) {
+          console.error("Failed to get session: ", err);
+          return;
+        }
+        console.log("Session validity: ", session.isValid());
+        console.log("Access Token: ", session.getAccessToken().getJwtToken());
+        console.log("ID Token: ", session.getIdToken().getJwtToken());
+        console.log("Refresh Token: ", session.getRefreshToken().getToken());
+      });
+    } else {
+      console.log("User not logged in");
+    }
   };
 
   return (
