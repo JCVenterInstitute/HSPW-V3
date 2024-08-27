@@ -242,6 +242,22 @@ const VennDiagramComponent = ({ data }) => {
         setSelectedSet(d);
       });
 
+    svg
+      .selectAll(".venn-intersection")
+      .on("mouseover", function (event, d) {
+        d3.select(this).select("path").style("fill-opacity", 0.25);
+        venntooltip.html(
+          `<strong>Set:</strong> ${d.label
+            .split("(")[0]
+            .trim()}<br><strong>Size:</strong> ${d.size}`
+        );
+        venntooltip.style("visibility", "visible");
+      })
+      .on("mouseout", function () {
+        d3.select(this).select("path").style("fill-opacity", 0);
+        venntooltip.style("visibility", "hidden");
+      });
+
     createLegend(
       svg,
       {
@@ -298,16 +314,18 @@ const VennDiagramComponent = ({ data }) => {
               }))}
               hasCustomCells={true}
               customCells={[0]}
-              cellRenderer={[(params) => (
-                <a
-                  // href={params.data.link}
-                  href={`https://salivaryproteome.org/protein/${params.value}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {params.value}
-                </a>
-              )]}
+              cellRenderer={[
+                (params) => (
+                  <a
+                    // href={params.data.link}
+                    href={`https://salivaryproteome.org/protein/${params.value}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {params.value}
+                  </a>
+                ),
+              ]}
             />
           </div>
         </div>
