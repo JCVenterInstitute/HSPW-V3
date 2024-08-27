@@ -262,14 +262,15 @@ export const NavBar = () => {
                   )}
                 </PopupState>
                 {isLoggedIn ? (
-                  <PopupState variant="popover" popupId="account-menu">
+                  <PopupState popupId="account-menu" variant="popover">
                     {(popupState) => (
                       <>
                         <Button
-                          {...bindTrigger(popupState)}
+                          {...bindHover(popupState)}
                           size="large"
                           style={navMenuStyles}
                           startIcon={<Avatar alt="User Avatar" />}
+                          endIcon={<ArrowDropDownIcon />}
                         >
                           Account
                         </Button>
