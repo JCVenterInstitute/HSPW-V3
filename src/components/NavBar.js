@@ -9,17 +9,13 @@ import {
   Container,
   Avatar,
 } from "@mui/material";
-import PopupState, {
-  bindTrigger,
-  bindMenu,
-  bindHover,
-} from "material-ui-popup-state";
+import PopupState, { bindMenu, bindHover } from "material-ui-popup-state";
 import HoverMenu from "material-ui-popup-state/HoverMenu";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"; // Importing the icon
 import logo from "../assets/hspw-logo.png";
 import MobileNavBar from "./MobileNavBar";
-import { AuthContext, AuthProvider } from "../services/AuthContext"; // Import the logout method
+import { AuthContext } from "../services/AuthContext"; // Import the logout method
 
 const navMenuStyles = {
   marginRight: "20px",
@@ -31,19 +27,16 @@ export const NavBar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
   const location = useLocation(); // Hook to track location changes
-  const { user, session, logout } = useContext(AuthContext);
+  const { session, logout } = useContext(AuthContext);
 
+  console.log(session);
   useEffect(() => {
     if (session && session.isValid()) {
       setIsLoggedIn(true);
-      console.log("Session validity: ", session.isValid());
-      console.log("Access Token: ", session.getAccessToken().getJwtToken());
-      console.log("ID Token: ", session.getIdToken().getJwtToken());
-      console.log("Refresh Token: ", session.getRefreshToken().getToken());
     } else {
       setIsLoggedIn(false);
     }
-  }, [location]); // Run useEffect whenever the location changes
+  }, [location, session]); // Run useEffect whenever the location changes
 
   const handleLogout = async () => {
     try {
