@@ -272,7 +272,7 @@ const VennDiagramComponent = ({ data }) => {
   };
 
   return (
-    <div id="vennContainer">
+    <div id="vennContainer" className="graph-container">
       <svg ref={svgRef} style={{ width: "90%", height: "auto" }}></svg>
       {selectedSet && (
         <div>
