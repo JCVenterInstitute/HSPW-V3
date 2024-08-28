@@ -45,6 +45,7 @@ import AccessibilityPage from "./pages/Footer/Accessibility.js";
 import { AuthProvider } from "./services/AuthContext.js";
 import Signup from "./pages/UserAuth/Signup.js";
 import Login from "./pages/UserAuth/Login.js";
+import Profile from "./pages/UserAuth/Profile.js";
 
 // Google Analytics
 import ReactGA from "react-ga4";
@@ -170,6 +171,7 @@ function App() {
                 <Route path="/accessibility" element={<AccessibilityPage />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/profile" element={<Profile />} />
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
               <Footer />
