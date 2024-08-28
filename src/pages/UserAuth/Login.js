@@ -9,7 +9,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useNavigate, Link } from "react-router-dom";
-import { AuthContext } from "../services/AuthContext";
+import { AuthContext } from "../../services/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();

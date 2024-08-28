@@ -43,8 +43,8 @@ import CopyrightPage from "./pages/Footer/Copyright.js";
 import DisclaimerPage from "./pages/Footer/Disclaimer.js";
 import AccessibilityPage from "./pages/Footer/Accessibility.js";
 import { AuthProvider } from "./services/AuthContext.js";
-import Signup from "./components/Signup.js";
-import Login from "./components/Login";
+import Signup from "./pages/UserAuth/Signup.js";
+import Login from "./pages/UserAuth/Login.js";
 
 // Google Analytics
 import ReactGA from "react-ga4";

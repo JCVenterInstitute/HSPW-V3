@@ -17,7 +17,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
-import userpool from "../userpool";
+import userpool from "../../userpool";
 
 const Signup = () => {
   const navigate = useNavigate();
