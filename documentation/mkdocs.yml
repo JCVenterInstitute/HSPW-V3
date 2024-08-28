@@ -4,10 +4,12 @@ nav:
   - Home: "index.md"
   - Salivary Proteins: salivary-proteins.md
   - Protein Cluster: protein-cluster.md
+  - Protein Signature: protein-signature.md
   - Genes: genes.md
   - Publications: publications.md
   - Multiple Sequence Alignment: multiple-sequence-alignment.md
   - Searching: searching.md
-  # - Protein Signature Search: protein-signature-search.md
+  - Differential Expression Analysis: differential-expression-analysis.md
+  - Experiments: experiment-search.md
   # - Protein Similarity Search: protein-similarity-search.md
   # - Help: help.md
