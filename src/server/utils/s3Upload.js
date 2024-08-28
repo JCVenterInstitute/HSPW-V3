@@ -62,7 +62,7 @@ exports.s3Upload = ({
   });
 };
 
-const getPresignUrl = async ({ bucketName, s3Key, contentType }) => {
+exports.getPresignUrl = async ({ bucketName, s3Key, contentType }) => {
   const params = {
     Bucket: bucketName,
     Key: s3Key,

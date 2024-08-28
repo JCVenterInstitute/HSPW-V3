@@ -7,6 +7,8 @@ import {
 } from "@mui/material";
 
 import MainFeature from "../../assets/hero.jpeg";
+import { Helmet } from "react-helmet";
+import BreadCrumb from "../../components/Breadcrumbs";
 
 const sections = [
   "User Accounts and Authorship",
@@ -16,8 +18,14 @@ const sections = [
 ];
 
 const PrivacyNoticePage = () => {
+  const breadcrumbPath = [{ path: "Home", link: "/" }, { path: "Privacy" }];
+
   return (
     <>
+      <Helmet>
+        <title>HSP | Privacy</title>
+      </Helmet>
+      <BreadCrumb path={breadcrumbPath} />
       <div
         style={{
           backgroundImage: `url(${MainFeature})`,

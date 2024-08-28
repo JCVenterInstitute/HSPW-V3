@@ -145,7 +145,7 @@ function Comment_Table(props) {
       // Skip any annotation type that's now FUNCTION, PTM, or DOMAIN
       if (!relevantAnnotationTypes.includes(annotation_type)) continue;
 
-      if (features.length === 0) {
+      if (Object.keys(features).length === 0) {
         rowData.push({
           popoverText,
           annotation_type,

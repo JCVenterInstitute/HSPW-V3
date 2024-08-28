@@ -29,21 +29,17 @@ import { styled } from "@mui/material/styles";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CustomLoadingOverlay from "../CustomLoadingOverlay";
-import CustomHeaderGroup from "../CustomHeaderGroup";
+import CustomGroupHeader from "../AgGrid/CustomGroupHeader.jsx";
+import CustomHeader from "../AgGrid/CustomHeader.jsx";
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 import "../Filter.css";
 import "../Table.css";
-import Legend from "./Legend.js";
 import { Link } from "react-router-dom";
 import NormalizationSwitch from "./NormalizationSwitch.js";
+import { expertOpinionHTML, MSHTML } from "./HeaderTooltips.js";
 
 const Accordion = styled((props) => (
-  <MuiAccordion
-    disableGutters
-    elevation={0}
-    square
-    {...props}
-  />
+  <MuiAccordion disableGutters elevation={0} square {...props} />
 ))(({ theme }) => ({
   marginBottom: "15px",
   "&:not(:last-child)": {
@@ -125,7 +121,9 @@ function specificityComponent(props) {
         ...commonStyles,
       }}
     >
-      <span style={{ textAlign: "center" }}>{value}</span>
+      <span style={{ textAlign: "center" }}>
+        {value ? parseFloat(value).toFixed(2) : value}
+      </span>
     </div>
   );
 }
@@ -225,10 +223,7 @@ function IHCComponent(props) {
 function proteinLinkComponent(props) {
   return (
     <div>
-      <Link
-        to={`/protein/${props.value}`}
-        rel="noopener noreferrer"
-      >
+      <Link to={`/protein/${props.value}`} rel="noopener noreferrer">
         {props.value}
       </Link>
     </div>
@@ -384,7 +379,6 @@ const SalivaryProteinTable = () => {
   const [columnApi, setColumnApi] = useState(null);
   const [gridApi, setGridApi] = useState(null);
   const [sortedColumn, setSortedColumn] = useState(null);
-  const [openLegend, setOpenLegend] = useState(false);
   const [normalizationSelected, setNormalizationSelected] = useState(false);
   const [salivaryMaxAndSum, setSalivaryMaxAndSum] = useState({});
 
@@ -395,7 +389,7 @@ const SalivaryProteinTable = () => {
       checkboxSelection: false,
       headerCheckboxSelection: false,
       wrapText: true,
-      minWidth: 115,
+      minWidth: 105,
       cellStyle: { wordBreak: "break-word" },
       cellClass: ["table-border", "salivary-protein-cell"],
       cellRenderer: "proteinLinkComponent",
@@ -403,6 +397,7 @@ const SalivaryProteinTable = () => {
     {
       headerName: "Gene Symbol",
       field: "Gene Symbol",
+      minWidth: 90,
       cellClass: ["table-border", "salivary-protein-cell"],
       cellStyle: {
         wordBreak: "break-word",
@@ -411,6 +406,7 @@ const SalivaryProteinTable = () => {
     {
       headerName: "Protein Name",
       field: "Protein Name",
+      minWidth: 90,
       cellClass: ["table-border", "salivary-protein-protein-name-cell"],
       cellStyle: {
         wordBreak: "break-word",
@@ -420,18 +416,30 @@ const SalivaryProteinTable = () => {
     {
       headerName: "Expert Opinion",
       field: "expert_opinion",
+      minWidth: 135,
       cellRenderer: "opinionComponent",
       cellClass: ["table-border"],
+      headerComponent: CustomHeader,
+      headerComponentParams: {
+        displayName: "Expert Opinion",
+        tooltipHTML: expertOpinionHTML,
+      },
     },
     {
       headerName: "MS (obs.)",
-      headerGroupComponent: CustomHeaderGroup,
+      headerGroupComponent: CustomGroupHeader,
+      headerGroupComponentParams: {
+        tooltipText: "",
+        displayName: "MS (obs.)",
+        tooltipHTML: MSHTML,
+      },
       headerClass: ["header-border", "salivary-protein-header"],
       cellClass: ["table-border"],
       children: [
         {
           headerName: "Whole Saliva",
           field: "saliva_abundance",
+          minWidth: 90,
           cellRenderer: "GreenComponent",
           cellRendererParams: {
             normalizationSelected,
@@ -442,6 +450,7 @@ const SalivaryProteinTable = () => {
         {
           headerName: "Parotid Glands",
           field: "parotid_gland_abundance",
+          minWidth: 90,
           cellRenderer: "GreenComponent",
           cellRendererParams: {
             normalizationSelected,
@@ -452,6 +461,7 @@ const SalivaryProteinTable = () => {
         {
           headerName: "SM/SL Glands",
           field: "sm/sl_abundance",
+          minWidth: 90,
           cellRenderer: "GreenComponent",
           cellRendererParams: {
             normalizationSelected,
@@ -462,6 +472,7 @@ const SalivaryProteinTable = () => {
         {
           headerName: "Blood",
           field: "plasma_abundance",
+          minWidth: 85,
           cellRenderer: "RedComponent",
           cellRendererParams: {
             normalizationSelected,
@@ -475,38 +486,54 @@ const SalivaryProteinTable = () => {
     {
       headerName: "IHC",
       field: "IHC",
+      minWidth: 70,
       wrapText: true,
       cellRenderer: "IHCComponent",
       cellClass: ["square_table", "salivary-proteins-colored-cell"],
     },
     {
-      headerName: "mRNA (NX)",
-      headerGroupComponent: CustomHeaderGroup,
+      headerName: "mRNA Transcript Level in Salivary Glands (nTPM)",
       headerClass: ["header-border", "salivary-protein-header"],
       wrapText: true,
       cellClass: ["table-border"],
       children: [
         {
-          headerName: "Value",
+          // headerName: "Minor Glands",
           field: "mRNA",
           cellRenderer: "GreenComponent",
           cellRendererParams: {
             normalizationSelected,
             max: salivaryMaxAndSum.mRNA_max,
           },
+          minWidth: 130,
           maxWidth: 170,
+          cellClass: ["square_table", "salivary-proteins-colored-cell"],
+          sortable: true,
+          headerComponent: CustomHeader,
+          headerComponentParams: {
+            tooltipText: "Data from Protein Atlas",
+            displayName: "Minor Glands",
+          },
+        },
+        {
+          headerName: "SM Glands",
+          field: "SM",
+          minWidth: 90,
+          cellRenderer: "specificityComponent",
           cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
         {
-          headerName: "Specificity",
-          field: "specificity",
+          headerName: "SL Glands",
+          field: "SL",
+          minWidth: 90,
           cellRenderer: "specificityComponent",
           cellClass: ["table-border", "salivary-proteins-colored-cell"],
         },
         {
-          headerName: "Specificity Score",
-          field: "specificity_score",
-          cellRenderer: "specificityScoreComponent",
+          headerName: "Parotid Glands",
+          field: "PAR",
+          minWidth: 90,
+          cellRenderer: "specificityComponent",
           cellClass: ["table-border", "salivary-proteins-colored-cell"],
         },
       ],
@@ -531,15 +558,12 @@ const SalivaryProteinTable = () => {
         '    <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon"></span>' +
         '    <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon"></span>' +
         '    <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon"></span>' +
-        '    <span ref="eText" class="ag-header-cell-text" role="columnheader" style="white-space: normal;"></span>' +
+        '    <span ref="eText" class="ag-header-cell-text" role="columnheader" style="white-space: normal; font-size: 10px;"></span>' +
         // '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
         "  </div>" +
         "</div>",
     },
   };
-
-  const handleOpenLegend = () => setOpenLegend(true);
-  const handleCloseLegend = () => setOpenLegend(false);
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
@@ -609,6 +633,9 @@ const SalivaryProteinTable = () => {
         mRNA: normalizeAbundance(item.mRNA),
         plasma_abundance: normalizeAbundance(item.plasma_abundance),
         "sm/sl_abundance": normalizeAbundance(item["sm/sl_abundance"]),
+        SM: normalizeAbundance(item.SM),
+        SL: normalizeAbundance(item.SL),
+        PAR: normalizeAbundance(item.PAR),
       };
     });
   };
@@ -661,6 +688,7 @@ const SalivaryProteinTable = () => {
     const salivaryMaxAndSum = await fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/get-salivary-max-and-sum`
     ).then((res) => res.json());
+
     setSalivaryMaxAndSum(salivaryMaxAndSum);
 
     if (normalizationSelected) {
@@ -1167,11 +1195,7 @@ const SalivaryProteinTable = () => {
             Reset Filters
           </Button>
           <FormGroup style={{ marginLeft: "18%" }}>
-            <Stack
-              direction="row"
-              spacing={1}
-              alignItems="center"
-            >
+            <Stack direction="row" spacing={1} alignItems="center">
               <Typography color="common.black">And</Typography>
               <Switch
                 checked={orFilterOn}
@@ -1301,10 +1325,7 @@ const SalivaryProteinTable = () => {
                   sx={{ border: "1px groove" }}
                 >
                   {opCount.map((child, key) => (
-                    <FormGroup
-                      key={key}
-                      sx={{ ml: "10px" }}
-                    >
+                    <FormGroup key={key} sx={{ ml: "10px" }}>
                       {child.key === "Unsubstantiated" ? (
                         <FormControlLabel
                           control={
@@ -1387,10 +1408,7 @@ const SalivaryProteinTable = () => {
                 >
                   {IHCCount.map((child, i) =>
                     child.key !== "?" ? (
-                      <FormGroup
-                        key={i}
-                        sx={{ ml: "10px" }}
-                      >
+                      <FormGroup key={i} sx={{ ml: "10px" }}>
                         <FormControlLabel
                           control={
                             <Checkbox
@@ -1638,11 +1656,7 @@ const SalivaryProteinTable = () => {
               </AccordionSummary>
               <AccordionDetails>
                 <FormGroup style={{ marginLeft: "2%" }}>
-                  <Stack
-                    direction="row"
-                    spacing={1}
-                    alignItems="center"
-                  >
+                  <Stack direction="row" spacing={1} alignItems="center">
                     <Typography color="common.black">Include</Typography>
                     <Switch
                       checked={msBExcludeOn}
@@ -1771,7 +1785,12 @@ const SalivaryProteinTable = () => {
         </Box>
         <Container
           maxWidth="false"
-          sx={{ marginTop: "30px", marginLeft: "20px" }}
+          id="table-container"
+          sx={{
+            marginTop: "30px",
+            marginLeft: "20px",
+            padding: "0px !important",
+          }}
         >
           <Box sx={{ display: "flex" }}>
             <Box
@@ -1859,10 +1878,7 @@ const SalivaryProteinTable = () => {
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
               >
                 {recordsPerPageList.map((option) => (
-                  <MenuItem
-                    key={option.value}
-                    value={option.value}
-                  >
+                  <MenuItem key={option.value} value={option.value}>
                     {option.label}
                   </MenuItem>
                 ))}
@@ -1895,10 +1911,7 @@ const SalivaryProteinTable = () => {
                   {Array.from(
                     { length: Math.ceil(docCount / pageSize) },
                     (_, index) => (
-                      <MenuItem
-                        key={index + 1}
-                        value={index + 1}
-                      >
+                      <MenuItem key={index + 1} value={index + 1}>
                         {index + 1}
                       </MenuItem>
                     )
@@ -2061,52 +2074,7 @@ const SalivaryProteinTable = () => {
                 />
                 Download Spreadsheet
               </Button>
-              <Button
-                sx={{
-                  fontWeight: "bold",
-                  textDecoration: "none",
-                  textTransform: "unset",
-                  color: "#F6921E",
-                  background: "white",
-                  fontSize: "20",
-                  "&:hover": {
-                    backgroundColor: "inherit", // Keeps the same background color on hover
-                  },
-                }}
-                onClick={handleOpenLegend}
-              >
-                Show Legend
-              </Button>
             </div>
-            <Modal
-              open={openLegend}
-              onClose={handleCloseLegend}
-            >
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: "15%",
-                  left: "50%",
-                  transform: "translate(-50%, -15%)",
-                  bgcolor: "background.paper",
-                  boxShadow: 24,
-                  p: 2,
-                  width: "60vw",
-                  overflow: "scroll",
-                  borderRadius: "16px",
-                }}
-              >
-                <Typography
-                  id="legend-modal-title"
-                  variant="h6"
-                  component="h2"
-                  sx={{ textAlign: "center" }}
-                >
-                  Table Legend
-                </Typography>
-                <Legend />
-              </Box>
-            </Modal>
           </Box>
         </Container>
       </Container>

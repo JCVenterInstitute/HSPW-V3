@@ -2,18 +2,15 @@ const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
 const app = express();
+const { exec } = require("child_process");
 const { Client } = require("@opensearch-project/opensearch");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const createAwsOpensearchConnector = require("aws-opensearch-connector");
-const { exec } = require("child_process");
-const util = require("util");
-const execPromise = util.promisify(exec);
-const fse = require("fs-extra");
 const path = require("path");
+
 const { processGroupData } = require("./utils/processGroupData");
 const { processFile } = require("./utils/processFile");
-const { s3Upload } = require("./utils/s3Upload");
-const { s3Download } = require("./utils/s3Download");
+const { s3Download, checkFileExists } = require("./utils/s3Download");
 const { formQuery } = require("./utils/formQuery");
 const { generatePresignedUrls } = require("./utils/generatePresignedUrls");
 const { createContact } = require("./utils/createContact");
@@ -1506,53 +1503,50 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
       parametricTest,
       timestamp,
       formattedDate,
-      workingDirectory,
     } = req.body;
-    const scriptPath = `${process.env.R_SCRIPT_PATH}`;
 
-    // Create the working directory and copy the R script
-    await fse.ensureDir(workingDirectory);
-    await processGroupData(req.body, workingDirectory);
-    await fse.copy(
-      path.join(scriptPath, process.env.R_SCRIPT_FILE_NAME),
-      path.join(workingDirectory, process.env.R_SCRIPT_FILE_NAME)
+    console.log(
+      `> Log Norm: ${logNorm}, Heatmap #: ${numberOfDifferentiallyAbundantProteinsInHeatmap}, Fold Threshold: ${foldChangeThreshold}, P Val Threshold: ${pValueThreshold}, P Value Type: ${pValueType}, Parametric Test: ${parametricTest}`
     );
-    // Execute the R script from the working directory
-    const command = `Rscript ${process.env.R_SCRIPT_FILE_NAME} ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType} ${parametricTest} ${numberOfDifferentiallyAbundantProteinsInHeatmap}`;
-    const { stdout } = await execPromise(command, {
-      cwd: workingDirectory,
-    });
 
-    if (parametricTest === "F") {
-      const renameCommand = "mv t_test.csv statistical_parametric_test.csv";
-      await execPromise(renameCommand, { cwd: workingDirectory });
-    } else {
-      const renameCommand =
-        "mv wilcox_rank.csv statistical_parametric_test.csv";
-      await execPromise(renameCommand, { cwd: workingDirectory });
-    }
-    // Compress the contents of the working directory
-    const compressCommand =
-      "zip -r data_set.zip volcano_0_dpi72.png volcano.csv heatmap_1_dpi72.png heatmap_0_dpi72.png tt_0_dpi72.png statistical_parametric_test.csv fc_0_dpi72.png fold_change.csv pca_score2d_0_dpi72.png pca_score.csv venn-dimensions.png venn_out_data.txt norm_0_dpi72.png data_normalized.csv data_original.csv all_data.tsv";
-    await execPromise(compressCommand, { cwd: workingDirectory });
+    const inputFile = await processGroupData(
+      req.body,
+      timestamp,
+      formattedDate
+    );
+    console.log("> Input file location", inputFile);
 
-    // S3 upload parameters
-    const params = {
-      bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
-      s3KeyPrefix: `jobs/${timestamp.year}-${timestamp.month}-${timestamp.day}/differential-expression-${formattedDate}`,
-      contentType: "text/plain",
-      directoryPath: workingDirectory,
-    };
-    // Perform the s3 upload
-    await s3Upload(params);
-    console.log(`stdout:\n${stdout}`);
-    res.status(200).send(`Output: ${stdout}`);
+    let command = `docker run --rm -v ~/.aws:/root/.aws diff_exp_local -i ${inputFile} -l ${logNorm} -f ${foldChangeThreshold} -p ${pValueThreshold} -r ${pValueType} -t ${parametricTest} -n ${numberOfDifferentiallyAbundantProteinsInHeatmap}`;
+    console.log("> Command", command);
+
+    const initialAnalysis = await execCommand(command);
+    console.log("> Initial Analysis output:", initialAnalysis);
+
+    // command = `docker run --rm -v ~/.aws:/root/.aws go_keg_local -i ${inputFile} -p 0.65 -q 0.25`;
+    // console.log("> Go/KEGG Command", command);
+
+    // Run GO/KEGG Docker, don't wait for it to finish running before returning complete
+    // Secondary results loaded afterwards
+    // const goKeggAnalysis = execCommand(command);
+
+    res.status(200).send("Docker run complete");
   } catch (error) {
     console.error(`Error during file operations: ${error.message}`);
     res.status(500).send(`Server Error: ${error.message}`);
   }
-  // res.status(200).send("Good");
 });
+
+function execCommand(command) {
+  return new Promise((resolve, reject) => {
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(stdout);
+      }
+    });
+  });
+}
 
 app.post("/api/differential-expression/analyze-file", async (req, res) => {
   try {
@@ -1566,47 +1560,29 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
       parametricTest,
       timestamp,
       formattedDate,
-      workingDirectory,
     } = req.body;
-    const scriptPath = `${process.env.R_SCRIPT_PATH}`;
 
-    // Create the working directory and copy the R script
-    await fse.ensureDir(workingDirectory);
-    await processFile(inputData, workingDirectory);
-    await fse.copy(
-      path.join(scriptPath, process.env.R_SCRIPT_FILE_NAME),
-      path.join(workingDirectory, process.env.R_SCRIPT_FILE_NAME)
+    console.log(
+      `> Log Norm: ${logNorm}, Heatmap #: ${numberOfDifferentiallyAbundantProteinsInHeatmap}, Fold Threshold: ${foldChangeThreshold}, P Val Threshold: ${pValueThreshold}, P Value Type: ${pValueType}, Parametric Test: ${parametricTest}`
     );
-    // Execute the R script from the working directory
-    const command = `Rscript ${process.env.R_SCRIPT_FILE_NAME} ${logNorm} ${foldChangeThreshold} ${pValueThreshold} ${pValueType} ${parametricTest} ${numberOfDifferentiallyAbundantProteinsInHeatmap}`;
-    const { stdout } = await execPromise(command, {
-      cwd: workingDirectory,
-    });
 
-    if (parametricTest === "F") {
-      const renameCommand = "mv t_test.csv statistical_parametric_test.csv";
-      await execPromise(renameCommand, { cwd: workingDirectory });
-    } else {
-      const renameCommand =
-        "mv wilcox_rank.csv statistical_parametric_test.csv";
-      await execPromise(renameCommand, { cwd: workingDirectory });
-    }
-    // Compress the contents of the working directory
-    const compressCommand =
-      "zip -r data_set.zip volcano_0_dpi72.png volcano.csv heatmap_1_dpi72.png heatmap_0_dpi72.png tt_0_dpi72.png statistical_parametric_test.csv fc_0_dpi72.png fold_change.csv pca_score2d_0_dpi72.png pca_score.csv venn-dimensions.png venn_out_data.txt norm_0_dpi72.png data_normalized.csv data_original.csv all_data.tsv";
-    await execPromise(compressCommand, { cwd: workingDirectory });
+    const inputFile = await processFile(inputData, timestamp, formattedDate);
 
-    // S3 upload parameters
-    const params = {
-      bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
-      s3KeyPrefix: `jobs/${timestamp.year}-${timestamp.month}-${timestamp.day}/differential-expression-${formattedDate}`,
-      contentType: "text/plain",
-      directoryPath: workingDirectory,
-    };
-    // Perform the s3 upload
-    await s3Upload(params);
-    console.log(`stdout:\n${stdout}`);
-    res.status(200).send(`Output: ${stdout}`);
+    console.log("> Input file location", inputFile);
+
+    let command = `docker run --rm -v ~/.aws:/root/.aws diff_exp_local -i ${inputFile} -l ${logNorm} -f ${foldChangeThreshold} -p ${pValueThreshold} -r ${pValueType} -t ${parametricTest} -n ${numberOfDifferentiallyAbundantProteinsInHeatmap}`;
+    console.log("> Command", command);
+
+    const initialAnalysis = await execCommand(command);
+    console.log("> Initial Analysis output:", initialAnalysis);
+
+    // command = `docker run --rm -v ~/.aws:/root/.aws go_keg_local -i ${inputFile} -p 0.65 -q 0.25`;
+    // console.log("> Go/KEGG Command", command);
+
+    // const goKeggAnalysis = execCommand(command);
+    // console.log("> Go/Kegg output:", goKeggAnalysis);
+
+    res.status(200).send("Docker run complete");
   } catch (error) {
     console.error(`Error during file operations: ${error.message}`);
     res.status(500).send(`Server Error: ${error.message}`);
@@ -1673,6 +1649,25 @@ app.get("/api/download-data-standard", async (req, res) => {
 
   const presignedUrl = await s3Download(params);
   res.send({ url: presignedUrl });
+});
+
+app.get("/api/go-kegg-check/:jobId/:fileName", async (req, res) => {
+  const jobId = req.params.jobId;
+  const fileName = req.params.fileName;
+
+  const datePart = jobId.split("-")[2];
+  const year = datePart.substring(0, 4);
+  const month = datePart.substring(4, 6);
+  const day = datePart.substring(6, 8);
+  const s3Key = `jobs/${year}-${month}-${day}/${jobId}/${fileName}`;
+
+  const fileExists = await checkFileExists(
+    process.env.DIFFERENTIAL_S3_BUCKET,
+    s3Key
+  );
+
+  console.log("> File Exists", fileExists);
+  return res.send({ exists: fileExists });
 });
 
 app.get("/api/s3Download/:jobId/:fileName", async (req, res) => {
@@ -2275,6 +2270,36 @@ const getSalivaryMaxAndSum = async () => {
         parotid_gland_abundance_sum: {
           sum: {
             field: "parotid_gland_abundance",
+          },
+        },
+        SM_max: {
+          max: {
+            field: "SM",
+          },
+        },
+        SM_sum: {
+          sum: {
+            field: "SM",
+          },
+        },
+        SL_max: {
+          max: {
+            field: "SL",
+          },
+        },
+        SL_sum: {
+          sum: {
+            field: "SL",
+          },
+        },
+        PAR_max: {
+          max: {
+            field: "PAR",
+          },
+        },
+        PAR_sum: {
+          sum: {
+            field: "PAR",
           },
         },
       },

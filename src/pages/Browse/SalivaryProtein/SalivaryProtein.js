@@ -59,8 +59,8 @@ const SalivaryProtein = () => {
             </a>{" "}
             experiments using whole saliva or glandular secretion samples
             collected from healthy subjects. The list is updated automatically
-            based on current supporting evidence derived from data uploaded to
-            the wiki or retrieved from external sources, such as the{" "}
+            based on current supporting evidence derived from data uploaded or
+            retrieved from external sources, such as the{" "}
             <a
               target="_blank"
               rel="noreferrer"

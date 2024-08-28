@@ -6,7 +6,7 @@ import {
   TableRow,
 } from "@mui/material";
 
-const CSVDataTable = ({ data }) => {
+const CSVDataTable = ({ data, selected }) => {
   const headers = data.length > 0 ? Object.keys(data[0]) : [];
 
   return (
@@ -20,7 +20,11 @@ const CSVDataTable = ({ data }) => {
             height: "40vh",
           }}
         >
-          <p>No data available.</p>
+          <p style={{ fontSize: "25px" }}>
+            {selected === "Statistical Parametric Test"
+              ? "0 significant features were found."
+              : "No data available."}
+          </p>
         </div>
       ) : (
         <Table>
