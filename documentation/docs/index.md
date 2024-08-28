@@ -6,7 +6,9 @@
 - [Publications](./publications.md)
 - [Multiple Sequence Alignment](./multiple-sequence-alignment.md)
 - [Searching](./searching.md)
+- [Experiment](./experiment-search.md)
+- [Differential Expression Analysis](./differential-expression-analysis.md)
+- [Protein Signature Search](./protein-signature.md)
 <!--
-- [Protein Signature Search](./protein-signature-search.md)
 - [Protein Similarity Search (BLAST)](./protein-similarity-search.md)
 - [Help](./help.md) -->
