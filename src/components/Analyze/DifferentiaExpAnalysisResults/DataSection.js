@@ -26,6 +26,7 @@ import { fetchDataFile, getImageStyle, handleDownload } from "./utils";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import DataTable from "./DataTable.js";
+import OutlierPlot from "./D3Graphics/OutlierPlot/OutlierPlot.jsx";
 
 const style = {
   dataBox: {
@@ -71,6 +72,8 @@ const DataSection = ({
   const [allFiles, setAllFiles] = useState(null);
   const [goResultsReady, setGoResultsReady] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
+  const [cleanedGroupData, setCleanedGroupData] = useState({});
+  const [groupLabels, setGroupLabels] = useState(new Set());
 
   const checkGoStatus = async () => {
     // console.log("> Calling Go Status Check");
@@ -152,6 +155,7 @@ const DataSection = ({
         }
       });
       setAllFiles(fileDict);
+
     } catch (err) {
       console.error("> Error fetching all data file", err);
     } finally {
@@ -163,6 +167,23 @@ const DataSection = ({
   useEffect(() => {
     getAllFiles();
   }, []);
+
+  useEffect(() => {
+    var tempCleanedGroupData = {};
+    var tempGroupLabels = new Set();
+    if (allFiles){
+      for (const [key, value] of Object.entries(
+        allFiles["data_normalized.csv"].data[0]
+      )) {
+        if (key !== "Protein") {
+          tempCleanedGroupData[key] = value.replaceAll('"', "");
+          tempGroupLabels.add(tempCleanedGroupData[key]);
+        }
+      }
+    }
+    setCleanedGroupData(tempCleanedGroupData);
+    setGroupLabels(tempGroupLabels);
+  }, [allFiles]);
 
   const getSection = () => {
     let displayResult = null;
@@ -247,16 +268,6 @@ const DataSection = ({
           break;
         case "Principal Component Analysis":
           if (tab !== "Data Matrix") {
-            var cleanedGroupData = {};
-            var groupLabels = new Set();
-            for (const [key, value] of Object.entries(
-              allFiles["data_normalized.csv"].data[0]
-            )) {
-              if (key !== "Protein") {
-                cleanedGroupData[key] = value.replaceAll('"', "");
-                groupLabels.add(cleanedGroupData[key]);
-              }
-            }
             displayResult = (
               <PrincipleComponentAnalysis
                 data={allFiles["pca_score.csv"].data}
@@ -340,9 +351,12 @@ const DataSection = ({
               </div>
             );
           } else if (tab === "Outlier") {
-            displayResult = displayImg(
-              allFiles["rf_outlier_0_dpi150.png"].downloadUrl
-            );
+            console.log(allFiles);
+            
+            displayResult = (<OutlierPlot outlierData={allFiles["rf_outlier.csv"].data} groupMapping={cleanedGroupData} />);
+            // displayResult = displayImg(
+            //   allFiles["rf_outlier_0_dpi150.png"].downloadUrl
+            // );
           }
           break;
         case "GO Biological Process":
