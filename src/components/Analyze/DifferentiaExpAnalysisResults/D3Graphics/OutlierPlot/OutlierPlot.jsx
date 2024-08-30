@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
+import "../D3GraphStyles.css";
 
 const OutlierPlot = ({ outlierData, groupMapping }) => {
   const svgRef = useRef();
@@ -24,13 +25,13 @@ const OutlierPlot = ({ outlierData, groupMapping }) => {
   useEffect(() => {
     // Combine outlierData and groupMapping into a single array
     const combinedData = outlierData.map((d) => ({
-      sample: d.Sample, // Make sure to use 'sample' to match the expected structure
+      sample: d.Sample, // Adjusted to match the expected structure
       value: d.x, // Use 'value' for clarity instead of 'x'
       group: groupMapping[d.Sample],
     }));
 
     // Set the dimensions and margins of the graph
-    const margin = { top: 75, right: 150, bottom: 20, left: 60 }; // Increased top margin to prevent label cutoff
+    const margin = { top: 50, right: 150, bottom: 20, left: 60 }; // Increased top margin to prevent label cutoff
     const width = dimensions.width - margin.left - margin.right - 20;
     const height = dimensions.height - margin.top - margin.bottom - 100;
 
@@ -54,7 +55,7 @@ const OutlierPlot = ({ outlierData, groupMapping }) => {
       .scaleBand()
       .domain(combinedData.map((d) => d.sample))
       .range([0, width])
-      .padding(0.4);
+      .padding(0.1); // Slight padding to avoid overlapping bars
 
     const yScale = d3
       .scaleLinear()
@@ -70,42 +71,76 @@ const OutlierPlot = ({ outlierData, groupMapping }) => {
     // Color scale for groups
     const color = d3.scaleOrdinal().domain(["A", "B"]).range(["red", "green"]);
 
-    // Create tooltip
-    const tooltip = d3
-      .select("body")
-      .append("div")
-      .attr("class", "tooltip")
-      .style("position", "absolute")
-      .style("background-color", "white")
-      .style("border", "1px solid #d3d3d3")
-      .style("padding", "5px")
-      .style("visibility", "hidden")
-      .style("z-index", 10); // Ensure tooltip is above other elements
+    // Create tooltip if it doesn't exist
+    let tooltip = d3.select(".tooltip");
+    if (tooltip.empty()) {
+      tooltip = d3
+        .select("body")
+        .append("div")
+        .attr("class", "tooltip")
+        .style("position", "absolute")
+        .style("background-color", "white")
+        .style("border", "1px solid #d3d3d3")
+        .style("padding", "5px")
+        .style("visibility", "visible")
+        .style("z-index", 10);
+    }
 
-    // Draw the lines with tooltips
+    // Draw the lines
     svg
       .selectAll(".line")
       .data(combinedData)
       .enter()
       .append("line")
+      .attr("class", "line") // Add class for easy selection
       .attr("x1", (d) => xScale(d.sample) + xScale.bandwidth() / 2)
       .attr("x2", (d) => xScale(d.sample) + xScale.bandwidth() / 2)
       .attr("y1", yScale(0))
       .attr("y2", (d) => yScale(d.value))
       .attr("stroke", (d) => color(d.group))
       .attr("stroke-width", 2)
-      .on("mouseover", (event, d) => {
+      .each(function (d) {
+        // Attach data to lines for easier lookup
+        d3.select(this).attr("data-sample", d.sample);
+      });
+
+    // Add invisible bars for tooltips
+    svg
+      .selectAll(".tooltip-bar")
+      .data(combinedData)
+      .enter()
+      .append("rect")
+      .attr("x", (d) => xScale(d.sample) + (xScale.bandwidth() * 0.1) / 2) // Adjust x position based on padding
+      .attr("width", xScale.bandwidth() * 0.9) // Width adjusted to avoid overlap
+      .attr("y", (d) => yScale(Math.max(0, d.value))) // Start from zero or the value, whichever is higher
+      .attr("height", (d) => Math.abs(yScale(d.value) - yScale(0))) // Height based on the value
+      .style("fill", "transparent")
+      .on("mouseover", function (event, d) {
+        // Show tooltip
         tooltip
-          .html(`Sample: ${d.sample}<br>Value: ${d.value}<br>Group: ${d.group}`)
+          .html(`Value: ${d}`)
           .style("visibility", "visible");
+
+        console.log(d);
+        // Make the corresponding line bold
+        svg.selectAll(".line").each(function () {
+          const line = d3.select(this);
+          if (line.attr("data-sample") === d.sample) {
+            line.attr("stroke-width", 4);
+          }
+        });
       })
       .on("mousemove", (event) => {
         tooltip
-          .style("left", event.pageX + 10 + "px")
-          .style("top", event.pageY - 25 + "px");
+          .style("top", `${event.pageY - 10}px`)
+          .style("left", `${event.pageX + 10}px`);
       })
-      .on("mouseout", () => {
+      .on("mouseout", function () {
+        // Hide tooltip
         tooltip.style("visibility", "hidden");
+
+        // Reset all lines to normal width
+        svg.selectAll(".line").attr("stroke-width", 2);
       });
 
     // Sort data to find the five longest lines
