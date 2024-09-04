@@ -15,10 +15,18 @@ import {
   Select,
   MenuItem,
   Grid,
+  Collapse,
+  List,
+  ListItem,
 } from "@mui/material";
+import { formRegex, initialPasswordRequirements } from "./AuthConsts";
 
 const Profile = () => {
   const { user, session } = useContext(AuthContext);
+
+  const [passwordRequirements, setPasswordRequirements] = useState(
+    initialPasswordRequirements
+  );
   const [userData, setUserData] = useState({
     title: "",
     firstName: "",
@@ -26,12 +34,30 @@ const Profile = () => {
     lastName: "",
     email: "",
     institution: "",
+    oldPassword: "", // Added oldPassword to compare
   });
-  const [editData, setEditData] = useState(userData);
+
+  const [formData, setFormData] = useState({
+    email: "",
+    emailErr: "",
+    newPassword: "",
+    newPasswordErr: "",
+    confirmNewPassword: "",
+    confirmNewPasswordErr: "",
+    title: "",
+    givenName: "",
+    givenNameErr: "",
+    middleInitial: "",
+    middleInitialErr: "",
+    familyName: "",
+    familyNameErr: "",
+    institution: "",
+    institutionErr: "",
+  });
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isSaveDisabled, setIsSaveDisabled] = useState(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -54,16 +80,20 @@ const Profile = () => {
             lastName: attributeMap["family_name"] || "",
             email: attributeMap["email"] || "",
             institution: attributeMap["custom:institution"] || "",
+            oldPassword: attributeMap["password"] || "", // Retrieve old password for comparison (needs correct Cognito attribute, modify if necessary)
           });
 
-          setEditData({
+          console.log(attributeMap["sub"]);
+
+          setFormData((prevData) => ({
+            ...prevData,
             title: attributeMap["custom:title"] || "",
-            firstName: attributeMap["given_name"] || "",
+            givenName: attributeMap["given_name"] || "",
             middleInitial: attributeMap["custom:middle_initial"] || "",
-            lastName: attributeMap["family_name"] || "",
+            familyName: attributeMap["family_name"] || "",
             email: attributeMap["email"] || "",
             institution: attributeMap["custom:institution"] || "",
-          });
+          }));
         });
       }
     };
@@ -71,12 +101,58 @@ const Profile = () => {
     fetchUserData();
   }, [user, session]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditData({
-      ...editData,
-      [name]: name === "middleInitial" ? value.toUpperCase() : value, // Capitalize middle initial
+  useEffect(() => {
+    const isFormValid = () => {
+      return (
+        formData.email &&
+        !formData.emailErr &&
+        formData.givenName &&
+        !formData.givenNameErr &&
+        formData.familyName &&
+        !formData.familyNameErr &&
+        formData.middleInitial.length <= 1 &&
+        !formData.middleInitialErr &&
+        formData.institution.length <= 100 &&
+        !formData.institutionErr
+      );
+    };
+
+    setIsSaveDisabled(!isFormValid());
+  }, [
+    formData.email,
+    formData.emailErr,
+    formData.givenName,
+    formData.givenNameErr,
+    formData.familyName,
+    formData.familyNameErr,
+    formData.middleInitial,
+    formData.middleInitialErr,
+    formData.institution,
+    formData.institutionErr,
+  ]);
+
+  const formDataUpdate = (formField, value) => {
+    setFormData((prevData) => ({ ...prevData, [formField]: value }));
+  };
+
+  const passwordUpdate = (value) => {
+    setFormData((prevData) => ({ ...prevData, ["newPassword"]: value }));
+    let tempPassReqs = [...passwordRequirements];
+    tempPassReqs.forEach((req, index) => {
+      tempPassReqs[index].isMet = req.regex.test(value);
     });
+    setPasswordRequirements(tempPassReqs); // Added this line to update state correctly
+  };
+
+  const fieldValidation = (field, fieldErr) => {
+    let isValid = true;
+    formRegex[field].forEach((element) => {
+      if (!element.regex.test(formData[field])) {
+        formDataUpdate(fieldErr, element.errMsg);
+        isValid = false;
+      }
+    });
+    if (isValid) formDataUpdate(fieldErr, "");
   };
 
   const handleDialogOpen = () => {
@@ -96,15 +172,40 @@ const Profile = () => {
   };
 
   const handleSave = async () => {
-    if (user) {
+    let errors = {
+      emailErr: "",
+      givenNameErr: "",
+      familyNameErr: "",
+    };
+
+    let isValid = true;
+
+    if (formData.email === "") {
+      errors.emailErr = "Email is required";
+      isValid = false;
+    }
+
+    if (formData.givenName === "") {
+      errors.givenNameErr = "First Name is required";
+      isValid = false;
+    }
+
+    if (formData.familyName === "") {
+      errors.familyNameErr = "Last Name is required";
+      isValid = false;
+    }
+
+    setFormData((prevData) => ({ ...prevData, ...errors }));
+
+    if (isValid && user) {
       user.updateAttributes(
         [
-          { Name: "custom:title", Value: editData.title },
-          { Name: "given_name", Value: editData.firstName },
-          { Name: "custom:middle_initial", Value: editData.middleInitial },
-          { Name: "family_name", Value: editData.lastName },
-          { Name: "email", Value: editData.email },
-          { Name: "custom:institution", Value: editData.institution },
+          { Name: "custom:title", Value: formData.title },
+          { Name: "given_name", Value: formData.givenName },
+          { Name: "custom:middle_initial", Value: formData.middleInitial },
+          { Name: "family_name", Value: formData.familyName },
+          { Name: "email", Value: formData.email },
+          { Name: "custom:institution", Value: formData.institution },
         ],
         (err, result) => {
           if (err) {
@@ -112,7 +213,14 @@ const Profile = () => {
             return;
           }
 
-          setUserData(editData);
+          setUserData({
+            title: formData.title,
+            firstName: formData.givenName,
+            middleInitial: formData.middleInitial,
+            lastName: formData.familyName,
+            email: formData.email,
+            institution: formData.institution,
+          });
           setIsDialogOpen(false);
           console.log("Successfully updated user attributes:", result);
         }
@@ -121,15 +229,41 @@ const Profile = () => {
   };
 
   const handleChangePassword = async () => {
-    if (newPassword !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
+    let errors = {
+      newPasswordErr: "",
+      confirmNewPasswordErr: "",
+    };
+
+    let isValid = true;
+
+    if (formData.newPassword === userData.oldPassword) {
+      errors.newPasswordErr = "You cannot use a previously used password.";
+      isValid = false;
     }
 
-    if (user) {
+    passwordRequirements.forEach((element) => {
+      if (!element.isMet) {
+        errors.newPasswordErr = "Password requirements not met";
+        isValid = false;
+      }
+    });
+
+    if (formData.newPassword === "") {
+      errors.newPasswordErr = "Password is required";
+      isValid = false;
+    }
+
+    if (!(formData.confirmNewPassword === formData.newPassword)) {
+      errors.confirmNewPasswordErr = "Does not match password";
+      isValid = false;
+    }
+
+    setFormData((prevData) => ({ ...prevData, ...errors }));
+
+    if (isValid && user) {
       user.changePassword(
         session.getAccessToken().getJwtToken(),
-        newPassword,
+        formData.newPassword,
         (err, result) => {
           if (err) {
             console.error("Error changing password:", err);
@@ -138,8 +272,8 @@ const Profile = () => {
 
           alert("Password changed successfully");
           setPasswordDialogOpen(false);
-          setNewPassword("");
-          setConfirmPassword("");
+          formDataUpdate("newPassword", "");
+          formDataUpdate("confirmNewPassword", "");
           console.log("Password changed successfully:", result);
         }
       );
@@ -147,7 +281,9 @@ const Profile = () => {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="md">
+      {" "}
+      {/* Updated to make container wider */}
       <Box sx={{ mt: 4, mb: 4 }}>
         <Typography variant="h4" gutterBottom>
           User Profile
@@ -206,9 +342,15 @@ const Profile = () => {
           </Button>
         </Box>
       </Box>
-
       {/* Dialog for editing user information */}
-      <Dialog open={isDialogOpen} onClose={handleDialogClose}>
+      <Dialog
+        open={isDialogOpen}
+        onClose={handleDialogClose}
+        maxWidth="md"
+        fullWidth
+      >
+        {" "}
+        {/* Updated maxWidth to md */}
         <DialogTitle>Edit Profile</DialogTitle>
         <DialogContent>
           <Grid container spacing={2}>
@@ -217,9 +359,8 @@ const Profile = () => {
                 <InputLabel id="form-box-title-field">Title</InputLabel>
                 <Select
                   labelId="form-box-title-field"
-                  name="title"
-                  value={editData.title}
-                  onChange={handleInputChange}
+                  value={formData.title}
+                  onChange={(e) => formDataUpdate("title", e.target.value)}
                   label="Title"
                 >
                   <MenuItem value={""}>Title</MenuItem>
@@ -234,45 +375,68 @@ const Profile = () => {
               <TextField
                 label="First Name"
                 name="firstName"
-                value={editData.firstName}
-                onChange={handleInputChange}
+                value={formData.givenName}
+                onChange={(e) => formDataUpdate("givenName", e.target.value)}
+                onBlur={() => fieldValidation("givenName", "givenNameErr")}
                 fullWidth
+                error={Boolean(formData.givenNameErr)}
+                helperText={formData.givenNameErr}
               />
             </Grid>
             <Grid item xs={4}>
               <TextField
                 label="Middle Initial"
                 name="middleInitial"
-                value={editData.middleInitial}
-                onChange={handleInputChange}
+                value={formData.middleInitial}
+                onChange={(e) =>
+                  formDataUpdate("middleInitial", e.target.value)
+                }
+                onBlur={() =>
+                  fieldValidation("middleInitial", "middleInitialErr")
+                }
+                inputProps={{
+                  maxLength: 1,
+                  style: { textTransform: "uppercase" },
+                }}
                 fullWidth
+                error={Boolean(formData.middleInitialErr)}
+                helperText={formData.middleInitialErr}
               />
             </Grid>
             <Grid item xs={4}>
               <TextField
                 label="Last Name"
                 name="lastName"
-                value={editData.lastName}
-                onChange={handleInputChange}
+                value={formData.familyName}
+                onChange={(e) => formDataUpdate("familyName", e.target.value)}
+                onBlur={() => fieldValidation("familyName", "familyNameErr")}
                 fullWidth
+                error={Boolean(formData.familyNameErr)}
+                helperText={formData.familyNameErr}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 label="Email"
                 name="email"
-                value={editData.email}
-                onChange={handleInputChange}
+                value={formData.email}
+                onChange={(e) => formDataUpdate("email", e.target.value)}
+                onBlur={() => fieldValidation("email", "emailErr")}
                 fullWidth
+                error={Boolean(formData.emailErr)}
+                helperText={formData.emailErr}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 label="Institution"
                 name="institution"
-                value={editData.institution}
-                onChange={handleInputChange}
+                value={formData.institution}
+                onChange={(e) => formDataUpdate("institution", e.target.value)}
+                onBlur={() => fieldValidation("institution", "institutionErr")}
                 fullWidth
+                error={Boolean(formData.institutionErr)}
+                helperText={formData.institutionErr}
               />
             </Grid>
           </Grid>
@@ -281,31 +445,74 @@ const Profile = () => {
           <Button onClick={handleDialogClose} color="secondary">
             Cancel
           </Button>
-          <Button onClick={handleSave} color="primary">
+          <Button
+            onClick={handleSave}
+            color="primary"
+            disabled={isSaveDisabled}
+          >
             Save Changes
           </Button>
         </DialogActions>
       </Dialog>
-
       {/* Dialog for changing password */}
-      <Dialog open={passwordDialogOpen} onClose={handlePasswordDialogClose}>
+      <Dialog
+        open={passwordDialogOpen}
+        onClose={handlePasswordDialogClose}
+        maxWidth="sm"
+        fullWidth
+      >
+        {" "}
+        {/* Updated maxWidth to sm */}
         <DialogTitle>Change Password</DialogTitle>
         <DialogContent>
           <TextField
             label="New Password"
             type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
+            value={formData.newPassword}
+            onChange={(e) => passwordUpdate(e.target.value)}
             fullWidth
             margin="normal"
+            error={Boolean(formData.newPasswordErr)}
+            helperText={formData.newPasswordErr}
           />
+          <Collapse in={formData.newPassword.length > 0}>
+            <Box
+              sx={{
+                mt: 1,
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                padding: "8px",
+                backgroundColor: "#f9f9f9",
+              }}
+            >
+              <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                Password must contain:
+              </Typography>
+              <List>
+                {passwordRequirements.map((requirement, index) => (
+                  <ListItem key={index}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: requirement.isMet ? "blue" : "red" }}
+                    >
+                      {requirement.requirement}
+                    </Typography>
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+          </Collapse>
           <TextField
             label="Confirm New Password"
             type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            value={formData.confirmNewPassword}
+            onChange={(e) =>
+              formDataUpdate("confirmNewPassword", e.target.value)
+            }
             fullWidth
             margin="normal"
+            error={Boolean(formData.confirmNewPasswordErr)}
+            helperText={formData.confirmNewPasswordErr}
           />
         </DialogContent>
         <DialogActions>
