@@ -146,7 +146,7 @@ const Signup = () => {
       new CognitoUserAttribute({ Name: "custom:title", Value: formData.title }),
       new CognitoUserAttribute({
         Name: "custom:middle_initial",
-        Value: formData.middleInitial,
+        Value: formData.middleInitial.toUpperCase,
       }),
       new CognitoUserAttribute({
         Name: "custom:institution",
