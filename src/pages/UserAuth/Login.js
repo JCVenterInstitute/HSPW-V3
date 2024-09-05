@@ -48,8 +48,7 @@ const Login = () => {
             <TextField
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              label="Email"
-              type="email"
+              label="Username"
               required
               fullWidth
               margin="normal"
