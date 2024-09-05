@@ -17,6 +17,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
 import userpool from "../../userpool";
+import Swal from "sweetalert2";
 import { formRegex, initialPasswordRequirements } from "./AuthConsts";
 
 const Signup = () => {
@@ -28,6 +29,9 @@ const Signup = () => {
   );
 
   const [formData, setFormData] = useState({
+    username: "",
+    esernameErr: "",
+
     email: "",
     emailErr: "",
 
@@ -150,17 +154,21 @@ const Signup = () => {
       }),
     ];
 
-    const username = formData.email;
+    const username = formData.username;
     const password = formData.password;
 
     userpool.signUp(username, password, attributeList, null, (err, result) => {
       if (err) {
-        console.error("Sign Up Error: ", err);
-        alert("Couldn't sign up");
+        Swal.fire({
+          title: "Failed to register",
+          text: err.message,
+          icon: "error",
+          confirmButtonColor: "#1464b4",
+        });
         return;
       }
-      alert("User Added Successfully");
-      navigate("/dashboard");
+      Swal.fire("User Added Successfully");
+      navigate("/login");
     });
   };
 
@@ -257,6 +265,17 @@ const Signup = () => {
               fullWidth
               margin="normal"
               error={Boolean(formData.emailErr)}
+            />
+            <TextField
+              value={formData.username}
+              onChange={(e) => formDataUpdate("username", e.target.value)}
+              label="Username"
+              helperText={formData.usernameErr}
+              onBlur={() => fieldValidation("username", "usernameErr")}
+              required
+              fullWidth
+              margin="normal"
+              error={Boolean(formData.usernameErr)}
             />
             <TextField
               value={formData.password}
