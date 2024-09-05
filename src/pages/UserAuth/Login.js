@@ -8,13 +8,17 @@ import {
   Paper,
   CircularProgress,
 } from "@mui/material";
+import { CognitoUser } from "amazon-cognito-identity-js";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../../services/AuthContext";
+import Swal from "sweetalert2";
+import userpool from "../../userpool";
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [unconfirmedUsername, setUnconfirmedUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,9 +28,57 @@ const Login = () => {
     setLoading(true);
     setError("");
 
-    login(email, password, (err, result) => {
-      if (err)
-        setError("Login failed. Please check your credentials and try again.");
+    login(username, password, (err, result) => {
+      if (err) {
+        console.error(err.message);
+        if (err.message === "User is not confirmed.") {
+          setUnconfirmedUsername(username);
+          setError(
+            <span>
+              Login failed. Please follow the steps in the email to verify your
+              account and try again.
+              <br />
+              <a
+                href="#"
+                onClick={(e) => {
+                  const cognitoUser = new CognitoUser({
+                    Username: unconfirmedUsername,
+                    Pool: userpool,
+                  });
+
+                  cognitoUser.resendConfirmationCode((err, result) => {
+                    if (err) {
+                      console.error("", err);
+                      Swal.fire({
+                        title: "Error sending verification email",
+                        text: err.message,
+                        icon: "error",
+                        confirmButtonColor: "#1464b4",
+                      });
+                    } else {
+                      Swal.fire({
+                        title: "Verification email sent",
+                        text: `Please check email association with: ${unconfirmedUsername}`,
+                        icon: "success",
+                        confirmButtonColor: "#1464b4",
+                      });
+                    }
+                  });
+                }}
+              >
+                Resend verification email
+              </a>
+              ?
+            </span>
+          );
+        } else {
+          setError(
+            <span>
+              Login failed. Please check your credentials and try again.
+            </span>
+          );
+        }
+      }
       setLoading(false);
       if (result) navigate("/");
     });
@@ -46,8 +98,8 @@ const Login = () => {
           </Box>
           <form onSubmit={handleLogin}>
             <TextField
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               label="Username"
               required
               fullWidth
@@ -82,7 +134,12 @@ const Login = () => {
             <Box textAlign="center" mt={3}>
               <Typography variant="body2">
                 No account?{" "}
-                <Button color="primary" component={Link} to="/signup">
+                <Button
+                  color="primary"
+                  component={Link}
+                  to="/signup"
+                  sx={{ textTransform: "none" }}
+                >
                   Create one
                 </Button>
               </Typography>
