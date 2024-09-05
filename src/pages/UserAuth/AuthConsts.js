@@ -9,7 +9,28 @@ export const formRegex = {
       errMsg: <span>Email is required</span>,
     },
   ],
-  password: [{}, {}, {}, {}],
+  username: [
+    {
+      regex: /^[a-zA-Z0-9.]+$/,
+      errMsg: (
+        <span>Username may only contain letters, numbers and/or periods</span>
+      ),
+    },
+    {
+      regex: /^.{0,32}$/,
+      errMsg: (
+        <span>Username cannot have a length more then 32 characters</span>
+      ),
+    },
+    {
+      regex: /^.{8,}$/,
+      errMsg: <span>Username must have a length of 8 or more characters</span>,
+    },
+    {
+      regex: /.+/,
+      errMsg: <span>Username is required</span>,
+    },
+  ],
   givenName: [
     {
       regex: /^[a-zA-Z]+[a-zA-Z.]*$/,
