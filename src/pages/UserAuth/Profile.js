@@ -28,6 +28,7 @@ const Profile = () => {
     initialPasswordRequirements
   );
   const [userData, setUserData] = useState({
+    username: "",
     title: "",
     firstName: "",
     middleInitial: "",
@@ -40,17 +41,24 @@ const Profile = () => {
   const [formData, setFormData] = useState({
     email: "",
     emailErr: "",
+
     newPassword: "",
     newPasswordErr: "",
+
     confirmNewPassword: "",
     confirmNewPasswordErr: "",
+
     title: "",
+
     givenName: "",
     givenNameErr: "",
+
     middleInitial: "",
     middleInitialErr: "",
+
     familyName: "",
     familyNameErr: "",
+
     institution: "",
     institutionErr: "",
   });
@@ -74,6 +82,12 @@ const Profile = () => {
           });
 
           setUserData({
+            username:
+              user
+                .getUsername()
+                .split(".")
+                .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+                .join(".") || "",
             title: attributeMap["custom:title"] || "",
             firstName: attributeMap["given_name"] || "",
             middleInitial: attributeMap["custom:middle_initial"] || "",
@@ -82,8 +96,6 @@ const Profile = () => {
             institution: attributeMap["custom:institution"] || "",
             oldPassword: attributeMap["password"] || "", // Retrieve old password for comparison (needs correct Cognito attribute, modify if necessary)
           });
-
-          console.log(attributeMap["sub"]);
 
           setFormData((prevData) => ({
             ...prevData,
@@ -286,7 +298,7 @@ const Profile = () => {
       {/* Updated to make container wider */}
       <Box sx={{ mt: 4, mb: 4 }}>
         <Typography variant="h4" gutterBottom>
-          User Profile
+          {userData.username}'s Profile
         </Typography>
 
         {/* Display user information */}
