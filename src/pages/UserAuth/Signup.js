@@ -167,7 +167,11 @@ const Signup = () => {
         });
         return;
       }
-      Swal.fire("User Added Successfully");
+      Swal.fire({
+        title: "User added successfully",
+        icon: "success",
+        confirmButtonColor: "#1464b4",
+      });
       navigate("/login");
     });
   };
