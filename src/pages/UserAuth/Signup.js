@@ -168,7 +168,8 @@ const Signup = () => {
         return;
       }
       Swal.fire({
-        title: "User added successfully",
+        title: "User registered successfully",
+        text: "Please check email for verification before logging in",
         icon: "success",
         confirmButtonColor: "#1464b4",
       });
