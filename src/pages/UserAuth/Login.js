@@ -144,6 +144,16 @@ const Login = () => {
                 </Button>
               </Typography>
             </Box>
+            <Box textAlign="center" mt={2}>
+              <Button
+                color="primary"
+                component={Link}
+                to="/forgot-password"
+                sx={{ textTransform: "none" }}
+              >
+                Forgot Password?
+              </Button>
+            </Box>
           </form>
         </Paper>
       </Grid>

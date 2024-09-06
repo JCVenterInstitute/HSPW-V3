@@ -54,6 +54,7 @@ import UploadExperiment from "./pages/UploadExperiment.js";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import ScrollToTop from "./components/ScrollToTop.js";
 import ApiPage from "./pages/ApiPage.js";
+import ForgotPassword from "./pages/UserAuth/ForgotPassword.js";
 ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
 
 const theme = createTheme({
@@ -171,6 +172,7 @@ function App() {
                 <Route path="/accessibility" element={<AccessibilityPage />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
