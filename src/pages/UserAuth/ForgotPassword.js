@@ -9,28 +9,50 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { CognitoUser } from "amazon-cognito-identity-js";
+import { useNavigate } from "react-router-dom"; // To navigate after success
+import Swal from "sweetalert2"; // SweetAlert2 for success message
 import userpool from "../../userpool";
+import { initialPasswordRequirements } from "./AuthConsts"; // Import password requirements
 
 const ForgotPassword = () => {
   const [username, setUsername] = useState("");
-  const [usernameError, setUsernameError] = useState(false); // Track if there's an error with the username
+  const [usernameError, setUsernameError] = useState(false);
   const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [step, setStep] = useState(1); // Track step (1: Send reset link, 2: Enter verification code)
+  const [passwordRequirements, setPasswordRequirements] = useState(
+    initialPasswordRequirements
+  );
+  const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [resendCooldown, setResendCooldown] = useState(false);
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
+
+  const navigate = useNavigate(); // To navigate after successful password reset
+
+  // Handle password validation
+  const handlePasswordChange = (password) => {
+    setNewPassword(password);
+
+    const updatedRequirements = initialPasswordRequirements.map(
+      (requirement) => ({
+        ...requirement,
+        isMet: requirement.regex.test(password),
+      })
+    );
+
+    setPasswordRequirements(updatedRequirements);
+    setIsPasswordValid(updatedRequirements.every((req) => req.isMet));
+  };
 
   const handleSendResetLink = (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    console.log(username);
-
     const cognitoUser = new CognitoUser({
-      Username: username, // Using username instead of email
+      Username: username,
       Pool: userpool,
     });
 
@@ -41,7 +63,6 @@ const ForgotPassword = () => {
         setUsernameError(false);
       },
       onFailure: (err) => {
-        // If the username doesn't exist or other error occurs, display an error message
         setUsernameError(true);
         setUsernameErrorMessage("Username does not exist.");
         setLoading(false);
@@ -51,19 +72,31 @@ const ForgotPassword = () => {
 
   const handleConfirmVerificationCode = (e) => {
     e.preventDefault();
+    if (!isPasswordValid) {
+      setError("Password does not meet the required criteria.");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
     const cognitoUser = new CognitoUser({
-      Username: username, // Use username
+      Username: username,
       Pool: userpool,
     });
 
     cognitoUser.confirmPassword(verificationCode, newPassword, {
       onSuccess: () => {
-        alert("Password has been reset successfully.");
         setLoading(false);
-        // Redirect or show success message
+        // Show SweetAlert success message
+        Swal.fire({
+          title: "Success!",
+          text: "Your password has been changed successfully.",
+          icon: "success",
+          confirmButtonText: "Go to Login",
+        }).then(() => {
+          navigate("/login"); // Redirect to login page after alert
+        });
       },
       onFailure: (err) => {
         setError(err.message);
@@ -111,13 +144,13 @@ const ForgotPassword = () => {
                 value={username}
                 onChange={(e) => {
                   setUsername(e.target.value);
-                  setUsernameError(false); // Reset error when user types again
+                  setUsernameError(false);
                 }}
                 label="Username"
                 required
                 fullWidth
                 margin="normal"
-                error={usernameError} // Show error if username doesn't exist
+                error={usernameError}
                 helperText={usernameError ? usernameErrorMessage : ""}
               />
               {error && (
@@ -153,13 +186,30 @@ const ForgotPassword = () => {
               />
               <TextField
                 value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+                onChange={(e) => handlePasswordChange(e.target.value)} // Call password handler
                 label="New Password"
                 type="password"
                 required
                 fullWidth
                 margin="normal"
               />
+              <Box mt={2}>
+                <Typography variant="body2">
+                  Password must meet the following criteria:
+                </Typography>
+                <ul>
+                  {passwordRequirements.map((req, idx) => (
+                    <li
+                      key={idx}
+                      style={{
+                        color: req.isMet ? "green" : "red",
+                      }}
+                    >
+                      {req.requirement}
+                    </li>
+                  ))}
+                </ul>
+              </Box>
               {error && (
                 <Typography color="error" variant="body2" mt={2}>
                   {error}
@@ -172,7 +222,7 @@ const ForgotPassword = () => {
                   color="primary"
                   size="large"
                   fullWidth
-                  disabled={loading}
+                  disabled={loading || !isPasswordValid}
                 >
                   {loading ? (
                     <CircularProgress size={24} />
