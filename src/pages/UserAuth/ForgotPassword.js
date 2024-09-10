@@ -12,29 +12,45 @@ import { CognitoUser } from "amazon-cognito-identity-js";
 import { useNavigate } from "react-router-dom"; // To navigate after success
 import Swal from "sweetalert2"; // SweetAlert2 for success message
 import userpool from "../../userpool";
+import PasswordField from "../../components/PasswordField"; // Import PasswordField
 import { initialPasswordRequirements } from "./AuthConsts"; // Import password requirements
 
 const ForgotPassword = () => {
-  const [username, setUsername] = useState("");
-  const [usernameError, setUsernameError] = useState(false);
-  const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
-  const [verificationCode, setVerificationCode] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  const [formData, setFormData] = useState({
+    username: "",
+    usernameError: "",
+
+    verificationCode: "",
+    verificationCodeErr: "",
+
+    newPassword: "",
+    newPasswordErr: "",
+
+    confirmPassword: "",
+    confirmPasswordErr: "",
+  });
+
   const [passwordRequirements, setPasswordRequirements] = useState(
     initialPasswordRequirements
   );
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [resendCooldown, setResendCooldown] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
 
   const navigate = useNavigate(); // To navigate after successful password reset
 
-  // Handle password validation
-  const handlePasswordChange = (password) => {
-    setNewPassword(password);
+  const formDataUpdate = (formField, value) => {
+    setFormData((prevData) => ({ ...prevData, [formField]: value }));
+  };
 
+  // Handle password change and validation
+  const handlePasswordChange = (password) => {
+    formDataUpdate("newPassword", password);
+    validatePassword(password);
+  };
+
+  const validatePassword = (password) => {
     const updatedRequirements = initialPasswordRequirements.map(
       (requirement) => ({
         ...requirement,
@@ -49,23 +65,22 @@ const ForgotPassword = () => {
   const handleSendResetLink = (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
 
     const cognitoUser = new CognitoUser({
-      Username: username,
+      Username: formData.username,
       Pool: userpool,
     });
 
+    //only error is too many attempts, which is unrelated to username, should update later
     cognitoUser.forgotPassword({
       onSuccess: (result) => {
         setStep(2); // Move to verification code input step
         setLoading(false);
-        setUsernameError(false);
+        formDataUpdate("usernameError", "");
       },
       onFailure: (err) => {
-        setUsernameError(true);
-        setUsernameErrorMessage("Username does not exist.");
         setLoading(false);
+        formDataUpdate("usernameError", err.message);
       },
     });
   };
@@ -73,53 +88,70 @@ const ForgotPassword = () => {
   const handleConfirmVerificationCode = (e) => {
     e.preventDefault();
     if (!isPasswordValid) {
-      setError("Password does not meet the required criteria.");
+      formDataUpdate(
+        "newPasswordErr",
+        "Password does not meet the required criteria."
+      );
       return;
     }
 
     setLoading(true);
-    setError("");
 
     const cognitoUser = new CognitoUser({
-      Username: username,
+      Username: formData.username,
       Pool: userpool,
     });
 
-    cognitoUser.confirmPassword(verificationCode, newPassword, {
-      onSuccess: () => {
-        setLoading(false);
-        // Show SweetAlert success message
-        Swal.fire({
-          title: "Success!",
-          text: "Your password has been changed successfully.",
-          icon: "success",
-          confirmButtonText: "Go to Login",
-        }).then(() => {
-          navigate("/login"); // Redirect to login page after alert
-        });
-      },
-      onFailure: (err) => {
-        setError(err.message);
-        setLoading(false);
-      },
-    });
+    cognitoUser.confirmPassword(
+      formData.verificationCode,
+      formData.newPassword,
+      {
+        onSuccess: () => {
+          setLoading(false);
+          // Show SweetAlert success message
+          Swal.fire({
+            title: "Success!",
+            text: "Your password has been changed successfully.",
+            icon: "success",
+            confirmButtonText: "Go to Login",
+            confirmButtonColor: "#1464b4",
+          }).then(() => navigate("/login"));
+        },
+
+        onFailure: (err) => {
+          formDataUpdate("verificationCodeErr", err.message);
+          // show sweet alert fail message here
+          setLoading(false);
+        },
+      }
+    );
   };
 
   const handleResendVerificationCode = () => {
     setResendCooldown(true);
 
     const cognitoUser = new CognitoUser({
-      Username: username,
+      Username: formData.username,
       Pool: userpool,
     });
 
     cognitoUser.forgotPassword({
       onSuccess: () => {
-        alert("Verification code resent.");
+        Swal.fire({
+          title: "Success!",
+          text: "Verification code resent.",
+          icon: "success",
+          confirmButtonColor: "#1464b4",
+        });
         setResendCooldown(false);
       },
       onFailure: (err) => {
-        setError(err.message);
+        Swal.fire({
+          title: "Failed to send verification code.",
+          text: err.message,
+          icon: "error",
+          confirmButtonColor: "#1464b4",
+        });
         setResendCooldown(false);
       },
     });
@@ -141,23 +173,17 @@ const ForgotPassword = () => {
           {step === 1 ? (
             <form onSubmit={handleSendResetLink}>
               <TextField
-                value={username}
+                value={formData.username}
                 onChange={(e) => {
-                  setUsername(e.target.value);
-                  setUsernameError(false);
+                  formDataUpdate("username", e.target.value);
                 }}
                 label="Username"
                 required
                 fullWidth
                 margin="normal"
-                error={usernameError}
-                helperText={usernameError ? usernameErrorMessage : ""}
+                error={Boolean(formData.usernameError)}
+                helperText={formData.usernameError}
               />
-              {error && (
-                <Typography color="error" variant="body2" mt={2}>
-                  {error}
-                </Typography>
-              )}
               <Box textAlign="center" mt={2}>
                 <Button
                   type="submit"
@@ -173,48 +199,35 @@ const ForgotPassword = () => {
             </form>
           ) : (
             <form onSubmit={handleConfirmVerificationCode}>
-              <Typography variant="body1">
-                A verification code has been sent to your email.
-              </Typography>
               <TextField
-                value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value)}
+                value={formData.verificationCode}
+                onChange={(e) =>
+                  formDataUpdate("verificationCode", e.target.value)
+                }
                 label="Verification Code"
                 required
                 fullWidth
                 margin="normal"
+                error={Boolean(formData.verificationCodeErr)}
+                helperText={formData.verificationCodeErr}
               />
-              <TextField
-                value={newPassword}
-                onChange={(e) => handlePasswordChange(e.target.value)} // Call password handler
-                label="New Password"
-                type="password"
-                required
-                fullWidth
-                margin="normal"
+              <PasswordField
+                password={formData.newPassword}
+                confirmPassword={formData.confirmPassword}
+                passwordRequirements={passwordRequirements}
+                onPasswordChange={handlePasswordChange}
+                onConfirmPasswordChange={(value) =>
+                  formDataUpdate("confirmPassword", value)
+                }
+                passwordError={formData.newPasswordErr}
+                confirmPasswordError={formData.confirmPasswordErr}
+                setPasswordError={(value) =>
+                  formDataUpdate("newPasswordErr", value)
+                }
+                setConfirmPasswordError={(value) =>
+                  formDataUpdate("confirmPasswordErr", value)
+                }
               />
-              <Box mt={2}>
-                <Typography variant="body2">
-                  Password must meet the following criteria:
-                </Typography>
-                <ul>
-                  {passwordRequirements.map((req, idx) => (
-                    <li
-                      key={idx}
-                      style={{
-                        color: req.isMet ? "green" : "red",
-                      }}
-                    >
-                      {req.requirement}
-                    </li>
-                  ))}
-                </ul>
-              </Box>
-              {error && (
-                <Typography color="error" variant="body2" mt={2}>
-                  {error}
-                </Typography>
-              )}
               <Box textAlign="center" mt={2}>
                 <Button
                   type="submit"
@@ -222,7 +235,14 @@ const ForgotPassword = () => {
                   color="primary"
                   size="large"
                   fullWidth
-                  disabled={loading || !isPasswordValid}
+                  disabled={
+                    loading ||
+                    !(
+                      isPasswordValid &&
+                      formData.verificationCode.length >= 6 &&
+                      formData.confirmPassword === formData.newPassword
+                    )
+                  }
                 >
                   {loading ? (
                     <CircularProgress size={24} />
