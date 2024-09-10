@@ -9,9 +9,6 @@ import {
   Paper,
   FormControl,
   InputLabel,
-  Collapse,
-  List,
-  ListItem,
 } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -19,18 +16,14 @@ import { CognitoUserAttribute } from "amazon-cognito-identity-js";
 import userpool from "../../userpool";
 import Swal from "sweetalert2";
 import { formRegex, initialPasswordRequirements } from "./AuthConsts";
+import PasswordField from "../../components/PasswordField";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const [passwordRequirements, setPasswordRequirements] = useState(
-    initialPasswordRequirements
-  );
 
   const [formData, setFormData] = useState({
     username: "",
-    esernameErr: "",
+    usernameErr: "",
 
     email: "",
     emailErr: "",
@@ -59,14 +52,6 @@ const Signup = () => {
     setFormData((prevData) => ({ ...prevData, [formField]: value }));
   };
 
-  const passwordUpdate = (value) => {
-    setFormData((prevData) => ({ ...prevData, ["password"]: value }));
-    let tempPassReqs = passwordRequirements;
-    passwordRequirements.map((req, index) => {
-      tempPassReqs[index].isMet = req.regex.test(value);
-    });
-  };
-
   const fieldValidation = (field, fieldErr) => {
     let isValid = true;
     formRegex[field].forEach((element) => {
@@ -80,47 +65,38 @@ const Signup = () => {
 
   const submitValidation = () => {
     let errors = {
-      emailErr: "",
-      passwordErr: "",
-      givenNameErr: "",
-      familyNameErr: "",
-      confirmPasswordErr: "",
+      emailErr: formData.emailErr,
+      passwordErr: formData.passwordErr,
+      givenNameErr: formData.givenNameErr,
+      familyNameErr: formData.familyNameErr,
+      confirmPasswordErr: formData.confirmPasswordErr,
     };
 
     let isValid = true;
 
     if (formData.email === "") {
       errors.emailErr = "Email is required";
-      isValid = false;
     }
 
     if (formData.givenName === "") {
       errors.givenNameErr = "First Name is required";
-      isValid = false;
     }
 
     if (formData.familyName === "") {
       errors.familyNameErr = "Last Name is required";
-      isValid = false;
     }
-
-    passwordRequirements.forEach((element) => {
-      if (!element.isMet) {
-        errors.passwordErr = "Password requirements not met";
-        isValid = false;
-      }
-    });
 
     if (formData.password === "") {
       errors.passwordErr = "Password is required";
-      isValid = false;
     }
 
     if (!(formData.confirmPassword === formData.password)) {
       errors.confirmPasswordErr = "Does not match password";
-      isValid = false;
     }
 
+    Object.values(errors).forEach((error) => {
+      if (error !== "") isValid = false;
+    });
     setFormData((prevData) => ({ ...prevData, ...errors }));
 
     return isValid;
@@ -146,7 +122,7 @@ const Signup = () => {
       new CognitoUserAttribute({ Name: "custom:title", Value: formData.title }),
       new CognitoUserAttribute({
         Name: "custom:middle_initial",
-        Value: formData.middleInitial.toUpperCase,
+        Value: formData.middleInitial.toUpperCase(),
       }),
       new CognitoUserAttribute({
         Name: "custom:institution",
@@ -171,19 +147,14 @@ const Signup = () => {
         title: "User registered successfully",
         text: "Please check email for verification before logging in",
         icon: "success",
+        confirmButtonText: "Go to Login",
         confirmButtonColor: "#1464b4",
-      });
-      navigate("/login");
+      }).then(() => navigate("/login"));
     });
   };
 
   return (
-    <Grid
-      container
-      justifyContent="center"
-      //alignItems="center"
-      sx={{ backgroundColor: "#f5f5f5" }}
-    >
+    <Grid container justifyContent="center" sx={{ backgroundColor: "#f5f5f5" }}>
       <Grid item xs={12} sm={8} md={5}>
         <Paper
           elevation={3}
@@ -232,7 +203,7 @@ const Signup = () => {
                 fieldValidation("middleInitial", "middleInitialErr")
               }
               inputProps={{
-                maxlength: 1,
+                maxLength: 1,
                 style: { textTransform: "uppercase" },
               }}
               fullWidth
@@ -282,66 +253,20 @@ const Signup = () => {
               margin="normal"
               error={Boolean(formData.usernameErr)}
             />
-            <TextField
-              value={formData.password}
-              onChange={(e) => passwordUpdate(e.target.value)}
-              onFocus={() => setIsExpanded(true)}
-              onBlur={() => setIsExpanded(false)}
-              type="password"
-              label="Password"
-              helperText={formData.passwordErr}
-              required
-              fullWidth
-              margin="normal"
-              error={Boolean(formData.passwordErr)}
-            />
-            <Collapse in={isExpanded}>
-              <Box
-                sx={{
-                  mt: 1, // Margin top to separate from the TextField
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                  padding: "8px",
-                  backgroundColor: "#f9f9f9",
-                }}
-              >
-                <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                  Password must contain:
-                </Typography>
-                <List>
-                  {passwordRequirements.map((requirement, index) => (
-                    <ListItem key={index}>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: requirement.isMet ? "blue" : "red" }}
-                      >
-                        {requirement.requirement}
-                      </Typography>
-                    </ListItem>
-                  ))}
-                </List>
-              </Box>
-            </Collapse>
-            <TextField
-              value={formData.confirmPassword}
-              onChange={(e) =>
-                formDataUpdate("confirmPassword", e.target.value)
+            <PasswordField
+              password={formData.password}
+              confirmPassword={formData.confirmPassword}
+              passwordRequirements={initialPasswordRequirements}
+              onPasswordChange={(value) => formDataUpdate("password", value)}
+              onConfirmPasswordChange={(value) =>
+                formDataUpdate("confirmPassword", value)
               }
-              label="Confirm Password"
-              helperText={formData.confirmPasswordErr}
-              onBlur={() =>
-                formDataUpdate(
-                  "confirmPasswordErr",
-                  formData.confirmPassword === formData.password
-                    ? ""
-                    : "Does not match password"
-                )
+              passwordError={formData.passwordErr}
+              confirmPasswordError={formData.confirmPasswordErr}
+              setPasswordError={(error) => formDataUpdate("passwordErr", error)}
+              setConfirmPasswordError={(error) =>
+                formDataUpdate("confirmPasswordErr", error)
               }
-              type="password"
-              required
-              fullWidth
-              margin="normal"
-              error={Boolean(formData.confirmPasswordErr)}
             />
             <Box textAlign="center" mt={2}>
               <Button
