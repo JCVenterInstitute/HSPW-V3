@@ -145,7 +145,7 @@ const Signup = () => {
       }
       Swal.fire({
         title: "User registered successfully",
-        text: "Please check email for verification before logging in",
+        text: "Please check email for verification before logging in.",
         icon: "success",
         confirmButtonText: "Go to Login",
         confirmButtonColor: "#1464b4",
