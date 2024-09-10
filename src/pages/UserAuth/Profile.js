@@ -21,6 +21,7 @@ import {
   Paper,
 } from "@mui/material";
 import { formRegex, initialPasswordRequirements } from "./AuthConsts";
+import PasswordField from "../../components/PasswordField";
 
 const Profile = () => {
   const { user, session } = useContext(AuthContext);
@@ -81,14 +82,16 @@ const Profile = () => {
           attributes.forEach((attribute) => {
             attributeMap[attribute.Name] = attribute.Value;
           });
-
+          console.log(userData);
           setUserData({
             username:
-              user
-                .getUsername()
-                .split(".")
-                .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-                .join(".") || "",
+              userData.username === ""
+                ? user
+                    .getUsername()
+                    .split(".")
+                    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+                    .join(".") || ""
+                : userData.username,
             title: attributeMap["custom:title"] || "",
             firstName: attributeMap["given_name"] || "",
             middleInitial: attributeMap["custom:middle_initial"] || "",
@@ -225,8 +228,9 @@ const Profile = () => {
             console.error("Error updating user data:", err);
             return;
           }
-
+          console.log(userData);
           setUserData({
+            username: userData.username,
             title: formData.title,
             firstName: formData.givenName,
             middleInitial: formData.middleInitial,
@@ -241,7 +245,7 @@ const Profile = () => {
     }
   };
 
-  const handleChangePassword = async () => {
+  const handlePasswordChange = async () => {
     let errors = {
       newPasswordErr: "",
       confirmNewPasswordErr: "",
@@ -492,62 +496,30 @@ const Profile = () => {
           {" "}
           {/* Updated maxWidth to sm */}
           <DialogTitle>Change Password</DialogTitle>
-          <DialogContent>
-            <TextField
-              label="New Password"
-              type="password"
-              value={formData.newPassword}
-              onChange={(e) => passwordUpdate(e.target.value)}
-              fullWidth
-              margin="normal"
-              error={Boolean(formData.newPasswordErr)}
-              helperText={formData.newPasswordErr}
-            />
-            <Collapse in={formData.newPassword.length > 0}>
-              <Box
-                sx={{
-                  mt: 1,
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                  padding: "8px",
-                  backgroundColor: "#f9f9f9",
-                }}
-              >
-                <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                  Password must contain:
-                </Typography>
-                <List>
-                  {passwordRequirements.map((requirement, index) => (
-                    <ListItem key={index}>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: requirement.isMet ? "blue" : "red" }}
-                      >
-                        {requirement.requirement}
-                      </Typography>
-                    </ListItem>
-                  ))}
-                </List>
-              </Box>
-            </Collapse>
-            <TextField
-              label="Confirm New Password"
-              type="password"
-              value={formData.confirmNewPassword}
-              onChange={(e) =>
-                formDataUpdate("confirmNewPassword", e.target.value)
+          <Container>
+            <PasswordField
+              password={formData.newPassword}
+              confirmPassword={formData.confirmNewPassword}
+              passwordRequirements={passwordRequirements}
+              onPasswordChange={(value) => passwordUpdate(value)}
+              onConfirmPasswordChange={(value) =>
+                formDataUpdate("confirmNewPassword", value)
               }
-              fullWidth
-              margin="normal"
-              error={Boolean(formData.confirmNewPasswordErr)}
-              helperText={formData.confirmNewPasswordErr}
+              passwordError={formData.newPasswordErr}
+              confirmPasswordError={formData.confirmNewPasswordErr}
+              setPasswordError={(value) =>
+                formDataUpdate("newPasswordErr", value)
+              }
+              setConfirmPasswordError={(value) =>
+                formDataUpdate("confirmNewPasswordErr", value)
+              }
             />
-          </DialogContent>
+          </Container>
           <DialogActions>
             <Button onClick={handlePasswordDialogClose} color="secondary">
               Cancel
             </Button>
-            <Button onClick={handleChangePassword} color="primary">
+            <Button onClick={handlePasswordChange} color="primary">
               Change Password
             </Button>
           </DialogActions>
