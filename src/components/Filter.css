@@ -48,7 +48,7 @@
   text-transform: uppercase;
   cursor: pointer;
   color: #696969;
-  /*   background: #f6f8fa; */
+  /* background: #f6f8fa;  */
 }
 
 input[type="checkbox"]:checked ~ label svg {

@@ -1,5 +1,4 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
-import main_feature from "../../assets/hero.jpeg";
 import {
   Container,
   TextField,
@@ -25,18 +24,19 @@ import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-material.css";
 import axios from "axios";
-import CustomHeaderGroup from "./CustomHeaderGroup";
-import CustomLoadingOverlay from "./CustomLoadingOverlay";
 import CircleCheckedFilled from "@mui/icons-material/CheckCircle";
 import CircleUnchecked from "@mui/icons-material/RadioButtonUnchecked";
 import Swal from "sweetalert2";
 import ClearIcon from "@mui/icons-material/Clear";
 import Papa from "papaparse";
-import BreadCrumb from "../../components/Breadcrumbs";
-import { Helmet } from "react-helmet";
+
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-material.css";
+
+import CustomLoadingOverlay from "./CustomLoadingOverlay";
+import PageHeader from "../../components/PageHeader";
+import main_feature from "../../assets/hero.jpeg";
 
 const toExcelColumn = (colIndex) => {
   let column = "";
@@ -115,12 +115,7 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const Accordion = styled((props) => (
-  <MuiAccordion
-    disableGutters
-    elevation={0}
-    square
-    {...props}
-  />
+  <MuiAccordion disableGutters elevation={0} square {...props} />
 ))(({ theme }) => ({
   marginBottom: "15px",
   "&:not(:last-child)": {
@@ -379,7 +374,6 @@ const DifferentialExpression = () => {
   const groupAColDef = [
     {
       headerName: "Group A",
-      headerGroupComponent: CustomHeaderGroup,
       headerClass: ["header-border", "differential-expression-header"],
       children: [
         {
@@ -409,7 +403,6 @@ const DifferentialExpression = () => {
   const groupBColDef = [
     {
       headerName: "Group B",
-      headerGroupComponent: CustomHeaderGroup,
       headerClass: ["header-border", "differential-expression-header"],
       children: [
         {
@@ -779,6 +772,9 @@ const DifferentialExpression = () => {
 
     Swal.fire({
       title: "Submitting the job, please wait...",
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
     });
     Swal.showLoading();
 
@@ -815,6 +811,9 @@ const DifferentialExpression = () => {
             }, 3000);
           });
       } else {
+        console.log("> Group A", groupARowData);
+        console.log("> Group B", groupBRowData);
+
         await axios
           .post(
             `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze`,
@@ -886,31 +885,20 @@ const DifferentialExpression = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Differential Expression</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        className="head_background"
-        style={{ backgroundImage: `url(${main_feature})` }}
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Differential Expression Analysis</h1>
-          <p className="head_text">
-            Please choose experiments from the following table for differential
-            expression analysis. This analysis will identify proteins with
-            differential abundance between experiments in Groups A and B based
-            on their normalized spectral counts.
-          </p>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={"HSP | Differential Expression"}
+        breadcrumb={breadcrumbPath}
+        title={"Differential Expression Analysis"}
+        description={
+          "Please choose experiments from the following table for differential expression analysis. This analysis will identify proteins with differential abundance between experiments in Groups A and B based on their normalized spectral counts."
+        }
+      />
       <Container
         maxWidth="xl"
         sx={{
           width: "100%",
           display: "flex",
           paddingLeft: "0px !important",
-          // paddingRight: "0px !important",
         }}
       >
         <Box
@@ -1093,16 +1081,11 @@ const DifferentialExpression = () => {
             );
           })}
         </Box>
-        <Container
-          maxWidth="false"
-          sx={{ margin: "30px 0 30px 20px" }}
-        >
+        <Container maxWidth="false" sx={{ margin: "30px 0 30px 20px" }}>
           <Box sx={{ display: "flex" }}>
             <Box
               style={{
                 display: "flex",
-                //  width: "100%",
-                //  maxWidth: "550px"
               }}
             >
               <TextField
@@ -1195,10 +1178,7 @@ const DifferentialExpression = () => {
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
               >
                 {recordsPerPageList.map((option) => (
-                  <MenuItem
-                    key={option.value}
-                    value={option.value}
-                  >
+                  <MenuItem key={option.value} value={option.value}>
                     {option.label}
                   </MenuItem>
                 ))}
@@ -1229,10 +1209,7 @@ const DifferentialExpression = () => {
                 }}
               >
                 {Array.from({ length: totalPageNumber }, (_, index) => (
-                  <MenuItem
-                    key={index + 1}
-                    value={index + 1}
-                  >
+                  <MenuItem key={index + 1} value={index + 1}>
                     {index + 1}
                   </MenuItem>
                 ))}
@@ -1346,29 +1323,14 @@ const DifferentialExpression = () => {
               ></AgGridReact>
             </div>
           </Box>
-          <Grid
-            container
-            spacing={8}
-          >
-            <Grid
-              item
-              xs={6}
-            >
+          <Grid container spacing={8}>
+            <Grid item xs={6}>
               <Box sx={{ m: 4, justifyContent: "center", display: "center" }}>
-                <Stack
-                  direction="row"
-                  spacing={5}
-                >
-                  <Button
-                    variant="contained"
-                    onClick={handleAddGroupA}
-                  >
+                <Stack direction="row" spacing={5}>
+                  <Button variant="contained" onClick={handleAddGroupA}>
                     Add
                   </Button>
-                  <Button
-                    variant="outlined"
-                    onClick={handleDeleteGroupA}
-                  >
+                  <Button variant="outlined" onClick={handleDeleteGroupA}>
                     Delete
                   </Button>
                 </Stack>
@@ -1396,25 +1358,13 @@ const DifferentialExpression = () => {
                 ></AgGridReact>
               </div>
             </Grid>
-            <Grid
-              item
-              xs={6}
-            >
+            <Grid item xs={6}>
               <Box sx={{ m: 4, justifyContent: "center", display: "center" }}>
-                <Stack
-                  direction="row"
-                  spacing={5}
-                >
-                  <Button
-                    variant="contained"
-                    onClick={handleAddGroupB}
-                  >
+                <Stack direction="row" spacing={5}>
+                  <Button variant="contained" onClick={handleAddGroupB}>
                     Add
                   </Button>
-                  <Button
-                    variant="outlined"
-                    onClick={handleDeleteGroupB}
-                  >
+                  <Button variant="outlined" onClick={handleDeleteGroupB}>
                     Delete
                   </Button>
                 </Stack>
@@ -1584,10 +1534,7 @@ const DifferentialExpression = () => {
             }}
           ></div>
           <Box>
-            <Typography
-              variant="h5"
-              sx={{ fontFamily: "Lato" }}
-            >
+            <Typography variant="h5" sx={{ fontFamily: "Lato" }}>
               ANALYSIS OPTIONS
             </Typography>
             <Box>
@@ -1789,11 +1736,23 @@ const DifferentialExpression = () => {
               >
                 T-Test
               </Typography>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  color: "#1463B9",
+                  fontFamily: "Montserrat",
+                  fontWeight: 600,
+                  mt: 3,
+                }}
+              >
+                Statistical Non-Parametric Test:
+              </Typography>
               <Checkbox
                 icon={<CircleUnchecked />}
                 checkedIcon={<CircleCheckedFilled />}
                 checked={parametricTest === "T"}
                 onChange={() => setParametricTest("T")}
+                sx={{ paddingLeft: 0 }}
               />
               <Typography
                 display="inline"
@@ -1803,11 +1762,7 @@ const DifferentialExpression = () => {
                 Wilcoxon Signed-rank Test
               </Typography>
             </Box>
-            <Button
-              variant="contained"
-              sx={{ mt: 5 }}
-              onClick={handleAnalyze}
-            >
+            <Button variant="contained" sx={{ mt: 5 }} onClick={handleAnalyze}>
               ANALYZE
             </Button>
           </Box>
