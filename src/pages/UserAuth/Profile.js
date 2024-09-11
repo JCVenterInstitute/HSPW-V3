@@ -38,6 +38,9 @@ const Profile = () => {
   });
 
   const [formData, setFormData] = useState({
+    oldPassword: "",
+    oldPasswordErr: "",
+
     email: "",
     emailErr: "",
 
@@ -243,9 +246,15 @@ const Profile = () => {
     let errors = {
       newPasswordErr: "",
       confirmNewPasswordErr: "",
+      oldPasswordErr: "",
     };
 
     let isValid = true;
+
+    if (formData.oldPassword === "") {
+      errors.oldPasswordErr = "Old password is required";
+      isValid = false;
+    }
 
     passwordRequirements.forEach((element) => {
       if (!element.isMet) {
@@ -268,22 +277,29 @@ const Profile = () => {
 
     if (isValid && user) {
       user.changePassword(
-        session.getAccessToken().getJwtToken(),
+        formData.oldPassword,
         formData.newPassword,
         (err, result) => {
-          if (err && err.message.includes("previousPassword")) {
+          if (err) {
+            console.log(formData.newPassword);
             setPasswordDialogOpen(false);
             Swal.fire({
-              title: "Error changing password",
-              text: "Password cannot be changed to a previously used password.",
+              title: "Failed to change password",
+              text: err.message.includes("username")
+                ? "Incorrect password given."
+                : err.message,
               icon: "error",
               confirmButtonColor: "#1464b4",
             }).then(() => setPasswordDialogOpen(true));
             return;
           }
 
-          alert("Password changed successfully");
           setPasswordDialogOpen(false);
+          Swal.fire({
+            title: "Password changed successfully",
+            icon: "success",
+            confirmButtonColor: "#1464b4",
+          });
           formDataUpdate("newPassword", "");
           formDataUpdate("confirmNewPassword", "");
           console.log("Password changed successfully:", result);
@@ -488,6 +504,16 @@ const Profile = () => {
         >
           <DialogTitle>Change Password</DialogTitle>
           <Container>
+            <TextField
+              label="Current Password"
+              type="password"
+              value={formData.oldPassword}
+              onChange={(e) => formDataUpdate("oldPassword", e.target.value)}
+              error={Boolean(formData.oldPasswordErr)}
+              helperText={formData.oldPasswordErr}
+              fullWidth
+              margin="normal"
+            />
             <PasswordField
               password={formData.newPassword}
               confirmPassword={formData.confirmNewPassword}
