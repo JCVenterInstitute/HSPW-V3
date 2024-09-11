@@ -15,11 +15,9 @@ import {
   Select,
   MenuItem,
   Grid,
-  Collapse,
-  List,
-  ListItem,
   Paper,
 } from "@mui/material";
+import Swal from "sweetalert2";
 import { formRegex, initialPasswordRequirements } from "./AuthConsts";
 import PasswordField from "../../components/PasswordField";
 
@@ -37,7 +35,6 @@ const Profile = () => {
     lastName: "",
     email: "",
     institution: "",
-    oldPassword: "", // Added oldPassword to compare
   });
 
   const [formData, setFormData] = useState({
@@ -82,7 +79,6 @@ const Profile = () => {
           attributes.forEach((attribute) => {
             attributeMap[attribute.Name] = attribute.Value;
           });
-          console.log(userData);
           setUserData({
             username:
               userData.username === ""
@@ -98,7 +94,6 @@ const Profile = () => {
             lastName: attributeMap["family_name"] || "",
             email: attributeMap["email"] || "",
             institution: attributeMap["custom:institution"] || "",
-            oldPassword: attributeMap["password"] || "", // Retrieve old password for comparison (needs correct Cognito attribute, modify if necessary)
           });
 
           setFormData((prevData) => ({
@@ -228,7 +223,6 @@ const Profile = () => {
             console.error("Error updating user data:", err);
             return;
           }
-          console.log(userData);
           setUserData({
             username: userData.username,
             title: formData.title,
@@ -252,11 +246,6 @@ const Profile = () => {
     };
 
     let isValid = true;
-
-    if (formData.newPassword === userData.oldPassword) {
-      errors.newPasswordErr = "You cannot use a previously used password.";
-      isValid = false;
-    }
 
     passwordRequirements.forEach((element) => {
       if (!element.isMet) {
@@ -282,8 +271,14 @@ const Profile = () => {
         session.getAccessToken().getJwtToken(),
         formData.newPassword,
         (err, result) => {
-          if (err) {
-            console.error("Error changing password:", err);
+          if (err && err.message.includes("previousPassword")) {
+            setPasswordDialogOpen(false);
+            Swal.fire({
+              title: "Error changing password",
+              text: "Password cannot be changed to a previously used password.",
+              icon: "error",
+              confirmButtonColor: "#1464b4",
+            }).then(() => setPasswordDialogOpen(true));
             return;
           }
 
@@ -377,8 +372,6 @@ const Profile = () => {
           maxWidth="md"
           fullWidth
         >
-          {" "}
-          {/* Updated maxWidth to md */}
           <DialogTitle>Edit Profile</DialogTitle>
           <DialogContent>
             <Grid container spacing={2}>
@@ -493,8 +486,6 @@ const Profile = () => {
           maxWidth="sm"
           fullWidth
         >
-          {" "}
-          {/* Updated maxWidth to sm */}
           <DialogTitle>Change Password</DialogTitle>
           <Container>
             <PasswordField
