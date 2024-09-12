@@ -17,6 +17,7 @@ import userpool from "../../userpool";
 import Swal from "sweetalert2";
 import { formRegex, initialPasswordRequirements } from "./AuthConsts";
 import PasswordField from "../../components/PasswordField";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -47,6 +48,9 @@ const Signup = () => {
     institution: "",
     institutionErr: "",
   });
+
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
+  const [recaptchaError, setRecaptchaError] = useState("");
 
   const formDataUpdate = (formField, value) => {
     setFormData((prevData) => ({ ...prevData, [formField]: value }));
@@ -102,10 +106,20 @@ const Signup = () => {
     return isValid;
   };
 
+  const handleRecaptchaChange = (token) => {
+    setRecaptchaToken(token);
+    setRecaptchaError(""); // Clear any previous reCAPTCHA errors
+  };
+
   const handleClick = (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
 
     if (!submitValidation()) {
+      return;
+    }
+
+    if (!recaptchaToken) {
+      setRecaptchaError("Please complete the reCAPTCHA.");
       return;
     }
 
@@ -268,6 +282,17 @@ const Signup = () => {
                 formDataUpdate("confirmPasswordErr", error)
               }
             />
+            <Box textAlign="center" mt={2}>
+              <ReCAPTCHA
+                sitekey={process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY}
+                onChange={handleRecaptchaChange}
+              />
+              {recaptchaError && (
+                <Typography color="error" variant="body2" mt={2}>
+                  {recaptchaError}
+                </Typography>
+              )}
+            </Box>
             <Box textAlign="center" mt={2}>
               <Button
                 type="submit"
