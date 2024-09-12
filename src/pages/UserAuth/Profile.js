@@ -185,6 +185,82 @@ const Profile = () => {
     setPasswordDialogOpen(false);
   };
 
+  function showCancelConfirmation() {
+    return Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to cancel email verification?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, cancel",
+      cancelButtonText: "No, go back",
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+    }).then((confirmationResult) => {
+      if (confirmationResult.isConfirmed) {
+        return Swal.fire({
+          title: "Cancelled",
+          text: "Email verification has been cancelled.",
+          icon: "success",
+          confirmButtonColor: "#1464b4",
+        });
+      } else {
+        return showVerificationAlert(); // Reopen the verification alert
+      }
+    });
+  }
+
+  function showVerificationAlert() {
+    return Swal.fire({
+      title: "Verification Code Sent",
+      text: `A verification code has been sent to your new email\n(${formData.email}). \nPlease enter the code below to verify your email.`,
+      input: "text",
+      inputPlaceholder: "Enter verification code",
+      showCancelButton: true,
+      confirmButtonText: "Verify",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#1464b4",
+      cancelButtonColor: "#d33",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      preConfirm: (code) => {
+        if (!code) {
+          // Return a validation error if no code is entered
+          Swal.showValidationMessage("Please enter the verification code.");
+          return;
+        }
+
+        return new Promise((resolve, reject) => {
+          user.verifyAttribute("email", code, {
+            onSuccess: (result) => {
+              Swal.fire({
+                title: "Success",
+                text: "Your email has been verified!",
+                icon: "success",
+                confirmButtonColor: "#1464b4",
+              });
+              resolve(result);
+            },
+            onFailure: (err) => {
+              Swal.fire({
+                title: "Error",
+                text: `Verification failed: ${err.message}`,
+                icon: "error",
+                confirmButtonColor: "#1464b4",
+              }).then(() => {
+                showVerificationAlert(); // Reopen the verification prompt after showing the error
+              });
+              reject(err);
+            },
+          });
+        });
+      },
+    }).then((result) => {
+      if (result.dismiss === Swal.DismissReason.cancel) {
+        showCancelConfirmation();
+      }
+    });
+  }
+
   const handleSave = async () => {
     let errors = {
       emailErr: "",
@@ -225,6 +301,9 @@ const Profile = () => {
           if (err) {
             console.error("Error updating user data:", err);
             return;
+          }
+          if (formData.email !== userData.email) {
+            showVerificationAlert();
           }
           setUserData({
             username: userData.username,
@@ -281,7 +360,6 @@ const Profile = () => {
         formData.newPassword,
         (err, result) => {
           if (err) {
-            console.log(formData.newPassword);
             setPasswordDialogOpen(false);
             Swal.fire({
               title: "Failed to change password",
