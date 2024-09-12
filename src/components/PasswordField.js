@@ -44,9 +44,9 @@ const PasswordField = ({
     onPasswordChange(e.target.value);
   };
 
-  const validateConfirmPassword = () => {
+  const validateConfirmPassword = (input = confirmPassword) => {
     setConfirmPasswordError(
-      confirmPassword === password ? "" : "Does not match password"
+      input === password ? "" : "Does not match password"
     );
   };
 
@@ -102,8 +102,10 @@ const PasswordField = ({
       </Collapse>
       <TextField
         value={confirmPassword}
-        onChange={handleConfirmPasswordChange}
-        onBlur={validateConfirmPassword}
+        onChange={(e) => {
+          handleConfirmPasswordChange(e);
+          validateConfirmPassword(e.target.value);
+        }}
         label="Confirm Password"
         helperText={confirmPasswordError}
         type="password"
