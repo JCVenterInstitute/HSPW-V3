@@ -9,23 +9,21 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { CognitoUser } from "amazon-cognito-identity-js";
-import { useNavigate } from "react-router-dom"; // To navigate after success
-import Swal from "sweetalert2"; // SweetAlert2 for success message
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import userpool from "../../userpool";
-import PasswordField from "../../components/PasswordField"; // Import PasswordField
-import { initialPasswordRequirements } from "./AuthConsts"; // Import password requirements
+import PasswordField from "../../components/PasswordField";
+import { initialPasswordRequirements } from "./AuthConsts";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const ForgotPassword = () => {
   const [formData, setFormData] = useState({
     username: "",
     usernameError: "",
-
     verificationCode: "",
     verificationCodeErr: "",
-
     newPassword: "",
     newPasswordErr: "",
-
     confirmPassword: "",
     confirmPasswordErr: "",
   });
@@ -37,29 +35,27 @@ const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
-
-  const navigate = useNavigate(); // To navigate after successful password reset
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
+  const navigate = useNavigate();
 
   const formDataUpdate = (formField, value) => {
     setFormData((prevData) => ({ ...prevData, [formField]: value }));
   };
 
-  // Handle password change and validation
+  const handleRecaptchaChange = (token) => setRecaptchaToken(token);
+
+  const validatePassword = (password) => {
+    const updatedRequirements = initialPasswordRequirements.map((req) => ({
+      ...req,
+      isMet: req.regex.test(password),
+    }));
+    setPasswordRequirements(updatedRequirements);
+    setIsPasswordValid(updatedRequirements.every((req) => req.isMet));
+  };
+
   const handlePasswordChange = (password) => {
     formDataUpdate("newPassword", password);
     validatePassword(password);
-  };
-
-  const validatePassword = (password) => {
-    const updatedRequirements = initialPasswordRequirements.map(
-      (requirement) => ({
-        ...requirement,
-        isMet: requirement.regex.test(password),
-      })
-    );
-
-    setPasswordRequirements(updatedRequirements);
-    setIsPasswordValid(updatedRequirements.every((req) => req.isMet));
   };
 
   const handleSendResetLink = (e) => {
@@ -71,10 +67,9 @@ const ForgotPassword = () => {
       Pool: userpool,
     });
 
-    //only error is too many attempts, which is unrelated to username, should update later
     cognitoUser.forgotPassword({
-      onSuccess: (result) => {
-        setStep(2); // Move to verification code input step
+      onSuccess: () => {
+        setStep(2);
         setLoading(false);
         formDataUpdate("usernameError", "");
       },
@@ -87,6 +82,17 @@ const ForgotPassword = () => {
 
   const handleConfirmVerificationCode = (e) => {
     e.preventDefault();
+
+    if (!recaptchaToken) {
+      Swal.fire({
+        title: "ReCAPTCHA verification required",
+        text: "Please verify you are not a robot.",
+        icon: "error",
+        confirmButtonColor: "#1464b4",
+      });
+      return;
+    }
+
     if (!isPasswordValid) {
       formDataUpdate(
         "newPasswordErr",
@@ -108,7 +114,6 @@ const ForgotPassword = () => {
       {
         onSuccess: () => {
           setLoading(false);
-          // Show SweetAlert success message
           Swal.fire({
             title: "Success!",
             text: "Your password has been changed successfully.",
@@ -117,10 +122,8 @@ const ForgotPassword = () => {
             confirmButtonColor: "#1464b4",
           }).then(() => navigate("/login"));
         },
-
         onFailure: (err) => {
           formDataUpdate("verificationCodeErr", err.message);
-          // show sweet alert fail message here
           setLoading(false);
         },
       }
@@ -174,9 +177,7 @@ const ForgotPassword = () => {
             <form onSubmit={handleSendResetLink}>
               <TextField
                 value={formData.username}
-                onChange={(e) => {
-                  formDataUpdate("username", e.target.value);
-                }}
+                onChange={(e) => formDataUpdate("username", e.target.value)}
                 label="Username"
                 required
                 fullWidth
@@ -228,6 +229,13 @@ const ForgotPassword = () => {
                   formDataUpdate("confirmPasswordErr", value)
                 }
               />
+              <Box textAlign="center">
+                <ReCAPTCHA
+                  sitekey={process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY}
+                  onChange={handleRecaptchaChange}
+                  style={{ display: "inline-block", marginTop: "14px" }} // Centering and adding margin
+                />
+              </Box>
               <Box textAlign="center" mt={2}>
                 <Button
                   type="submit"
@@ -250,17 +258,18 @@ const ForgotPassword = () => {
                     "Confirm Verification Code"
                   )}
                 </Button>
-              </Box>
-              <Box textAlign="center" mt={2}>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  size="small"
-                  disabled={resendCooldown}
-                  onClick={handleResendVerificationCode}
-                >
-                  Resend Verification Code
-                </Button>
+                <Box textAlign="center">
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    size="small"
+                    disabled={resendCooldown} // Disable button while cooldown is active
+                    onClick={handleResendVerificationCode}
+                    sx={{ mt: 2 }} // Add margin on top
+                  >
+                    Resend Verification Code
+                  </Button>
+                </Box>
               </Box>
             </form>
           )}
