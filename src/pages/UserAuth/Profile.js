@@ -237,7 +237,12 @@ const Profile = () => {
                 text: "Your email has been verified!",
                 icon: "success",
                 confirmButtonColor: "#1464b4",
-              });
+              }).then(() =>
+                setUserData((prevData) => ({
+                  ...prevData,
+                  email: formData.email,
+                }))
+              );
               resolve(result);
             },
             onFailure: (err) => {
@@ -311,7 +316,7 @@ const Profile = () => {
             firstName: formData.givenName,
             middleInitial: formData.middleInitial,
             lastName: formData.familyName,
-            email: formData.email,
+            email: userData.email,
             institution: formData.institution,
           });
           setIsDialogOpen(false);
