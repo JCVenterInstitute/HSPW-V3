@@ -214,6 +214,10 @@ def main(event):
     result = subprocess.run(command)
     print(f"> Kegg Analysis ran. Process return code: {result.returncode}")
 
+    command = ["Rscropt", "stringdbR"]
+    result = subprocess.run(command)
+    print(f"> String DB R script ran. Process return code: {result.returncode}")
+
     # if result.returncode == 0:
     #     print("> Successfully ran Kegg script")
     # else:
@@ -238,6 +242,7 @@ def main(event):
         "egocc.tsv",
         "egomf_gene_net.tsv",
         "gsemf.tsv",
+        "string.csv",
     ]
 
     zip_files("./", files_to_zip, "go_kegg_set.zip")
