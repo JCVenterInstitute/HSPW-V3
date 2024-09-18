@@ -127,7 +127,7 @@ def main(event):
 
     dirName = os.path.basename(input_file)
 
-    # 3, Download input file from S3
+    # Download input file from S3
     print("> Attempting to download input file from S3")
     s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
     file_name = f"{input_file}/all_data.tsv"
@@ -138,7 +138,7 @@ def main(event):
     download_file_from_s3(s3_bucket_name, file_name, download_destination)
     print("> Successfully downloaded input file from s3")
 
-    # 4. Copy R Scripts to new dir (Create dir if it doesn't exist)
+    # Copy R Scripts to new dir (Create dir if it doesn't exist)
     print("> Attempting to copy R Script to input directory")
     target_directory = f"/tmp/{dirName}/"
     print("> Target directory", target_directory)
@@ -162,73 +162,33 @@ def main(event):
     print("> Successfully copied R Scripts to input directory")
     dir_files(f"/tmp/{dirName}")
 
-    # 5. Navigate to new dir & run R Script
+    # Navigate to new dir & run R Script
     print("> Attempting to run analysis")
     os.chdir(f"/tmp/{dirName}")
 
     command = ["Rscript", "go_cc.R", str(pValueCutoff), str(qValueCutoff)]
     result = subprocess.run(command)
     print(f"> Go_CC Analysis ran. Process return code: {result.returncode}")
-    dir_files(f"/tmp/{dirName}")
-
-    # If Script fails, send SES notification to support email
-    # if result.returncode == 0:
-    #     print("> Successfully ran Go_CC script")
-    # else:
-    #     print(f"> Error running Go_CC R Script for: {input_file}")
-    #     print(f"> Failed command: {command}")
-    #     body = f"Input File: {input_file}\nFailed Command: {command}"
-    #     support_email = os.environ.get("SUPPORT_EMAIL")
-    #     send_email(support_email, support_email, body)
-    #     return
 
     command = ["Rscript", "go_bp.R", str(pValueCutoff), str(qValueCutoff)]
     result = subprocess.run(command)
     print(f"> Go_Bp Analysis ran. Process return code: {result.returncode}")
 
-    # if result.returncode == 0:
-    #     print("> Successfully ran Go_Bp script")
-    # else:
-    #     print(f"> Error running Go_Bp R Script for: {input_file}")
-    #     print(f"> Failed command: {command}")
-    #     body = f"Input File: {input_file}\nFailed Command: {command}"
-    #     support_email = os.environ.get("SUPPORT_EMAIL")
-    #     send_email(support_email, support_email, body)
-    #     return
-
     command = ["Rscript", "go_mf.R", str(pValueCutoff), str(qValueCutoff)]
     result = subprocess.run(command)
     print(f"> Go_Mf Analysis ran. Process return code: {result.returncode}")
-
-    # if result.returncode == 0:
-    #     print("> Successfully ran Go_Mf script")
-    # else:
-    #     print(f"> Error running Go_Mf R Script for: {input_file}")
-    #     print(f"> Failed command: {command}")
-    #     body = f"Input File: {input_file}\nFailed Command: {command}"
-    #     support_email = os.environ.get("SUPPORT_EMAIL")
-    #     send_email(support_email, support_email, body)
-    #     return
 
     command = ["Rscript", "kegg.R", str(pValueCutoff), str(qValueCutoff)]
     result = subprocess.run(command)
     print(f"> Kegg Analysis ran. Process return code: {result.returncode}")
 
-    command = ["Rscropt", "stringdbR"]
+    dir_files(f"/tmp/{dirName}")
+
+    command = ["Rscript", "stringdbR.r"]
     result = subprocess.run(command)
     print(f"> String DB R script ran. Process return code: {result.returncode}")
 
-    # if result.returncode == 0:
-    #     print("> Successfully ran Kegg script")
-    # else:
-    #     print(f"> Error running Kegg R Script for: {input_file}")
-    #     print(f"> Failed command: {command}")
-    #     body = f"Input File: {input_file}\nFailed Command: {command}"
-    #     support_email = os.environ.get("SUPPORT_EMAIL")
-    #     send_email(support_email, support_email, body)
-    #     return
-
-    # # 6. Create Zip file with the output files
+    # Create Zip file with the output files
     files_to_zip = [
         "egocc_gene_net.tsv",
         "gsebp.tsv",
