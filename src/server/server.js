@@ -16,6 +16,11 @@ const { generatePresignedUrls } = require("./utils/generatePresignedUrls");
 const { createContact } = require("./utils/createContact");
 const { getSSMParameter } = require("./utils/utils");
 const { sendSupportEmail } = require("./utils/sendSupportEmail");
+const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+const {
+  DynamoDBDocumentClient,
+  QueryCommand,
+} = require("@aws-sdk/lib-dynamodb");
 
 app.use(cors());
 app.use(express.json({ limit: "200mb" }));
@@ -42,6 +47,10 @@ const getClient = async () => {
     node: host,
   });
 };
+
+// Initialize DynamoDB client
+const ddbClient = new DynamoDBClient({ region: "us-east-2" });
+const docClient = DynamoDBDocumentClient.from(ddbClient);
 
 /***************************
  * Protein Cluster Endpoints
@@ -1628,6 +1637,41 @@ app.post(
 /*********************
  * Misc Util Endpoints
  *********************/
+
+app.get("/api/submissions/:username", async (req, res) => {
+  const { username } = req.params;
+  console.log(username);
+  const params = {
+    TableName: "hsp-analysis-submissions-DEV",
+    IndexName: "username-index", // If you're using a GSI based on username
+    KeyConditionExpression: "#username = :username",
+    ExpressionAttributeNames: {
+      "#username": "username",
+    },
+    ExpressionAttributeValues: {
+      ":username": username, // Use the provided username in the request params
+    },
+  };
+
+  try {
+    // Perform the DynamoDB query
+    const data = await docClient.send(new QueryCommand(params));
+
+    if (data.Items) {
+      // Send the retrieved items as a response
+      res.status(200).json(data.Items);
+    } else {
+      // Handle case where no items are found
+      res.status(404).json({ message: "No submissions found for this user." });
+    }
+  } catch (err) {
+    // Handle any errors
+    console.error("Error querying DynamoDB:", err);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: err.message });
+  }
+});
 
 app.get("/api/download-template-data", async (req, res) => {
   // S3 download parameters
