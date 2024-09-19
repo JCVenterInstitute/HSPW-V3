@@ -12,6 +12,7 @@ COPY go_bp.R ${FUNCTION_DIR}
 COPY go_cc.R ${FUNCTION_DIR}
 COPY go_mf.R ${FUNCTION_DIR}
 COPY kegg.R ${FUNCTION_DIR}
+COPY stringdbR.r ${FUNCTION_DIR}
 
 RUN curl -O https://bootstrap.pypa.io/pip/2.7/get-pip.py
 

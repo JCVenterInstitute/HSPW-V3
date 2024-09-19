@@ -48,8 +48,10 @@ def upload_files_to_s3(bucket_name, directory_name, subdirectory):
     # Iterate over each file and upload it to S3
     for file_name in files:
         file_path = os.path.join(directory_name, file_name)
-        if os.path.isfile(file_path) and not file_name.endswith(
-            ".R"
+        if (
+            os.path.isfile(file_path)
+            and not file_name.endswith(".R")
+            and not file_name.endswith(".r")
         ):  # Skip all .R files
             # Construct the S3 key with the subdirectory
             s3_key = os.path.join(subdirectory, file_name)
@@ -157,6 +159,10 @@ def main(event):
 
     source_path = "./kegg.R"
     target_path = os.path.join(target_directory, "kegg.R")
+    shutil.copyfile(source_path, target_path)
+
+    source_path = "./stringdbR.r"
+    target_path = os.path.join(target_directory, "stringdbR.r")
     shutil.copyfile(source_path, target_path)
 
     print("> Successfully copied R Scripts to input directory")
