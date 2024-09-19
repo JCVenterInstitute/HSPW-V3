@@ -20,6 +20,7 @@ const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const {
   DynamoDBDocumentClient,
   QueryCommand,
+  UpdateCommand,
 } = require("@aws-sdk/lib-dynamodb");
 
 app.use(cors());
@@ -1670,6 +1671,34 @@ app.get("/api/submissions/:username", async (req, res) => {
     res
       .status(500)
       .json({ message: "Internal Server Error", error: err.message });
+  }
+});
+
+app.put("/api/submissions/:id", async (req, res) => {
+  const { id } = req.params;
+  const { important } = req.body; // Assuming frontend sends { important: true/false }
+
+  // Construct the DynamoDB UpdateCommand
+  const params = {
+    TableName: "hsp-analysis-submissions-DEV", // Replace with your table name
+    Key: { id }, // Use the "id" as the key
+    UpdateExpression: "SET #important = :important",
+    ExpressionAttributeNames: {
+      "#important": "important",
+    },
+    ExpressionAttributeValues: {
+      ":important": important,
+    },
+    ReturnValues: "ALL_NEW", // Returns the updated item
+  };
+
+  try {
+    // Execute the UpdateCommand
+    const data = await docClient.send(new UpdateCommand(params));
+    res.json(data.Attributes); // Send updated attributes back to the frontend
+  } catch (err) {
+    console.error("Error updating important status:", err);
+    res.status(500).json({ error: "Failed to update important status" });
   }
 });
 
