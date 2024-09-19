@@ -83,6 +83,8 @@ const DataSection = ({
       const { exists } = await res.json();
 
       setGoResultsReady(exists);
+
+      if (exists) await getAllFiles();
     } catch (e) {
       console.log(e);
     }
@@ -137,6 +139,7 @@ const DataSection = ({
       await Promise.all(fetchPromises);
 
       fileDict["inputData"] = {};
+
       searchParams.forEach((input, header) => {
         switch (header) {
           case "pType":
@@ -151,6 +154,9 @@ const DataSection = ({
             break;
         }
       });
+
+      console.log("> File Dictionary", fileDict);
+
       setAllFiles(fileDict);
     } catch (err) {
       console.error("> Error fetching all data file", err);
@@ -166,6 +172,7 @@ const DataSection = ({
 
   const getSection = () => {
     let displayResult = null;
+
     if (allFiles) {
       switch (selectedSection) {
         case "Volcano Plot":
@@ -350,37 +357,47 @@ const DataSection = ({
         case "GO Cellular Component":
         case "KEGG Pathway/Module":
           if (tab === "Enrichment Plot") {
-            displayResult = (
+            displayResult = allFiles[goKeggDict[selectedSection][0]] ? (
               <BarChartComponent
                 plotData={allFiles[goKeggDict[selectedSection][0]].data}
               />
+            ) : (
+              <CheckbackLater />
             );
           } else if (tab && tab.endsWith("connected genes")) {
-            displayResult = (
+            displayResult = allFiles[goKeggDict[selectedSection][1]] ? (
               <NetworkGraph
                 plotData={allFiles[goKeggDict[selectedSection][1]].data}
               />
+            ) : (
+              <CheckbackLater />
             );
           } else if (tab && tab.endsWith("Ridge plot")) {
-            displayResult = (
+            displayResult = allFiles[goKeggDict[selectedSection][2]] ? (
               <RidgePlotComponent
                 tableData={allFiles[goKeggDict[selectedSection][2]].data}
                 allData={allFiles["all_data.tsv"].data}
               />
+            ) : (
+              <CheckbackLater />
             );
           } else if (tab && tab.endsWith("Heatmap plot")) {
-            displayResult = (
+            displayResult = allFiles[goKeggDict[selectedSection][2]] ? (
               <GOHeatmapComponent
                 tableData={allFiles[goKeggDict[selectedSection][2]].data}
                 allData={allFiles["all_data.tsv"].data}
               />
+            ) : (
+              <CheckbackLater />
             );
           } else if (tab && tab.endsWith("cluster plot")) {
-            displayResult = (
-              <TreeClusterPlotComponent
-                plotData={allFiles[goKeggDict[selectedSection][3]]}
-              />
-            );
+            // displayResult = (
+            //   <TreeClusterPlotComponent
+            //     plotData={allFiles[goKeggDict[selectedSection][3]]}
+            //   />
+            // );
+
+            displayResult = displayImg(allFiles["gsecc_tree.jpeg"].downloadUrl);
           } else {
             displayResult = null;
           }
