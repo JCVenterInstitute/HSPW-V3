@@ -1,67 +1,82 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { Paper, Box } from "@mui/material";
 
 const Submissions = () => {
   const [rowData, setRowData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const ddbClient = new DynamoDBClient({ region: "us-east-2" });
-  const docClient = DynamoDBDocumentClient.from(ddbClient);
-
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const params = {
-          TableName: "hsp-analysis-submissions-DEV",
-          IndexName: "username-index", // Use the GSI (if defined)
-          KeyConditionExpression: "#username = :username",
-          ExpressionAttributeNames: {
-            "#username": "username",
-          },
-          ExpressionAttributeValues: {
-            ":username": "testUser", // Replace with your actual username or variable
-          },
-        };
-
-        const command = new QueryCommand(params);
-        const data = await docClient.send(command);
-        console.log(data);
-        setRowData(data.Items); // Set row data to display in AG Grid
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      } finally {
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/submissions/testUser`)
+      .then((response) => response.json())
+      .then((data) => {
+        setRowData(data);
         setLoading(false);
-      }
-    };
-
-    fetchData();
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      });
   }, []);
 
   const columnDefs = [
-    { field: "id", headerName: "ID" },
-    { field: "name", headerName: "Name" },
-    { field: "status", headerName: "Status" },
-    { field: "submission_date", headerName: "Submission Date" },
-    { field: "type", headerName: "Type" },
-    {
-      field: "link",
-      headerName: "Link",
-      cellRenderer: (params) =>
-        `<a href="${params.value}" target="_blank">View</a>`,
-    },
-    { field: "description", headerName: "Description" },
+    { headerName: "Type", field: "type", minWidth: 220, initialWidth: 220 },
+    { headerName: "Name", field: "name" },
+    { headerName: "Status", field: "status" },
+    { headerName: "Submission Date", field: "submission_date" },
   ];
 
+  const defColumnDefs = {
+    flex: 1,
+    filter: true,
+    resizable: true,
+    sortable: true,
+    wrapHeaderText: true,
+    wrapText: true,
+    autoHeaderHeight: true,
+  };
+
   return (
-    <div className="ag-theme-alpine" style={{ height: 400, width: "100%" }}>
-      {loading ? (
-        <p>Loading data...</p>
-      ) : (
-        <AgGridReact rowData={rowData} columnDefs={columnDefs} />
-      )}
-    </div>
+    <Box
+      sx={{
+        backgroundColor: "#f5f5f5",
+        height: "100vh", // Ensure the container takes full viewport height
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "20px", // Padding around the container
+        boxSizing: "border-box", // Include padding in height calculation
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          padding: "1rem", // Reduced padding for less space around content
+          borderRadius: "10px",
+          width: "100%",
+          maxWidth: "1200px",
+          height: "80vh", // Limit height to avoid excessive empty space
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <div
+          className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
+          style={{ flexGrow: 1, width: "100%" }}
+        >
+          <AgGridReact
+            className="ag-cell-wrap-text"
+            rowData={rowData}
+            columnDefs={columnDefs}
+            defaultColDef={defColumnDefs}
+            suppressMovable
+            enableCellTextSelection={true}
+            paginationPageSize={50}
+            domLayout="autoHeight"
+          />
+        </div>
+      </Paper>
+    </Box>
   );
 };
 
