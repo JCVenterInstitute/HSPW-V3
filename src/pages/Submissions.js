@@ -1,25 +1,37 @@
 import React, { useState, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { Paper, Box, Checkbox } from "@mui/material";
+import { Paper, Box, IconButton } from "@mui/material";
+import PushPinIcon from "@mui/icons-material/PushPin";
+import LinkIcon from "@mui/icons-material/Link";
 
 const Submissions = () => {
   const [rowData, setRowData] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/submissions/testUser`)
       .then((response) => response.json())
       .then((data) => {
         setRowData(data);
-        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
-        setLoading(false);
       });
   }, []);
 
   const columnDefs = [
+    {
+      headerName: "Important",
+      field: "important",
+      cellRendererFramework: (params) => (
+        <IconButton onClick={() => handlePinChange(params.data)}>
+          <PushPinIcon
+            sx={{
+              color: params.value ? "blue" : "gray",
+            }}
+          />
+        </IconButton>
+      ),
+    },
     { headerName: "Type", field: "type", minWidth: 220, width: 220 },
     { headerName: "Name", field: "name", minWidth: 200, width: 200 },
     { headerName: "Status", field: "status", minWidth: 120, width: 100 },
@@ -30,14 +42,19 @@ const Submissions = () => {
       width: 200,
     },
     {
-      headerName: "Important",
-      field: "important",
+      headerName: "Link",
+      field: "link",
+      minWidth: 150,
+      width: 150,
       cellRendererFramework: (params) => (
-        <Checkbox
-          checked={params.value}
-          onChange={() => handlePinChange(params.data)}
-          color="primary"
-        />
+        <IconButton
+          component="a"
+          href={params.value}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <LinkIcon sx={{ color: "blue" }} />
+        </IconButton>
       ),
     },
   ];
@@ -53,10 +70,8 @@ const Submissions = () => {
   };
 
   const handlePinChange = (row) => {
-    // Toggle the important field
     const updatedRow = { ...row, important: !row.important };
 
-    // Correct the endpoint and request type
     fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${row.id}`, {
       method: "PUT",
       headers: {
@@ -66,7 +81,6 @@ const Submissions = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        // Update the local state with the new pinned state
         setRowData((prevData) =>
           prevData.map((item) =>
             item.id === updatedRow.id
