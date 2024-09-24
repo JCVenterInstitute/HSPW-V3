@@ -3,6 +3,7 @@ import { AgGridReact } from "ag-grid-react";
 import { Paper, Box, IconButton, Typography } from "@mui/material";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import LinkIcon from "@mui/icons-material/Link";
+import CustomCell from "../components/CustomCell"; // Import the custom cell component
 
 const Submissions = () => {
   const [rowData, setRowData] = useState([]);
@@ -21,92 +22,6 @@ const Submissions = () => {
         console.error("Error fetching data:", error);
       });
   }, []);
-
-  const columnDefs = [
-    {
-      headerName: "Important",
-      field: "important",
-      cellRendererFramework: (params) => (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <IconButton onClick={() => handlePinChange(params.data)}>
-            <PushPinIcon sx={{ color: params.value ? "blue" : "gray" }} />
-          </IconButton>
-        </div>
-      ),
-      cellStyle: { paddingLeft: "15px" }, // Add padding for alignment
-    },
-    {
-      headerName: "Type",
-      field: "type",
-      minWidth: 220,
-      width: 220,
-      cellStyle: { paddingLeft: "15px" }, // Ensure cell text aligns with header
-    },
-    {
-      headerName: "Name",
-      field: "name",
-      minWidth: 200,
-      width: 200,
-      cellStyle: { paddingLeft: "15px" }, // Ensure cell text aligns with header
-    },
-    {
-      headerName: "Status",
-      field: "status",
-      minWidth: 120,
-      width: 100,
-      cellStyle: { paddingLeft: "15px" }, // Ensure cell text aligns with header
-    },
-    {
-      headerName: "Submission Date",
-      field: "submission_date",
-      minWidth: 200,
-      width: 200,
-      sort: "desc", // Default sorting applied here
-      sortable: true,
-      cellStyle: { paddingLeft: "15px" }, // Ensure cell text aligns with header
-    },
-    {
-      headerName: "Link",
-      field: "link",
-      minWidth: 150,
-      width: 150,
-      cellRendererFramework: (params) => (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <IconButton
-            component="a"
-            href={params.value}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <LinkIcon sx={{ color: "blue" }} />
-          </IconButton>
-        </div>
-      ),
-      cellStyle: { paddingLeft: "15px" }, // Ensure cell text aligns with header
-    },
-  ];
-
-  const defColumnDefs = {
-    flex: 1,
-    filter: true,
-    resizable: true,
-    sortable: true,
-    wrapHeaderText: true,
-    wrapText: true,
-    autoHeaderHeight: true,
-  };
 
   const handlePinChange = (row) => {
     const updatedRow = { ...row, important: !row.important };
@@ -136,6 +51,92 @@ const Submissions = () => {
         }
       })
       .catch((error) => console.error("Error updating data:", error));
+  };
+
+  const columnDefs = [
+    {
+      headerName: "",
+      field: "important",
+      maxWidth: 50,
+      resizable: false,
+      cellRenderer: (params) => (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <IconButton onClick={() => handlePinChange(params.data)}>
+            <PushPinIcon sx={{ color: params.value ? "blue" : "gray" }} />
+          </IconButton>
+        </div>
+      ),
+    },
+    {
+      headerName: "Type",
+      field: "type",
+      minWidth: 120,
+      width: 220,
+      cellRenderer: (params) => <CustomCell value={params.value} />,
+    },
+    {
+      headerName: "Name",
+      field: "name",
+      minWidth: 125,
+      width: 200,
+      cellRenderer: (params) => <CustomCell value={params.value} />,
+    },
+    {
+      headerName: "Status",
+      field: "status",
+      minWidth: 125,
+      width: 100,
+      cellRenderer: (params) => <CustomCell value={params.value} />,
+    },
+    {
+      headerName: "Submission Date",
+      field: "submission_date",
+      minWidth: 200,
+      width: 200,
+      sort: "desc", // Default sorting applied here
+      sortable: true,
+      cellRenderer: (params) => <CustomCell value={params.value} />,
+    },
+    {
+      headerName: "Link",
+      field: "link",
+      maxWidth: 105,
+      resizable: false,
+      cellRenderer: (params) => (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <IconButton
+            component="a"
+            href={params.value}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <LinkIcon sx={{ color: "blue" }} />
+          </IconButton>
+        </div>
+      ),
+    },
+  ];
+
+  const defColumnDefs = {
+    flex: 1,
+    filter: true,
+    resizable: true,
+    sortable: true,
+    wrapHeaderText: true,
+    wrapText: true,
+    autoHeaderHeight: true,
   };
 
   return (
