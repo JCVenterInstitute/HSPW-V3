@@ -118,7 +118,27 @@ def send_email(sender_email, recipient_email, body):
         print("Email sent! Message ID:", response["MessageId"])
 
 
+# Update the submission status after completion
+def update_submission_status(id, new_status):
+    dynamodb = boto3.resource("dynamodb")
+    table_name = os.environ.get("SUBMISSIONS_TABLE")
+    table = dynamodb.Table(table_name)
+
+    try:
+        response = table.update_item(
+            Key={"id": id},
+            UpdateExpression="SET #s = :new_status",
+            ExpressionAttributeNames={"#s": "status"},
+            ExpressionAttributeValues={":new_status": new_status},
+            ReturnValues="UPDATED_NEW",
+        )
+        print("Update succeeded:", response)
+    except Exception as e:
+        print(f"Error updating record: {e}")
+
+
 def main(event):
+    submission_id = event.get("submission_id")
     input_file = event.get("input_file")
     pValueCutoff = event.get("pValueCutoff")
     qValueCutoff = event.get("qValueCutoff")
@@ -221,6 +241,8 @@ def main(event):
     subdirectory = f"{input_file}"
     upload_files_to_s3(s3_bucket_name, directory_name, subdirectory)
     print("> Successfully uploaded results to S3")
+
+    update_submission_status(submission_id, "Done")
 
     return {
         "statusCode": 200,  # HTTP status code for successful response

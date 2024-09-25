@@ -1,6 +1,6 @@
 ARG FUNCTION_DIR="/function"
 
-FROM analysis_version2:latest as build-image
+FROM go_keg_local2:latest as build-image
 
 # Include global arg in this stage of the build
 ARG FUNCTION_DIR
@@ -26,7 +26,7 @@ RUN pip install \
         boto3
 
 
-FROM analysis_version2:latest
+FROM go_keg_local2:latest
 
 # Include global arg in this stage of the build
 ARG FUNCTION_DIR
@@ -41,6 +41,7 @@ COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
 RUN ln -s $(which python3) /usr/local/bin/python
 
 ENV AWS_REGION=us-east-1
+ENV SUBMISSIONS_TABLE=hsp-analysis-submissions-DEV
 
 # Set runtime interface client as default command for the container runtime
 ENTRYPOINT [ "/usr/local/bin/python", "-m", "awslambdaric" ]
