@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import { handleDownload } from "./utils";
 import { fileMapping } from "./Constants";
 import { getTabOptions } from "./utils";
-import { DockOutlined, GraphicEq } from "@mui/icons-material";
-import { map } from "d3v7";
 
 const TabOptions = ({
   tab = null,
@@ -136,7 +134,7 @@ const TabOptions = ({
   return (
     <Box
       id="option-tab-box"
-      sx={{ display: "flex" }}
+      sx={{ display: "flex", alignItems: "center" }}
     >
       <Box style={{ display: "flex", width: "100%", maxWidth: "950px" }}>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
