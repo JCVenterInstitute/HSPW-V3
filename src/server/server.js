@@ -1676,29 +1676,36 @@ app.get("/api/submissions/:username", async (req, res) => {
 
 app.put("/api/submissions/:id", async (req, res) => {
   const { id } = req.params;
-  const { important } = req.body; // Assuming frontend sends { important: true/false }
+  const updateFields = req.body; // Expecting dynamic fields in the request body, e.g. { important: true, name: "New Name" }
 
-  // Construct the DynamoDB UpdateCommand
+  // Dynamically construct the UpdateExpression and ExpressionAttribute values
+  let UpdateExpression = "SET";
+  const ExpressionAttributeNames = {};
+  const ExpressionAttributeValues = {};
+
+  // Loop through the fields in the request body and build the update parameters
+  Object.keys(updateFields).forEach((key, index) => {
+    const comma = index === 0 ? "" : ",";
+    UpdateExpression += `${comma} #${key} = :${key}`;
+    ExpressionAttributeNames[`#${key}`] = key;
+    ExpressionAttributeValues[`:${key}`] = updateFields[key];
+  });
+
   const params = {
-    TableName: "hsp-analysis-submissions-DEV", // Replace with your table name
-    Key: { id }, // Use the "id" as the key
-    UpdateExpression: "SET #important = :important",
-    ExpressionAttributeNames: {
-      "#important": "important",
-    },
-    ExpressionAttributeValues: {
-      ":important": important,
-    },
-    ReturnValues: "ALL_NEW", // Returns the updated item
+    TableName: "hsp-analysis-submissions-DEV", // Update to match your table name
+    Key: { id }, // Primary key for the table
+    UpdateExpression,
+    ExpressionAttributeNames,
+    ExpressionAttributeValues,
+    ReturnValues: "ALL_NEW", // Return all updated values
   };
 
   try {
-    // Execute the UpdateCommand
-    const data = await docClient.send(new UpdateCommand(params));
-    res.json(data.Attributes); // Send updated attributes back to the frontend
-  } catch (err) {
-    console.error("Error updating important status:", err);
-    res.status(500).json({ error: "Failed to update important status" });
+    const result = await docClient.send(new UpdateCommand(params));
+    res.status(200).json(result.Attributes); // Respond with updated attributes
+  } catch (error) {
+    console.error("Error updating submission:", error);
+    res.status(500).json({ error: "Failed to update submission" });
   }
 });
 
