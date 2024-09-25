@@ -3,7 +3,9 @@ import { AgGridReact } from "ag-grid-react";
 import { Paper, Box, IconButton, Typography } from "@mui/material";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import LinkIcon from "@mui/icons-material/Link";
-import CustomCell from "../components/CustomCell"; // Import the custom cell component
+import EditIcon from "@mui/icons-material/Edit";
+import Swal from "sweetalert2";
+import CustomCell from "../components/CustomCell";
 
 const Submissions = () => {
   const [rowData, setRowData] = useState([]);
@@ -23,6 +25,7 @@ const Submissions = () => {
       });
   }, []);
 
+  // Handle updating the important (pinned) status
   const handlePinChange = (row) => {
     const updatedRow = { ...row, important: !row.important };
 
@@ -31,14 +34,15 @@ const Submissions = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(updatedRow),
+      body: JSON.stringify({ important: updatedRow.important }), // Only send the important field
     })
       .then((response) => response.json())
-      .then(() => {
+      .then((updatedData) => {
+        // Update the state by moving rows between pinned and unpinned
         if (updatedRow.important) {
           setPinnedTopRowData((prevPinnedRows) => [
             ...prevPinnedRows,
-            updatedRow,
+            updatedData,
           ]);
           setRowData((prevUnpinnedRows) =>
             prevUnpinnedRows.filter((item) => item.id !== updatedRow.id)
@@ -47,12 +51,66 @@ const Submissions = () => {
           setPinnedTopRowData((prevPinnedRows) =>
             prevPinnedRows.filter((item) => item.id !== updatedRow.id)
           );
-          setRowData((prevUnpinnedRows) => [...prevUnpinnedRows, updatedRow]);
+          setRowData((prevUnpinnedRows) => [...prevUnpinnedRows, updatedData]);
         }
       })
       .catch((error) => console.error("Error updating data:", error));
   };
 
+  // Handle name editing through SweetAlert prompt
+  const handleNameEdit = (row) => {
+    Swal.fire({
+      title: "Edit Name",
+      input: "text",
+      inputLabel: "Update the name of this submission",
+      inputValue: row.name,
+      showCancelButton: true,
+      confirmButtonText: "Save",
+      showLoaderOnConfirm: true,
+      preConfirm: (newName) => {
+        if (newName === "") {
+          Swal.showValidationMessage("Name cannot be empty");
+        } else {
+          return fetch(
+            `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${row.id}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ name: newName }), // Send updated name
+            }
+          )
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Failed to update name in DynamoDB");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              // Update the rowData directly with the new name
+              setRowData((prevRowData) =>
+                prevRowData.map((item) =>
+                  item.id === row.id ? { ...item, name: data.name } : item
+                )
+              );
+              setPinnedTopRowData((prevPinnedRowData) =>
+                prevPinnedRowData.map((item) =>
+                  item.id === row.id ? { ...item, name: data.name } : item
+                )
+              );
+
+              Swal.fire("Saved!", "Name has been updated", "success");
+            })
+            .catch((error) => {
+              Swal.fire("Error", "Failed to update name", "error");
+            });
+        }
+      },
+    });
+  };
+
+  // Column definitions for the AgGridReact
   const columnDefs = [
     {
       headerName: "",
@@ -85,7 +143,35 @@ const Submissions = () => {
       field: "name",
       minWidth: 125,
       width: 200,
-      cellRenderer: (params) => <CustomCell value={params.value} />,
+      cellRenderer: (params) => (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            fontFamily: "Lato, sans-serif",
+            fontSize: "14px",
+          }}
+        >
+          <Typography
+            sx={{
+              flexGrow: 1,
+              fontFamily: "Lato",
+              fontSize: "14px",
+              marginLeft: "20px !important",
+              marginTop: "4px",
+            }}
+          >
+            {params.value}
+          </Typography>
+          <IconButton
+            onClick={() => handleNameEdit(params.data)}
+            sx={{ marginTop: "2px" }}
+          >
+            <EditIcon />
+          </IconButton>
+        </div>
+      ),
     },
     {
       headerName: "Status",
@@ -99,7 +185,7 @@ const Submissions = () => {
       field: "submission_date",
       minWidth: 200,
       width: 200,
-      sort: "desc", // Default sorting applied here
+      sort: "desc",
       sortable: true,
       cellRenderer: (params) => <CustomCell value={params.value} />,
     },
