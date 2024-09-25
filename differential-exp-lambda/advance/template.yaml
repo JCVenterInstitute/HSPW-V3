@@ -92,6 +92,11 @@ Resources:
                   - "s3:DeleteObject"
                   - "s3:AbortMultipartUpload"
                 Resource: "*"
+              - Sid: DynamoDbAccess
+                Effect: "Allow"
+                Action:
+                  - "dynamodb:UpdateItem"
+                Resource: "*"
 
   AdvanceAnalysis:
     Type: AWS::Serverless::Function
