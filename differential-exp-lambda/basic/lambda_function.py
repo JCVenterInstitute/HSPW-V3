@@ -7,6 +7,8 @@ from botocore.exceptions import ClientError
 from pathlib import Path
 import base64
 import json
+import uuid
+from datetime import datetime
 
 
 # Copy all files from src_dir to dest_dir.
@@ -127,10 +129,46 @@ def rename_file(directory, old_name, new_name):
     os.rename(old_path, new_path)
 
 
+# Write the submission record into dynamodb
+def record_submission(event, submission_id):
+    dynamodb = boto3.resource("dynamodb")
+    table_name = os.getenv("SUBMISSIONS_TABLE")
+    table = dynamodb.Table(table_name)
+
+    submission_path = os.path.basename(event.get("input_file"))
+    log_normalized = event.get("log_normalized")
+    stat_test = event.get("stat_test")
+    p_val = event.get("pValueThreshold")
+    fold_threshold = event.get("foldChangeThreshold")
+    p_raw = event.get("p_raw")
+    heat_map_number = str(event.get("heat_map_number"))
+
+    submission = {
+        "id": submission_id,
+        "important": False,
+        "link": f"/differential-expression/results/{submission_path}?logNorm={log_normalized}&heatmap={heat_map_number}&foldChange={fold_threshold}&pValue={p_val}&pType={p_raw}&parametricTest={stat_test}",
+        "status": "Running",
+        "submission_date": str(datetime.now()),
+        "type": "differential expression analysis",
+        "username": event.get("username"),
+    }
+
+    print(f"Submission", submission)
+
+    # Write the record to the DynamoDB table
+    try:
+        table.put_item(Item=submission)
+        print("Record inserted successfully!")
+    except Exception as e:
+        print(f"Error inserting record: {e}")
+
+
 def main(event):
     print("> Event", event)
 
     try:
+        submission_id = str(uuid.uuid4())
+        print(f"> Submission ID", submission_id)
         input_file = event.get("input_file")
         log_normalized = event.get("log_normalized")
         stat_test = event.get("stat_test")
@@ -139,6 +177,8 @@ def main(event):
         p_raw = event.get("p_raw")
         heat_map_number = str(event.get("heat_map_number"))
         file_name = os.path.basename(input_file)
+
+        record_submission(event, submission_id)
 
         print(f"> Input File: {input_file}")
         print(f"> Log Norm: {log_normalized}")
@@ -296,7 +336,12 @@ def main(event):
 
         return {
             "statusCode": 200,
-            "body": json.dumps({"message": "Analysis Complete and Files Uploaded"}),
+            "body": json.dumps(
+                {
+                    "message": "Analysis Complete and Files Uploaded",
+                    "submission_id": submission_id,
+                }
+            ),
             "headers": {"Content-Type": "application/json"},
             "isBase64Encoded": False,
         }
@@ -312,7 +357,11 @@ def main(event):
 
         return {
             "statusCode": 500,
-            "body": json.dumps({"message": str(e)}),
+            "body": json.dumps(
+                {
+                    "message": str(e),
+                }
+            ),
             "headers": {"Content-Type": "application/json"},
             "isBase64Encoded": False,
         }
