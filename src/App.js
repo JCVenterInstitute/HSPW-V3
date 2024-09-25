@@ -46,6 +46,7 @@ import { AuthProvider } from "./services/AuthContext.js";
 import Signup from "./pages/UserAuth/Signup.js";
 import Login from "./pages/UserAuth/Login.js";
 import Profile from "./pages/UserAuth/Profile.js";
+import AuthGuard from "./services/AuthGuard.js";
 
 // Google Analytics
 import ReactGA from "react-ga4";
@@ -119,29 +120,6 @@ function App() {
                   path="/Protein-Set-Search"
                   element={<ProteinSetSearch />}
                 />
-                <Route
-                  path="/clustalo/results/:jobId"
-                  element={<ClustalOmegaResults />}
-                />
-                <Route path="/clustalo" element={<ClustalOmega />} />
-                <Route
-                  path="/differential-expression/results/:jobId"
-                  element={<DifferentialExpressionResults />}
-                />
-                <Route
-                  path="/differential-expression"
-                  element={<DifferentialExpression />}
-                />
-                <Route
-                  path="/iprscan5/results/:jobId"
-                  element={<InterProScanResults />}
-                />
-                <Route path="/iprscan5" element={<InterProScan />} />
-                <Route
-                  path="/psiblast/results/:jobId"
-                  element={<PSIBlastResults />}
-                />
-                <Route path="/psiblast" element={<PSIBlast />} />
                 <Route path="/citation" element={<Citation />} />
                 <Route
                   path="/citation/:citationid"
@@ -174,8 +152,87 @@ function App() {
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/submissions" element={<Submissions />} />
+
+                <Route
+                  path="/clustalo/results/:jobId"
+                  element={
+                    <AuthGuard>
+                      <ClustalOmegaResults />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/differential-expression/results/:jobId"
+                  element={
+                    <AuthGuard>
+                      <DifferentialExpressionResults />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/differential-expression"
+                  element={
+                    <AuthGuard>
+                      <DifferentialExpression />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/iprscan5/results/:jobId"
+                  element={
+                    <AuthGuard>
+                      <InterProScanResults />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/psiblast/results/:jobId"
+                  element={
+                    <AuthGuard>
+                      <PSIBlastResults />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/psiblast"
+                  element={
+                    <AuthGuard>
+                      <PSIBlast />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/iprscan5"
+                  element={
+                    <AuthGuard>
+                      <InterProScan />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/clustalo"
+                  element={
+                    <AuthGuard>
+                      <ClustalOmega />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <AuthGuard>
+                      <Profile />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/submissions"
+                  element={
+                    <AuthGuard>
+                      <Submissions />
+                    </AuthGuard>
+                  }
+                />
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
               <Footer />
