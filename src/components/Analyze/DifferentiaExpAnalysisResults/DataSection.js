@@ -155,8 +155,6 @@ const DataSection = ({
         }
       });
 
-      console.log("> File Dictionary", fileDict);
-
       setAllFiles(fileDict);
     } catch (err) {
       console.error("> Error fetching all data file", err);
@@ -357,7 +355,7 @@ const DataSection = ({
         case "GO Cellular Component":
         case "KEGG Pathway/Module":
           if (tab === "Enrichment Plot") {
-            displayResult = allFiles[goKeggDict[selectedSection][0]] ? (
+            displayResult = allFiles[goKeggDict[selectedSection][0]].data ? (
               <BarChartComponent
                 plotData={allFiles[goKeggDict[selectedSection][0]].data}
               />
@@ -365,7 +363,7 @@ const DataSection = ({
               <CheckbackLater />
             );
           } else if (tab && tab.endsWith("connected genes")) {
-            displayResult = allFiles[goKeggDict[selectedSection][1]] ? (
+            displayResult = allFiles[goKeggDict[selectedSection][1]].data ? (
               <NetworkGraph
                 plotData={allFiles[goKeggDict[selectedSection][1]].data}
               />
@@ -373,7 +371,7 @@ const DataSection = ({
               <CheckbackLater />
             );
           } else if (tab && tab.endsWith("Ridge plot")) {
-            displayResult = allFiles[goKeggDict[selectedSection][2]] ? (
+            displayResult = allFiles[goKeggDict[selectedSection][2]].data ? (
               <RidgePlotComponent
                 tableData={allFiles[goKeggDict[selectedSection][2]].data}
                 allData={allFiles["all_data.tsv"].data}
@@ -382,7 +380,7 @@ const DataSection = ({
               <CheckbackLater />
             );
           } else if (tab && tab.endsWith("Heatmap plot")) {
-            displayResult = allFiles[goKeggDict[selectedSection][2]] ? (
+            displayResult = allFiles[goKeggDict[selectedSection][2]].data ? (
               <GOHeatmapComponent
                 tableData={allFiles[goKeggDict[selectedSection][2]].data}
                 allData={allFiles["all_data.tsv"].data}
