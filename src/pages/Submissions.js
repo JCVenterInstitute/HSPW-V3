@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../services/AuthContext";
 import { AgGridReact } from "ag-grid-react";
 import { Paper, Box, IconButton, Typography } from "@mui/material";
 import PushPinIcon from "@mui/icons-material/PushPin";
@@ -8,11 +9,13 @@ import Swal from "sweetalert2";
 import CustomCell from "../components/CustomCell";
 
 const Submissions = () => {
+  const { user, session } = useContext(AuthContext);
   const [rowData, setRowData] = useState([]);
   const [pinnedTopRowData, setPinnedTopRowData] = useState([]);
+  const username = "test-user-local";
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/submissions/testUser`)
+    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${username}`)
       .then((response) => response.json())
       .then((data) => {
         const pinnedRows = data.filter((row) => row.important);
@@ -25,7 +28,6 @@ const Submissions = () => {
       });
   }, []);
 
-  // Handle updating the important (pinned) status
   const handlePinChange = (row) => {
     const updatedRow = { ...row, important: !row.important };
 
@@ -34,11 +36,10 @@ const Submissions = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ important: updatedRow.important }), // Only send the important field
+      body: JSON.stringify({ important: updatedRow.important }),
     })
       .then((response) => response.json())
       .then((updatedData) => {
-        // Update the state by moving rows between pinned and unpinned
         if (updatedRow.important) {
           setPinnedTopRowData((prevPinnedRows) => [
             ...prevPinnedRows,
@@ -57,7 +58,6 @@ const Submissions = () => {
       .catch((error) => console.error("Error updating data:", error));
   };
 
-  // Handle name editing through SweetAlert prompt
   const handleNameEdit = (row) => {
     Swal.fire({
       title: "Edit Name",
@@ -78,7 +78,7 @@ const Submissions = () => {
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ name: newName }), // Send updated name
+              body: JSON.stringify({ name: newName }),
             }
           )
             .then((response) => {
@@ -88,7 +88,6 @@ const Submissions = () => {
               return response.json();
             })
             .then((data) => {
-              // Update the rowData directly with the new name
               setRowData((prevRowData) =>
                 prevRowData.map((item) =>
                   item.id === row.id ? { ...item, name: data.name } : item
@@ -110,7 +109,6 @@ const Submissions = () => {
     });
   };
 
-  // Column definitions for the AgGridReact
   const columnDefs = [
     {
       headerName: "",
@@ -136,13 +134,22 @@ const Submissions = () => {
       field: "type",
       minWidth: 120,
       width: 220,
-      cellRenderer: (params) => <CustomCell value={params.value} />,
+      cellRenderer: (params) => {
+        const capitalizeWords = (str) => {
+          return str.replace(/\b\w/g, (char) => char.toUpperCase());
+        };
+
+        return <CustomCell value={capitalizeWords(params.value)} />;
+      },
     },
     {
       headerName: "Name",
       field: "name",
       minWidth: 125,
       width: 200,
+      cellStyle: (params) => ({
+        borderRight: params.column.colId === "link" ? "none" : "1px solid #ccc",
+      }),
       cellRenderer: (params) => (
         <div
           style={{
@@ -177,7 +184,11 @@ const Submissions = () => {
       headerName: "Status",
       field: "status",
       minWidth: 125,
+      maxWidth: 125,
       width: 100,
+      cellStyle: (params) => ({
+        borderRight: params.column.colId === "link" ? "none" : "1px solid #ccc",
+      }),
       cellRenderer: (params) => <CustomCell value={params.value} />,
     },
     {
@@ -187,13 +198,18 @@ const Submissions = () => {
       width: 200,
       sort: "desc",
       sortable: true,
+      cellStyle: (params) => ({
+        borderRight: params.column.colId === "link" ? "none" : "1px solid #ccc",
+      }),
       cellRenderer: (params) => <CustomCell value={params.value} />,
     },
     {
       headerName: "Link",
       field: "link",
       maxWidth: 105,
+      minWidth: 105,
       resizable: false,
+      cellStyle: { borderRight: "none" },
       cellRenderer: (params) => (
         <div
           style={{
@@ -223,6 +239,10 @@ const Submissions = () => {
     wrapHeaderText: true,
     wrapText: true,
     autoHeaderHeight: true,
+    suppressMovable: true, // Disable column movement
+    cellStyle: (params) => ({
+      borderRight: params.column.colId === "link" ? "none" : "1px solid #ccc",
+    }),
   };
 
   return (
@@ -259,7 +279,7 @@ const Submissions = () => {
             flexGrow: 1,
             width: "100%",
             border: "1px solid #ccc",
-            borderRadius: "10px", // Ensure the table has rounded corners
+            borderRadius: "10px",
           }}
         >
           <AgGridReact
