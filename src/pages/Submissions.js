@@ -184,13 +184,57 @@ const Submissions = () => {
       headerName: "Status",
       field: "status",
       minWidth: 125,
-      maxWidth: 125,
       width: 100,
-      cellStyle: (params) => ({
-        borderRight: params.column.colId === "link" ? "none" : "1px solid #ccc",
-      }),
-      cellRenderer: (params) => <CustomCell value={params.value} />,
+      cellRenderer: (params) => {
+        const getStatusStyle = (status) => {
+          switch (status.toLowerCase()) {
+            case "failed":
+              return {
+                backgroundColor: "red",
+                color: "white",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+              };
+            case "complete":
+              return {
+                backgroundColor: "green",
+                color: "white",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+              };
+            case "running":
+              return {
+                backgroundColor: "yellow",
+                color: "black",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+              };
+            default:
+              return {
+                backgroundColor: "gray",
+                color: "white",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+              };
+          }
+        };
+
+        return <div style={getStatusStyle(params.value)}>{params.value}</div>;
+      },
     },
+
     {
       headerName: "Submission Date",
       field: "submission_date",
