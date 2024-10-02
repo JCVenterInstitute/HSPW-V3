@@ -9,10 +9,10 @@ import Swal from "sweetalert2";
 import CustomCell from "../components/CustomCell";
 
 const Submissions = () => {
-  const { user, session } = useContext(AuthContext);
+  const { user, _ } = useContext(AuthContext);
   const [rowData, setRowData] = useState([]);
   const [pinnedTopRowData, setPinnedTopRowData] = useState([]);
-  const username = "test-user-local";
+  const username = user ? user.getUsername() : "test-user-local";
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${username}`)
@@ -26,6 +26,22 @@ const Submissions = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
+
+    if (rowData.length === 0) {
+      fetch(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/test-user-local`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          const pinnedRows = data.filter((row) => row.important);
+          const unpinnedRows = data.filter((row) => !row.important);
+          setPinnedTopRowData(pinnedRows);
+          setRowData(unpinnedRows);
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    }
   }, []);
 
   const handlePinChange = (row) => {
@@ -115,6 +131,7 @@ const Submissions = () => {
       field: "important",
       maxWidth: 50,
       resizable: false,
+      cellStyle: { borderRight: "1px solid #ccc" },
       cellRenderer: (params) => (
         <div
           style={{
@@ -134,6 +151,7 @@ const Submissions = () => {
       field: "type",
       minWidth: 120,
       width: 220,
+      cellStyle: { borderRight: "1px solid #ccc" },
       cellRenderer: (params) => {
         const capitalizeWords = (str) => {
           return str.replace(/\b\w/g, (char) => char.toUpperCase());
@@ -147,9 +165,7 @@ const Submissions = () => {
       field: "name",
       minWidth: 125,
       width: 200,
-      cellStyle: (params) => ({
-        borderRight: params.column.colId === "link" ? "none" : "1px solid #ccc",
-      }),
+      cellStyle: { borderRight: "1px solid #ccc" },
       cellRenderer: (params) => (
         <div
           style={{
@@ -184,7 +200,9 @@ const Submissions = () => {
       headerName: "Status",
       field: "status",
       minWidth: 125,
+      maxWidth: 125,
       width: 100,
+      cellStyle: { borderRight: "1px solid #ccc" },
       cellRenderer: (params) => {
         const getStatusStyle = (status) => {
           switch (status.toLowerCase()) {
@@ -234,7 +252,6 @@ const Submissions = () => {
         return <div style={getStatusStyle(params.value)}>{params.value}</div>;
       },
     },
-
     {
       headerName: "Submission Date",
       field: "submission_date",
@@ -242,9 +259,17 @@ const Submissions = () => {
       width: 200,
       sort: "desc",
       sortable: true,
-      cellStyle: (params) => ({
-        borderRight: params.column.colId === "link" ? "none" : "1px solid #ccc",
-      }),
+      cellStyle: { borderRight: "1px solid #ccc" },
+      cellRenderer: (params) => <CustomCell value={params.value} />,
+    },
+    {
+      headerName: "Completion Date",
+      field: "completion_date",
+      minWidth: 200,
+      width: 200,
+      sort: "desc",
+      sortable: true,
+      cellStyle: { borderRight: "1px solid #ccc" },
       cellRenderer: (params) => <CustomCell value={params.value} />,
     },
     {
@@ -283,10 +308,8 @@ const Submissions = () => {
     wrapHeaderText: true,
     wrapText: true,
     autoHeaderHeight: true,
-    suppressMovable: true, // Disable column movement
-    cellStyle: (params) => ({
-      borderRight: params.column.colId === "link" ? "none" : "1px solid #ccc",
-    }),
+    suppressMovable: true,
+    cellStyle: { borderRight: "1px solid #ccc" },
   };
 
   return (
