@@ -260,18 +260,54 @@ const Submissions = () => {
       sort: "desc",
       sortable: true,
       cellStyle: { borderRight: "1px solid #ccc" },
-      cellRenderer: (params) => <CustomCell value={params.value} />,
+      cellRenderer: (params) => {
+        // Remove the fractional seconds part
+        const rawDate = params.value.split(".")[0]; // Splits the date at the fractional seconds part
+        const date = new Date(rawDate.replace(" ", "T")); // Replace the space with 'T' to comply with ISO 8601
+        if (!isNaN(date.getTime())) {
+          // Check if the date is valid
+          const formattedDate = new Intl.DateTimeFormat("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+          }).format(date);
+          return <CustomCell value={formattedDate} />;
+        } else {
+          return <CustomCell value="" />; // Handle invalid date
+        }
+      },
     },
     {
       headerName: "Completion Date",
       field: "completion_date",
       minWidth: 200,
       width: 200,
-      sort: "desc",
       sortable: true,
       cellStyle: { borderRight: "1px solid #ccc" },
-      cellRenderer: (params) => <CustomCell value={params.value} />,
+      cellRenderer: (params) => {
+        // Remove the fractional seconds part
+        const rawDate = params.value.split(".")[0]; // Splits the date at the fractional seconds part
+        const date = new Date(rawDate.replace(" ", "T")); // Replace the space with 'T' to comply with ISO 8601
+        if (!isNaN(date.getTime())) {
+          // Check if the date is valid
+          const formattedDate = new Intl.DateTimeFormat("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+          }).format(date);
+          return <CustomCell value={formattedDate} />;
+        } else {
+          return <CustomCell value="" />; // Handle invalid date
+        }
+      },
     },
+
     {
       headerName: "Link",
       field: "link",
