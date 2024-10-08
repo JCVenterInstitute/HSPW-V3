@@ -108,6 +108,7 @@ const TabOptions = ({
         <ToggleButton
           className="tab-button"
           key={`${selectedSection}-tab-${i}`}
+          sx={{ fontSize: "13px" }}
           value={tab}
         >
           {tab}
@@ -124,7 +125,7 @@ const TabOptions = ({
             setTab(newTab);
           }
         }}
-        sx={{ ...style.tabStyle, marginTop: "10px" }}
+        sx={{ ...style.tabStyle }}
       >
         {tabButtons}
       </ToggleButtonGroup>
@@ -136,7 +137,7 @@ const TabOptions = ({
       id="option-tab-box"
       sx={{ display: "flex", alignItems: "center" }}
     >
-      <Box style={{ display: "flex", width: "100%", maxWidth: "950px" }}>
+      <Box style={{ display: "flex", width: "100%", maxWidth: "1100px" }}>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           {createTabGroup(selectedSection)}
         </Box>
