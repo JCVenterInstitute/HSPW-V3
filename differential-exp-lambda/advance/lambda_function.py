@@ -242,7 +242,7 @@ def main(event):
     upload_files_to_s3(s3_bucket_name, directory_name, subdirectory)
     print("> Successfully uploaded results to S3")
 
-    update_submission_status(submission_id, "Done")
+    # update_submission_status(submission_id, "Done")
 
     return {
         "statusCode": 200,  # HTTP status code for successful response

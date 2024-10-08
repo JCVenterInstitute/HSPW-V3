@@ -150,7 +150,7 @@ def record_submission(event, submission_id):
         "status": "Running",
         "submission_date": str(datetime.now()),
         "type": "differential expression analysis",
-        "username": event.get("username"),
+        # "username": event.get("username"),
     }
 
     print(f"Submission", submission)
@@ -178,7 +178,7 @@ def main(event):
         heat_map_number = str(event.get("heat_map_number"))
         file_name = os.path.basename(input_file)
 
-        record_submission(event, submission_id)
+        # record_submission(event, submission_id)
 
         print(f"> Input File: {input_file}")
         print(f"> Log Norm: {log_normalized}")
