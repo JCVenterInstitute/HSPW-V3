@@ -70,8 +70,8 @@ exports.processGroupData = async (
 ) => {
   console.log("> Processing Group Data");
 
-  console.log("> Group A", groupAData);
-  console.log("> Group B", groupBData);
+  // console.log("> Group A", groupAData);
+  // console.log("> Group B", groupBData);
 
   const { processedSamples: processedGroupA } = await processSamples(
     groupAData,
@@ -87,7 +87,7 @@ exports.processGroupData = async (
   // Create CSV string
   const csvString = createCsvString(combinedData);
 
-  console.log("> CSV String", csvString);
+  // console.log("> CSV String", csvString);
 
   const contentType = "text/csv";
 
@@ -101,7 +101,7 @@ exports.processGroupData = async (
     contentType,
   });
 
-  console.log("> Presigned URL", presignedUrl);
+  // console.log("> Presigned URL", presignedUrl);
 
   const response = await axios.put(presignedUrl, csvString, {
     headers: {

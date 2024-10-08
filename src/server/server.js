@@ -1503,6 +1503,7 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
       parametricTest,
       timestamp,
       formattedDate,
+      // username,
     } = req.body;
 
     console.log(
@@ -1516,6 +1517,7 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
     );
 
     const basicAnalysisRequestBody = {
+      // username: username ? username : "test-user-local",
       input_file: inputFile,
       log_normalized: logNorm,
       stat_test: parametricTest,
@@ -1531,18 +1533,16 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
     // Run basic differential expression analysis
     const basicResponse = await axios.post(
       process.env.BASIC_ANALYSIS_API,
-      basicAnalysisRequestBody,
-      {
-        timeout: 60000,
-      }
+      basicAnalysisRequestBody
     );
 
     console.log("> Basic Analysis Response", basicResponse.message);
 
     const advanceAnalysisRequestBody = {
       input_file: inputFile,
-      pValueCutoff: 0.65,
-      qValueCutoff: 0.25,
+      pValueCutoff: 0.85,
+      qValueCutoff: 0.8,
+      // submission_id: basicResponse.submission_id,
     };
 
     // Start advance differential expression analysis
@@ -1556,19 +1556,6 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
 
     console.log("> Advance Analysis Response", advanceResponse.message);
 
-    // let command = `docker run --rm -v ~/.aws:/root/.aws diff_exp_local -i ${inputFile} -l ${logNorm} -f ${foldChangeThreshold} -p ${pValueThreshold} -r ${pValueType} -t ${parametricTest} -n ${numberOfDifferentiallyAbundantProteinsInHeatmap}`;
-    // console.log("> Command", command);
-
-    // const initialAnalysis = await execCommand(command);
-    // console.log("> Initial Analysis output:", initialAnalysis);
-
-    // command = `docker run --rm -v ~/.aws:/root/.aws go_keg_local -i ${inputFile} -p 0.65 -q 0.25`;
-    // console.log("> Go/KEGG Command", command);
-
-    // Run GO/KEGG Docker, don't wait for it to finish running before returning complete
-    // Secondary results loaded afterwards
-    // const goKeggAnalysis = execCommand(command);
-
     res.status(200).send("Docker run complete");
   } catch (error) {
     console.log("> Error", error);
@@ -1576,18 +1563,6 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
     res.status(500).send(`Server Error: ${error.message}`);
   }
 });
-
-function execCommand(command) {
-  return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(stdout);
-      }
-    });
-  });
-}
 
 app.post("/api/differential-expression/analyze-file", async (req, res) => {
   try {
@@ -1601,6 +1576,7 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
       parametricTest,
       timestamp,
       formattedDate,
+      // username,
     } = req.body;
 
     console.log(
@@ -1609,19 +1585,45 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
 
     const inputFile = await processFile(inputData, timestamp, formattedDate);
 
+    const basicAnalysisRequestBody = {
+      // username: username ? username : "test-user-local",
+      input_file: inputFile,
+      log_normalized: logNorm,
+      stat_test: parametricTest,
+      p_raw: pValueType,
+      foldChangeThreshold,
+      pValueThreshold,
+      heat_map_number: numberOfDifferentiallyAbundantProteinsInHeatmap,
+    };
+
     console.log("> Input file location", inputFile);
+    console.log("> Request Body", basicAnalysisRequestBody);
 
-    let command = `docker run --rm -v ~/.aws:/root/.aws diff_exp_local -i ${inputFile} -l ${logNorm} -f ${foldChangeThreshold} -p ${pValueThreshold} -r ${pValueType} -t ${parametricTest} -n ${numberOfDifferentiallyAbundantProteinsInHeatmap}`;
-    console.log("> Command", command);
+    // Run basic differential expression analysis
+    const basicResponse = await axios.post(
+      process.env.BASIC_ANALYSIS_API,
+      basicAnalysisRequestBody
+    );
 
-    const initialAnalysis = await execCommand(command);
-    console.log("> Initial Analysis output:", initialAnalysis);
+    console.log("> Basic Analysis Response", basicResponse.message);
 
-    // command = `docker run --rm -v ~/.aws:/root/.aws go_keg_local -i ${inputFile} -p 0.65 -q 0.25`;
-    // console.log("> Go/KEGG Command", command);
+    const advanceAnalysisRequestBody = {
+      input_file: inputFile,
+      pValueCutoff: 0.65,
+      qValueCutoff: 0.25,
+      submission_id: basicResponse.submission_id,
+    };
 
-    // const goKeggAnalysis = execCommand(command);
-    // console.log("> Go/Kegg output:", goKeggAnalysis);
+    // Start advance differential expression analysis
+    const advanceResponse = await axios.post(
+      process.env.ADVANCE_ANALYSIS_API,
+      advanceAnalysisRequestBody,
+      {
+        timeout: 60000,
+      }
+    );
+
+    console.log("> Advance Analysis Response", advanceResponse.message);
 
     res.status(200).send("Docker run complete");
   } catch (error) {
