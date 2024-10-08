@@ -6,7 +6,7 @@ import {
   Stack,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { fileNames, goKeggDict } from "./Constants.js";
+import { fileNames, goKeggDict, fileMapping } from "./Constants.js";
 import ResultDownload from "./ResultSections/ResultDownload";
 import VolcanoPlot from "./D3Graphics/VolcanoPlot/VolcanoPlot";
 import StatisticalParametricPlot from "./D3Graphics/StatisticalParametricTest/StatisticalParametricTest";
@@ -353,7 +353,6 @@ const DataSection = ({
         case "GO Biological Process":
         case "GO Molecular Function":
         case "GO Cellular Component":
-        case "KEGG Pathway/Module":
           if (tab === "Enrichment Plot") {
             displayResult = allFiles[goKeggDict[selectedSection][0]].data ? (
               <BarChartComponent
@@ -395,9 +394,24 @@ const DataSection = ({
             //   />
             // );
 
-            displayResult = displayImg(allFiles["gsecc_tree.jpeg"].downloadUrl);
+            const clusterPlotPngName = fileMapping[selectedSection][tab];
+
+            displayResult = displayImg(
+              allFiles[clusterPlotPngName].downloadUrl
+            );
           } else {
             displayResult = null;
+          }
+          break;
+        case "KEGG Pathway/Module":
+          if (tab === "Enrichment Plot") {
+            displayResult = allFiles[goKeggDict[selectedSection][0]].data ? (
+              <BarChartComponent
+                plotData={allFiles[goKeggDict[selectedSection][0]].data}
+              />
+            ) : (
+              <CheckbackLater />
+            );
           }
           break;
         case "Result Data":
