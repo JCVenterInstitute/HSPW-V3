@@ -48,7 +48,7 @@ export const fileMapping = {
     "GSEA Heatmap plot": "gsebp_heat.jpeg",
     "GSEA Heatmap plot Data": "gsebp.tsv",
     "GSEA Tree cluster plot": "gsebp_tree.jpeg",
-    "GSEA Tree cluster Data": "gsecc_tree.tsv",
+    // "GSEA Tree cluster Data": "gsecc_tree.tsv",
   },
   "GO Molecular Function": {
     "Enrichment Plot": "gomf_bar.jpeg",
@@ -59,7 +59,7 @@ export const fileMapping = {
     "GSEA Heatmap plot": "gsemf_heat.jpeg",
     "GSEA Heatmap plot Data": "gsemf.tsv",
     "GSEA Tree cluster plot": "gsemf_tree.jpeg",
-    "GSEA Tree cluster Data": "gsecc_tree.tsv",
+    // "GSEA Tree cluster Data": "gsecc_tree.tsv",
   },
   "GO Cellular Component": {
     "Enrichment Plot": "gocc_bar.jpeg",
@@ -70,9 +70,20 @@ export const fileMapping = {
     "GSEA Heatmap plot": "gsecc_heat.jpeg",
     "GSEA Heatmap plot Data": "gsecc.tsv",
     "GSEA Tree cluster plot": "gsecc_tree.jpeg",
-    "GSEA Tree cluster Data": "gsecc_tree.tsv",
+    // "GSEA Tree cluster Data": "gsecc_tree.tsv",
   },
-  "KEGG Pathway/Module": {
+  "KEGG Pathway": {
+    "Enrichment Plot": "kegg_pathway_bar.jpeg",
+    "Enrichment Plot Data": "kegg.tsv",
+    "Enriched terms & connected genes": "kegg_gene_network.jpeg",
+    "GSEA Ridge plot": "kegg_pathway_ridge.jpeg",
+    "GSEA Ridge plot Data": "gsemkk.tsv",
+    "GSEA Heatmap plot": "kegg_heat.jpeg",
+    "GSEA Heatmap plot Data": "gsemkk.tsv",
+    "GSEA Tree cluster plot": "kegg_tree.jpeg",
+    "GSEA Tree cluster plot Data": "gsecc_tree.tsv",
+  },
+  "KEGG Module": {
     "Enrichment Plot": "kegg_pathway_bar.jpeg",
     "Enrichment Plot Data": "kegg.tsv",
     "Enriched terms & connected genes": "kegg_gene_network.jpeg",
@@ -116,13 +127,8 @@ export const sectionToTabs = {
     "GSEA Heatmap plot",
     "GSEA Tree cluster plot",
   ],
-  "KEGG Pathway/Module": [
-    "Enrichment Plot",
-    "Enriched terms & connected genes",
-    "GSEA Ridge plot",
-    "GSEA Heatmap plot",
-    "GSEA Tree cluster plot",
-  ],
+  "KEGG Pathway": ["Enrichment Plot", "GSEA Ridge plot", "GSEA Heatmap plot"],
+  "KEGG Module": ["Enrichment Plot", "GSEA Ridge plot", "GSEA Heatmap plot"],
 };
 
 // Mapping of each download link to file name in s3
@@ -188,6 +194,8 @@ export const fileNames = [
   "statistical_parametric_test.csv",
   "venn_out_data.txt",
   "volcano.csv",
+  "kegg_pathway_ridge.jpeg",
+  "kegg_pathway_heat.jpeg",
 ];
 
 export const goKeggDict = {
@@ -209,12 +217,12 @@ export const goKeggDict = {
     "gsecc.tsv",
     "gsecc_tree.tsv",
   ],
-  "KEGG Pathway/Module": [
+  "KEGG Pathway": [
     "kegg.tsv",
-    "kegg_gene_net.tsv",
-    "gsekk.tsv",
-    "gsecc_tree.tsv",
+    "kegg_pathway_ridge.jpeg",
+    "kegg_pathway_heat.jpeg",
   ],
+  "KEGG Module": ["kegg.tsv", "kegg.tsv", "kegg_module_heat.jpeg"],
 };
 
 export const option = [
@@ -229,7 +237,8 @@ export const option = [
   "GO Biological Process",
   "GO Molecular Function",
   "GO Cellular Component",
-  "KEGG Pathway/Module",
+  // "KEGG Pathway",
+  // "KEGG Module",
   "Input Data",
   "Result Data",
   "Download",

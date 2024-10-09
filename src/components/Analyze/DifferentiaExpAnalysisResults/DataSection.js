@@ -73,8 +73,6 @@ const DataSection = ({
   const [intervalId, setIntervalId] = useState(null);
 
   const checkGoStatus = async () => {
-    // console.log("> Calling Go Status Check");
-
     try {
       const res = await fetch(
         `${process.env.REACT_APP_API_ENDPOINT}/api/go-kegg-check/${jobId}/gsemf.tsv`
@@ -403,16 +401,75 @@ const DataSection = ({
             displayResult = null;
           }
           break;
-        case "KEGG Pathway/Module":
+        case "KEGG Module":
+        case "KEGG Pathway":
           if (tab === "Enrichment Plot") {
-            displayResult = allFiles[goKeggDict[selectedSection][0]].data ? (
-              <BarChartComponent
-                plotData={allFiles[goKeggDict[selectedSection][0]].data}
-              />
-            ) : (
-              <CheckbackLater />
+            const noSignificantData =
+              goResultsReady & !allFiles[goKeggDict[selectedSection][0]].data;
+
+            if (noSignificantData) {
+              displayResult = <>No significant data Found</>;
+            } else {
+              displayResult = allFiles[goKeggDict[selectedSection][0]].data ? (
+                <BarChartComponent
+                  plotData={allFiles[goKeggDict[selectedSection][0]].data}
+                />
+              ) : (
+                <CheckbackLater />
+              );
+            }
+          } else if (tab && tab.endsWith("Ridge plot")) {
+            console.log(
+              "> goKeggDict[selectedSection][1]",
+              goKeggDict[selectedSection][1],
+              allFiles
             );
+
+            displayResult = displayImg(
+              allFiles[goKeggDict[selectedSection][1]].downloadUrl
+            );
+            // displayResult = allFiles[goKeggDict[selectedSection][1]].data ? (
+            //   <RidgePlotComponent
+            //     tableData={allFiles[goKeggDict[selectedSection][1]].data}
+            //     allData={allFiles["all_data.tsv"].data}
+            //   />
+            // ) : (
+            //   <CheckbackLater />
+            // );
+          } else if (tab && tab.endsWith("Heatmap plot")) {
+            const noSignificantData =
+              goResultsReady & !allFiles[goKeggDict[selectedSection][2]].data;
+
+            console.log(
+              "> goKeggDict[selectedSection][2]",
+              goKeggDict[selectedSection][2],
+              allFiles
+            );
+
+            if (noSignificantData) {
+              displayResult = <>No significant data Found</>;
+            } else {
+              displayResult = allFiles[goKeggDict[selectedSection][0]].data ? (
+                (displayResult = displayImg(
+                  allFiles[goKeggDict[selectedSection][2]].downloadUrl
+                ))
+              ) : (
+                <CheckbackLater />
+              );
+            }
+
+            // displayResult = allFiles[goKeggDict[selectedSection][2]].data ? (
+            //   <GOHeatmapComponent
+            //     tableData={allFiles[goKeggDict[selectedSection][2]].data}
+            //     allData={allFiles["all_data.tsv"].data}
+            //   />
+            // ) : (
+            //   <CheckbackLater />
+            // );
+          } else {
+            displayResult = null;
           }
+
           break;
         case "Result Data":
           displayResult = <DataTable data={allFiles["all_data.tsv"].data} />;
@@ -422,14 +479,14 @@ const DataSection = ({
             <Container sx={{ margin: "0px" }}>
               <Typography
                 variant="h5"
-                sx={{ fontFamily: "Lato" }}
+                sx={{ fontFamily: "Lato", paddingX: "24px" }}
               >
                 Analysis Options:
               </Typography>
               <DataTable data={[allFiles["inputData"]]} />
               <Typography
                 variant="h5"
-                sx={{ fontFamily: "Lato" }}
+                sx={{ fontFamily: "Lato", paddingX: "24px" }}
               >
                 Input Data:
               </Typography>
