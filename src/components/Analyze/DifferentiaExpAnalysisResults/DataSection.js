@@ -419,35 +419,24 @@ const DataSection = ({
               );
             }
           } else if (tab && tab.endsWith("Ridge plot")) {
-            console.log(
-              "> goKeggDict[selectedSection][1]",
-              goKeggDict[selectedSection][1],
-              allFiles
+            displayResult = allFiles[goKeggDict[selectedSection][1]].data ? (
+              <RidgePlotComponent
+                tableData={allFiles[goKeggDict[selectedSection][1]].data}
+                allData={allFiles["all_data.tsv"].data}
+              />
+            ) : (
+              <CheckbackLater />
             );
-
-            displayResult = displayImg(
-              allFiles[goKeggDict[selectedSection][1]].downloadUrl
-            );
-            // displayResult = allFiles[goKeggDict[selectedSection][1]].data ? (
-            //   <RidgePlotComponent
-            //     tableData={allFiles[goKeggDict[selectedSection][1]].data}
-            //     allData={allFiles["all_data.tsv"].data}
-            //   />
-            // ) : (
-            //   <CheckbackLater />
-            // );
           } else if (tab && tab.endsWith("Heatmap plot")) {
             const noSignificantData =
               goResultsReady & !allFiles[goKeggDict[selectedSection][2]].data;
 
-            console.log(
-              "> goKeggDict[selectedSection][2]",
-              goKeggDict[selectedSection][2],
-              allFiles
-            );
-
             if (noSignificantData) {
-              displayResult = <>No significant data Found</>;
+              displayResult = (
+                <Container sx={{ textAlign: "center", marginTop: "10px" }}>
+                  No Significant Data Found
+                </Container>
+              );
             } else {
               displayResult = allFiles[goKeggDict[selectedSection][0]].data ? (
                 (displayResult = displayImg(

@@ -217,11 +217,7 @@ export const goKeggDict = {
     "gsecc.tsv",
     "gsecc_tree.tsv",
   ],
-  "KEGG Pathway": [
-    "kegg.tsv",
-    "kegg_pathway_ridge.jpeg",
-    "kegg_pathway_heat.jpeg",
-  ],
+  "KEGG Pathway": ["kegg.tsv", "gsekk.tsv", "kegg_pathway_heat.jpeg"],
   "KEGG Module": ["kegg.tsv", "kegg.tsv", "kegg_module_heat.jpeg"],
 };
 
@@ -237,8 +233,8 @@ export const option = [
   "GO Biological Process",
   "GO Molecular Function",
   "GO Cellular Component",
-  // "KEGG Pathway",
-  // "KEGG Module",
+  "KEGG Pathway",
+  "KEGG Module",
   "Input Data",
   "Result Data",
   "Download",

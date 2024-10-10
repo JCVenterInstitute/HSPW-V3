@@ -1,8 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
-const app = express();
-const { exec } = require("child_process");
 const { Client } = require("@opensearch-project/opensearch");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const createAwsOpensearchConnector = require("aws-opensearch-connector");
@@ -17,6 +15,8 @@ const { createContact } = require("./utils/createContact");
 const { getSSMParameter } = require("./utils/utils");
 const { sendSupportEmail } = require("./utils/sendSupportEmail");
 
+const app = express();
+
 app.use(cors());
 app.use(express.json({ limit: "200mb" }));
 app.use(express.urlencoded({ limit: "200mb", extended: true }));
@@ -24,9 +24,6 @@ app.use(express.static("build"));
 app.use("/static", express.static(path.join(__dirname, "./build/static")));
 
 const host = process.env.OS_HOSTNAME;
-
-// const host1 =
-//   "https://search-hspw-dev-open-crluksvxj4mvcgl5nopcl6ykte.us-east-2.es.amazonaws.com";
 
 const getClient = async () => {
   const awsCredentials = await defaultProvider()();
