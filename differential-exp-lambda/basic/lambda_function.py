@@ -262,6 +262,10 @@ def main(event):
             r_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
 
+        # Log stdout and stderr
+        print("R script output (stdout):\n", result.stdout)
+        print("R script errors (stderr):\n", result.stderr)
+
         # If R Script fails, send SES notification to support email
         if result.returncode == 0:
             print("> Successfully ran R Script")

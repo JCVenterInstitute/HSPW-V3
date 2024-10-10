@@ -34,7 +34,7 @@ Resources:
       FunctionName: "Differential-Analysis-Basic"
       Description: Differential Analysis Basic
       Role: arn:aws:iam::552623730819:role/HSP-Api-Execution-Role
-      MemorySize: 1536
+      MemorySize: 3584
       Timeout: 900
       Events:
         ProxyApiRoot:
