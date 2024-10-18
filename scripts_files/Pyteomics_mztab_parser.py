@@ -9,21 +9,60 @@ from pyteomics.parser import xcleave, expasy_rules
 
 # Fetch protein sequence and length from UniProt with rate-limiting handling
 def fetch_protein_sequence(accession):
+    """
+    Fetch a single protein sequence and its length from the UniProt API using the accession number.
+    """
     url = f"https://www.uniprot.org/uniprot/{accession}.fasta"
     response = requests.get(url)
 
-    while response.status_code == 429:  # Handle rate-limiting
+    # Handle rate-limiting by UniProt
+    while response.status_code == 429:
         print(f"Rate-limited while fetching {accession}. Retrying after 5 seconds...")
         time.sleep(5)
         response = requests.get(url)
 
     if response.status_code == 200:
         fasta_data = response.text.splitlines()
-        sequence = ''.join(fasta_data[1:])
+        sequence = ''.join(fasta_data[1:])  # Join all sequence lines (FASTA starts with a header)
         return sequence, len(sequence)
     else:
         print(f"Error fetching {accession}: Status code {response.status_code}")
         return None, None
+
+# Fetch UniParc IDs for a batch of accessions
+def fetch_uniparc_ids(accessions):
+    """
+    Fetch UniParc IDs for a batch of UniProt accessions.
+    """
+    url = "https://rest.uniprot.org/idmapping/run"
+    payload = {
+        'from': 'UniProtKB_AC-ID',
+        'to': 'UniParc',
+        'ids': ','.join(accessions)
+    }
+
+    response = requests.post(url, data=payload)
+
+    if response.status_code == 200:
+        job_id = response.json()['jobId']
+        result_url = f"https://rest.uniprot.org/idmapping/results/{job_id}"
+
+        # Polling for the result
+        while True:
+            result_response = requests.get(result_url)
+            if result_response.status_code == 200:
+                results = result_response.json()
+                mapping = {result['from']: result['to'] for result in results.get('results', [])}
+                return mapping
+            elif result_response.status_code == 202:  # Still processing
+                print(f"Waiting for UniParc mapping results...")
+                time.sleep(5)
+            else:
+                print(f"Error fetching results: Status code {result_response.status_code}")
+                return {}
+    else:
+        print(f"Failed to start UniParc ID mapping: Status code {response.status_code}")
+        return {}
 
 # Calculate cleavage abundance
 def calculate_cleavage_abundance(peptide_count_over_cleavages, total_peptide_count_over_cleavages):
@@ -48,6 +87,7 @@ def parse_mztab(file_path):
     protein_df['Abundance'] = 0.0
     protein_df['Peptide Cleavages'] = 0
     protein_df['Cleavage Abundance'] = 0.0
+    protein_df['UniParc'] = None  # Adding column for UniParc IDs
 
     total_peptide_count_over_cleavages = 0
     total_count_over_length = 0
@@ -76,6 +116,15 @@ def parse_mztab(file_path):
             peptide_count_over_cleavages = peptide_count / num_cleavages if num_cleavages > 0 else 0
             protein_df.at[i, 'Peptide Count Over Cleavages'] = peptide_count_over_cleavages
             total_peptide_count_over_cleavages += peptide_count_over_cleavages
+
+    # Fetch UniParc IDs for all accessions
+    accessions = protein_df['accession'].dropna().tolist()
+    uniparc_mapping = fetch_uniparc_ids(accessions)
+
+    # Assign UniParc IDs to the protein DataFrame
+    for i, row in protein_df.iterrows():
+        accession = row.get('accession')
+        protein_df.at[i, 'UniParc'] = uniparc_mapping.get(accession, None)
 
     # Calculate abundance and cleavage abundance
     for i, row in protein_df.iterrows():
@@ -119,7 +168,7 @@ def generate_study_protein(protein_df, experiment_id_key, total_protein_count, t
             "experiment_peptide_count": total_peptide_count,
             "peptide_cleavages": row['Peptide Cleavages'],
             "abundance_cleavages": row['Cleavage Abundance'],
-            "uparc": row['accession']
+            "uparc": row['UniParc']  # Now using UniParc ID from the mapping
         }
         proteins.append(protein)
 
