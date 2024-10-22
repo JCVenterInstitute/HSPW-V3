@@ -32,7 +32,6 @@ const RidgePlotComponent = ({ tableData, allData }) => {
 
   useEffect(() => {
     if (data1.length > 0 && data2.length > 0) {
-      console.log(data1);
       const svg = d3.select(svgRef.current);
       svg.selectAll("*").remove();
 
@@ -123,6 +122,10 @@ const RidgePlotComponent = ({ tableData, allData }) => {
         const matchedData2 = [];
         groupData1.forEach((d1) => {
           const proteins = d1["core_enrichment"].split("/");
+          // const proteins = d1["core_enrichment"]
+          //   ? d1["core_enrichment"].split("/")
+          //   : d1["geneID"].split("/");
+
           proteins.forEach((protein) => {
             if (proteinFoldChange.hasOwnProperty(protein)) {
               matchedData2.push({

@@ -126,9 +126,6 @@ const DataSection = ({
   const getAllFiles = async () => {
     try {
       const fileDict = {};
-      // for (const file of fileNames) {
-      //   fileDict[file] = await fetchDataFile(jobId, file);
-      // }
       const fetchPromises = fileNames.map(async (file) => {
         const data = await fetchDataFile(jobId, file);
         fileDict[file] = data;
@@ -394,9 +391,19 @@ const DataSection = ({
 
             const clusterPlotPngName = fileMapping[selectedSection][tab];
 
-            displayResult = displayImg(
-              allFiles[clusterPlotPngName].downloadUrl
-            );
+            if (allFiles[clusterPlotPngName].downloadUrl) {
+              displayResult = displayImg(
+                allFiles[clusterPlotPngName].downloadUrl
+              );
+            } else {
+              displayResult = goResultsReady ? (
+                <Container sx={{ textAlign: "center", marginTop: "10px" }}>
+                  No Significant Data Found
+                </Container>
+              ) : (
+                <CheckbackLater />
+              );
+            }
           } else {
             displayResult = null;
           }
@@ -408,7 +415,11 @@ const DataSection = ({
               goResultsReady & !allFiles[goKeggDict[selectedSection][0]].data;
 
             if (noSignificantData) {
-              displayResult = <>No significant data Found</>;
+              displayResult = (
+                <Container sx={{ textAlign: "center", marginTop: "10px" }}>
+                  No Significant Data Found
+                </Container>
+              );
             } else {
               displayResult = allFiles[goKeggDict[selectedSection][0]].data ? (
                 <BarChartComponent
@@ -419,19 +430,44 @@ const DataSection = ({
               );
             }
           } else if (tab && tab.endsWith("Ridge plot")) {
-            displayResult = allFiles[goKeggDict[selectedSection][1]].data ? (
-              <RidgePlotComponent
-                tableData={allFiles[goKeggDict[selectedSection][1]].data}
-                allData={allFiles["all_data.tsv"].data}
-              />
-            ) : (
-              <CheckbackLater />
-            );
+            // const noSignificantData =
+            //   goResultsReady &
+            //   allFiles[goKeggDict[selectedSection][1]] &
+            //   !allFiles[goKeggDict[selectedSection][1]].data;
+
+            if (
+              goResultsReady &&
+              !allFiles[goKeggDict[selectedSection][1].downloadUrl]
+            ) {
+              displayResult = (
+                <Container sx={{ textAlign: "center", marginTop: "10px" }}>
+                  No Significant Data Found
+                </Container>
+              );
+            } else {
+              displayResult = allFiles[goKeggDict[selectedSection][1]]
+                .downloadUrl ? (
+                (displayResult = displayImg(
+                  allFiles[goKeggDict[selectedSection][1]].downloadUrl
+                ))
+              ) : (
+                <CheckbackLater />
+              );
+            }
+
+            // displayResult = allFiles[goKeggDict[selectedSection][1]].data ? (
+            //   <RidgePlotComponent
+            //     tableData={allFiles[goKeggDict[selectedSection][1]].data}
+            //     allData={allFiles["all_data.tsv"].data}
+            //   />
+            // ) : (
+            //   <CheckbackLater />
+            // );
           } else if (tab && tab.endsWith("Heatmap plot")) {
             const noSignificantData =
-              goResultsReady &
-              allFiles[goKeggDict[selectedSection][2]] &
-              !allFiles[goKeggDict[selectedSection][2]].data;
+              goResultsReady &&
+              allFiles[goKeggDict[selectedSection][2]] &&
+              allFiles[goKeggDict[selectedSection][2]].downloadUrl === null;
 
             if (noSignificantData) {
               displayResult = (
@@ -440,7 +476,8 @@ const DataSection = ({
                 </Container>
               );
             } else {
-              displayResult = allFiles[goKeggDict[selectedSection][0]].data ? (
+              displayResult = allFiles[goKeggDict[selectedSection][2]]
+                .downloadUrl ? (
                 (displayResult = displayImg(
                   allFiles[goKeggDict[selectedSection][2]].downloadUrl
                 ))
