@@ -119,10 +119,10 @@ const RidgePlotComponent = ({ tableData, allData }) => {
         const groupData1 = data1.filter(
           (d) => d["Description"] === Description
         );
-        console.log(groupData1);
+
         const matchedData2 = [];
         groupData1.forEach((d1) => {
-          const proteins = d1["geneID"].split("/");
+          const proteins = d1["core_enrichment"].split("/");
           proteins.forEach((protein) => {
             if (proteinFoldChange.hasOwnProperty(protein)) {
               matchedData2.push({
@@ -319,7 +319,11 @@ const RidgePlotComponent = ({ tableData, allData }) => {
         ref={svgRef}
         style={{ width: "100%", height: "auto" }} // Optional for responsive design
       ></svg>
-      <div id="tooltip" className="tooltip" style={{ display: "none" }}></div>
+      <div
+        id="tooltip"
+        className="tooltip"
+        style={{ display: "none" }}
+      ></div>
     </div>
   );
 };

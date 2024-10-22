@@ -47,7 +47,10 @@ const CheckbackLater = () => {
         height: "50vh",
       }}
     >
-      <Stack id="stack" sx={{ alignItems: "center" }}>
+      <Stack
+        id="stack"
+        sx={{ alignItems: "center" }}
+      >
         <CircularProgress />
         <Typography sx={{ marginY: "10px" }}>
           Results not ready. Analysis still running. Please check back later
@@ -426,9 +429,9 @@ const DataSection = ({
             );
           } else if (tab && tab.endsWith("Heatmap plot")) {
             const noSignificantData =
-              goResultsReady & allFiles[goKeggDict[selectedSection][2]]
-                ? !allFiles[goKeggDict[selectedSection][2]].data
-                : true;
+              goResultsReady &
+              allFiles[goKeggDict[selectedSection][2]] &
+              !allFiles[goKeggDict[selectedSection][2]].data;
 
             if (noSignificantData) {
               displayResult = (
@@ -484,7 +487,10 @@ const DataSection = ({
           break;
         case "Download":
           displayResult = (
-            <ResultDownload jobId={jobId} handleDownload={handleDownload} />
+            <ResultDownload
+              jobId={jobId}
+              handleDownload={handleDownload}
+            />
           );
           break;
         default:
@@ -506,7 +512,10 @@ const DataSection = ({
       <CircularProgress />
     </Box>
   ) : (
-    <Box sx={style.dataBox} className="d3Graph">
+    <Box
+      sx={style.dataBox}
+      className="d3Graph"
+    >
       {getSection()}
     </Box>
   );

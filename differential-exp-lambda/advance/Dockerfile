@@ -1,6 +1,6 @@
 ARG FUNCTION_DIR="/function"
 
-FROM go_keg_local2:latest as build-image
+FROM go_keg_local3:latest as build-image
 
 # Include global arg in this stage of the build
 ARG FUNCTION_DIR
@@ -26,7 +26,7 @@ RUN pip install \
         boto3
 
 
-FROM go_keg_local2:latest
+FROM go_keg_local3:latest
 
 # Include global arg in this stage of the build
 ARG FUNCTION_DIR

@@ -1,6 +1,7 @@
 library("org.Hs.eg.db")
 library(STRINGdb)
 library(UniProt.ws)
+library(tidyr)
 
 all_data <- read.table("all_data.tsv",sep="\t",header=T)
 colnames(all_data)[1] <- "UNIPROT"
@@ -18,5 +19,7 @@ all_mapped_inter <- merge(all_mapped, interactions[, c("from", "to", "combined_s
 id_chngse<-mapUniProt("Ensembl_Protein", "UniProtKB", query = all_mapped_inter$from, columns = c("gene_primary","accession"))
 colnames(id_chngse)[1] <- "to"
 colnames(id_chngse)[2] <- "Genes.interacting"
-all_mapped_inter_symbol <- merge(all_mapped_inter, id_chngse[, c("to", "Genes.interacting")], by="to")
-write.csv(all_mapped_inter_symbol,"string.csv")
+all_mapped_inter_symbol <- unique(merge(all_mapped_inter, id_chngse[, c("to", "Genes.interacting")], by="to"))
+all_mapped_inter_symbol$Gene.Names..primary. <- sub(";.*", "", all_mapped_inter_symbol$Gene.Names..primary.)
+all_mapped_inter_symbol$Genes.interacting <- sub(";.*", "", all_mapped_inter_symbol$Genes.interacting)
+write.csv(all_mapped_inter_symbol,"string.csv",row.names=F)

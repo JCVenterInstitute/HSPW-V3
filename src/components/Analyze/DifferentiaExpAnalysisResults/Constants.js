@@ -196,6 +196,8 @@ export const fileNames = [
   "volcano.csv",
   "kegg_pathway_ridge.jpeg",
   "kegg_pathway_heat.jpeg",
+  "kegg_module_ridge.jpeg",
+  "kegg_module_heat.jpeg",
 ];
 
 export const goKeggDict = {
