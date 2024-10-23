@@ -54,7 +54,7 @@ const createCsvString = (data) => {
   // Create each row
   const rows = data.map((sample) => {
     return [
-      sample.Identifier,
+      sample.Identifier.replaceAll("#", ""), // remove # from identifiers, causes issue with rScript
       sample.Group,
       ...proteinIds.map((id) => sample[id] || "0"),
     ].join("\t");
