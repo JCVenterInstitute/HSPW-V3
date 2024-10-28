@@ -67,7 +67,7 @@ const RidgePlotComponent = ({ tableData, allData }) => {
 
       const proteinFoldChange = {};
       data2.forEach((d) => {
-        const protein = d["Protein"];
+        const protein = d["ENTREZID"] ? d["ENTREZID"] : d["Protein"];
         const foldChange = parseFloat(d["Fold.Change"]);
         proteinFoldChange[protein] = foldChange;
       });
@@ -322,11 +322,7 @@ const RidgePlotComponent = ({ tableData, allData }) => {
         ref={svgRef}
         style={{ width: "100%", height: "auto" }} // Optional for responsive design
       ></svg>
-      <div
-        id="tooltip"
-        className="tooltip"
-        style={{ display: "none" }}
-      ></div>
+      <div id="tooltip" className="tooltip" style={{ display: "none" }}></div>
     </div>
   );
 };

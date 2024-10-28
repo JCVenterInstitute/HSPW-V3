@@ -47,10 +47,7 @@ const CheckbackLater = () => {
         height: "50vh",
       }}
     >
-      <Stack
-        id="stack"
-        sx={{ alignItems: "center" }}
-      >
+      <Stack id="stack" sx={{ alignItems: "center" }}>
         <CircularProgress />
         <Typography sx={{ marginY: "10px" }}>
           Results not ready. Analysis still running. Please check back later
@@ -439,10 +436,13 @@ const DataSection = ({
               goResultsReady &&
               !allFiles[goKeggDict[selectedSection][1].downloadUrl]
             ) {
-              displayResult = (
-                <Container sx={{ textAlign: "center", marginTop: "10px" }}>
-                  No Significant Data Found
-                </Container>
+              displayResult = allFiles[goKeggDict[selectedSection][1]].data ? (
+                <RidgePlotComponent
+                  tableData={allFiles[goKeggDict[selectedSection][1]].data}
+                  allData={allFiles["kegg_id_convert.tsv"].data}
+                />
+              ) : (
+                <CheckbackLater />
               );
             } else {
               displayResult = allFiles[goKeggDict[selectedSection][1]]
@@ -524,10 +524,7 @@ const DataSection = ({
           break;
         case "Download":
           displayResult = (
-            <ResultDownload
-              jobId={jobId}
-              handleDownload={handleDownload}
-            />
+            <ResultDownload jobId={jobId} handleDownload={handleDownload} />
           );
           break;
         default:
@@ -549,10 +546,7 @@ const DataSection = ({
       <CircularProgress />
     </Box>
   ) : (
-    <Box
-      sx={style.dataBox}
-      className="d3Graph"
-    >
+    <Box sx={style.dataBox} className="d3Graph">
       {getSection()}
     </Box>
   );
