@@ -25,6 +25,7 @@ const RidgePlotComponent = ({ tableData, allData }) => {
     try {
       setData1(cleanData(tableData.slice(0, 25)));
       setData2(cleanData(allData));
+      console.log(allData);
     } catch (error) {
       console.error("Incorrect File:", error);
     }
@@ -68,14 +69,16 @@ const RidgePlotComponent = ({ tableData, allData }) => {
       const proteinFoldChange = {};
       data2.forEach((d) => {
         const protein = d["ENTREZID"] ? d["ENTREZID"] : d["Protein"];
-        const foldChange = parseFloat(d["Fold.Change"]);
+        const foldChange = parseFloat(d["log2.FC."]);
         proteinFoldChange[protein] = foldChange;
       });
 
       const allFoldChanges = [
-        ...data1.map((d) => parseFloat(d["Fold.Change"])),
-        ...data2.map((d) => parseFloat(d["Fold.Change"])),
+        ...data1.map((d) => parseFloat(d["log2.FC."])),
+        ...data2.map((d) => parseFloat(d["log2.FC."])),
       ].filter((d) => !isNaN(d));
+
+      console.log(allFoldChanges);
 
       const [minFoldChange, maxFoldChange] = d3.extent(allFoldChanges);
       const padding = 0.2;
@@ -130,17 +133,17 @@ const RidgePlotComponent = ({ tableData, allData }) => {
             if (proteinFoldChange.hasOwnProperty(protein)) {
               matchedData2.push({
                 ...d1,
-                "Fold.Change": proteinFoldChange[protein],
+                "log2.FC.": proteinFoldChange[protein],
               });
             }
           });
         });
 
         const validData = matchedData2.filter(
-          (d) => !isNaN(d["Fold.Change"]) && d["Fold.Change"] !== undefined
+          (d) => !isNaN(d["log2.FC."]) && d["log2.FC."] !== undefined
         );
 
-        const density = kde(validData.map((d) => d["Fold.Change"]));
+        const density = kde(validData.map((d) => d["log2.FC."]));
 
         const areaGenerator = d3
           .area()
@@ -212,7 +215,7 @@ const RidgePlotComponent = ({ tableData, allData }) => {
         )
         .style("font-size", "12px")
         .style("font-weight", "bold")
-        .text("Fold Change");
+        .text("log2.FC.");
 
       plot
         .append("text")
