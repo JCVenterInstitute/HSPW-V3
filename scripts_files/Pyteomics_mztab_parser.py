@@ -1,3 +1,7 @@
+# run command: python3 script mztab user_input_json unique_ID output_folder
+# Example: python3 .\scripts_files\Pyteomics_mztab_parser.py .\scripts_files\mzTabs\SILAC_CQI.mzTab .\scripts_files\JSONs\SILAC_CQI.json 4122 .\scripts_files\parser_output\
+# pyteomics documentation: https://pyteomics.readthedocs.io/en/latest/parser.html
+
 import requests
 import pandas as pd
 import argparse
@@ -155,7 +159,7 @@ def parse_mztab(file_path):
     protein_df['Abundance'] = 0.0
     protein_df['Peptide Cleavages'] = 0
     protein_df['Cleavage Abundance'] = 0.0
-    protein_df['UniParc'] = None  # Adding column for UniParc IDs
+    protein_df['UniParc'] = None 
 
     total_peptide_count_over_cleavages = 0
     total_count_over_length = 0
@@ -188,8 +192,10 @@ def parse_mztab(file_path):
                 total_peptide_count_over_cleavages += peptide_count_over_cleavages
             else:
                 print(f"Skipping accession {accession} due to sequence fetch failure.")
+                #  TODO: track failed/skipped accessions
         else:
             print(f"Skipping invalid accession: {raw_accession}")
+            #  TODO: track failed/skipped accessions
 
     # Fetch UniParc IDs for all cleaned accessions
     accessions = protein_df['accession'].dropna().apply(clean_accession).dropna().tolist()
