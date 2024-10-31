@@ -1,3 +1,5 @@
+// to change the links on the downloads page just change the links in the download field
+//  the first link in the array maps to the left most icon in the row
 export const DATA = [
   {
     study: 1,
