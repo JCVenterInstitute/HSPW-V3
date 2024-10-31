@@ -183,8 +183,11 @@ def parse_mztab(file_path):
                 protein_df.at[i, 'Normalized Value'] = normalized_value
                 total_count_over_length += normalized_value
 
-                cleaved_peptides = xcleave(sequence, expasy_rules['trypsin'])
-                num_cleavages = len(cleaved_peptides)
+                # Peptide cleaving is a regex with exceptions, those exceptions are not automatically included
+                # https://pyteomics.readthedocs.io/en/latest/api/parser.html#pyteomics.parser.expasy_rules
+                cleaved_peptides = xcleave(sequence, expasy_rules['trypsin'], exception=expasy_rules['trypsin_exception'])
+                # cleaved peptides return the petides but we want the number of cleavages so we subtract 1 from the length
+                num_cleavages = len(cleaved_peptides) - 1
                 protein_df.at[i, 'Peptide Cleavages'] = num_cleavages
 
                 peptide_count_over_cleavages = peptide_count / num_cleavages if num_cleavages > 0 else 0
@@ -245,7 +248,7 @@ def generate_study_protein(protein_df, experiment_id_key, uparc_mapping, total_p
         protein = {
             "experiment_id_key": experiment_id_key,
             "Uniprot_id": cleaned_accession,
-            "protein_sequence": row['Sequence'],
+            # "protein_sequence": row['Sequence'],
             "protein_sequence_length": row['Length'],
             "abundance": row['Abundance'],
             "protein_name": row.get('description', 'unknown'),
@@ -255,7 +258,7 @@ def generate_study_protein(protein_df, experiment_id_key, uparc_mapping, total_p
             "experiment_peptide_count": total_peptide_count,
             "peptide_cleavages": row['Peptide Cleavages'],
             "abundance_cleavages": row['Cleavage Abundance'],
-            "uparc": uparc_id  # Use the mapped UniParc ID or None if not found
+            "uparc": uparc_id
         }
         proteins.append(protein)
 
@@ -317,9 +320,9 @@ def main():
 
     os.makedirs(args.output_dir, exist_ok=True)
 
-    save_json(study, os.path.join(args.output_dir, 'study.json'))
-    save_json(study_protein, os.path.join(args.output_dir, 'study_protein.json'))
-    save_json(study_peptide, os.path.join(args.output_dir, 'study_peptide.json'))
+    save_json(study, os.path.join(args.output_dir, os.path.basename(args.mztab_file).split('.')[0] + '_study.json'))
+    save_json(study_protein, os.path.join(args.output_dir, os.path.basename(args.mztab_file).split('.')[0] + '_study_protein.json'))
+    save_json(study_peptide, os.path.join(args.output_dir, os.path.basename(args.mztab_file).split('.')[0] + '_study_peptide.json'))
 
 if __name__ == "__main__":
     main()
