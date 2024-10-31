@@ -1,0 +1,29 @@
+{
+    "experiment_group_id": 0,
+    "Study_name": "Persistent immune and clotting dysfunction detected in saliva and blood plasma after COVID-19",
+    "institution": "J. Craig Venter Institute",
+    "contact_name": "Marcelo Freire",
+    "contact_information": "mfreire@jcvi.org",
+    "experiment_created_date": "2022-06-08 22:45:56",
+    "reference_line": "0",
+    "PubMed_ID": "37483779",
+    "Taxononomy_Species": "Homo Sapiens",
+    "Taxononomy_ID": "9606",
+    "sample_type": "Saliva",
+    "experiment_id_key": 4257,
+    "experiment_title": "Persistent Dysfunction of Innate Immune and Clotting Factors Detected in Saliva and Blood Plasma after COVID-19",
+    "sample_description_comment": "",
+    "condition_type": "COVID-19",
+    "bto_ac": [
+        "BTO:0001202"
+    ],
+    "bto_term_list": [
+        "Saliva"
+    ],
+    "experiment_protein_count": "333",
+    "experiment_peptide_count": "19046",
+    "sequence_mapped_swiss_count": "0",
+    "experiment_type": "Identification",
+    "experiment_short_title": "Export of C:\\Users\\thermo\\Documents\\PD Study\\New Study 7\\1DLC12292020QE_Saliva_proteomics_#11.pdResult",
+    "sample_name": "1DLC12292020QE_Saliva_proteomics_#11"
+}
