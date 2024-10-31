@@ -1,5 +1,5 @@
-# run command: python3 script mztab user_input_json unique_ID output_folder
-# Example: python3 .\scripts_files\Pyteomics_mztab_parser.py .\scripts_files\mzTabs\SILAC_CQI.mzTab .\scripts_files\JSONs\SILAC_CQI.json 4122 .\scripts_files\parser_output\
+# run command: python3 script mztab unique_ID output_folder --json_input user_input_json
+# Example: python3 .\scripts_files\Pyteomics_mztab_parser.py .\scripts_files\mzTabs\SILAC_CQI.mzTab 4122 .\scripts_files\parser_output\ --json_file  .\scripts_files\JSONs\SILAC_CQI.json
 # pyteomics documentation: https://pyteomics.readthedocs.io/en/latest/parser.html
 
 import requests
@@ -222,7 +222,10 @@ def parse_mztab(file_path):
 
 # Generate study JSON
 def generate_study_json(input_json, experiment_id_key, mztab_file, mz_tab):
-    study = input_json.copy()
+    if input_json is None:
+        study = {}
+    else:
+        study = input_json.copy()
 
     study['experiment_id_key'] = experiment_id_key
     study['experiment_type'] = mz_tab.metadata.get('mzTab-type', 'unknown')
@@ -288,9 +291,9 @@ def save_json(data, file_path):
 def main():
     parser = argparse.ArgumentParser(description="Parse mzTab, JSON file, and experiment ID to output study files.")
     parser.add_argument('mztab_file', type=str, help="Path to the mzTab file")
-    parser.add_argument('json_file', type=str, help="Path to the input JSON file")
     parser.add_argument('experiment_id', type=int, help="Experiment ID")
     parser.add_argument('output_dir', type=str, help="Path to output directory")
+    parser.add_argument('--json_file', type=str, default=None, help=" Optional path to the input JSON file")
 
     args = parser.parse_args()
 
@@ -299,9 +302,10 @@ def main():
     total_protein_count = protein_df.shape[0]
     total_peptide_count = peptide_df.shape[0]
 
-    with open(args.json_file, 'r') as f:
-        input_json = json.load(f)
-
+    input_json = None
+    if args.json_file:
+        with open(args.json_file, 'r') as f:
+            input_json = json.load(f)
     # Generate UniParc mapping for the proteins
     accessions = protein_df['accession'].dropna().apply(clean_accession).dropna().tolist()
     uniparc_mapping = fetch_uniparc_ids(accessions)
