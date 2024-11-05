@@ -1,6 +1,8 @@
-import "../../D3GraphStyles.css";
 import React, { useEffect, useState, useRef } from "react";
+import { Container } from "@mui/material";
 import * as d3 from "d3v7";
+
+import "../../D3GraphStyles.css";
 
 const RidgePlotComponent = ({ table, all }) => {
   const svgRef = useRef();
@@ -35,7 +37,7 @@ const RidgePlotComponent = ({ table, all }) => {
   }, [table, all]);
 
   useEffect(() => {
-    if (tableData.length === 0 && allData.length === 0) return;
+    if (tableData.length === 0 || allData.length === 0) return;
 
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
@@ -158,7 +160,6 @@ const RidgePlotComponent = ({ table, all }) => {
         .attr("stroke-width", 1.5)
         .attr("d", areaGenerator)
         .on("mouseover", function (event, d) {
-          const [x, y] = d3.pointer(event);
           d3.select("#tooltip")
             .style("display", "block")
             .style("left", `${event.pageX + 10}px`)
@@ -220,6 +221,7 @@ const RidgePlotComponent = ({ table, all }) => {
     addLegend(plot, pAdjustScale);
   }, [tableData, allData]);
 
+  // Adds the graph legend to the bottom left of table
   const addLegend = (plot, pAdjustScale) => {
     const legendWidth = 200;
     const legendHeight = 20;
@@ -312,17 +314,26 @@ const RidgePlotComponent = ({ table, all }) => {
 
   return (
     <div className="ridgechart-container graph-container">
-      <svg
-        id="ridgeChart"
-        className="ridgechart"
-        ref={svgRef}
-        style={{ width: "100%", height: "auto" }} // Optional for responsive design
-      ></svg>
-      <div
-        id="tooltip"
-        className="tooltip"
-        style={{ display: "none" }}
-      ></div>
+      {tableData.length === 0 ? (
+        // Table Data File empty
+        <Container sx={{ textAlign: "center", marginTop: "10px" }}>
+          No Significant Data Found
+        </Container>
+      ) : (
+        <>
+          <svg
+            id="ridgeChart"
+            className="ridgechart"
+            ref={svgRef}
+            style={{ width: "100%", height: "auto" }} // Optional for responsive design
+          ></svg>
+          <div
+            id="tooltip"
+            className="tooltip"
+            style={{ display: "none" }}
+          ></div>
+        </>
+      )}
     </div>
   );
 };
