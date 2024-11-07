@@ -430,11 +430,6 @@ const DataSection = ({
               );
             }
           } else if (tab && tab.endsWith("Ridge plot")) {
-            // const noSignificantData =
-            //   goResultsReady &
-            //   allFiles[goKeggDict[selectedSection][1]] &
-            //   !allFiles[goKeggDict[selectedSection][1]].data;
-
             if (
               goResultsReady &&
               !allFiles[goKeggDict[selectedSection][1].downloadUrl]
@@ -457,15 +452,6 @@ const DataSection = ({
                 <CheckbackLater />
               );
             }
-
-            // displayResult = allFiles[goKeggDict[selectedSection][1]].data ? (
-            //   <RidgePlotComponent
-            //     table={allFiles[goKeggDict[selectedSection][1]].data}
-            //     all={allFiles["all_data.tsv"].data}
-            //   />
-            // ) : (
-            //   <CheckbackLater />
-            // );
           } else if (tab && tab.endsWith("Heatmap plot")) {
             const noSignificantData =
               goResultsReady &&
