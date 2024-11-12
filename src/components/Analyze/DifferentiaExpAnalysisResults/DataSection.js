@@ -6,7 +6,7 @@ import {
   Stack,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { fileNames, goKeggDict } from "./Constants.js";
+import { fileNames, goKeggDict, fileMapping } from "./Constants.js";
 import ResultDownload from "./ResultSections/ResultDownload";
 import VolcanoPlot from "./D3Graphics/VolcanoPlot/VolcanoPlot";
 import StatisticalParametricPlot from "./D3Graphics/StatisticalParametricTest/StatisticalParametricTest";
@@ -73,8 +73,6 @@ const DataSection = ({
   const [intervalId, setIntervalId] = useState(null);
 
   const checkGoStatus = async () => {
-    // console.log("> Calling Go Status Check");
-
     try {
       const res = await fetch(
         `${process.env.REACT_APP_API_ENDPOINT}/api/go-kegg-check/${jobId}/gsemf.tsv`
@@ -83,6 +81,8 @@ const DataSection = ({
       const { exists } = await res.json();
 
       setGoResultsReady(exists);
+
+      if (exists) await getAllFiles();
     } catch (e) {
       console.log(e);
     }
@@ -126,9 +126,6 @@ const DataSection = ({
   const getAllFiles = async () => {
     try {
       const fileDict = {};
-      // for (const file of fileNames) {
-      //   fileDict[file] = await fetchDataFile(jobId, file);
-      // }
       const fetchPromises = fileNames.map(async (file) => {
         const data = await fetchDataFile(jobId, file);
         fileDict[file] = data;
@@ -137,6 +134,7 @@ const DataSection = ({
       await Promise.all(fetchPromises);
 
       fileDict["inputData"] = {};
+
       searchParams.forEach((input, header) => {
         switch (header) {
           case "pType":
@@ -151,6 +149,7 @@ const DataSection = ({
             break;
         }
       });
+
       setAllFiles(fileDict);
     } catch (err) {
       console.error("> Error fetching all data file", err);
@@ -166,6 +165,7 @@ const DataSection = ({
 
   const getSection = () => {
     let displayResult = null;
+
     if (allFiles) {
       switch (selectedSection) {
         case "Volcano Plot":
@@ -348,42 +348,145 @@ const DataSection = ({
         case "GO Biological Process":
         case "GO Molecular Function":
         case "GO Cellular Component":
-        case "KEGG Pathway/Module":
           if (tab === "Enrichment Plot") {
-            displayResult = (
+            displayResult = allFiles[goKeggDict[selectedSection][0]].data ? (
               <BarChartComponent
                 plotData={allFiles[goKeggDict[selectedSection][0]].data}
               />
+            ) : (
+              <CheckbackLater />
             );
           } else if (tab && tab.endsWith("connected genes")) {
-            displayResult = (
+            displayResult = allFiles[goKeggDict[selectedSection][1]].data ? (
               <NetworkGraph
                 plotData={allFiles[goKeggDict[selectedSection][1]].data}
               />
+            ) : (
+              <CheckbackLater />
             );
           } else if (tab && tab.endsWith("Ridge plot")) {
-            displayResult = (
+            displayResult = allFiles[goKeggDict[selectedSection][2]].data ? (
               <RidgePlotComponent
-                tableData={allFiles[goKeggDict[selectedSection][2]].data}
-                allData={allFiles["all_data.tsv"].data}
+                table={allFiles[goKeggDict[selectedSection][2]].data}
+                all={allFiles["all_data.tsv"].data}
               />
+            ) : (
+              <CheckbackLater />
             );
           } else if (tab && tab.endsWith("Heatmap plot")) {
-            displayResult = (
+            displayResult = allFiles[goKeggDict[selectedSection][2]].data ? (
               <GOHeatmapComponent
                 tableData={allFiles[goKeggDict[selectedSection][2]].data}
                 allData={allFiles["all_data.tsv"].data}
               />
+            ) : (
+              <CheckbackLater />
             );
           } else if (tab && tab.endsWith("cluster plot")) {
-            displayResult = (
-              <TreeClusterPlotComponent
-                plotData={allFiles[goKeggDict[selectedSection][3]]}
-              />
-            );
+            // displayResult = (
+            //   <TreeClusterPlotComponent
+            //     plotData={allFiles[goKeggDict[selectedSection][3]]}
+            //   />
+            // );
+
+            const clusterPlotPngName = fileMapping[selectedSection][tab];
+
+            if (allFiles[clusterPlotPngName].downloadUrl) {
+              displayResult = displayImg(
+                allFiles[clusterPlotPngName].downloadUrl
+              );
+            } else {
+              displayResult = goResultsReady ? (
+                <Container sx={{ textAlign: "center", marginTop: "10px" }}>
+                  No Significant Data Found
+                </Container>
+              ) : (
+                <CheckbackLater />
+              );
+            }
           } else {
             displayResult = null;
           }
+          break;
+        case "KEGG Module":
+        case "KEGG Pathway":
+          if (tab === "Enrichment Plot") {
+            const noSignificantData =
+              goResultsReady & !allFiles[goKeggDict[selectedSection][0]].data;
+
+            if (noSignificantData) {
+              displayResult = (
+                <Container sx={{ textAlign: "center", marginTop: "10px" }}>
+                  No Significant Data Found
+                </Container>
+              );
+            } else {
+              displayResult = allFiles[goKeggDict[selectedSection][0]].data ? (
+                <BarChartComponent
+                  plotData={allFiles[goKeggDict[selectedSection][0]].data}
+                />
+              ) : (
+                <CheckbackLater />
+              );
+            }
+          } else if (tab && tab.endsWith("Ridge plot")) {
+            if (
+              goResultsReady &&
+              !allFiles[goKeggDict[selectedSection][1].downloadUrl]
+            ) {
+              displayResult = allFiles[goKeggDict[selectedSection][1]].data ? (
+                <RidgePlotComponent
+                  table={allFiles[goKeggDict[selectedSection][1]].data}
+                  all={allFiles["kegg_id_convert.tsv"].data}
+                />
+              ) : (
+                <CheckbackLater />
+              );
+            } else {
+              displayResult = allFiles[goKeggDict[selectedSection][1]]
+                .downloadUrl ? (
+                (displayResult = displayImg(
+                  allFiles[goKeggDict[selectedSection][1]].downloadUrl
+                ))
+              ) : (
+                <CheckbackLater />
+              );
+            }
+          } else if (tab && tab.endsWith("Heatmap plot")) {
+            const noSignificantData =
+              goResultsReady &&
+              allFiles[goKeggDict[selectedSection][2]] &&
+              allFiles[goKeggDict[selectedSection][2]].downloadUrl === null;
+
+            if (noSignificantData) {
+              displayResult = (
+                <Container sx={{ textAlign: "center", marginTop: "10px" }}>
+                  No Significant Data Found
+                </Container>
+              );
+            } else {
+              displayResult = allFiles[goKeggDict[selectedSection][2]]
+                .downloadUrl ? (
+                (displayResult = displayImg(
+                  allFiles[goKeggDict[selectedSection][2]].downloadUrl
+                ))
+              ) : (
+                <CheckbackLater />
+              );
+            }
+
+            // displayResult = allFiles[goKeggDict[selectedSection][2]].data ? (
+            //   <GOHeatmapComponent
+            //     tableData={allFiles[goKeggDict[selectedSection][2]].data}
+            //     allData={allFiles["all_data.tsv"].data}
+            //   />
+            // ) : (
+            //   <CheckbackLater />
+            // );
+          } else {
+            displayResult = null;
+          }
+
           break;
         case "Result Data":
           displayResult = <DataTable data={allFiles["all_data.tsv"].data} />;
@@ -393,14 +496,14 @@ const DataSection = ({
             <Container sx={{ margin: "0px" }}>
               <Typography
                 variant="h5"
-                sx={{ fontFamily: "Lato" }}
+                sx={{ fontFamily: "Lato", paddingX: "24px" }}
               >
                 Analysis Options:
               </Typography>
               <DataTable data={[allFiles["inputData"]]} />
               <Typography
                 variant="h5"
-                sx={{ fontFamily: "Lato" }}
+                sx={{ fontFamily: "Lato", paddingX: "24px" }}
               >
                 Input Data:
               </Typography>
