@@ -3,14 +3,14 @@ import { StyledEngineProvider } from "@mui/material/styles";
 import { Helmet } from "react-helmet";
 
 import Banner from "../components/Carousel.js";
-import salivary_protein from "../assets/icon-salivary-protein.png";
-import analysis from "../assets/icon-analyze.png";
-import download from "../assets/icon-download.png";
-import upload from "../assets/icon-upload.png";
-import publications from "../assets/icon-publications.png";
-import gene from "../assets/icon-gene.png";
-import protein_cluster from "../assets/icon-clustering.png";
-import api from "../assets/icon-api.png";
+import salivary_protein from "../assets/icons/icon-salivary-protein.png";
+import analysis from "../assets/icons/icon-analyze.png";
+import download from "../assets/icons/icon-download.png";
+import upload from "../assets/icons/icon-upload.png";
+import publications from "../assets/icons/icon-publications.png";
+import gene from "../assets/icons/icon-gene.png";
+import protein_cluster from "../assets/icons/icon-clustering.png";
+import api from "../assets/icons/icon-api.png";
 import "../components/BasicCard.css";
 
 import {
@@ -234,7 +234,10 @@ class Home extends React.Component {
             <title>HSP | Home</title>
           </Helmet>
           <StyledEngineProvider injectFirst>
-            <div id="application" data-layout={page.layout}>
+            <div
+              id="application"
+              data-layout={page.layout}
+            >
               <section style={{ backgroundColor: "#e6eeaf" }}>
                 <Container
                   maxWidth="xl"
@@ -267,7 +270,11 @@ class Home extends React.Component {
                   borderRadius: "16px",
                 }}
               >
-                <Grid container spacing={2} sx={{ marginY: "12px" }}>
+                <Grid
+                  container
+                  spacing={2}
+                  sx={{ marginY: "12px" }}
+                >
                   {page.basicCards.map((props, i) => {
                     return (
                       <Grid

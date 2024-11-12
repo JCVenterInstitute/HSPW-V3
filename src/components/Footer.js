@@ -1,10 +1,10 @@
 import React from "react";
 import "./index.css";
-import jcvi from "../assets/logo-jcvi.svg";
-import forsyth from "../assets/logo-forsyth.png";
-import uthsc from "../assets/logo-uthsc.svg";
-import ub from "../assets/logo-ub.png";
-import nih from "../assets/logo-nih-nidcr.png";
+import jcvi from "../assets/logo/logo-jcvi.svg";
+import forsyth from "../assets/logo/logo-forsyth.png";
+import uthsc from "../assets/logo/logo-uthsc.svg";
+import ub from "../assets/logo/logo-ub.png";
+import nih from "../assets/logo/logo-nih-nidcr.png";
 import { Container, Grid } from "@mui/material";
 import { Link } from "react-router-dom";
 
