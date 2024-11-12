@@ -149,7 +149,6 @@ const ProteinSetSearch = () => {
       headerName: "Protein Name",
       field: "protein_name",
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
       cellClass: ["table-border", "protein-set-search-cell"],
     },
     {

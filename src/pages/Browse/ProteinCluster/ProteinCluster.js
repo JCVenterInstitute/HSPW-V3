@@ -28,16 +28,9 @@ export const options = {
     },
   },
   bubble: { textStyle: { fontSize: 11 } },
-  // chartArea: {
-  //   left: "10%",
-  //   top: "5%",
-  //   width: "75%", // Decrease if necessary to allow space for bubbles
-  //   height: "50%",
-  // },
 };
 
 const ProteinCluster = () => {
-  const [message, setMessage] = useState("");
   const [number, setNumber] = useState({});
   const [isLoading, setLoading] = useState(true);
 
@@ -48,13 +41,6 @@ const ProteinCluster = () => {
   ];
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/protein-cluster`)
-      .then((res) => res.json())
-      .then((data) => setMessage(data["Cluster ID"]))
-      .catch((error) =>
-        console.error("Error fetching protein cluster data:", error)
-      );
-
     fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/protein-cluster-member-count`
     )

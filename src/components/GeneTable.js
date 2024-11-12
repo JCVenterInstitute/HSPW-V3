@@ -160,10 +160,6 @@ const GeneTable = () => {
   const [rowData, setRowData] = useState([]);
   const [searchText, setSearchText] = useState("");
 
-  const globalSearch = (input) => {
-    setSearchText(input);
-  };
-
   const escapeSpecialCharacters = (inputVal) => {
     return inputVal.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
   };

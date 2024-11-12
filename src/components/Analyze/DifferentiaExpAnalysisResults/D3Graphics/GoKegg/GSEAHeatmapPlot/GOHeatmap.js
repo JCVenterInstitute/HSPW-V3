@@ -1,8 +1,7 @@
 import "../../D3GraphStyles.css";
 import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
-import { fetchDataFile } from "../../../utils";
-import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 const GOHeatmapComponent = ({ tableData, allData }) => {
   const svgRef = useRef();
@@ -346,7 +345,10 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
         </ToggleButtonGroup>
       </div>
       <svg ref={svgRef}></svg>
-      <div id="tooltip" className="tooltip"></div>
+      <div
+        id="tooltip"
+        className="tooltip"
+      ></div>
     </div>
   );
 };

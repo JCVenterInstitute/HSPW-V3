@@ -48,54 +48,55 @@ const GeneDetail = (props) => {
 
   const gene_link = "https://www.ncbi.nlm.nih.gov/gene/";
 
-  const fetchGenes = async () => {
-    const url = `${process.env.REACT_APP_API_ENDPOINT}/genes/${params["geneid"]}`;
-
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      const message = `An error has occured: ${response.status}`;
-      throw new Error(message);
-    }
-
-    const genes = await response.json();
-
-    setData(genes);
-    setMessage(false);
-  };
-
-  const fetchProtein = async () => {
-    const proteinNameMapping = {};
-
-    for (const gene of data[0]["_source"]["Gene Products"]) {
-      try {
-        const response = await fetch(
-          `https://rest.uniprot.org/uniprotkb/${gene}.json`
-        );
-
-        const proteinName = await response.json();
-
-        if (proteinName && proteinName.proteinDescription) {
-          const { recommendedName, submissionNames } =
-            proteinName.proteinDescription;
-
-          if (recommendedName) {
-            proteinNameMapping[gene] = recommendedName.fullName.value;
-          } else if (submissionNames) {
-            proteinNameMapping[gene] = submissionNames[0].fullName.value;
-          }
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    setProteinNameMap(proteinNameMapping);
-    setLoading(false);
-  };
-
   useEffect(() => {
+    const fetchGenes = async () => {
+      const url = `${process.env.REACT_APP_API_ENDPOINT}/genes/${params["geneid"]}`;
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        const message = `An error has occured: ${response.status}`;
+        throw new Error(message);
+      }
+
+      const genes = await response.json();
+
+      setData(genes);
+      setMessage(false);
+    };
+
+    const fetchProtein = async () => {
+      const proteinNameMapping = {};
+
+      for (const gene of data[0]["_source"]["Gene Products"]) {
+        try {
+          const response = await fetch(
+            `https://rest.uniprot.org/uniprotkb/${gene}.json`
+          );
+
+          const proteinName = await response.json();
+
+          if (proteinName && proteinName.proteinDescription) {
+            const { recommendedName, submissionNames } =
+              proteinName.proteinDescription;
+
+            if (recommendedName) {
+              proteinNameMapping[gene] = recommendedName.fullName.value;
+            } else if (submissionNames) {
+              proteinNameMapping[gene] = submissionNames[0].fullName.value;
+            }
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      setProteinNameMap(proteinNameMapping);
+      setLoading(false);
+    };
+
     fetchGenes();
+
     if (message === false) {
       fetchProtein();
     }

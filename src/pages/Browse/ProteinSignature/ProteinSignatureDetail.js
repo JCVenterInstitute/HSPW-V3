@@ -49,7 +49,7 @@ const SignatureDetail = (props) => {
   const [PROFILE, setPROFILE] = useState("");
   const [SMART, setSMART] = useState("");
   const [reference, setReference] = useState([]);
-  const [authorName, setauthorName] = useState("");
+  const [authorName, setAuthorName] = useState("");
   const [year, setYear] = useState("");
   const [journal, setJournal] = useState("");
 
@@ -68,7 +68,23 @@ const SignatureDetail = (props) => {
       const json = response.data;
       return json;
     };
+
+    const constructReferences = async (references) => {
+      const promises = references.map((ref) => {
+        const id = ref.split(":")[1];
+        return fetchPubMed(id);
+      });
+
+      const pubmedDetails = await Promise.all(promises);
+
+      // Now set the state with the fetched details
+      setAuthorName(pubmedDetails.map((detail) => detail.authorName));
+      setYear(pubmedDetails.map((detail) => detail.yearTitle));
+      setJournal(pubmedDetails.map((detail) => detail.journalTitle));
+    };
+
     const signatureResult = fetchSignature().catch(console.errror);
+
     signatureResult.then((signature) => {
       if (signature) {
         setData(signature);
@@ -97,20 +113,6 @@ const SignatureDetail = (props) => {
       }
     });
   }, []);
-
-  const constructReferences = async (references) => {
-    const promises = references.map((ref) => {
-      const id = ref.split(":")[1];
-      return fetchPubMed(id);
-    });
-
-    const pubmedDetails = await Promise.all(promises);
-
-    // Now set the state with the fetched details
-    setauthorName(pubmedDetails.map((detail) => detail.authorName));
-    setYear(pubmedDetails.map((detail) => detail.yearTitle));
-    setJournal(pubmedDetails.map((detail) => detail.journalTitle));
-  };
 
   const fetchPubMed = async (id) => {
     const pubmedLink = `${process.env.REACT_APP_API_ENDPOINT}/api/citation/${id}`;

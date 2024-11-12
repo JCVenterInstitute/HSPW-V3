@@ -8,7 +8,6 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import "./Filter.css";
 
 function App() {
-  const [gridApi, setGridApi] = useState();
   const [testData, setData] = useState([]);
   const [colDefs, setcolDefs] = useState([]);
 
@@ -40,10 +39,6 @@ function App() {
 
   const defColumnDefs = { flex: 1, filter: true, minWidth: 300 };
 
-  const onGridReady = (params) => {
-    setGridApi(params);
-  };
-
   return (
     <div className="AppBox1">
       <div
@@ -53,7 +48,6 @@ function App() {
         <AgGridReact
           className="ag-cell-wrap-text"
           defaultColDef={defColumnDefs}
-          onGridReady={onGridReady}
           pagination={true}
           columnDefs={colDefs}
           rowData={testData}

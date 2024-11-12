@@ -14,7 +14,6 @@ import ProteinCluster from "./pages/Browse/ProteinCluster/ProteinCluster.js";
 import GeneDetail from "./pages/Browse/Gene/GeneDetail.js";
 import SalivaryProtein from "./pages/Browse/SalivaryProtein/SalivaryProtein";
 import ProteinDetail from "./pages/Browse/SalivaryProtein/ProteinDetail";
-import Analysis from "./pages/Analysis.js";
 import Citation from "./pages/Browse/Citation/Citation";
 import CitationDetail from "./pages/Browse/Citation/CitationDetail";
 import ProteinSignatureDetail from "./pages/Browse/ProteinSignature/ProteinSignatureDetail.js";
@@ -214,10 +213,6 @@ function App() {
                 path="/api-description"
                 element={<ApiPage />}
               />
-              {/* <Route
-                path="/analysis"
-                element={<Analysis />}
-              /> */}
               <Route
                 path="/privacy-policy"
                 element={<PrivacyPolicyPage />}

@@ -1,7 +1,6 @@
 import "../D3GraphStyles.css";
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3v7";
-import { fetchDataFile } from "../../utils.js"; // Import fetchDataFile from utils.js
 
 const Boxplot = ({ containerId, data }) => {
   const boxplotRef = useRef(null);
@@ -273,7 +272,10 @@ const Boxplot = ({ containerId, data }) => {
 
   return (
     <div>
-      <label htmlFor="topN" className="input-label">
+      <label
+        htmlFor="topN"
+        className="input-label"
+      >
         Number of Proteins (1 - 40):
       </label>
       <input
