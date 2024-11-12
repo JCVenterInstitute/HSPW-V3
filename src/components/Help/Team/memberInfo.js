@@ -12,6 +12,11 @@ import Jessica from "../../../assets/team-members/Jessica-Welch.jpg";
 import Markus from "../../../assets/team-members/Markus-Hardt.jpeg";
 import Yanhui from "../../../assets/team-members/Yanhui-Zhang.jpg";
 import William from "../../../assets/team-members/William-Lau.jpg";
+import Shubham from "../../../assets/team-members/Shubham-Deshmukh.jpg";
+import Anthony from "../../../assets/team-members/Anthony-Vo.jpg";
+import Andrew from "../../../assets/team-members/Andrew-LaPointe.jpg";
+import Rhea from "../../../assets/team-members/Rhea-Hinger.jpg";
+import Shuv from "../../../assets/team-members/Shuvrajyoti-Deb.jpg";
 
 const memberInfo = [
   {
@@ -62,7 +67,7 @@ const memberInfo = [
         imageName: "Mickey-Zheng.jpg",
         image: Mickey,
         description:
-          "<b>Mickey Zheng, B.S.</b> Mickey is a Software Engineer in the Informatics Department at the J. Craig Venter Institute (JCVI). He works on full-stack development and data management on the HSP and iDPCC projects. He is knowledgeable in an array of programming languages like JavaScript, and adept in utilizing cloud technologies such as AWS.",
+          "<b>Mickey Zheng, B.S.</b> Mickey is a Software Engineer in the Informatics Department at the J. Craig Venter Institute (JCVI) specializing in full-stack development and data management for the HSP and iDPCC project. Skilled in multiple programming languages, including JavaScript and Python, and experienced with frameworks like Next.js and React.js. Proficient in leveraging AWS and other cloud technologies to support scalable solutions.",
       },
       {
         imageName: "Link-Wu.jpg",
@@ -120,6 +125,42 @@ const memberInfo = [
         imageName: "Floyd-Dewhirst.jpg",
         image: Floyd,
         description: `<b>Floyd E. Dewhirst, DDS, Ph.D.</b> Floyd has been a research scientist at The Forsyth Institute where he has been continuously funded by NIDCR for the past 43 years. He is known for his work on organisms comprising the human oral microbiome and the creation of the <a href="https://www.homd.org/" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">Human Oral Microbiome Database</a>  Exit Disclaimer. His current research focuses on culturing as-yet-uncultured bacteria, determining their genome sequences and understanding their role in human health and disease.`,
+      },
+    ],
+  },
+  {
+    title: "Past Interns",
+    id: "past-interns",
+    members: [
+      {
+        imageName: "Andrew-LaPointe.jpg",
+        image: Andrew,
+        description:
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+      },
+      {
+        imageName: "Anthony-Vo.jpg",
+        image: Anthony,
+        description:
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+      },
+      {
+        imageName: "Rhea-Hinger.jpg",
+        image: Rhea,
+        description:
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+      },
+      {
+        imageName: "Shubham-Deshmukh.jpg",
+        image: Shubham,
+        description:
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+      },
+      {
+        imageName: "Shuvrajyoti-Deb.jpg",
+        image: Shuv,
+        description:
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
       },
     ],
   },
