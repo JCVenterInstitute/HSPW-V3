@@ -17,6 +17,7 @@ import Anthony from "../../../assets/team-members/Anthony-Vo.jpg";
 import Andrew from "../../../assets/team-members/Andrew-LaPointe.jpg";
 import Rhea from "../../../assets/team-members/Rhea-Hinger.jpg";
 import Shuv from "../../../assets/team-members/Shuvrajyoti-Deb.jpg";
+import Nikhil from "../../../assets/team-members/Nikhil-Singh.jpg";
 
 const memberInfo = [
   {
@@ -143,6 +144,12 @@ const memberInfo = [
         image: Anthony,
         description:
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+      },
+      {
+        imageName: "Nikhil-Singh.jpg",
+        image: Nikhil,
+        description:
+          "<b>Nikhil Singh</b> Nikhil is a Software Developer currently contributing to bioinformatics and computational projects at the J. Craig Venter Institute (JCVI), with expertise in full-stack development focused on JavaScript, Python, and AWS. He specializes in building data-driven applications and advanced visualizations with tools like Next.js, React, and D3.js, along with hands-on experience in distributed systems and cloud technologies such as AWS services. He is dedicated to developing scalable, impactful solutions through cloud integrations and is an enthusiastic contributor to open-source projects.",
       },
       {
         imageName: "Rhea-Hinger.jpg",
