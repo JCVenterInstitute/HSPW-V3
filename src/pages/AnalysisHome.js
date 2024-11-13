@@ -14,7 +14,7 @@ import {
   Link,
   Typography,
 } from "@mui/material";
-import BreadCrumb from "../components/Breadcrumbs";
+import BreadCrumb from "../components/Layout/Breadcrumbs";
 import { Helmet } from "react-helmet";
 
 class analysisHome extends React.Component {

@@ -7,7 +7,7 @@ import {
   useMediaQuery,
   Container,
 } from "@mui/material";
-import logo from "../assets/logo/hspw-logo.png";
+import logo from "../../assets/logo/hspw-logo.png";
 import React from "react";
 import PopupState from "material-ui-popup-state";
 import { bindHover, bindMenu } from "material-ui-popup-state/hooks";

@@ -1,12 +1,5 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  useMemo,
-} from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
-import Typography from "@mui/material/Typography";
 import {
   Container,
   TextField,
@@ -25,35 +18,13 @@ import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import { styled } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import Typography from "@mui/material/Typography";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import dayjs from "dayjs";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { ReactComponent as DownloadLogo } from "../assets/table-icon/download.svg";
-import "./Filter.css";
-import CustomLoadingOverlay from "./CustomLoadingOverlay";
+import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
+import "../Filter.css";
+import "../Table.css";
 import { Link } from "react-router-dom";
-
-const recordsPerPageList = [
-  {
-    value: 50,
-    label: 50,
-  },
-  {
-    value: 100,
-    label: 100,
-  },
-  {
-    value: 500,
-    label: 500,
-  },
-  {
-    value: 1000,
-    label: 1000,
-  },
-];
 
 const Accordion = styled((props) => (
   <MuiAccordion
@@ -111,7 +82,7 @@ function LinkComponent(props) {
     <div>
       <Link
         rel="noopener noreferrer"
-        to={`/citation/${props.value}`}
+        to={`/gene/${props.value}`}
       >
         {props.value}
       </Link>
@@ -119,124 +90,78 @@ function LinkComponent(props) {
   );
 }
 
-const customHeaders = { "Content-Type": "application/json" };
+const recordsPerPageList = [
+  {
+    value: 50,
+    label: 50,
+  },
+  {
+    value: 100,
+    label: 100,
+  },
+  {
+    value: 500,
+    label: 500,
+  },
+  {
+    value: 1000,
+    label: 1000,
+  },
+];
 
-const CitationTable = () => {
+const stringAttributes = ["GeneID", "Gene Name", "Location"];
+const numberAttributes = [];
+
+const columns = [
+  {
+    headerName: "Gene",
+    field: "GeneID",
+    maxWidth: "120",
+    checkboxSelection: false,
+    headerCheckboxSelection: false,
+    cellRenderer: "LinkComponent",
+    headerClass: ["header-border"],
+    cellClass: ["table-border", "gene-cell"],
+  },
+  {
+    headerName: "Gene Name",
+    field: "Gene Name",
+    wrapText: true,
+    autoHeight: true,
+    cellStyle: { wordBreak: "break-word" },
+    headerClass: ["header-border"],
+    cellClass: ["table-border", "gene-cell"],
+  },
+  {
+    headerName: "Location",
+    field: "Location",
+    maxWidth: "150",
+    headerClass: ["header-border"],
+    cellClass: ["table-border", "gene-cell"],
+  },
+];
+
+const customHeaders = {
+  "Content-Type": "application/json",
+};
+
+const defColumnDefs = { flex: 1, sortable: true, resizable: true };
+
+const GeneTable = () => {
   const gridRef = useRef();
-  const [rowData, setRowData] = useState([]);
-  const [searchText, setSearchText] = useState("");
+
   const [gridApi, setGridApi] = useState();
+  const [columnApi, setColumnApi] = useState(null);
   const [pageSize, setPageSize] = useState(50);
   const [pageNum, setPageNum] = useState(0);
-  const [docCount, setDocCount] = useState(0);
+  const [facetFilters, setFacetFilters] = useState({});
   const [sortedColumn, setSortedColumn] = useState(null);
-  const [columnApi, setColumnApi] = useState(null);
+  const [docCount, setDocCount] = useState(0);
+  const [rowData, setRowData] = useState([]);
+  const [searchText, setSearchText] = useState("");
 
-  const [facetFilters, setFacetFilters] = useState({
-    PubDate: {
-      start: dayjs("1957-08-17").format("YYYY/MM/DD"),
-      end: dayjs(new Date()).format("YYYY/MM/DD"),
-    },
-  });
-
-  const loadingOverlayComponent = useMemo(() => {
-    return CustomLoadingOverlay;
-  }, []);
-
-  const columns = [
-    {
-      headerName: "Citation",
-      field: "PubMed_ID",
-      cellRenderer: "LinkComponent",
-      checkboxSelection: false,
-      headerCheckboxSelection: false,
-      sortable: true,
-      maxWidth: 145,
-      wrapText: true,
-      headerClass: ["header-border"],
-      cellClass: ["table-border", "citation-cell"],
-    },
-    {
-      headerName: "Date of Publication",
-      field: "PubDate",
-      maxWidth: 205,
-      sortable: true,
-      wrapText: true,
-      headerClass: ["header-border", "citation-header"],
-      cellClass: ["table-border", "citation-cell"],
-    },
-    {
-      headerName: "Title",
-      field: "Title",
-      minWidth: 600,
-      wrapText: true,
-      autoHeight: true,
-      cellStyle: { wordBreak: "break-word" },
-      sortable: true,
-      headerClass: ["header-border"],
-      cellClass: ["table-border", "citation-cell"],
-    },
-    {
-      headerName: "Journal",
-      field: "journal_title",
-      wrapText: true,
-      sortable: true,
-      headerClass: ["header-border"],
-      cellClass: ["table-border", "citation-cell"],
-    },
-  ];
-
-  const defColumnDefs = {
-    flex: 1,
-    resizable: true,
-    wrapHeaderText: true,
-    autoHeight: true,
-    autoHeaderHeight: true,
-  };
-
-  const stringAttributes = ["Title", "journal_title", "PubMed_ID"];
-  const numberAttributes = ["PubDate"];
-
-  const fetchCitationData = async () => {
-    const filterQueries = queryBuilder(facetFilters);
-
-    const data = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/citations/${pageSize}/${
-        pageNum * pageSize
-      }`,
-      {
-        method: "POST",
-        headers: customHeaders,
-        body: JSON.stringify({
-          filters: filterQueries,
-          ...(searchText && { keyword: createGlobalSearchQuery() }),
-          ...(sortedColumn && createSortQuery()),
-        }),
-      }
-    ).then((res) => res.json());
-
-    const { hits, total } = data.hits;
-    const totalResultsCount = total.value;
-    const tableData = hits.map((rec) => rec._source);
-
-    setDocCount(totalResultsCount > 10000 ? 10000 : totalResultsCount); // pagination breaks for results after 10k so limit results
-
-    setRowData(tableData);
-  };
-
-  /**
-   * Track which column is selected for sort by user
-   */
-  const onSortChanged = () => {
-    const columnState = columnApi.getColumnState();
-    const sortedColumn = columnState.filter((col) => col.sort !== null);
-
-    if (sortedColumn.length !== 0) {
-      const { sort, colId } = sortedColumn[0];
-      setSortedColumn({ attribute: colId, order: sort });
-    } else {
-      setSortedColumn(null);
-    }
+  const escapeSpecialCharacters = (inputVal) => {
+    return inputVal.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
   };
 
   /**
@@ -245,22 +170,20 @@ const CitationTable = () => {
    * @returns OpenSearch range query based on inputs
    */
   const createRangeQuery = ({ attrName, start, end }) => {
-    const rangeQuery = {
-      bool: {
-        filter: [
-          {
-            range: {
-              [attrName]: {
-                ...(start && { gte: start }),
-                ...(end && { lte: end }),
-              },
-            },
-          },
-        ],
+    let rangeQuery = {
+      range: {
+        [attrName]: {
+          ...(start && { gte: start }),
+          ...(end && { lte: end }),
+        },
       },
     };
 
-    return rangeQuery;
+    return {
+      bool: {
+        filter: [rangeQuery],
+      },
+    };
   };
 
   /**
@@ -280,46 +203,26 @@ const CitationTable = () => {
   };
 
   /**
-   * Creates a query for a string field for OpenSearch
-   * @param {{attrName, value}} input necessary fields for string query
-   * @returns
+   * Create a proper sort query for whichever sort attribute is selected
    */
-  const createStringQuery = ({ attrName, value }) => {
-    const escapedInput = escapeSpecialCharacters(value);
+  const createSortQuery = () => {
+    const { attribute, order } = sortedColumn;
+
+    // Have to include .keyword when sorting string attributes
+    const sortAttrKey = `${sortedColumn.attribute}${
+      stringAttributes.includes(attribute) && attribute !== "Gene Name"
+        ? ".keyword"
+        : ""
+    }`;
 
     return {
-      bool: {
-        filter: [
-          {
-            regexp: {
-              [`${attrName}.keyword`]: {
-                value: `${escapedInput}.*`,
-                flags: "ALL",
-                case_insensitive: true,
-              },
-            },
+      sort: [
+        {
+          [sortAttrKey]: {
+            order,
           },
-        ],
-      },
-    };
-  };
-
-  /**
-   * Returns a term query used by the Citation search
-   * @param {{attrName, value}} Input Contains attribute name & value used for term query
-   * @returns OpenSearch Term Query Filter
-   */
-  const createTermQuery = ({ attrName, value }) => {
-    return {
-      bool: {
-        filter: [
-          {
-            term: {
-              [attrName]: value,
-            },
-          },
-        ],
-      },
+        },
+      ],
     };
   };
 
@@ -339,96 +242,95 @@ const CitationTable = () => {
       } else if (numberAttributes.includes(attr)) {
         queries.push(createRangeQuery({ attrName: attr, ...filters[attr] }));
       }
-      // else if (exactMatches.includes(attr)) {
-      // queries.push(createTermQuery({ attrName: attr, value: filters[attr] }));
-      // }
     }
 
     return queries;
   };
 
+  const fetchData = async () => {
+    const filterQueries = queryBuilder(facetFilters);
+
+    await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/genes/${pageSize}/${
+        pageSize * pageNum
+      }`,
+      {
+        method: "POST",
+        headers: customHeaders,
+        body: JSON.stringify({
+          filters: filterQueries,
+          ...(searchText && { keyword: createGlobalSearchQuery() }),
+          ...(sortedColumn && createSortQuery()),
+        }),
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        const { hits, total } = data.hits;
+        setRowData(hits.map((rec) => rec._source));
+
+        setDocCount(total.value > 10000 ? 10000 : total.value); // pagination breaks for results after 10k so limit results
+      });
+  };
+
   useEffect(() => {
-    fetchCitationData();
+    fetchData();
   }, []);
 
   useEffect(() => {
+    if (gridApi) gridApi.showLoadingOverlay();
+
     // Needed to delay search so users can type before triggering search
     const delayDebounceFn = setTimeout(() => {
       setPageNum(0);
-      fetchCitationData();
+      fetchData();
     }, 600);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [facetFilters, searchText]);
+  }, [facetFilters, searchText, pageSize, gridApi]);
 
   useEffect(() => {
-    // FIXME: Pagination work
-    fetchCitationData();
-  }, [pageSize, pageNum]);
+    if (gridApi) gridApi.showLoadingOverlay();
+    fetchData();
+  }, [pageNum, gridApi]);
 
-  // Update records when new sort is applied & go back to first page
   useEffect(() => {
     if (gridApi) {
       gridApi.showLoadingOverlay();
       setPageNum(0);
-      fetchCitationData();
+      fetchData();
     }
   }, [sortedColumn]);
 
   /**
-   * Create a proper sort query for whichever sort attribute is selected
+   * Creates a query for a string field for OpenSearch
+   * @param {{attrName, value}} input necessary fields for string query
+   * @returns
    */
-  const createSortQuery = () => {
-    const { attribute, order } = sortedColumn;
-
-    // Have to include .keyword when sorting string attributes
-    const sortAttrKey = `${sortedColumn.attribute}${
-      stringAttributes.includes(attribute) ? ".keyword" : ""
-    }`;
+  const createStringQuery = ({ attrName, value }) => {
+    const escapedInput = escapeSpecialCharacters(value);
 
     return {
-      sort: [
-        {
-          [sortAttrKey]: {
-            order,
+      bool: {
+        filter: [
+          {
+            regexp: {
+              [attrName !== "Gene Name" ? `${attrName}.keyword` : attrName]: {
+                value: `${escapedInput}.*`,
+                flags: "ALL",
+                case_insensitive: true,
+              },
+            },
           },
-        },
-      ],
-    };
-  };
-
-  /**
-   * Handle Publications date range filter changes
-   * @param {String} dateTime Either "start" or "end"
-   * @param {date} dateValue Value for the start or end date
-   */
-  const handleDateChange = (dateTime, dateValue) => {
-    dateValue = dayjs(dateValue).format("YYYY/MM/DD");
-    const oldPubDateFilter = facetFilters["PubDate"];
-
-    const currentFilters = {
-      ...facetFilters,
-      PubDate: {
-        ...oldPubDateFilter,
-        [dateTime]: dateValue,
+        ],
       },
     };
-
-    setFacetFilters(currentFilters);
   };
 
-  // Set new page to next page
-  const onBtNext = () => {
-    if (pageNum < docCount / pageSize - 1) {
-      setPageNum(pageNum + 1);
-    }
-  };
-
-  // Set new page to prev page
-  const onBtPrevious = () => {
-    if (pageNum !== 0) {
-      setPageNum(pageNum - 1);
-    }
+  const onGridReady = (params) => {
+    params.api.showLoadingOverlay();
+    setGridApi(params.api);
+    setColumnApi(params.columnApi);
   };
 
   /**
@@ -453,44 +355,49 @@ const CitationTable = () => {
     }
   };
 
-  const onGridReady = (params) => {
-    setGridApi(params.api);
-    setColumnApi(params.columnApi);
+  const resetFilters = () => {
+    setFacetFilters({});
+    setSearchText("");
+    setSortedColumn(null);
   };
 
-  // Export current page as CSV file
+  /**
+   * Track which column is selected for sort by user
+   */
+  const onSortChanged = () => {
+    const columnState = columnApi.getColumnState();
+    const sortedColumn = columnState.filter((col) => col.sort !== null);
+
+    if (sortedColumn.length !== 0) {
+      const { sort, colId } = sortedColumn[0];
+      setSortedColumn({ attribute: colId, order: sort });
+    } else {
+      setSortedColumn(null);
+    }
+  };
+
   const onBtExport = useCallback(() => {
     gridRef.current.api.exportDataAsCsv();
   }, []);
 
-  /**
-   * Escape all special characters for input string
-   * Special Characters include: [-[\]{}()*+?.,\\^$|#\s
-   * @param {String} inputVal Non-escaped string value entered by user
-   * @returns String where special characters are escaped with slashes
-   */
-  const escapeSpecialCharacters = (inputVal) => {
-    return inputVal.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  const onBtNext = () => {
+    if (pageNum < docCount / pageSize - 1) {
+      setPageNum(pageNum + 1);
+    }
+  };
+
+  const onBtPrevious = () => {
+    if (pageNum !== 0) {
+      setPageNum(pageNum - 1);
+    }
   };
 
   const clearSearch = () => {
     setSearchText("");
   };
 
-  /**
-   * Reset all search facets
-   */
-  const resetFilters = () => {
-    setFacetFilters({
-      PubDate: {
-        start: dayjs("1957-08-17").format("YYYY/MM/DD"),
-        end: dayjs(new Date()).format("YYYY/MM/DD"),
-      },
-    });
-    setPageNum(0);
-    setDocCount(0);
-    setSearchText("");
-    setPageSize(50);
+  const handleGlobalSearch = (input) => {
+    setSearchText(input);
   };
 
   return (
@@ -507,8 +414,8 @@ const CitationTable = () => {
           sx={{
             backgroundColor: "#f9f8f7",
             width: "285px",
-            height: "auto",
             overflow: "scroll",
+            height: "auto",
           }}
         >
           <h1
@@ -547,7 +454,7 @@ const CitationTable = () => {
                     lineHeight: "normal",
                   }}
                 >
-                  Citation ID
+                  Gene ID
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -560,10 +467,40 @@ const CitationTable = () => {
                       borderRadius: "16px",
                     },
                   }}
-                  name="PubMed_ID"
                   onChange={handleInputChange}
+                  name="GeneID"
+                  value={facetFilters["GeneID"] ? facetFilters["GeneID"] : ""}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary>
+                <Typography
+                  sx={{
+                    color: "#454545",
+                    fontFamily: "Montserrat",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    lineHeight: "normal",
+                  }}
+                >
+                  Gene Name
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label="Search..."
+                  InputProps={{
+                    style: {
+                      borderRadius: "16px",
+                    },
+                  }}
+                  onChange={handleInputChange}
+                  name="Gene Name"
                   value={
-                    facetFilters["PubMed_ID"] ? facetFilters["PubMed_ID"] : ""
+                    facetFilters["Gene Name"] ? facetFilters["Gene Name"] : ""
                   }
                 />
               </AccordionDetails>
@@ -579,52 +516,7 @@ const CitationTable = () => {
                     lineHeight: "normal",
                   }}
                 >
-                  Date of Publication
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails sx={{ paddingX: "10px" }}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <Container components={["DatePicker", "DatePicker"]}>
-                    <DatePicker
-                      label="Start Date"
-                      format="YYYY/MM/DD"
-                      minDate={dayjs("1957-08-17")}
-                      maxDate={dayjs(new Date())}
-                      value={dayjs(facetFilters["PubDate"]["start"])}
-                      onChange={(newValue) =>
-                        handleDateChange("start", newValue)
-                      }
-                    />
-                  </Container>
-                  <br />
-                  <Container
-                    components={["DatePicker", "DatePicker"]}
-                    sx={{ paddingX: "10px" }}
-                  >
-                    <DatePicker
-                      label="End Date"
-                      format="YYYY/MM/DD"
-                      minDate={dayjs("1957-08-17")}
-                      maxDate={dayjs(new Date())}
-                      value={dayjs(dayjs(facetFilters["PubDate"]["end"]))}
-                      onChange={(newValue) => handleDateChange("end", newValue)}
-                    />
-                  </Container>
-                </LocalizationProvider>
-              </AccordionDetails>
-            </Accordion>
-            <Accordion>
-              <AccordionSummary>
-                <Typography
-                  sx={{
-                    color: "#454545",
-                    fontFamily: "Montserrat",
-                    fontSize: "16px",
-                    fontStyle: "normal",
-                    lineHeight: "normal",
-                  }}
-                >
-                  Title
+                  Location
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -638,42 +530,10 @@ const CitationTable = () => {
                     },
                   }}
                   onChange={handleInputChange}
-                  value={facetFilters["Title"] ? facetFilters["Title"] : ""}
-                  name="Title"
-                />
-              </AccordionDetails>
-            </Accordion>
-            <Accordion>
-              <AccordionSummary>
-                <Typography
-                  sx={{
-                    color: "#454545",
-                    fontFamily: "Montserrat",
-                    fontSize: "16px",
-                    fontStyle: "normal",
-                    lineHeight: "normal",
-                  }}
-                >
-                  Journal
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <TextField
-                  variant="outlined"
-                  size="small"
-                  label="Search..."
-                  InputProps={{
-                    style: {
-                      borderRadius: "16px",
-                    },
-                  }}
-                  onChange={handleInputChange}
+                  name="Location"
                   value={
-                    facetFilters["journal_title"]
-                      ? facetFilters["journal_title"]
-                      : ""
+                    facetFilters["Location"] ? facetFilters["Location"] : ""
                   }
-                  name="journal_title"
                 />
               </AccordionDetails>
             </Accordion>
@@ -681,7 +541,7 @@ const CitationTable = () => {
         </Box>
         <Container
           maxWidth="false"
-          sx={{ marginTop: "30px", marginLeft: "20px" }}
+          sx={{ marginTop: "30px" }}
         >
           <Box sx={{ display: "flex" }}>
             <Box
@@ -731,6 +591,9 @@ const CitationTable = () => {
                   borderColor: "#1463B9",
                   cursor: "pointer",
                   borderRadius: "0 16px 16px 0",
+                }}
+                onClick={() => {
+                  handleGlobalSearch(searchText);
                 }}
               >
                 <SearchIcon sx={{ color: "white" }} />
@@ -824,7 +687,7 @@ const CitationTable = () => {
                   marginRight: "30px",
                 }}
               >
-                out of {Math.ceil(docCount / pageSize)}
+                out of {docCount === 0 ? 0 : Math.ceil(docCount / pageSize)}
               </Typography>
               <button
                 onClick={onBtPrevious}
@@ -903,7 +766,6 @@ const CitationTable = () => {
               </button>
             </Box>
           </Box>
-
           <Box
             sx={{
               marginTop: "20px",
@@ -920,17 +782,14 @@ const CitationTable = () => {
                 columnDefs={columns}
                 defaultColDef={defColumnDefs}
                 onGridReady={onGridReady}
-                cacheQuickFilter={true}
-                loadingOverlayComponent={loadingOverlayComponent}
                 components={{
                   LinkComponent,
                 }}
-                enableCellTextSelection={true}
                 onSortChanged={onSortChanged}
-                paginationPageSize={pageSize}
+                enableCellTextSelection={true}
               />
             </div>
-            <div style={{ display: "flex" }}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Button
                 onClick={onBtExport}
                 sx={{
@@ -960,4 +819,4 @@ const CitationTable = () => {
   );
 };
 
-export default CitationTable;
+export default GeneTable;

@@ -5,7 +5,7 @@ import "react-tabs/style/react-tabs.css";
 import { saveAs } from "file-saver";
 
 import AnalysisFilter from "../components/AnalysisFilter.js";
-import Table from "../components/CsvToJsonTable.js";
+import Table from "../components/Tables/CsvToJsonTable.js";
 import heatmap from "../assets/top100var_heatmap_626170.png";
 import "./style.css";
 import { Helmet } from "react-helmet";

@@ -3,10 +3,10 @@ import Chart from "react-google-charts";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 
-import GeneTable from "../../../components/GeneTable";
+import GeneTable from "../../../components/Tables/GeneTable";
 import MainFeature from "../../../assets/hero.jpeg";
 import { Container } from "@mui/material";
-import BreadCrumb from "../../../components/Breadcrumbs";
+import BreadCrumb from "../../../components/Layout/Breadcrumbs";
 import { Helmet } from "react-helmet";
 
 export const options = {

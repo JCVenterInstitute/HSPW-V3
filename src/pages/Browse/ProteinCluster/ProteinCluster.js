@@ -2,13 +2,13 @@ import LinearProgress from "@mui/material/LinearProgress";
 import React, { useState, useEffect } from "react";
 import Chart from "react-google-charts";
 import Box from "@mui/material/Box";
+import { Container } from "@mui/material";
+import { Helmet } from "react-helmet";
 
 import main_feature from "../../../assets/hero.jpeg";
-import Cluster from "../../../components/ProteinClusterTable";
+import Cluster from "../../../components/Tables/ProteinClusterTable";
+import BreadCrumb from "../../../components/Layout/Breadcrumbs";
 import "../../style.css";
-import { Container } from "@mui/material";
-import BreadCrumb from "../../../components/Breadcrumbs";
-import { Helmet } from "react-helmet";
 
 export const options = {
   legend: { position: "none" },

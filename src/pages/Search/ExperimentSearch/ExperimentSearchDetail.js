@@ -10,14 +10,15 @@ import axios from "axios";
 import { useParams } from "react-router";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
-import MainFeature from "../../../assets/hero.jpeg";
-import "../../style.css";
 import LaunchIcon from "@mui/icons-material/Launch";
-import ExperimentProteinTable from "../../../components/Search/ExperimentSearch/ExperimentProteinTable";
 import { Container } from "@mui/material";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import BreadCrumb from "../../../components/Breadcrumbs";
+
+import ExperimentProteinTable from "../../../components/Search/ExperimentSearch/ExperimentProteinTable";
+import BreadCrumb from "../../../components/Layout/Breadcrumbs";
+import MainFeature from "../../../assets/hero.jpeg";
+import "../../style.css";
 
 const th = {
   background: "#f2f2f2",

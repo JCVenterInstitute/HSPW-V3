@@ -1,11 +1,11 @@
 import FontAwesome from "react-fontawesome";
+import { Container } from "@mui/material";
+import { Helmet } from "react-helmet";
 
 import Protein from "../../../components/SalivaryProtein/SalivaryProteinTable.js";
 import MainFeature from "../../../assets/hero.jpeg";
+import BreadCrumb from "../../../components/Layout/Breadcrumbs";
 import "../../style.css";
-import { Container } from "@mui/material";
-import BreadCrumb from "../../../components/Breadcrumbs.js";
-import { Helmet } from "react-helmet";
 
 const SalivaryProtein = () => {
   const breadcrumbPath = [

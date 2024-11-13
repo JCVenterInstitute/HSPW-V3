@@ -6,10 +6,11 @@ import {
   ListItem,
   ListItemText,
 } from "@mui/material";
+import { Helmet } from "react-helmet";
+
 import main_feature from "../../assets/hero.jpeg";
 import memberInfo from "../../components/Help/Team/memberInfo";
-import BreadCrumb from "../../components/Breadcrumbs";
-import { Helmet } from "react-helmet";
+import BreadCrumb from "../../components/Layout/Breadcrumbs";
 
 const Team = () => {
   const breadcrumbPath = [

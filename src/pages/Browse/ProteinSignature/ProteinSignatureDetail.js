@@ -13,11 +13,12 @@ import FontAwesome from "react-fontawesome";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
+import { Container } from "@mui/material";
+import { Helmet } from "react-helmet";
+
+import BreadCrumb from "../../../components/Layout/Breadcrumbs";
 import MainFeature from "../../../assets/hero.jpeg";
 import "../../style.css";
-import { Container } from "@mui/material";
-import BreadCrumb from "../../../components/Breadcrumbs";
-import { Helmet } from "react-helmet";
 
 const th = {
   background: "#f2f2f2",

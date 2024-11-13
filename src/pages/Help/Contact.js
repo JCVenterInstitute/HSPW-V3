@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import main_feature from "../../assets/hero.jpeg";
 import {
   Container,
   Box,
@@ -32,8 +31,10 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import axios from "axios";
 import Swal from "sweetalert2";
 import ReCAPTCHA from "react-google-recaptcha";
-import BreadCrumb from "../../components/Breadcrumbs";
 import { Helmet } from "react-helmet";
+
+import BreadCrumb from "../../components/Layout/Breadcrumbs";
+import main_feature from "../../assets/hero.jpeg";
 
 const Contact = () => {
   const RECAPTCHA_PUBLIC_KEY = process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY;

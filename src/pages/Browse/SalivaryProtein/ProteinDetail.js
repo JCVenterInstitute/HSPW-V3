@@ -14,15 +14,15 @@ import { useParams } from "react-router";
 import ProtvistaUniprot from "protvista-uniprot";
 import "font-awesome/css/font-awesome.min.css";
 import "resize-observer-polyfill";
+import { Helmet } from "react-helmet";
+import { Link as ReactLink } from "react-router-dom";
 
 import BChart from "../../../components/SalivaryProtein/TwoSidedBarChart";
 import CommentTable from "../../../components/SalivaryProtein/CommentTable";
 import GlycanTable from "../../../components/SalivaryProtein/GlycanTable";
 import main_feature from "../../../assets/hero.jpeg";
 import "../../style.css";
-import { Link as ReactLink } from "react-router-dom";
-import BreadCrumb from "../../../components/Breadcrumbs";
-import { Helmet } from "react-helmet";
+import BreadCrumb from "../../../components/Layout/Breadcrumbs";
 
 window.customElements.define("protvista-uniprot", ProtvistaUniprot);
 

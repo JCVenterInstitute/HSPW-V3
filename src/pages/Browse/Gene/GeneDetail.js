@@ -10,11 +10,11 @@ import { useParams } from "react-router";
 import FontAwesome from "react-fontawesome";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
-
-import MainFeature from "../../../assets/hero.jpeg";
 import { Container } from "@mui/material";
-import BreadCrumb from "../../../components/Breadcrumbs";
 import { Helmet } from "react-helmet";
+
+import BreadCrumb from "../../../components/Layout/Breadcrumbs";
+import MainFeature from "../../../assets/hero.jpeg";
 
 const th = {
   background: "#f2f2f2",

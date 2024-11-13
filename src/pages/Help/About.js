@@ -3,13 +3,13 @@ import main_feature from "../../assets/hero.jpeg";
 import { Typography, Container, Grid } from "@mui/material";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 import FlyerFront from "../../assets/flyers/hspw-flyer-front.png";
 import FlyerBack from "../../assets/flyers/hspw-flyer-back.png";
 import LegacyFlyerBack from "../../assets/flyers/2022-HSP-Wiki-flyer-back.png";
 import LegacyFlyerFront from "../../assets/flyers/2022-HSP-Wiki-flyer-front.png";
-import BreadCrumb from "../../components/Breadcrumbs";
-import { Helmet } from "react-helmet";
+import BreadCrumb from "../../components/Layout/Breadcrumbs";
 
 const About = () => {
   const breadcrumbPath = [

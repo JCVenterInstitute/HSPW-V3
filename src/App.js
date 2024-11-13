@@ -2,13 +2,13 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import "./App.css";
-import NavBar from "./components/NavBar.js";
+import NavBar from "./components/Layout/NavBar.js";
 import Home from "./pages";
 import Download from "./pages/Help/Download.js";
 import AnalysisHome from "./pages/AnalysisHome";
 import Gene from "./pages/Browse/Gene/Gene.js";
 import Contact from "./pages/Help/Contact.js";
-import Footer from "./components/Footer.js";
+import Footer from "./components/Layout/Footer.js";
 import ProteinSignature from "./pages/Browse/ProteinSignature/ProteinSignature.js";
 import ProteinCluster from "./pages/Browse/ProteinCluster/ProteinCluster.js";
 import GeneDetail from "./pages/Browse/Gene/GeneDetail.js";

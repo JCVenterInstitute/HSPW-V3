@@ -1,9 +1,10 @@
 import React from "react";
-import main_feature from "../../assets/hero.jpeg";
 import { Typography, Container } from "@mui/material";
-import InterProScanSequenceParameters from "../../components/MultipleSequenceAlignment/InterProScanSequenceParameters";
 import { Helmet } from "react-helmet";
-import BreadCrumb from "../../components/Breadcrumbs";
+
+import InterProScanSequenceParameters from "../../components/MultipleSequenceAlignment/InterProScanSequenceParameters";
+import BreadCrumb from "../../components/Layout/Breadcrumbs";
+import main_feature from "../../assets/hero.jpeg";
 
 const InterProScan = () => {
   const breadcrumbPath = [
