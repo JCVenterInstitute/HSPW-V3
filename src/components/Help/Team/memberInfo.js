@@ -120,7 +120,7 @@ const memberInfo = [
         imageName: "William-Lau.jpg",
         image: William,
         description:
-          "<b>William Lau , B.S., M.S., Ph.D.</b> William Lau has been a bioinformatics scientist/staff computer engineer and group leader at the National Institutes of Health (NIH) since 2005.  He obtained both of his BS and MS in Biomedical Engineering, and a doctorate in Bioinformatics.  He has a strong track record of working across disciplines and with both computational and experimental biologists to develop and apply quantitative methods to answer research questions.  He has also led the development of several biomedical database systems and web applications for use by NIH researchers as well as the broader scientific community. His current research focuses on using systems biology approaches to unravel the intricacies of the immune system network, resulting in multiple publications as co-first author in high impact journals.   William has received the NIH Director’s Award and several CIT/NIAID Merit Awards for his contributions to the NIH’s missions.",
+          "<b>William Lau, B.S., M.S., Ph.D.</b> William Lau has been a bioinformatics scientist/staff computer engineer and group leader at the National Institutes of Health (NIH) since 2005.  He obtained both of his BS and MS in Biomedical Engineering, and a doctorate in Bioinformatics.  He has a strong track record of working across disciplines and with both computational and experimental biologists to develop and apply quantitative methods to answer research questions.  He has also led the development of several biomedical database systems and web applications for use by NIH researchers as well as the broader scientific community. His current research focuses on using systems biology approaches to unravel the intricacies of the immune system network, resulting in multiple publications as co-first author in high impact journals.   William has received the NIH Director’s Award and several CIT/NIAID Merit Awards for his contributions to the NIH’s missions.",
       },
       {
         imageName: "Floyd-Dewhirst.jpg",
@@ -137,13 +137,13 @@ const memberInfo = [
         imageName: "Andrew-LaPointe.jpg",
         image: Andrew,
         description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "<b>Andrew LaPointe</b> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
       },
       {
         imageName: "Anthony-Vo.jpg",
         image: Anthony,
         description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "<b>Anthony Vo, B.S.</b> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
       },
       {
         imageName: "Nikhil-Singh.jpg",
@@ -155,19 +155,19 @@ const memberInfo = [
         imageName: "Rhea-Hinger.jpg",
         image: Rhea,
         description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "<b>Rhea Hinger, M.A.</b> Rhea holds a Master’s in Graphic Design from the Maryland Institute College of Art. She was an intern at J. Craig Venter Institute (JCVI) where she helped with the UI-UX Design. She is skilled in Communication Design, Wire framing and User Research.",
       },
       {
         imageName: "Shubham-Deshmukh.jpg",
         image: Shubham,
         description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "<b>Shubham Deshmukh, B.S.</b> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
       },
       {
         imageName: "Shuvrajyoti-Deb.jpg",
         image: Shuv,
         description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "<b>Shuvrajyoti Debroy, B.S., M.S.</b> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
       },
     ],
   },
