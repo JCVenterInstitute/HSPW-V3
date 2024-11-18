@@ -88,7 +88,7 @@ export const DATA = [
     institution: "J. Craig Venter Institute",
     year: "2022",
     download: [
-      "https://drive.google.com/file/d/1xfHuPKmEP-1-0b0E9qKIf-bNdxwJhayv/view?usp=sharing",
+      "https://s3.us-east-1.amazonaws.com/salivaryproteome.org/hspw-prod-public-data/COVID-19-JCVI-Dataset.csv",
     ],
     available: true,
   },

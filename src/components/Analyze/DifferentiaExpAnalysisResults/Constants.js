@@ -74,7 +74,7 @@ export const fileMapping = {
   },
   "KEGG Pathway": {
     "Enrichment Plot": "kegg_pathway_bar.jpeg",
-    "Enrichment Plot Data": "kegg.tsv",
+    "Enrichment Plot Data": "keggpathway.tsv",
     "Enriched terms & connected genes": "kegg_gene_network.jpeg",
     "GSEA Ridge plot": "kegg_pathway_ridge.jpeg",
     "GSEA Ridge plot Data": "gsekk.tsv",
@@ -85,7 +85,7 @@ export const fileMapping = {
   },
   "KEGG Module": {
     "Enrichment Plot": "kegg_pathway_bar.jpeg",
-    "Enrichment Plot Data": "kegg.tsv",
+    "Enrichment Plot Data": "keggmodule.tsv",
     "Enriched terms & connected genes": "kegg_gene_network.jpeg",
     "GSEA Ridge plot": "kegg_pathway_ridge.jpeg",
     "GSEA Ridge plot Data": "gsemkk.tsv",
@@ -171,17 +171,17 @@ export const fileNames = [
   "egomf.tsv",
   "egocc_gene_net.tsv",
   "egocc.tsv",
-  "kegg_gene_net.tsv",
+  // "kegg_gene_net.tsv",
   "fold_change.csv",
   "gsebp.tsv",
   "gsemf.tsv",
   "gsecc.tsv",
   "gsekk.tsv",
   "gsemkk.tsv",
-  "gsebp_tree.jpeg",
-  "gsecc_tree.jpeg",
-  "gsemf_tree.jpeg",
-  "gsecc_tree.tsv",
+  // "gsebp_tree.jpeg",
+  // "gsecc_tree.jpeg",
+  // "gsemf_tree.jpeg",
+  // "gsecc_tree.tsv",
   "heatmap_0_dpi150.png",
   "heatmap_1_dpi150.png",
   "kegg.tsv",
@@ -200,6 +200,8 @@ export const fileNames = [
   "kegg_pathway_heat.jpeg",
   "kegg_module_ridge.jpeg",
   "kegg_module_heat.jpeg",
+  "keggmodule.tsv",
+  "keggpathway.tsv",
 ];
 
 export const goKeggDict = {
@@ -221,8 +223,8 @@ export const goKeggDict = {
     "gsecc.tsv",
     "gsecc_tree.tsv",
   ],
-  "KEGG Pathway": ["kegg.tsv", "gsekk.tsv", "kegg_pathway_heat.jpeg"],
-  "KEGG Module": ["kegg.tsv", "gsemkk.tsv", "kegg_module_heat.jpeg"],
+  "KEGG Pathway": ["keggpathway.tsv", "gsekk.tsv", "kegg_pathway_heat.jpeg"],
+  "KEGG Module": ["keggmodule.tsv", "gsemkk.tsv", "kegg_module_heat.jpeg"],
 };
 
 export const option = [

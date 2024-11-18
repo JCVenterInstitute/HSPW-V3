@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { Helmet } from "react-helmet";
 
-import main_feature from "../../assets/hero.jpeg";
+import PageHero from "../../assets/hero.jpeg";
 import memberInfo from "../../components/Help/Team/memberInfo";
 import BreadCrumb from "../../components/Layout/Breadcrumbs";
 
@@ -27,7 +27,7 @@ const Team = () => {
       <BreadCrumb path={breadcrumbPath} />
       <div
         className="head_background"
-        style={{ backgroundImage: `url(${main_feature})` }}
+        style={{ backgroundImage: `url(${PageHero})` }}
       >
         <Container maxWidth="xl">
           <h1 className="head_title">Team</h1>
