@@ -108,7 +108,7 @@ Resources:
       FunctionName: "Differential-Analysis-Advance"
       Description: Differential Analysis Advance
       Role: !GetAtt HSPDiffExpRole.Arn
-      MemorySize: 3584
+      MemorySize: 8000
       Environment:
         Variables:
           S3_BUCKET_NAME: !Ref S3BucketName
