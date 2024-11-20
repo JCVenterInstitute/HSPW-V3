@@ -123,6 +123,7 @@ export const sectionToTabs = {
     "GSEA Heatmap plot",
     "GSEA Tree cluster plot",
   ],
+  "Network Graph": ["Analysis using Network graph"],
 };
 
 // Mapping of each download link to file name in s3
@@ -227,6 +228,7 @@ export const option = [
   "GO Molecular Function",
   "GO Cellular Component",
   "KEGG Pathway/Module",
+  "Network Graph",
   "Input Data",
   "Result Data",
   "Download",

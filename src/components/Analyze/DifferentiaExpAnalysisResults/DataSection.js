@@ -23,6 +23,7 @@ import GOHeatmapComponent from "./D3Graphics/GoKegg/GSEAHeatmapPlot/GOHeatmap.js
 import DotGraph from "./D3Graphics/DotGraph/DotGraph";
 import HeatmapComponent from "./D3Graphics/Heatmap/Heatmap.js";
 import NetworkGraph from "./D3Graphics/GoKegg/NetworkGraph/NetworkGraph";
+import NetworkGraphContainer from "./D3Graphics/NetworkGraph_indi/NetworkGraphContainer.js";
 import { fetchDataFile, getImageStyle, handleDownload } from "./utils";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
@@ -405,6 +406,9 @@ const DataSection = ({
           } else {
             displayResult = null;
           }
+          break;
+        case "Network Graph":
+          displayResult = <NetworkGraphContainer />;
           break;
         case "Result Data":
           displayResult = <DataTable data={allFiles["all_data.tsv"].data} />;
