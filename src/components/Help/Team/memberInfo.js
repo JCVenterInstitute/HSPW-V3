@@ -155,13 +155,13 @@ const memberInfo = [
         imageName: "Rhea-Hinger.jpg",
         image: Rhea,
         description:
-          "<b>Rhea Hinger, M.A.</b> Rhea holds a Master’s in Graphic Design from the Maryland Institute College of Art. She was an intern at J. Craig Venter Institute (JCVI) where she helped with the UI-UX Design. She is skilled in Communication Design, Wire framing and User Research.",
+          "<b>Rhea Hinger, M.A.</b> Rhea holds a Master’s in Graphic Design from the Maryland Institute College of Art. She was an intern at J. Craig Venter Institute (JCVI) where she helped with the UI-UX Design. She is skilled in communication design, wire framing and user research.",
       },
       {
         imageName: "Shubham-Deshmukh.jpg",
         image: Shubham,
         description:
-          "<b>Shubham Deshmukh, B.S.</b> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "<b>Shubham Deshmukh, B.S., M.S.</b> Shubham is a Computer Science graduate student at Virginia Tech with extensive experience in software engineering, machine learning, and data visualization. He has contributed to impactful projects such as the Human Salivary Proteome (HSP) at JCVI and developed advanced algorithms for environmental data analysis. With expertise in Python, JavaScript, React, D3.js, AWS, and Docker, Shubham is particularly passionate about data science, machine learning, and computer vision.",
       },
       {
         imageName: "Shuvrajyoti-Deb.jpg",
