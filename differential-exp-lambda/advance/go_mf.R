@@ -14,7 +14,7 @@ qvalue=as.numeric(args[2])
 
 #GO MF enrichment plot
 set.seed(1234)
-egomf <- enrichGO(gene = all_data$rn, OrgDb = org.Hs.eg.db, keyType = 'UNIPROT', ont = "CC", pAdjustMethod = "BH", pvalueCutoff  = pvalue, qvalueCutoff  = qvalue)
+egomf <- enrichGO(gene = all_data$rn, OrgDb = org.Hs.eg.db, keyType = 'UNIPROT', ont = "MF", pAdjustMethod = "BH", pvalueCutoff  = pvalue, qvalueCutoff  = qvalue)
 write.table(as.data.frame(egomf),"egomf.tsv",sep="\t",row.names = TRUE)
 bm <- barplot(egomf,showCategory = 20)
 ggplot_alternative <- function(){bm+ theme_bw()}
@@ -27,7 +27,7 @@ ggsave("gomf_gene_network.jpeg",ggplot_alternative(),width = 11.25,height = 6.25
 write.table(as.data.frame(egomfx),"egomf_gene_net.tsv",sep="\t",row.names = TRUE)
 #GO MF	GSEA
 set.seed(1234)
-gsemf <- gseGO(geneList = id_fc_sort, OrgDb = org.Hs.eg.db, keyType = 'UNIPROT', ont = "CC", minGSSize = 10, maxGSSize = 500, pvalueCutoff = pvalue, verbose = FALSE,seed = TRUE)
+gsemf <- gseGO(geneList = id_fc_sort, OrgDb = org.Hs.eg.db, keyType = 'UNIPROT', ont = "MF", minGSSize = 10, maxGSSize = 500, pvalueCutoff = pvalue, verbose = FALSE,seed = TRUE)
 write.table(as.data.frame(gsemf),"gsemf.tsv",sep="\t",row.names = TRUE)
 ridgemf <- ridgeplot(gsemf,25)
 ggplot_alternative <- function(){ridgemf+ theme_bw()}
