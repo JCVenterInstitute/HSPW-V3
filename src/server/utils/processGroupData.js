@@ -66,7 +66,8 @@ const createCsvString = (data) => {
 exports.processGroupData = async (
   { groupAData, groupBData },
   timestamp,
-  formattedDate
+  formattedDate,
+  groupNames
 ) => {
   console.log("> Processing Group Data");
 
@@ -75,11 +76,11 @@ exports.processGroupData = async (
 
   const { processedSamples: processedGroupA } = await processSamples(
     groupAData,
-    "A"
+    groupNames && groupNames.groupA ? groupNames.groupA : "A"
   );
   const { processedSamples: processedGroupB } = await processSamples(
     groupBData,
-    "B"
+    groupNames && groupNames.groupB ? groupNames.groupB : "B"
   );
 
   const combinedData = [...processedGroupA, ...processedGroupB];
