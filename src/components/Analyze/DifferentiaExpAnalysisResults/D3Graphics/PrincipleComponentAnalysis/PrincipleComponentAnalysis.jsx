@@ -10,6 +10,7 @@ const PrincipleComponentAnalysis = ({
   groupMapping,
   pcaVariance,
   extension,
+  groupNames = { groupA: "A", groupB: "B" },
 }) => {
   const plotConfig = {
     dataFile: data,
@@ -41,8 +42,8 @@ const PrincipleComponentAnalysis = ({
               <br/><strong>PC2</strong>: ${d3.format(".2f")(d["PC2"])}`;
     },
     legendDict: {
-      1: ["A", "var(--sig-dot-color)"],
-      2: ["B", "var(--sigfold-dot-color)"],
+      1: [`${groupNames.groupA}`, "var(--sig-dot-color)"],
+      2: [`${groupNames.groupB}`, "var(--sigfold-dot-color)"],
     },
   };
   const chartRef = useRef(null);
@@ -433,9 +434,19 @@ const PrincipleComponentAnalysis = ({
   };
 
   return (
-    <div id="PCATest" className="graph-container" ref={containerRef}>
-      <div className="reset-button-container" style={resetButtonMargin}>
-        <button onClick={resetZoom} className="reset-button">
+    <div
+      id="PCATest"
+      className="graph-container"
+      ref={containerRef}
+    >
+      <div
+        className="reset-button-container"
+        style={resetButtonMargin}
+      >
+        <button
+          onClick={resetZoom}
+          className="reset-button"
+        >
           Reset
         </button>
       </div>
