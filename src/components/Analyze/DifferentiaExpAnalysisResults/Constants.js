@@ -184,6 +184,7 @@ export const fileNames = [
   "rf_imp_0_dpi150.png",
   "rf_outlier_0_dpi150.png",
   "statistical_parametric_test.csv",
+  "string.csv",
   "venn_out_data.txt",
   "volcano.csv",
 ];
