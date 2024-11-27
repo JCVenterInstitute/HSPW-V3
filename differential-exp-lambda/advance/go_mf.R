@@ -3,10 +3,13 @@ library(clusterProfiler)
 library(enrichplot)
 library(ggupset)
 library(ggplot2)
-all_data <- read.table("all_data.tsv",sep="\t",header=T)
+all_dataa <- read.table("all_data.tsv",sep="\t",header=T)
+all_data <- subset(all_dataa, p.value < 0.056)
 id_fc <- all_data$Fold.Change
 names(id_fc) <- all_data$rn
 id_fc_sort <- id_fc[order(-id_fc)]
+pup <- subset(all_data, log2.FC. > 0)
+pdown <- subset(all_data, log2.FC. < 0)
 
 args <- commandArgs(trailingOnly = TRUE)
 pvalue=as.numeric(args[1])
@@ -19,6 +22,12 @@ write.table(as.data.frame(egomf),"egomf.tsv",sep="\t",row.names = TRUE)
 bm <- barplot(egomf,showCategory = 20)
 ggplot_alternative <- function(){bm+ theme_bw()}
 ggsave("egomf_bar.jpeg",ggplot_alternative(),width = 11.25,height = 6.25,dpi = 600)
+set.seed(1234)
+egomfup <- enrichGO(gene = pup$rn, OrgDb = org.Hs.eg.db, keyType = 'UNIPROT', ont = "CC", pAdjustMethod = "BH", pvalueCutoff  = pvalue, qvalueCutoff  = qvalue)
+write.table(as.data.frame(egomfup),"egomfup.tsv",sep="\t",row.names = TRUE)
+set.seed(1234)
+egomfdown <- enrichGO(gene = pdown$rn, OrgDb = org.Hs.eg.db, keyType = 'UNIPROT', ont = "CC", pAdjustMethod = "BH", pvalueCutoff  = pvalue, qvalueCutoff  = qvalue)
+write.table(as.data.frame(egomfdown),"egomfdown.tsv",sep="\t",row.names = TRUE)
 set.seed(1234)
 egomfx <- setReadable(egomf, 'org.Hs.eg.db', 'UNIPROT')
 p <- cnetplot(egomfx, foldChange=id_fc_sort, circular = TRUE, colorEdge = TRUE)
