@@ -6,8 +6,8 @@ import { useParams } from "react-router";
 import FontAwesome from "react-fontawesome";
 import { Box, Container, LinearProgress } from "@mui/material";
 
+import BreadCrumb from "../../../components/Layout/Breadcrumbs";
 import MainFeature from "../../../assets/hero.jpeg";
-import BreadCrumb from "../../../components/Breadcrumbs";
 import { Helmet } from "react-helmet";
 
 const th = {
@@ -27,7 +27,6 @@ const td = {
 };
 
 const Citation_detail = (props) => {
-  const [xml, setXML] = useState("");
   const [abstract, setAbstract] = useState("");
   const [affi, setaffi] = useState("");
   const [keyword, setKeyWord] = useState();
@@ -38,8 +37,6 @@ const Citation_detail = (props) => {
   const [ta, setTA] = useState();
   const [pgn, setPGN] = useState();
   const [journal, setJournal] = useState();
-  const [isLoadingT, setLoadingT] = useState(true);
-  const [message, setMessage] = useState("");
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");
   const params = useParams();
@@ -482,6 +479,7 @@ const Citation_detail = (props) => {
               >
                 <a
                   target="_blank"
+                  rel="noreferrer"
                   href={interpro_link + data[0]["_source"]["PubMed_ID"]}
                 >
                   {"PubMed "}

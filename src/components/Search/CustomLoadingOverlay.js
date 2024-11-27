@@ -1,6 +1,8 @@
 import React from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 
-export default () => {
+const CustomLoadingOverlay = () => {
   return <CircularProgress />;
 };
+
+export default CustomLoadingOverlay;

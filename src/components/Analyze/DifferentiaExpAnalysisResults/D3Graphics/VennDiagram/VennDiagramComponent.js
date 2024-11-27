@@ -296,6 +296,22 @@ const VennDiagramComponent = ({ data }) => {
         setSelectedSet(d);
       });
 
+    svg
+      .selectAll(".venn-intersection")
+      .on("mouseover", function (event, d) {
+        d3.select(this).select("path").style("fill-opacity", 0.25);
+        venntooltip.html(
+          `<strong>Set:</strong> ${d.label
+            .split("(")[0]
+            .trim()}<br><strong>Size:</strong> ${d.size}`
+        );
+        venntooltip.style("visibility", "visible");
+      })
+      .on("mouseout", function () {
+        d3.select(this).select("path").style("fill-opacity", 0);
+        venntooltip.style("visibility", "hidden");
+      });
+
     createLegend(
       svg,
       {
@@ -316,8 +332,7 @@ const VennDiagramComponent = ({ data }) => {
    * @returns {JSX.Element} The rendered Venn diagram component.
    */
   return (
-    <div id="vennContainer">
-      {/* SVG element for rendering the Venn diagram */}
+    <div id="vennContainer" className="graph-container">
       <svg ref={svgRef} style={{ width: "90%", height: "auto" }}></svg>
 
       {/* Conditionally render the data table if a set is selected */}
@@ -343,18 +358,11 @@ const VennDiagramComponent = ({ data }) => {
                 protein,
               }))}
               hasCustomCells={true}
-              customCells={[0]} // Specifies which columns have custom cell rendering
+              customCells={[0]}
               cellRenderer={[
-                /**
-                 * Renders a custom cell with a link to the external resource.
-                 * Each `protein` value is used to generate a URL for detailed information.
-                 *
-                 * @param {object} params - Parameters for the cell renderer.
-                 * @param {string} params.value - The value to be displayed in the cell (protein name).
-                 * @returns {JSX.Element} A link element with the protein name.
-                 */
                 (params) => (
                   <a
+                    // href={params.data.link}
                     href={`https://salivaryproteome.org/protein/${params.value}`}
                     target="_blank"
                     rel="noopener noreferrer"

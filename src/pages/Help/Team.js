@@ -6,10 +6,11 @@ import {
   ListItem,
   ListItemText,
 } from "@mui/material";
-import main_feature from "../../assets/hero.jpeg";
-import memberInfo from "../../components/Help/Team/memberInfo";
-import BreadCrumb from "../../components/Breadcrumbs";
 import { Helmet } from "react-helmet";
+
+import PageHero from "../../assets/hero.jpeg";
+import memberInfo from "../../components/Help/Team/memberInfo";
+import BreadCrumb from "../../components/Layout/Breadcrumbs";
 
 const Team = () => {
   const breadcrumbPath = [
@@ -26,7 +27,7 @@ const Team = () => {
       <BreadCrumb path={breadcrumbPath} />
       <div
         className="head_background"
-        style={{ backgroundImage: `url(${main_feature})` }}
+        style={{ backgroundImage: `url(${PageHero})` }}
       >
         <Container maxWidth="xl">
           <h1 className="head_title">Team</h1>

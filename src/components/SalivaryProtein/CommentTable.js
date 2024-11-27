@@ -103,8 +103,6 @@ function Comment_Table(props) {
         height: "100%",
         maxWidth: "100%",
         maxHeight: "100%",
-        width: "auto",
-        height: "auto",
       },
     },
   ];

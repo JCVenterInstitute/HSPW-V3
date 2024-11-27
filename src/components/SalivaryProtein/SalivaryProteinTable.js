@@ -1,7 +1,6 @@
 import List from "@mui/material/List";
 import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
-import InfoIcon from "@mui/icons-material/Info";
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -30,14 +29,14 @@ import { styled } from "@mui/material/styles";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CustomLoadingOverlay from "../CustomLoadingOverlay";
-import CustomHeaderGroup from "../CustomHeaderGroup";
+import CustomGroupHeader from "../AgGrid/CustomGroupHeader.jsx";
+import CustomHeader from "../AgGrid/CustomHeader.jsx";
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 import "../Filter.css";
 import "../Table.css";
-import Legend from "./Legend.js";
 import { Link } from "react-router-dom";
 import NormalizationSwitch from "./NormalizationSwitch.js";
-import Swal from "sweetalert2";
+import { expertOpinionHTML, MSHTML } from "./HeaderTooltips.js";
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -231,43 +230,6 @@ function proteinLinkComponent(props) {
   );
 }
 
-function CustomHeader(props) {
-  const onButtonClick = (event) => {
-    event.stopPropagation();
-    Swal.fire({ title: props.tooltipText, confirmButtonColor: "#1464b4" });
-  };
-  const onHeaderClick = () => {
-    props.progressSort();
-  };
-
-  return (
-    <div
-      className="custom-header"
-      onClick={onHeaderClick}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-      }}
-    >
-      <span style={{ flex: 1, cursor: "pointer" }}>{props.displayName}</span>
-      <InfoIcon
-        onClick={onButtonClick}
-        sx={{
-          color: "inherit",
-          "&:hover": {
-            color: "#e9e9e9",
-          },
-          marginLeft: "auto", // Ensures the icon is pushed to the right
-        }}
-      />
-      <div className="custom-tooltip" style={{ display: "none" }}>
-        {props.tooltipText}
-      </div>
-    </div>
-  );
-}
-
 function GreenComponent(props) {
   const data = typeof props.value === "number" ? props.value : 0;
   const dataMax = props.max.value;
@@ -417,7 +379,6 @@ const SalivaryProteinTable = () => {
   const [columnApi, setColumnApi] = useState(null);
   const [gridApi, setGridApi] = useState(null);
   const [sortedColumn, setSortedColumn] = useState(null);
-  const [openLegend, setOpenLegend] = useState(false);
   const [normalizationSelected, setNormalizationSelected] = useState(false);
   const [salivaryMaxAndSum, setSalivaryMaxAndSum] = useState({});
 
@@ -436,6 +397,7 @@ const SalivaryProteinTable = () => {
     {
       headerName: "Gene Symbol",
       field: "Gene Symbol",
+      minWidth: 90,
       cellClass: ["table-border", "salivary-protein-cell"],
       cellStyle: {
         wordBreak: "break-word",
@@ -444,6 +406,7 @@ const SalivaryProteinTable = () => {
     {
       headerName: "Protein Name",
       field: "Protein Name",
+      minWidth: 90,
       cellClass: ["table-border", "salivary-protein-protein-name-cell"],
       cellStyle: {
         wordBreak: "break-word",
@@ -453,19 +416,30 @@ const SalivaryProteinTable = () => {
     {
       headerName: "Expert Opinion",
       field: "expert_opinion",
-      minWidth: 100,
+      minWidth: 135,
       cellRenderer: "opinionComponent",
       cellClass: ["table-border"],
+      headerComponent: CustomHeader,
+      headerComponentParams: {
+        displayName: "Expert Opinion",
+        tooltipHTML: expertOpinionHTML,
+      },
     },
     {
       headerName: "MS (obs.)",
-      headerGroupComponent: CustomHeaderGroup,
+      headerGroupComponent: CustomGroupHeader,
+      headerGroupComponentParams: {
+        tooltipText: "",
+        displayName: "MS (obs.)",
+        tooltipHTML: MSHTML,
+      },
       headerClass: ["header-border", "salivary-protein-header"],
       cellClass: ["table-border"],
       children: [
         {
           headerName: "Whole Saliva",
           field: "saliva_abundance",
+          minWidth: 90,
           cellRenderer: "GreenComponent",
           cellRendererParams: {
             normalizationSelected,
@@ -476,6 +450,7 @@ const SalivaryProteinTable = () => {
         {
           headerName: "Parotid Glands",
           field: "parotid_gland_abundance",
+          minWidth: 90,
           cellRenderer: "GreenComponent",
           cellRendererParams: {
             normalizationSelected,
@@ -486,6 +461,7 @@ const SalivaryProteinTable = () => {
         {
           headerName: "SM/SL Glands",
           field: "sm/sl_abundance",
+          minWidth: 90,
           cellRenderer: "GreenComponent",
           cellRendererParams: {
             normalizationSelected,
@@ -496,6 +472,7 @@ const SalivaryProteinTable = () => {
         {
           headerName: "Blood",
           field: "plasma_abundance",
+          minWidth: 85,
           cellRenderer: "RedComponent",
           cellRendererParams: {
             normalizationSelected,
@@ -509,13 +486,13 @@ const SalivaryProteinTable = () => {
     {
       headerName: "IHC",
       field: "IHC",
+      minWidth: 70,
       wrapText: true,
       cellRenderer: "IHCComponent",
       cellClass: ["square_table", "salivary-proteins-colored-cell"],
     },
     {
       headerName: "mRNA Transcript Level in Salivary Glands (nTPM)",
-      headerGroupComponent: CustomHeaderGroup,
       headerClass: ["header-border", "salivary-protein-header"],
       wrapText: true,
       cellClass: ["table-border"],
@@ -528,7 +505,7 @@ const SalivaryProteinTable = () => {
             normalizationSelected,
             max: salivaryMaxAndSum.mRNA_max,
           },
-          minWidth: 125,
+          minWidth: 130,
           maxWidth: 170,
           cellClass: ["square_table", "salivary-proteins-colored-cell"],
           sortable: true,
@@ -541,18 +518,21 @@ const SalivaryProteinTable = () => {
         {
           headerName: "SM Glands",
           field: "SM",
+          minWidth: 90,
           cellRenderer: "specificityComponent",
           cellClass: ["square_table", "salivary-proteins-colored-cell"],
         },
         {
           headerName: "SL Glands",
           field: "SL",
+          minWidth: 90,
           cellRenderer: "specificityComponent",
           cellClass: ["table-border", "salivary-proteins-colored-cell"],
         },
         {
           headerName: "Parotid Glands",
           field: "PAR",
+          minWidth: 90,
           cellRenderer: "specificityComponent",
           cellClass: ["table-border", "salivary-proteins-colored-cell"],
         },
@@ -584,9 +564,6 @@ const SalivaryProteinTable = () => {
         "</div>",
     },
   };
-
-  const handleOpenLegend = () => setOpenLegend(true);
-  const handleCloseLegend = () => setOpenLegend(false);
 
   const loadingOverlayComponent = useMemo(() => {
     return CustomLoadingOverlay;
@@ -2097,49 +2074,7 @@ const SalivaryProteinTable = () => {
                 />
                 Download Spreadsheet
               </Button>
-              <Button
-                sx={{
-                  fontWeight: "bold",
-                  textDecoration: "none",
-                  textTransform: "unset",
-                  color: "#F6921E",
-                  background: "white",
-                  fontSize: "20",
-                  "&:hover": {
-                    backgroundColor: "inherit", // Keeps the same background color on hover
-                  },
-                }}
-                onClick={handleOpenLegend}
-              >
-                Show Legend
-              </Button>
             </div>
-            <Modal open={openLegend} onClose={handleCloseLegend}>
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: "15%",
-                  left: "50%",
-                  transform: "translate(-50%, -15%)",
-                  bgcolor: "background.paper",
-                  boxShadow: 24,
-                  p: 2,
-                  width: "60vw",
-                  overflow: "scroll",
-                  borderRadius: "16px",
-                }}
-              >
-                <Typography
-                  id="legend-modal-title"
-                  variant="h6"
-                  component="h2"
-                  sx={{ textAlign: "center" }}
-                >
-                  Table Legend
-                </Typography>
-                <Legend />
-              </Box>
-            </Modal>
           </Box>
         </Container>
       </Container>

@@ -1,5 +1,4 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
-import main_feature from "../../assets/hero.jpeg";
 import {
   Container,
   TextField,
@@ -25,18 +24,18 @@ import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-material.css";
 import axios from "axios";
-import CustomHeaderGroup from "./CustomHeaderGroup";
-import CustomLoadingOverlay from "./CustomLoadingOverlay";
 import CircleCheckedFilled from "@mui/icons-material/CheckCircle";
 import CircleUnchecked from "@mui/icons-material/RadioButtonUnchecked";
 import Swal from "sweetalert2";
 import ClearIcon from "@mui/icons-material/Clear";
 import Papa from "papaparse";
-import BreadCrumb from "../../components/Breadcrumbs";
-import { Helmet } from "react-helmet";
+
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-material.css";
+
+import CustomLoadingOverlay from "./CustomLoadingOverlay";
+import PageHeader from "../../components/Layout/PageHeader";
 
 const toExcelColumn = (colIndex) => {
   let column = "";
@@ -379,7 +378,6 @@ const DifferentialExpression = () => {
   const groupAColDef = [
     {
       headerName: "Group A",
-      headerGroupComponent: CustomHeaderGroup,
       headerClass: ["header-border", "differential-expression-header"],
       children: [
         {
@@ -409,7 +407,6 @@ const DifferentialExpression = () => {
   const groupBColDef = [
     {
       headerName: "Group B",
-      headerGroupComponent: CustomHeaderGroup,
       headerClass: ["header-border", "differential-expression-header"],
       children: [
         {
@@ -818,9 +815,6 @@ const DifferentialExpression = () => {
             }, 3000);
           });
       } else {
-        console.log("> Group A", groupARowData);
-        console.log("> Group B", groupBRowData);
-
         await axios
           .post(
             `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze`,
@@ -892,31 +886,20 @@ const DifferentialExpression = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Differential Expression</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        className="head_background"
-        style={{ backgroundImage: `url(${main_feature})` }}
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Differential Expression Analysis</h1>
-          <p className="head_text">
-            Please choose experiments from the following table for differential
-            expression analysis. This analysis will identify proteins with
-            differential abundance between experiments in Groups A and B based
-            on their normalized spectral counts.
-          </p>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={"HSP | Differential Expression"}
+        breadcrumb={breadcrumbPath}
+        title={"Differential Expression Analysis"}
+        description={
+          "Please choose experiments from the following table for differential expression analysis. This analysis will identify proteins with differential abundance between experiments in Groups A and B based on their normalized spectral counts."
+        }
+      />
       <Container
         maxWidth="xl"
         sx={{
           width: "100%",
           display: "flex",
           paddingLeft: "0px !important",
-          // paddingRight: "0px !important",
         }}
       >
         <Box
@@ -1107,8 +1090,6 @@ const DifferentialExpression = () => {
             <Box
               style={{
                 display: "flex",
-                //  width: "100%",
-                //  maxWidth: "550px"
               }}
             >
               <TextField
@@ -1795,11 +1776,23 @@ const DifferentialExpression = () => {
               >
                 T-Test
               </Typography>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  color: "#1463B9",
+                  fontFamily: "Montserrat",
+                  fontWeight: 600,
+                  mt: 3,
+                }}
+              >
+                Statistical Non-Parametric Test:
+              </Typography>
               <Checkbox
                 icon={<CircleUnchecked />}
                 checkedIcon={<CircleCheckedFilled />}
                 checked={parametricTest === "T"}
                 onChange={() => setParametricTest("T")}
+                sx={{ paddingLeft: 0 }}
               />
               <Typography
                 display="inline"

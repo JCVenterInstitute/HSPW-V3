@@ -313,6 +313,7 @@ body {
   }
   .ag-tooltip {
     color: white;
+    background-color: #0056b3;
     border-radius: 8px; /* Rounded edges */
     border: 1px solid #000; /* Border with desired color and thickness */
     padding: 10px; /* Optional: add some padding for better appearance */

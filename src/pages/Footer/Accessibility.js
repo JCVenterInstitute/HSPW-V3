@@ -1,8 +1,8 @@
 import { Container, Typography } from "@mui/material";
-
-import MainFeature from "../../assets/hero.jpeg";
 import { Helmet } from "react-helmet";
-import BreadCrumb from "../../components/Breadcrumbs";
+
+import BreadCrumb from "../../components/Layout/Breadcrumbs";
+import MainFeature from "../../assets/hero.jpeg";
 
 const AccessibilityPage = () => {
   const breadcrumbPath = [

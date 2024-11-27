@@ -2,13 +2,13 @@ import LinearProgress from "@mui/material/LinearProgress";
 import React, { useState, useEffect } from "react";
 import Chart from "react-google-charts";
 import Box from "@mui/material/Box";
+import { Container } from "@mui/material";
+import { Helmet } from "react-helmet";
 
 import main_feature from "../../../assets/hero.jpeg";
-import Cluster from "../../../components/ProteinClusterTable";
+import Cluster from "../../../components/Tables/ProteinClusterTable";
+import BreadCrumb from "../../../components/Layout/Breadcrumbs";
 import "../../style.css";
-import { Container } from "@mui/material";
-import BreadCrumb from "../../../components/Breadcrumbs";
-import { Helmet } from "react-helmet";
 
 export const options = {
   legend: { position: "none" },
@@ -28,16 +28,9 @@ export const options = {
     },
   },
   bubble: { textStyle: { fontSize: 11 } },
-  // chartArea: {
-  //   left: "10%",
-  //   top: "5%",
-  //   width: "75%", // Decrease if necessary to allow space for bubbles
-  //   height: "50%",
-  // },
 };
 
 const ProteinCluster = () => {
-  const [message, setMessage] = useState("");
   const [number, setNumber] = useState({});
   const [isLoading, setLoading] = useState(true);
 
@@ -48,13 +41,6 @@ const ProteinCluster = () => {
   ];
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/protein-cluster`)
-      .then((res) => res.json())
-      .then((data) => setMessage(data["Cluster ID"]))
-      .catch((error) =>
-        console.error("Error fetching protein cluster data:", error)
-      );
-
     fetch(
       `${process.env.REACT_APP_API_ENDPOINT}/api/protein-cluster-member-count`
     )

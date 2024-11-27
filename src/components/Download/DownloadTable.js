@@ -2,26 +2,48 @@ import React, { useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import { DATA } from "../../data/data";
-import first_pic from "../../assets/first-pic.png";
-import second_pic from "../../assets/second-pic.png";
-import third_pic from "../../assets/third-pic.png";
-import second_pic_hover from "../../assets/second-pic-hover.png";
-import third_pic_hover from "../../assets/third-pic-hover.png";
-import MzTab from "../../assets/MzTab.png";
-import METADATA from "../../assets/METADATA.png";
-import RAW from "../../assets/RAW.png";
-import "../Filter.css";
-import "../Table.css";
 import { Container } from "@mui/material";
 
+import { DATA } from "../../data/data";
+import MetaDataIcon from "../../assets/download-table-icons/MetaDataIcon.png";
+import MzTabIcon from "../../assets/download-table-icons/MzTabIcon.png";
+import RawIcon from "../../assets/download-table-icons/RawIcon.png";
+import RawIconHover from "../../assets/download-table-icons/RawIconHover.png";
+import MzTabIconHover from "../../assets/download-table-icons/MzTabIconHover.png";
+import MetaDataIconHover from "../../assets/download-table-icons/MetaDataIconHover.png";
+import MzTab from "../../assets/download-table-icons/MzTab.png";
+import METADATA from "../../assets/download-table-icons/METADATA.png";
+import RAW from "../../assets/download-table-icons/RAW.png";
+import "../Filter.css";
+import "../Table.css";
+
 function LinkComponent(props) {
-  const imageUrlArray = [first_pic, second_pic, third_pic];
-  const hoverImageUrlArray = [
-    third_pic_hover,
-    second_pic_hover,
-    third_pic_hover,
-  ];
+  const { value, data } = props;
+
+  const paperUrl = data?.paper;
+
+  return (
+    <div>
+      {paperUrl ? (
+        <a
+          href={paperUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {value}
+        </a>
+      ) : (
+        value
+      )}
+    </div>
+  );
+}
+
+function DownloadComponent(props) {
+  const imageUrlArray = [MetaDataIcon, MzTabIcon, RawIcon];
+
+  const hoverImageUrlArray = [MetaDataIconHover, MzTabIconHover, RawIconHover];
+
   const downloadIcons = [METADATA, MzTab, RAW];
   const [isHovered, setIsHovered] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(-1);
@@ -38,39 +60,59 @@ function LinkComponent(props) {
 
   return (
     <>
-      {imageUrlArray.map((imageUrl, index) => (
-        <a
-          key={index}
-          rel="noopener noreferrer"
-          href={props.value}
-          className={index === currentIndex && isHovered ? "download-link" : ""}
-          onMouseEnter={() => handleMouseEnter(index)}
-          onMouseLeave={handleMouseLeave}
-        >
-          <img
-            src={
-              index === currentIndex
-                ? isHovered
+      {imageUrlArray.map((imageUrl, index) => {
+        return props.value[index] ? (
+          <a
+            key={index}
+            rel="noopener noreferrer"
+            href={props.value[index]} // Each image has a unique URL
+            target="_blank"
+            className={
+              index === currentIndex && isHovered ? "download-link" : ""
+            }
+            onMouseEnter={() => handleMouseEnter(index)}
+            onMouseLeave={handleMouseLeave}
+          >
+            <img
+              src={
+                index === currentIndex && isHovered
                   ? hoverImageUrlArray[index]
                   : imageUrl
-                : imageUrl
-            }
-            style={{ marginRight: "5px", marginTop: "5px" }}
-            alt={`Link ${index + 1}`}
-          />
-          {index === currentIndex && isHovered && (
-            <>
+              }
+              style={{
+                marginRight: "5px",
+                marginTop: "5px",
+                width: "30px",
+                height: "30px",
+              }}
+              alt={`Link ${index + 1}`}
+            />
+            {index === currentIndex && isHovered && (
               <div className="download-hover-content">
                 <img
+                  style={{ margin: "0px 16px -12px 0px" }}
                   src={downloadIcons[index]}
                   alt={`${downloadIcons[index]}`}
                   className="download-hover-image"
                 />
               </div>
-            </>
-          )}
-        </a>
-      ))}
+            )}
+          </a>
+        ) : (
+          <img
+            key={index}
+            src={imageUrl}
+            style={{
+              marginRight: "5px",
+              marginTop: "5px",
+              width: "30px",
+              height: "30px",
+              opacity: "30%",
+            }}
+            alt={`Link ${index + 1}`}
+          />
+        );
+      })}
     </>
   );
 }
@@ -95,6 +137,7 @@ function DownloadTable() {
     {
       headerName: "Study Name",
       field: "project",
+      cellRenderer: "LinkComponent",
       autoHeight: true,
       wrapText: true,
       cellStyle: { wordBreak: "break-word" },
@@ -131,7 +174,7 @@ function DownloadTable() {
     {
       headerName: "Download",
       field: "download",
-      cellRenderer: "LinkComponent",
+      cellRenderer: "DownloadComponent",
       maxWidth: 170,
       autoHeight: true,
       headerClass: ["header-border"],
@@ -160,6 +203,7 @@ function DownloadTable() {
           <AgGridReact
             rowData={rowData}
             components={{
+              DownloadComponent,
               LinkComponent,
             }}
             rowHeight={rowHeight}

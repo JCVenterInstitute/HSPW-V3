@@ -6,10 +6,10 @@ import {
   Typography,
 } from "@mui/material";
 import FontAwesome from "react-fontawesome";
-
-import MainFeature from "../../assets/hero.jpeg";
-import BreadCrumb from "../../components/Breadcrumbs";
 import { Helmet } from "react-helmet";
+
+import BreadCrumb from "../../components/Layout/Breadcrumbs";
+import MainFeature from "../../assets/hero.jpeg";
 
 const sections = [
   "Notice",

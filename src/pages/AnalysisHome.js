@@ -1,9 +1,9 @@
 import React from "react";
 import main_feature from "../assets/hero.jpeg";
-import differential from "../assets/icon-heatmap.png";
-import msa from "../assets/icon-msa-alignment.png";
-import blast from "../assets/icon-protein-blast.png";
-import signature from "../assets/icon-protein-signature.png";
+import differential from "../assets/icons/icon-heatmap.png";
+import msa from "../assets/icons/icon-msa-alignment.png";
+import blast from "../assets/icons/icon-protein-blast.png";
+import signature from "../assets/icons/icon-protein-signature.png";
 import { StyledEngineProvider } from "@mui/material/styles";
 import {
   Card,
@@ -14,7 +14,7 @@ import {
   Link,
   Typography,
 } from "@mui/material";
-import BreadCrumb from "../components/Breadcrumbs";
+import BreadCrumb from "../components/Layout/Breadcrumbs";
 import { Helmet } from "react-helmet";
 
 class analysisHome extends React.Component {

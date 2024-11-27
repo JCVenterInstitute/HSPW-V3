@@ -5,12 +5,81 @@ import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-
-import { menu } from "./Menu1.js";
-import { hasChildren } from "./utils.js";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+
+import { hasChildren } from "./utils.js";
+
+const menu = [
+  {
+    title: "Normalization",
+    items: [
+      {
+        title: "Z-Score",
+        items: [],
+      },
+      {
+        title: "Rank",
+        items: [],
+      },
+      {
+        title: "Quantile",
+        item: [],
+      },
+      {
+        title: "Median",
+        items: [],
+      },
+    ],
+  },
+  {
+    title: "Filtering",
+    items: [
+      {
+        title: "Interquantile Range",
+        items: [],
+      },
+      {
+        title: "Standard deviation",
+        items: [],
+      },
+      {
+        title: "Median absolute deviation",
+        items: [],
+      },
+      {
+        title: "Non-parametric relative standard deviation",
+        items: [],
+      },
+      {
+        title: "Mean intensity value",
+        items: [],
+      },
+      {
+        title: "Median intensity value",
+        items: [],
+      },
+    ],
+  },
+  {
+    title: "Export",
+    items: [
+      {
+        title: "Heatmap",
+        items: [],
+      },
+      {
+        title: "Volcano Plot",
+        items: [],
+      },
+      {
+        title: "Histogram",
+        item: [],
+      },
+    ],
+  },
+];
 
 export default function AnalysisFilter() {
   return menu.map((item, key) => (

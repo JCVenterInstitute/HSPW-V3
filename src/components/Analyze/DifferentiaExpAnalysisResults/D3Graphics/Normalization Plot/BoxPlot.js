@@ -287,7 +287,10 @@ const Boxplot = ({ containerId, data }) => {
 
   return (
     <div>
-      <label htmlFor="topN" className="input-label">
+      <label
+        htmlFor="topN"
+        className="input-label"
+      >
         Number of Proteins (1 - 40):
       </label>
       <input

@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Track user submissions from HSP analysis
+
+Parameters:
+  DeployEnv:
+    Type: String
+    Default: DEV
+
+Resources:
+  HspAnalysisSubmissionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Join
+        - "-"
+        - - "hsp-analysis-submissions"
+          - !Ref DeployEnv
+      BillingMode: PAY_PER_REQUEST
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: username
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: "username-index"
+          KeySchema:
+            - AttributeName: username
+              KeyType: HASH
+          Projection:
+            ProjectionType: "ALL"

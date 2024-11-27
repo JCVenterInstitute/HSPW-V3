@@ -66,7 +66,12 @@ export const fetchDataFile = async (jobId, fileName) => {
           transformHeader: (header, index) => {
             if (index === 0 && (header === "" || header === "rn")) {
               // PCA files contain Sample instead of Proteins unlike all other files
-              return fileName.startsWith("pca") ? "Sample" : "Protein";
+              let header = fileName.startsWith("pca") ? "Sample" : "Protein";
+
+              if (fileName.startsWith("randomforest_confusion"))
+                header = "Group";
+
+              return header;
             } else {
               return header;
             }
