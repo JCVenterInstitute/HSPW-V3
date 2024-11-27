@@ -12,7 +12,9 @@ import {
   IconButton,
   FormGroup,
   FormControlLabel,
+  Tooltip,
 } from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
 import { styled } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -1602,12 +1604,22 @@ const DifferentialExpression = () => {
                   fontFamily: "Montserrat",
                   fontWeight: 600,
                   mt: 3,
+                  display: "inline-flex",
+                  alignItems: "center",
                 }}
               >
-                Group Names:
+                Group Names
+                <Tooltip
+                  describeChild
+                  placement="right"
+                  title="Group names only apply when not using your own submitted files"
+                >
+                  <InfoIcon sx={{ fontSize: "1rem", ml: 0.5 }} />
+                </Tooltip>
+                :
               </Typography>
+              <br />
               <TextField
-                required
                 id="outlined-required"
                 label="Group A"
                 defaultValue="A"
@@ -1617,7 +1629,6 @@ const DifferentialExpression = () => {
                 }}
               />
               <TextField
-                required
                 id="outlined-required"
                 label="Group B"
                 defaultValue="B"
