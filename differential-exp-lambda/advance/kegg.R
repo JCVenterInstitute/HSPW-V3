@@ -9,14 +9,18 @@ pvalue=as.numeric(args[1])
 qvalue=as.numeric(args[2])
 
 all_data <- read.table("all_data.tsv",sep="\t",header=T)
+
 #Converting ids to ENTREZID for analysis
 id_chng = bitr(all_data$rn, fromType="UNIPROT", toType="ENTREZID", OrgDb="org.Hs.eg.db")
 colnames(id_chng) <- c("rn", "ENTREZID")
-new_all <- merge(all_data, id_chng[, c("rn", "ENTREZID")], by="rn")
+new_al <- merge(all_data, id_chng[, c("rn", "ENTREZID")], by="rn")
+new_all <- subset(new_al, p.value < 0.056)
 eid_fc <- new_all$log2.FC.
 names(eid_fc) <- new_all$ENTREZID
 id_fc_sort <- eid_fc[order(-eid_fc)]
 write.table(as.data.frame(new_all),"kegg_id_convert.tsv",sep="\t",row.names = FALSE)
+pup <- subset(new_all, log2.FC. > 0)
+pdown <- subset(new_all, log2.FC. < 0)
 #doing enrichment analysis
 set.seed(1234)
 kk <- enrichKEGG(gene = new_all$ENTREZID, organism = 'hsa', pvalueCutoff = pvalue, qvalueCutoff = qvalue)
@@ -24,6 +28,12 @@ write.table(as.data.frame(kk),"keggpathway.tsv",sep="\t",row.names = TRUE)
 bkk <- barplot(kk)
 ggplot_alternative <- function(){bkk+ theme_bw()}
 ggsave("kegg_pathway_bar.jpeg",ggplot_alternative(),width = 11.25,height = 6.25,dpi = 600)
+set.seed(1234)
+kkup <- enrichKEGG(gene = pup$ENTREZID, organism = 'hsa', pvalueCutoff = pvalue, qvalueCutoff = qvalue)
+write.table(as.data.frame(kkup),"kkup.tsv",sep="\t",row.names = TRUE)
+set.seed(1234)
+kkdown <- enrichKEGG(gene = pdown$ENTREZID, organism = 'hsa', pvalueCutoff = pvalue, qvalueCutoff = qvalue)
+write.table(as.data.frame(kkdown),"kkdown.tsv",sep="\t",row.names = TRUE)
 set.seed(1234)
 kkx <- setReadable(kk, 'org.Hs.eg.db', 'ENTREZID')
 p <- cnetplot(kkx, foldChange=id_fc_sort, circular = TRUE, colorEdge = TRUE)
@@ -53,7 +63,12 @@ write.table(as.data.frame(mkk),"keggmodule.tsv",sep="\t",row.names = TRUE)
 bmkk <- barplot(mkk)
 ggplot_alternative <- function(){bmkk+ theme_bw()}
 ggsave("kegg_module_bar.jpeg",ggplot_alternative(),width = 11.25,height = 6.25,dpi = 600)
-write.table(as.data.frame(mkk),"kegg.tsv",sep="\t",row.names = TRUE)
+set.seed(1234)
+mkkup <- enrichMKEGG(gene = pup$ENTREZID, organism = 'hsa', pvalueCutoff = pvalue, qvalueCutoff = qvalue)
+write.table(as.data.frame(mkkup),"mkkup.tsv",sep="\t",row.names = TRUE)
+set.seed(1234)
+mkkdown <- enrichMKEGG(gene = pdown$ENTREZID, organism = 'hsa', pvalueCutoff = pvalue, qvalueCutoff = qvalue)
+write.table(as.data.frame(mkkdown),"mkkdown.tsv",sep="\t",row.names = TRUE)
 set.seed(1234)
 mkkx <- setReadable(mkk, 'org.Hs.eg.db', 'ENTREZID')
 p <- cnetplot(mkkx, foldChange=id_fc_sort, circular = TRUE, colorEdge = TRUE)

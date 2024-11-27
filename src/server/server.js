@@ -1500,6 +1500,7 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
       parametricTest,
       timestamp,
       formattedDate,
+      groupNames,
       // username,
     } = req.body;
 
@@ -1510,7 +1511,8 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
     const inputFile = await processGroupData(
       req.body,
       timestamp,
-      formattedDate
+      formattedDate,
+      groupNames
     );
 
     const basicAnalysisRequestBody = {
@@ -1573,6 +1575,7 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
       parametricTest,
       timestamp,
       formattedDate,
+      groupNames,
       // username,
     } = req.body;
 
@@ -2040,8 +2043,8 @@ const globalSearch = async ({
           [notKeywordList.includes(sortedColumn.attribute)
             ? `${sortedColumn.attribute}`
             : sortedColumn.attribute === "salivary_proteins.keywords"
-            ? `${sortedColumn.attribute}.keyword.keyword`
-            : `${sortedColumn.attribute}.keyword`]: {
+              ? `${sortedColumn.attribute}.keyword.keyword`
+              : `${sortedColumn.attribute}.keyword`]: {
             order: sortedColumn.order,
           },
         },

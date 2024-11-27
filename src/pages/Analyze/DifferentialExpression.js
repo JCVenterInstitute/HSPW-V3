@@ -12,7 +12,9 @@ import {
   IconButton,
   FormGroup,
   FormControlLabel,
+  Tooltip,
 } from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
 import { styled } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -200,6 +202,7 @@ const DifferentialExpression = () => {
   const [upperLimit, setUpperLimit] = useState(20000);
   const [inputData, setInputData] = useState("");
   const [fileIsValid, setFileIsValid] = useState(true);
+  const [groupNames, setGroupNames] = useState({ groupA: "A", groupB: "B" });
 
   useEffect(() => {
     // Apply the filter whenever the limits change
@@ -718,6 +721,24 @@ const DifferentialExpression = () => {
     }
   };
 
+  const handleGroupNameChange = (e, group) => {
+    const { value } = e.target;
+
+    setGroupNames((prev) => {
+      const newGroupName = prev;
+      const defaultGroups = { groupA: "A", groupB: "B" };
+
+      if (value === "") {
+        // Use default A or B as name if name not provided
+        newGroupName[group] = defaultGroups[group];
+      } else {
+        newGroupName[group] = value;
+      }
+
+      return newGroupName;
+    });
+  };
+
   const handleAnalyze = async () => {
     if (!fileName) {
       if (groupARowData.length === 0 || groupBRowData.length === 0) {
@@ -772,8 +793,6 @@ const DifferentialExpression = () => {
 
     const jobId = `differential-expression-${formattedDate}`;
 
-    const workingDirectory = `/home/ec2-user/differential-expression-result/${year}-${month}-${day}/${jobId}`;
-
     Swal.fire({
       title: "Submitting the job, please wait...",
       showConfirmButton: false,
@@ -804,7 +823,7 @@ const DifferentialExpression = () => {
                 seconds,
               },
               formattedDate,
-              workingDirectory,
+              groupNames,
             }
           )
           .then(() => {
@@ -836,7 +855,7 @@ const DifferentialExpression = () => {
                 seconds,
               },
               formattedDate,
-              workingDirectory,
+              groupNames,
             }
           )
           .then(() => {
@@ -1578,6 +1597,46 @@ const DifferentialExpression = () => {
               ANALYSIS OPTIONS
             </Typography>
             <Box>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  color: "#1463B9",
+                  fontFamily: "Montserrat",
+                  fontWeight: 600,
+                  mt: 3,
+                  display: "inline-flex",
+                  alignItems: "center",
+                }}
+              >
+                Group Names
+                <Tooltip
+                  describeChild
+                  placement="right"
+                  title="Group names only apply when not using your own submitted files"
+                >
+                  <InfoIcon sx={{ fontSize: "1rem", ml: 0.5 }} />
+                </Tooltip>
+                :
+              </Typography>
+              <br />
+              <TextField
+                id="outlined-required"
+                label="Group A"
+                defaultValue="A"
+                sx={{ mr: 3, mt: 1 }}
+                onChange={(e) => {
+                  handleGroupNameChange(e, "groupA");
+                }}
+              />
+              <TextField
+                id="outlined-required"
+                label="Group B"
+                defaultValue="B"
+                sx={{ mr: 3, mt: 1 }}
+                onChange={(e) => {
+                  handleGroupNameChange(e, "groupB");
+                }}
+              />
               <Typography
                 variant="subtitle1"
                 sx={{

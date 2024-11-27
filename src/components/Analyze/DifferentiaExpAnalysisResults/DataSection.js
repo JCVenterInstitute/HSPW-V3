@@ -72,6 +72,7 @@ const DataSection = ({
   const [allFiles, setAllFiles] = useState(null);
   const [goResultsReady, setGoResultsReady] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
+  const [groupNames, setGroupNames] = useState({ groupA: "A", groupB: "B" });
 
   const checkGoStatus = async () => {
     try {
@@ -151,6 +152,9 @@ const DataSection = ({
         }
       });
 
+      // Get the group names gor A & B
+      getGroupNames(fileDict["data_original.csv"].data);
+
       setAllFiles(fileDict);
       console.log(fileDict);
     } catch (err) {
@@ -158,6 +162,19 @@ const DataSection = ({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getGroupNames = (data) => {
+    const labels = data[0];
+    const uniqueVals = [...new Set(Object.values(labels))];
+    let groupNames = uniqueVals.filter((val) => val !== "Label");
+
+    if (groupNames.length !== 2) return;
+
+    setGroupNames({
+      groupA: groupNames[0] ? groupNames[0] : "A",
+      groupB: groupNames[1] ? groupNames[1] : "B",
+    });
   };
 
   // Get all_data.tsv, shared across all tab sections
@@ -182,6 +199,7 @@ const DataSection = ({
                 details={["p.value", "Fold.Change"]}
                 xlabel="Log2(FC)"
                 ylabel="-Log10(p)"
+                groupNames={groupNames}
               />
             );
           } else if (tab === "Data Matrix") {
@@ -266,6 +284,7 @@ const DataSection = ({
                 groupLabels={[...groupLabels]}
                 pcaVariance={allFiles["pca_variance.csv"].data}
                 extension={"csv"}
+                groupNames={groupNames}
               />
             );
           } else if (tab === "Data Matrix") {

@@ -49,7 +49,9 @@ import UploadExperiment from "./pages/UploadExperiment.js";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import ScrollToTop from "./components/ScrollToTop.js";
 import ApiPage from "./pages/ApiPage.js";
-ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
+
+if (process.env.REACT_APP_DEPLOY_ENV === "PROD")
+  ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
 
 const theme = createTheme({
   breakpoints: {

@@ -18,8 +18,8 @@ const VennDiagramComponent = ({ data }) => {
   const svgRef = useRef(); // Ref for the SVG element
   const [selectedSet, setSelectedSet] = useState(null);
 
-  const width = 600;
-  const height = 400;
+  const width = 1200;
+  const height = 1000;
   const margin = { top: 20, right: 40, bottom: 20, left: 20 };
 
   /**
@@ -319,9 +319,10 @@ const VennDiagramComponent = ({ data }) => {
         2: [`Unique ${groups[1]}: ${sets[1].size}`, "#ff7f0e"],
         3: [`Common ${groups[0]} & ${groups[1]}: ${sets[2].size}`, "grey"],
       },
-      width - 3 * margin.right,
-      40,
-      12
+      5,
+      10,
+      16,
+      20
     );
   };
   /**
@@ -332,14 +333,17 @@ const VennDiagramComponent = ({ data }) => {
    * @returns {JSX.Element} The rendered Venn diagram component.
    */
   return (
-    <div id="vennContainer" className="graph-container">
-      <svg ref={svgRef} style={{ width: "90%", height: "auto" }}></svg>
-
-      {/* Conditionally render the data table if a set is selected */}
+    <div
+      id="vennContainer"
+      className="graph-container"
+    >
+      <svg
+        ref={svgRef}
+        style={{ width: "90%", height: "auto" }}
+      ></svg>
       {selectedSet && (
         <div>
-          {/* Heading for the selected set */}
-          <h2>
+          <h2 style={{ marginLeft: "25px" }}>
             {selectedSet.label.startsWith("Common")
               ? `${selectedSet.label}`
               : `Unique ${selectedSet.label}`}
