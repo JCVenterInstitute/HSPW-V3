@@ -23,7 +23,7 @@ import GOHeatmapComponent from "./D3Graphics/GoKegg/GSEAHeatmapPlot/GOHeatmap.js
 import DotGraph from "./D3Graphics/DotGraph/DotGraph";
 import HeatmapComponent from "./D3Graphics/Heatmap/Heatmap.js";
 import NetworkGraph from "./D3Graphics/GoKegg/NetworkGraph/NetworkGraph";
-import NetworkGraphContainer from "./D3Graphics/NetworkGraph_indi/NetworkGraphContainer.js";
+import NetworkGraphStringDB from "./D3Graphics/NetworkGraph_indi/NetworkGraph.js";
 import { fetchDataFile, getImageStyle, handleDownload } from "./utils";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
@@ -174,6 +174,7 @@ const DataSection = ({
         }
       });
       setAllFiles(fileDict);
+      console.log(fileDict);
     } catch (err) {
       console.error("> Error fetching all data file", err);
     } finally {
@@ -408,7 +409,9 @@ const DataSection = ({
           }
           break;
         case "Network Graph":
-          displayResult = <NetworkGraphContainer />;
+          displayResult = (
+            <NetworkGraphStringDB data={allFiles["string.csv"].data} />
+          );
           break;
         case "Result Data":
           displayResult = <DataTable data={allFiles["all_data.tsv"].data} />;

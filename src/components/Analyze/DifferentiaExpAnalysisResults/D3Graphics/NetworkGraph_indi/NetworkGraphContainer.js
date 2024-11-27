@@ -28,7 +28,7 @@ const NetworkGraphContainer = () => {
     <div style={{ width: "100vw", height: "100vh" }}>
       {" "}
       {/* Fullscreen */}
-      {csvData.length > 0 && <NetworkGraph csvData={csvData} />}
+      {/* {csvData.length > 0 && <NetworkGraph csvData={csvData} />} */}
     </div>
   );
 };

@@ -94,7 +94,7 @@ const processData = (data, pValueThreshold, fdrThreshold, log2FCThreshold) => {
   return elements;
 };
 
-const NetworkGraph = ({ csvData }) => {
+const NetworkGraph = ({ data }) => {
   const [cy, setCy] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [message, setMessage] = useState("");
@@ -105,18 +105,19 @@ const NetworkGraph = ({ csvData }) => {
   const [minLog2FC, setMinLog2FC] = useState(0);
 
   useEffect(() => {
-    // Calculate minimum log2.FC when csvData is loaded
-    if (csvData.length > 0) {
-      const minLog2FCValue = calculateMinLog2FC(csvData);
+    // Calculate minimum log2.FC when data is loaded
+    console.log(data);
+    if (data?.length > 0) {
+      const minLog2FCValue = calculateMinLog2FC(data);
       setMinLog2FC(minLog2FCValue);
       setLog2FCThreshold(minLog2FCValue); // Set initial threshold to minimum
     }
-  }, [csvData]);
+  }, [data]);
 
   useEffect(() => {
-    if (csvData.length > 0) {
+    if (data.length > 0) {
       const elements = processData(
-        csvData,
+        data,
         pValueThreshold,
         fdrThreshold,
         log2FCThreshold
@@ -181,7 +182,7 @@ const NetworkGraph = ({ csvData }) => {
         }
       };
     }
-  }, [csvData, pValueThreshold, fdrThreshold, log2FCThreshold, selectedLayout]);
+  }, [data, pValueThreshold, fdrThreshold, log2FCThreshold, selectedLayout]);
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);

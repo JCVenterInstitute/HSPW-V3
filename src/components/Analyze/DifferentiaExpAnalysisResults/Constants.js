@@ -83,6 +83,7 @@ export const fileMapping = {
     "GSEA Tree cluster plot": "kegg_tree.jpeg",
     "GSEA Tree cluster plot Data": "gsecc_tree.tsv",
   },
+  "Network Graph": "string.csv",
 };
 
 // Mapping of tabs for each section of results page
@@ -152,6 +153,7 @@ export const downloadMapping = {
   // "KEGG Pathway/Module": "",
   "Result Data": "all_data.tsv",
   "All Data Set": "data_set.zip",
+  "Network Graph": "string.csv",
 };
 
 export const fileNames = [
