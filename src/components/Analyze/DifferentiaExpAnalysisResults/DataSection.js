@@ -509,7 +509,10 @@ const DataSection = ({
           }
 
           break;
-        case "Result Data":
+        case "Network Graph":
+          displayResult = <NetworkGraphStringDB data={allFiles["string.csv"].data}/>;
+          break;
+          case "Result Data":
           displayResult = <DataTable data={allFiles["all_data.tsv"].data} />;
           break;
         case "Input Data":
