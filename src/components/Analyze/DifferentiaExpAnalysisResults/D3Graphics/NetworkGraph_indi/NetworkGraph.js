@@ -221,7 +221,14 @@ const NetworkGraph = ({ csvData }) => {
   ];
 
   return (
-    <div style={{ width: "100%", height: "100%", marginBottom: 50 }}>
+    <div style={{ width: "100%", height: "100%", marginBottom: 10 }}>
+      <div style={{ marginBottom: 30, lineHeight: 1.5 }}>
+        The protein-protein association networks were generated utilizing
+        STRINGdb. The analysis focused exclusively on the significantly
+        differentially abundant proteins to identify their interacting partners,
+        employing the default settings available within the R environment
+        through STRINGdb.
+      </div>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <div>
           <input
