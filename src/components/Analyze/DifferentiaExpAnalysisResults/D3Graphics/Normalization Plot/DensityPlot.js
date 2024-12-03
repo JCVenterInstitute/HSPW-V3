@@ -3,6 +3,15 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3v7";
 import { fetchDataFile } from "../../utils.js";
 
+/**
+ * Renders a density plot using D3.js.
+ * The plot displays the density distribution of the numeric values in the provided data.
+ *
+ * @param {object} props - The component props.
+ * @param {string} props.containerId - The ID for the container element.
+ * @param {Array<object>} props.data - The data to be visualized.
+ * @returns {JSX.Element} The rendered density plot component.
+ */
 const DensityPlot = ({ containerId, data }) => {
   const svgRef = useRef();
   const densityTooltip = useRef(null);

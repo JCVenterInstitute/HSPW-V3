@@ -2,9 +2,39 @@ import "../../D3GraphStyles.css";
 import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
 
+/**
+ * BarChartComponent - A React component for rendering a bar chart using D3.js.
+ *
+ * This component takes `plotData` as a prop and generates a bar chart where each bar represents
+ * a data entry with a count value. The chart includes tooltips, a color gradient legend, and
+ * customizable axes. The component also performs data cleaning to remove extra double quotes
+ * from data values before rendering the chart.
+ *
+ * Props:
+ * - `plotData` (Array of Objects): An array of data objects where each object represents a data row
+ *   with various properties including `Description`, `Count`, and `p.adjust`. The data is used to
+ *   populate the bars in the chart.
+ *
+ * State:
+ * - `data` (Array of Objects): The cleaned and processed data to be displayed in the bar chart.
+ *
+ * UseEffect Hooks:
+ * - First `useEffect`: Cleans and processes the `plotData` prop. Takes the first 20 rows, removes
+ *   double quotes from the relevant fields, and updates the `data` state.
+ * - Second `useEffect`: Triggers the `drawBarChart` function whenever the `data` state is updated.
+ *
+ * Methods:
+ * - `drawBarChart(data)`: Draws the bar chart using D3.js. This includes setting up the SVG, scales,
+ *   axes, bars, labels, and tooltips. It also defines a color scale based on `p.adjust` values and
+ *   adds a legend for visual reference.
+ *
+ * @param {Object} props - The props object containing `plotData`.
+ * @returns {JSX.Element} - A `div` containing the SVG element for the bar chart.
+ */
+
 const BarChartComponent = ({ plotData }) => {
   const [data, setData] = useState(null);
-  const svgRef = useRef();
+  const svgRef = useRef(); // Ref for accessing the SVG DOM element
 
   const margin = { top: 20, right: 10, bottom: 50, left: 280 };
   const width = 1200 - margin.left - margin.right;

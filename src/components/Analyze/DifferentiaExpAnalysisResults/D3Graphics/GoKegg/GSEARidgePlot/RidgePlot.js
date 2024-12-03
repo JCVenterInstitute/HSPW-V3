@@ -36,6 +36,7 @@ const RidgePlotComponent = ({ table, all }) => {
     }
   }, [table, all]);
 
+  // Render the Ridge Plot when data1 and data2 are available
   useEffect(() => {
     if (tableData.length === 0 || allData.length === 0) return;
 
@@ -277,6 +278,7 @@ const RidgePlotComponent = ({ table, all }) => {
       .text("p.adjust");
   };
 
+  // Function to wrap text in y-axis labels
   function wrap(text, width) {
     text.each(function () {
       var text = d3.select(this),

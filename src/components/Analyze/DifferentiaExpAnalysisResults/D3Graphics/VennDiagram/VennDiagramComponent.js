@@ -8,6 +8,12 @@ import { createLegend } from "../../utils";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 
+/**
+ * VennDiagramComponent renders a Venn diagram based on the provided data.
+ * @param {Object} props - The component props.
+ * @param {Array} props.data - The data to be used for rendering the Venn diagram.
+ * @returns {JSX.Element} The rendered VennDiagramComponent.
+ */
 const VennDiagramComponent = ({ data }) => {
   const svgRef = useRef(); // Ref for the SVG element
   const [selectedSet, setSelectedSet] = useState(null);
@@ -16,6 +22,9 @@ const VennDiagramComponent = ({ data }) => {
   const height = 1000;
   const margin = { top: 20, right: 40, bottom: 20, left: 20 };
 
+  /**
+   * useEffect hook to initialize and update the Venn diagram when data changes.
+   */
   useEffect(() => {
     if (!data) return;
 
@@ -73,16 +82,34 @@ const VennDiagramComponent = ({ data }) => {
     }
   }, [data]);
 
+  /**
+   * Extracts unique group labels from the provided label data.
+   * @param {Object} labelData - The label data.
+   * @returns {Array} The unique group labels.
+   */
   const getGroupLabels = (labelData) => {
     const uniqueVals = [...new Set(Object.values(labelData))];
     return uniqueVals.filter((val) => val !== "Label");
   };
 
+  /**
+   * Determines the columns corresponding to each group.
+   * @param {Object} labels - The labels object.
+   * @param {Array} groups - The group labels.
+   * @returns {Array} An array containing the columns for each group.
+   */
   const getGroupColumns = (labels, groups) => [
     Object.keys(labels).filter((key) => labels[key] === groups[0]),
     Object.keys(labels).filter((key) => labels[key] === groups[1]),
   ];
 
+  /**
+   * Calculates the unique and common sets based on the provided data and columns.
+   * @param {Array} df - The data frame.
+   * @param {Array} a_columns - The columns for group A.
+   * @param {Array} b_columns - The columns for group B.
+   * @returns {Object} The sets containing unique and common values.
+   */
   const calculateSets = (df, a_columns, b_columns) => {
     const unique_a = new Set();
     const unique_b = new Set();
@@ -109,8 +136,18 @@ const VennDiagramComponent = ({ data }) => {
     return { unique_a, unique_b, common_ab };
   };
 
+  /**
+   * Extracts the label from a data row.
+   * @param {Object} row - The data row.
+   * @returns {string} The extracted label.
+   */
   const getLabelFromRow = (row) => stripQuotes(row["Protein"]);
 
+  /**
+   * Removes quotes from a string value.
+   * @param {string} value - The string value.
+   * @returns {string} The value without quotes.
+   */
   const stripQuotes = (value) => value.replace(/^"(.*)"$/, "$1");
 
   const initializeTooltip = () =>
@@ -120,6 +157,16 @@ const VennDiagramComponent = ({ data }) => {
       .attr("class", "tooltip")
       .style("position", "absolute");
 
+  /**
+   * Draws the Venn diagram for the special case where there are no unique sets.
+   * @param {d3.Selection} vennContainer - The selection of the Venn diagram container.
+   * @param {Array} sets - The sets to be displayed in the diagram.
+   * @param {Array} groups - The group labels.
+   * @param {Set} common_ab - The set of common values.
+   * @param {Set} unique_a - The set of unique values for group A.
+   * @param {Set} unique_b - The set of unique values for group B.
+   * @param {d3.Selection} venntooltip - The tooltip selection.
+   */
   const drawSpecialCaseVenn = (
     vennContainer,
     sets,
@@ -191,6 +238,13 @@ const VennDiagramComponent = ({ data }) => {
     );
   };
 
+  /**
+   * Draws a standard Venn diagram with three sets.
+   * @param {d3.Selection} vennContainer - The selection of the Venn diagram container.
+   * @param {Array} sets - The sets to be displayed in the diagram.
+   * @param {Array} groups - The group labels.
+   * @param {d3.Selection} venntooltip - The tooltip selection.
+   */
   const drawStandardVenn = (vennContainer, sets, groups, venntooltip) => {
     const svg = vennContainer
       .attr("preserveAspectRatio", "xMinYMin meet")
@@ -271,7 +325,13 @@ const VennDiagramComponent = ({ data }) => {
       20
     );
   };
-
+  /**
+   * Renders the Venn diagram and the associated data table.
+   * Displays the SVG element for the Venn diagram and, if a set is selected,
+   * shows a data table with details of the selected set.
+   *
+   * @returns {JSX.Element} The rendered Venn diagram component.
+   */
   return (
     <div
       id="vennContainer"
@@ -288,8 +348,16 @@ const VennDiagramComponent = ({ data }) => {
               ? `${selectedSet.label}`
               : `Unique ${selectedSet.label}`}
           </h2>
+
+          {/* DataTable component displaying the data of the selected set */}
           <div className="ag-theme-material ag-cell-wrap-text ag-theme-alpine">
             <DataTable
+              /**
+               * Data to be displayed in the table. Each item in the array is an object with a `protein` property.
+               * The `protein` values are links to external resources, such as detailed protein information.
+               *
+               * @type {Array<{protein: string}>}
+               */
               data={[...selectedSet.data].map((protein) => ({
                 protein,
               }))}
