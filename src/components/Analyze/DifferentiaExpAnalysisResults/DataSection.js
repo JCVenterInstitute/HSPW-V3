@@ -510,9 +510,24 @@ const DataSection = ({
 
           break;
         case "Network Graph":
-          displayResult = <NetworkGraphStringDB data={allFiles["string.csv"].data}/>;
+          if (goResultsReady && allFiles["string.csv"].data === null) {
+            displayResult = (
+              <Container sx={{ textAlign: "center", marginTop: "10px" }}>
+                No Significant Data Found
+              </Container>
+            );
+          } else {
+            displayResult =
+              goResultsReady && allFiles["string.csv"].data ? (
+                (displayResult = (
+                  <NetworkGraphStringDB data={allFiles["string.csv"].data} />
+                ))
+              ) : (
+                <CheckbackLater />
+              );
+          }
           break;
-          case "Result Data":
+        case "Result Data":
           displayResult = <DataTable data={allFiles["all_data.tsv"].data} />;
           break;
         case "Input Data":
