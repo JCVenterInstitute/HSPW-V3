@@ -8,7 +8,7 @@ const BarChartComponent = ({ plotData }) => {
 
   const margin = { top: 20, right: 10, bottom: 50, left: 280 };
   const width = 1200 - margin.left - margin.right;
-  const height = 700 - margin.top - margin.bottom;
+  const height = 1200 - margin.top - margin.bottom;
 
   useEffect(() => {
     // Remove double quotes from all relevant fields in the data
@@ -73,7 +73,9 @@ const BarChartComponent = ({ plotData }) => {
       .append("g")
       .attr("class", "axis y-axis")
       .call(d3.axisLeft(y))
-      .selectAll(".tick line")
+      .selectAll(".tick text")
+      .style("font-size", "15px")
+      .style("text-anchor", "center") // Center-align text for better readability
       .attr("x2", width)
       .attr("stroke-opacity", 0.1);
 
@@ -92,7 +94,8 @@ const BarChartComponent = ({ plotData }) => {
       .attr("x", width / 2)
       .attr("y", height + margin.bottom - 10)
       .attr("text-anchor", "middle")
-      .text("Count");
+      .text("Count")
+      .style("font-size", "22px");
 
     // Define color scale based on p.adjust values
     const colorScale = d3
@@ -157,7 +160,8 @@ const BarChartComponent = ({ plotData }) => {
       .attr("x", (d) => x(+d["Count"]) + 5)
       .text((d) => d["Count"])
       .attr("text-anchor", "start")
-      .attr("alignment-baseline", "middle");
+      .attr("alignment-baseline", "middle")
+      .style("font-size", "22px");
 
     // Legend
     const legendHeight = 150;
@@ -204,7 +208,7 @@ const BarChartComponent = ({ plotData }) => {
       .attr("y", -5) // Adjust the y position for the text
       .attr("text-anchor", "middle")
       .text("p.adjust")
-      .style("font-size", "12px")
+      .style("font-size", "22px")
       .style("fill", "#333"); // Adjust font size and color as needed
 
     const legendScale = d3
@@ -218,7 +222,8 @@ const BarChartComponent = ({ plotData }) => {
       .append("g")
       .attr("class", "axis legend-axis")
       .attr("transform", `translate(${legendWidth}, 0)`)
-      .call(legendAxis);
+      .call(legendAxis)
+      .style("font-size", "22px");
   };
 
   return (

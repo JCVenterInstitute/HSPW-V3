@@ -26,6 +26,7 @@ import { fetchDataFile, getImageStyle, handleDownload } from "./utils";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import DataTable from "./DataTable.js";
+import EnrichmentPlot from "./D3Graphics/GoKegg/EncrichmentPlot/EnrichmentPlots.js";
 
 const style = {
   dataBox: {
@@ -369,8 +370,9 @@ const DataSection = ({
         case "GO Cellular Component":
           if (tab === "Enrichment Plot") {
             displayResult = allFiles[goKeggDict[selectedSection][0]].data ? (
-              <BarChartComponent
-                plotData={allFiles[goKeggDict[selectedSection][0]].data}
+              <EnrichmentPlot
+                upRegData={allFiles[goKeggDict[selectedSection][4]].data}
+                downRegData={allFiles[goKeggDict[selectedSection][5]].data}
               />
             ) : (
               <CheckbackLater />
@@ -441,8 +443,9 @@ const DataSection = ({
               );
             } else {
               displayResult = allFiles[goKeggDict[selectedSection][0]].data ? (
-                <BarChartComponent
-                  plotData={allFiles[goKeggDict[selectedSection][0]].data}
+                <EnrichmentPlot
+                  upRegData={allFiles[goKeggDict[selectedSection][3]].data}
+                  downRegData={allFiles[goKeggDict[selectedSection][4]].data}
                 />
               ) : (
                 <CheckbackLater />
