@@ -223,13 +223,6 @@ const NetworkGraph = ({ data }) => {
 
   return (
     <div style={{ width: "100%", height: "100%", marginBottom: 10 }}>
-      <div style={{ marginBottom: 30, lineHeight: 1.5 }}>
-        The protein-protein association networks were generated utilizing
-        STRINGdb. The analysis focused exclusively on the significantly
-        differentially abundant proteins to identify their interacting partners,
-        employing the default settings available within the R environment
-        through STRINGdb.
-      </div>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <div>
           <input
@@ -240,7 +233,10 @@ const NetworkGraph = ({ data }) => {
             onKeyPress={(e) => e.key === "Enter" && handleSearch()}
             className="input-field"
           />
-          <button onClick={handleSearch} className="search-button">
+          <button
+            onClick={handleSearch}
+            className="search-button"
+          >
             Search
           </button>
           {message && <p className="message">{message}</p>}
@@ -256,7 +252,10 @@ const NetworkGraph = ({ data }) => {
       </div>
 
       {/* Sliders for p.value, FDR, log2.FC */}
-      <div className="slider-controls" style={{ marginTop: 20 }}>
+      <div
+        className="slider-controls"
+        style={{ marginTop: 20 }}
+      >
         <label style={{ paddingRight: 50 }}>
           p.value:
           <input
@@ -369,8 +368,10 @@ const NetworkGraph = ({ data }) => {
           <span>-1.0 ≤ log2.FC ≤ 1.0 (Yellow)</span>
         </div>
       </div>
-
-      <div id="cy" style={{ width: "100%", height: "1000px" }}></div>
+      <div
+        id="cy"
+        style={{ width: "100%", height: "1000px" }}
+      ></div>
     </div>
   );
 };
