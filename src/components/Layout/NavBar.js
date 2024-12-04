@@ -268,6 +268,15 @@ export const NavBar = () => {
                         </MenuItem>
                         <MenuItem
                           component={Link}
+                          onClick={() => {
+                            window.location.href =
+                              "http://hsp-documentation.s3-website.us-east-2.amazonaws.com";
+                          }}
+                        >
+                          Documentation
+                        </MenuItem>
+                        <MenuItem
+                          component={Link}
                           to="/download"
                         >
                           Download

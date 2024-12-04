@@ -1,0 +1,19 @@
+{
+  "name": "documentation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "mkdocs build -d ../src/server/documentation",
+    "build:local": "mkdocs build",
+    "sync:s3": "aws s3 sync ./site s3://hsp-documentation",
+    "deploy": "npm run build:local && npm run sync:s3"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

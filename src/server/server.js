@@ -22,6 +22,7 @@ app.use(express.json({ limit: "200mb" }));
 app.use(express.urlencoded({ limit: "200mb", extended: true }));
 app.use(express.static("build"));
 app.use("/static", express.static(path.join(__dirname, "./build/static")));
+app.use("/doc", express.static(path.join(__dirname, "./documentation/")));
 
 const host = process.env.OS_HOSTNAME;
 
@@ -2358,6 +2359,12 @@ app.get("/api/get-salivary-max-and-sum", (req, res) => {
   const data = getSalivaryMaxAndSum();
   data.then(function (result) {
     res.json(result);
+  });
+});
+
+app.get("/doc/*", function (req, res) {
+  res.sendFile("index.html", {
+    root: path.join(__dirname, "./documentation/"),
   });
 });
 
