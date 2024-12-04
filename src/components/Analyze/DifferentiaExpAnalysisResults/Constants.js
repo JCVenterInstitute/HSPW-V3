@@ -94,7 +94,7 @@ export const fileMapping = {
     "GSEA Tree cluster plot": "kegg_tree.jpeg",
     "GSEA Tree cluster plot Data": "gsecc_tree.tsv",
   },
-  "Network Graph": "string.csv",
+  "Network Analysis": "string.csv",
 };
 
 // Mapping of tabs for each section of results page
@@ -130,7 +130,7 @@ export const sectionToTabs = {
   ],
   "KEGG Pathway": ["Enrichment Plot", "GSEA Ridge plot", "GSEA Heatmap plot"],
   "KEGG Module": ["Enrichment Plot", "GSEA Ridge plot", "GSEA Heatmap plot"],
-  "Network Graph": ["Analysis using Network graph"],
+  "Network Analysis": ["Analysis using Network graph"],
 };
 
 // Mapping of each download link to file name in s3
@@ -159,7 +159,7 @@ export const downloadMapping = {
   // "KEGG Pathway/Module": "",
   "Result Data": "all_data.tsv",
   "All Data Set": "data_set.zip",
-  "Network Graph": "string.csv",
+  "Network Analysis": "string.csv",
 };
 
 export const fileNames = [
@@ -273,7 +273,7 @@ export const option = [
   "GO Cellular Component",
   "KEGG Pathway",
   "KEGG Module",
-  "Network Graph",
+  "Network Analysis",
   "Input Data",
   "Result Data",
   "Download",

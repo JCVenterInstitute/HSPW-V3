@@ -67,7 +67,7 @@ const description = {
   "GO Cellular Component": GoDescriptions,
   "KEGG Pathway": KeggDescriptions,
   "KEGG Module": KeggDescriptions,
-  "Network Graph":
+  "Network Analysis":
     "The protein-protein association networks were generated utilizing STRINGdb. The analysis focused exclusively on the significantly differentially abundant proteins to identify their interacting partners, employing the default settings available within the R environment through STRINGdb.",
 };
 

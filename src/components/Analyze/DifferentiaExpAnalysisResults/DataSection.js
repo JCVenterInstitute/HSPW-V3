@@ -512,7 +512,7 @@ const DataSection = ({
           }
 
           break;
-        case "Network Graph":
+        case "Network Analysis":
           if (goResultsReady && allFiles["string.csv"].data === null) {
             displayResult = (
               <Container sx={{ textAlign: "center", marginTop: "10px" }}>
