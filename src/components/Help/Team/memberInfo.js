@@ -137,13 +137,13 @@ const memberInfo = [
         imageName: "Andrew-LaPointe.jpg",
         image: Andrew,
         description:
-          "<b>Andrew LaPointe</b> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "<b>Andrew LaPointe</b> Andrew LaPointe is a student of Computer Science and software engineering. His skills include full-stack web development, D3, and scripting. Past projects include Erlang OTP, Express JS, and, Python applications.",
       },
       {
         imageName: "Anthony-Vo.jpg",
         image: Anthony,
         description:
-          "<b>Anthony Vo, B.S.</b> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "<b>Anthony Vo, B.S.</b> Anthony has a degree in Computer Science from the University of Maryland. While he was an intern at J. Craig Venter Institute (JCVI), he helped to develop some of the D3 visuals for the differential analysis. He has a range of knowledge in programming languages such as JavaScript, Java and Python.",
       },
       {
         imageName: "Nikhil-Singh.jpg",
@@ -167,7 +167,7 @@ const memberInfo = [
         imageName: "Shuvrajyoti-Deb.jpg",
         image: Shuv,
         description:
-          "<b>Shuvrajyoti Debroy, B.S., M.S.</b> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "<b>Shuvrajyoti Debroy, B.S., M.S.</b> Shuv is a Software Engineer with a masters degree in data science. During his internship, he contributed to the HSP data pipeline. He has a range of experience with machine learning, statistical analysis, and data visualization.",
       },
     ],
   },
