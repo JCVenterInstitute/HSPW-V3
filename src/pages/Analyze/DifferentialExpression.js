@@ -732,7 +732,8 @@ const DifferentialExpression = () => {
         // Use default A or B as name if name not provided
         newGroupName[group] = defaultGroups[group];
       } else {
-        newGroupName[group] = value;
+        newGroupName[group] =
+          `Group ${group === "groupA" ? "1" : "2"}: ${value}`;
       }
 
       return newGroupName;
