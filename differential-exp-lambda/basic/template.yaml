@@ -13,12 +13,20 @@ Parameters:
     Type: String
     Description: The APIGateway stage name.
     Default: v1
+  S3BucketName:
+    Type: String
+  SupportEmail:
+    Type: String
+  AwsRegion:
+    Type: String
+  SubmissionTable:
+    Type: String
 
 Resources:
   ApiGateway:
     Type: AWS::Serverless::Api
     Properties:
-      Name: "Differential-Analysis-Basic"
+      Name: !Sub "Differential-Analysis-Basic-${DeployEnv}"
       StageName: !Ref ApiStage
       EndpointConfiguration: REGIONAL
       BinaryMediaTypes:
@@ -31,11 +39,17 @@ Resources:
       Dockerfile: Dockerfile
     Properties:
       PackageType: Image
-      FunctionName: "Differential-Analysis-Basic"
+      FunctionName: !Sub "Differential-Analysis-Basic-${DeployEnv}"
       Description: Differential Analysis Basic
       Role: arn:aws:iam::552623730819:role/HSP-Api-Execution-Role
       MemorySize: 3584
       Timeout: 900
+      Environment:
+        Variables:
+          S3_BUCKET_NAME: !Ref S3BucketName
+          SUPPORT_EMAIL: !Ref SupportEmail
+          REGION: !Ref AwsRegion
+          SUBMISSIONS_TABLE: !Ref SubmissionTable
       Events:
         ProxyApiRoot:
           Type: Api

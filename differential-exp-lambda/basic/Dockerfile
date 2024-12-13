@@ -32,11 +32,6 @@ WORKDIR ${FUNCTION_DIR}
 # Copy in the built dependencies
 COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
 
-ENV S3_BUCKET_NAME=hspw-data-dev-v2
-ENV SUPPORT_EMAIL=mzheng@jvi.org
-ENV AWS_REGION=us-east-1
-ENV SUBMISSIONS_TABLE=hsp-analysis-submissions-DEV
-
 # Ensure correct path to Python interpreter
 RUN ln -s $(which python3) /usr/local/bin/python
 
