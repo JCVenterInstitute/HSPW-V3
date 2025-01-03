@@ -75,9 +75,14 @@ const TabOptions = ({
 
     let graphs = document.getElementsByClassName("graph-container");
 
+    // If scale is greater than 1, image is cut off when downloaded
+    // If scale is too low, the image is blurry for other browsers when downloaded
+    const isChrome = navigator.userAgent.toLowerCase().includes("chrome");
+    const scale = isChrome ? 1 : 5;
+
     const downloadSVG = (graph) =>
       d3ToPng(graph, selectedSection, {
-        scale: 5,
+        scale,
         format: "webp",
         quality: 1,
         download: true,
