@@ -1,6 +1,6 @@
 # HSPW
 
-This repo contains all things QCMS related.
+This repo contains all things HSP related.
 
 ## Local Development
 
