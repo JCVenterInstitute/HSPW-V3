@@ -90,7 +90,7 @@ def zip_files(directory, files, zip_name):
 
 # Send SES email when docker run fails
 def send_email(sender_email, recipient_email, body):
-    region = os.environ.get("AWS_REGION")
+    region = os.environ.get("REGION")
     ses_client = boto3.client("ses", region_name=region)
 
     try:

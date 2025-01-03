@@ -17,12 +17,16 @@ Parameters:
     Type: String
   SupportEmail:
     Type: String
+  SubmissionTable:
+    Type: String
+  AwsRegion:
+    Type: String
 
 Resources:
   ApiGateway:
     Type: AWS::Serverless::Api
     Properties:
-      Name: "Differential-Analysis-Advance"
+      Name: !Sub "Differential-Analysis-Advance-${DeployEnv}"
       StageName: !Ref ApiStage
       EndpointConfiguration: REGIONAL
       BinaryMediaTypes:
@@ -105,7 +109,7 @@ Resources:
       Dockerfile: Dockerfile
     Properties:
       PackageType: Image
-      FunctionName: "Differential-Analysis-Advance"
+      FunctionName: !Sub "Differential-Analysis-Advance-${DeployEnv}"
       Description: Differential Analysis Advance
       Role: !GetAtt HSPDiffExpRole.Arn
       MemorySize: 8000
@@ -113,6 +117,8 @@ Resources:
         Variables:
           S3_BUCKET_NAME: !Ref S3BucketName
           SUPPORT_EMAIL: !Ref SupportEmail
+          SUBMISSIONS_TABLE: !Ref SubmissionTable
+          REGION: !Ref AwsRegion
       Timeout: 900
 
   AdvanceAnalysisTrigger:
@@ -120,9 +126,12 @@ Resources:
     Properties:
       Handler: advance_trigger.handler
       Runtime: nodejs16.x
-      FunctionName: "Differential-Analysis-Advance-Trigger"
+      FunctionName: !Sub "Differential-Analysis-Advance-Trigger-${DeployEnv}"
       Description: Trigger Start of Advance Differential Analysis
       Role: !GetAtt HSPDiffExpRole.Arn
+      Environment:
+        Variables:
+          DEPLOY_ENV: !Ref DeployEnv
       Timeout: 60
       Events:
         ProxyApiRoot:
