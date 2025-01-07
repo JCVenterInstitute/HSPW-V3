@@ -75,7 +75,7 @@ const TabOptions = ({
 
     let graphs = document.getElementsByClassName("graph-container");
 
-    // If scale is greater than 1, image is cut off when downloaded
+    // If scale is greater than 1, image is cut off when downloaded in Chrome
     // If scale is too low, the image is blurry for other browsers when downloaded
     const isChrome = navigator.userAgent.toLowerCase().includes("chrome");
     const scale = isChrome ? 1 : 5;
@@ -147,30 +147,31 @@ const TabOptions = ({
           {createTabGroup(selectedSection)}
         </Box>
       </Box>
-      {selectedSection !== "Download" && (
-        <Box sx={style.downloadButton}>
-          {tab &&
-          (tab === "Visualization" ||
-            tab === "GSEA Ridge plot" ||
-            tab === "Enrichment Plot") ? (
-            <Button
-              variant="contained"
-              onClick={downloadD3Plots}
-            >
-              Download
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              onClick={() => {
-                handleDownload(jobId, fileName);
-              }}
-            >
-              Download
-            </Button>
-          )}
-        </Box>
-      )}
+      {selectedSection !== "Download" &&
+        selectedSection !== "Network Analysis" && (
+          <Box sx={style.downloadButton}>
+            {tab &&
+            (tab === "Visualization" ||
+              tab === "GSEA Ridge plot" ||
+              tab === "Enrichment Plot") ? (
+              <Button
+                variant="contained"
+                onClick={downloadD3Plots}
+              >
+                Download
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                onClick={() => {
+                  handleDownload(jobId, fileName);
+                }}
+              >
+                Download
+              </Button>
+            )}
+          </Box>
+        )}
     </Box>
   );
 };

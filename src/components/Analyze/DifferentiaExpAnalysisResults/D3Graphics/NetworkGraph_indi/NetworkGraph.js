@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import cytoscape from "cytoscape";
 import Select from "react-select";
 import "./NetworkGraph.css";
+import { saveAs } from "file-saver"; //or require
 
 // Function for creating color based on log2.FC value
 const getNodeColor = (log2FC, inDataFile) => {
@@ -106,7 +107,6 @@ const NetworkGraph = ({ data }) => {
 
   useEffect(() => {
     // Calculate minimum log2.FC when data is loaded
-    console.log(data);
     if (data?.length > 0) {
       const minLog2FCValue = calculateMinLog2FC(data);
       setMinLog2FC(minLog2FCValue);
@@ -213,6 +213,10 @@ const NetworkGraph = ({ data }) => {
     setSelectedLayout(selectedOption.value);
   };
 
+  const downloadImage = () => {
+    saveAs(cy.png(), "network-analysis.png");
+  };
+
   const layoutOptions = [
     { value: "circle", label: "Circle" },
     { value: "grid", label: "Grid" },
@@ -241,13 +245,23 @@ const NetworkGraph = ({ data }) => {
           </button>
           {message && <p className="message">{message}</p>}
         </div>
-        <div style={{ width: "200px" }}>
-          <Select
-            options={layoutOptions}
-            onChange={handleLayoutChange}
-            placeholder="Select Layout"
-            className="layout-dropdown"
-          />
+        <div style={{ display: "flex" }}>
+          <div style={{ margin: "0px 5px 0px 0px" }}>
+            <button
+              onClick={downloadImage}
+              className="search-button"
+            >
+              Download
+            </button>
+          </div>
+          <div>
+            <Select
+              options={layoutOptions}
+              onChange={handleLayoutChange}
+              placeholder="Select Layout"
+              className="layout-dropdown"
+            />
+          </div>
         </div>
       </div>
 
@@ -293,7 +307,6 @@ const NetworkGraph = ({ data }) => {
           {log2FCThreshold}
         </label>
       </div>
-
       <div
         className="legend-container"
         style={{
