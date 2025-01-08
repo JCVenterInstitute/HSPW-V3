@@ -60,8 +60,10 @@ module.exports = {
         OS_HOSTNAME:
           "https://search-hspw-prod-y77jqnl5zklvuwu3k66anbowhi.us-east-2.es.amazonaws.com",
         API_ENDPOINT: "http://localhost:8000",
-        BASIC_ANALYSIS_API: "",
-        ADVANCE_ANALYSIS_API: "",
+        BASIC_ANALYSIS_API:
+          "https://vjllt843hb.execute-api.us-east-2.amazonaws.com/Stage/",
+        ADVANCE_ANALYSIS_API:
+          "https://o32vc26ibc.execute-api.us-east-2.amazonaws.com/Stage/",
       },
     },
   ],

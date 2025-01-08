@@ -35,7 +35,7 @@ Resources:
   HSPDiffExpRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: HSP-Differential-Expression-Role
+      RoleName: !Sub "HSP-Differential-Expression-Role-${DeployEnv}"
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
