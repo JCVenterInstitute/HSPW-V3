@@ -32,11 +32,11 @@ import * as d3 from "d3v7";
  * @returns {JSX.Element} - A `div` containing the SVG element for the bar chart.
  */
 
-const BarChartComponent = ({ plotData }) => {
+const BarChartComponent = ({ plotData, title }) => {
   const [data, setData] = useState(null);
   const svgRef = useRef(); // Ref for accessing the SVG DOM element
 
-  const margin = { top: 20, right: 10, bottom: 50, left: 280 };
+  const margin = { top: 20, right: 10, bottom: 50, left: 300 };
   const width = 1200 - margin.left - margin.right;
   const height = 1200 - margin.top - margin.bottom;
 
@@ -62,6 +62,25 @@ const BarChartComponent = ({ plotData }) => {
       drawBarChart(data);
     }
   }, [data]);
+
+  // Wrap text with a specific number of words per line
+  const wrapText = (text, wordsPerLine) => {
+    text.each(function () {
+      const textElement = d3.select(this);
+      const words = textElement.text().split(/\s+/); // Split text into words
+      textElement.text(null); // Clear existing text
+
+      // Group words into chunks of `wordsPerLine`
+      for (let i = 0; i < words.length; i += wordsPerLine) {
+        const chunk = words.slice(i, i + wordsPerLine).join(" ");
+        textElement
+          .append("tspan")
+          .attr("x", -10) // Keep `tspan` aligned with the tick
+          .attr("dy", i === 0 ? "0em" : "1.2em") // Adjust line spacing
+          .text(chunk);
+      }
+    });
+  };
 
   const drawBarChart = (data) => {
     // Clear existing SVG content
@@ -89,7 +108,7 @@ const BarChartComponent = ({ plotData }) => {
       .scaleBand()
       .domain(data.map((d) => d.Description))
       .range([0, height])
-      .padding(0.2); // Increase the gap between bars
+      .padding(0.4); // Increase the gap between bars
 
     // X scale (for counts)
     const x = d3
@@ -104,10 +123,21 @@ const BarChartComponent = ({ plotData }) => {
       .attr("class", "axis y-axis")
       .call(d3.axisLeft(y))
       .selectAll(".tick text")
-      .style("font-size", "15px")
-      .style("text-anchor", "center") // Center-align text for better readability
-      .attr("x2", width)
-      .attr("stroke-opacity", 0.1);
+      .style("font-size", "14px")
+      .style("text-anchor", "end")
+      .attr("x", -10)
+      .call(wrapText, 4);
+
+    // Add Title to graph
+    svg
+      .append("text")
+      .attr("x", width / 2) // Center the title
+      .attr("y", 0) // Adjust the y position (e.g., at 20px from the top)
+      .attr("text-anchor", "middle") // Center align the text
+      .style("font-size", "24px") // Set font size
+      .style("font-weight", "bold") // Make it bold
+      .style("text-decoration", "underline") // Underline the text
+      .text(`${title}`); // Set the title text
 
     // X axis with label and grid lines
     svg
@@ -235,7 +265,7 @@ const BarChartComponent = ({ plotData }) => {
     legend
       .append("text")
       .attr("x", legendWidth / 2)
-      .attr("y", -5) // Adjust the y position for the text
+      .attr("y", -15) // Adjust the y position for the text
       .attr("text-anchor", "middle")
       .text("p.adjust")
       .style("font-size", "22px")
