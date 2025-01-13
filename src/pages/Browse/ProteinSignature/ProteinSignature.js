@@ -2,13 +2,13 @@ import { Chart } from "react-google-charts";
 import { useState, useEffect } from "react";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
+import { Helmet } from "react-helmet";
+import { Container } from "@mui/material";
 
 import MainFeature from "../../../assets/hero.jpeg";
-import ProteinSignatureTable from "../../../components/ProteinSignatureTable";
+import ProteinSignatureTable from "../../../components/Tables/ProteinSignatureTable";
+import BreadCrumb from "../../../components/Layout/Breadcrumbs";
 import "../../style.css";
-import { Container } from "@mui/material";
-import BreadCrumb from "../../../components/Breadcrumbs";
-import { Helmet } from "react-helmet";
 
 export const data = [
   [

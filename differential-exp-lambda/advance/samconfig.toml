@@ -1,0 +1,38 @@
+version = 0.1
+
+[core.build.parameters]
+template_file = "template.yaml"
+manifest = "package.json"
+
+[app-core-dev.deploy.parameters] # Used by pipeline for DEV deployment
+profile = "default"
+region = "us-east-2"
+image_repository = "552623730819.dkr.ecr.us-east-2.amazonaws.com/differential-expression-advance-dev"
+stack_name = "HSP-Differential-Expression-Advanced-DEV"
+capabilities = "CAPABILITY_NAMED_IAM"
+s3_bucket = "hsp-dev-deployments"
+s3_prefix = "hsp-differential-expression-advanced"
+parameter_overrides = [
+    "S3BucketName=hspw-data-dev-v2",
+    "SupportEmail=mzheng@jvi.org",
+    "AwsRegion=us-east-1",
+    "DeployEnv=DEV",
+    "SubmissionTable=hsp-analysis-submissions-DEV"
+]
+
+
+[app-core-prod.deploy.parameters] # Used by pipeline for DEV deployment
+profile = "default"
+region = "us-east-2"
+image_repository = "552623730819.dkr.ecr.us-east-2.amazonaws.com/differential-expression-advance-prod"
+stack_name = "HSP-Differential-Expression-Advanced-PROD"
+capabilities = "CAPABILITY_NAMED_IAM"
+s3_bucket = "hsp-prod-deployments"
+s3_prefix = "hsp-differential-expression-advanced"
+parameter_overrides = [
+    "S3BucketName=hspw-data-prod-v2",
+    "SupportEmail=mzheng@jvi.org",
+    "AwsRegion=us-east-1",
+    "DeployEnv=PROD",
+    "SubmissionTable=hsp-analysis-submissions-PROD"
+]

@@ -1,8 +1,20 @@
 import "../D3GraphStyles.css";
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3v7";
-import { fetchDataFile } from "../../utils.js"; // Import fetchDataFile from utils.js
 
+/**
+ * Boxplot Component
+ *
+ * Renders a boxplot visualization using D3.js within a React component.
+ * Allows dynamic adjustment of the number of top boxplots displayed based on median values.
+ * Includes zoom functionality and tooltips for interactive data exploration.
+ *
+ * @param {Object} props - The component props.
+ * @param {string} props.containerId - The ID of the HTML container where the boxplot will be rendered.
+ * @param {Array<Object>} props.data - The data to be visualized in the boxplot. Each data object should have keys representing different metrics.
+ *
+ * @returns {JSX.Element} The rendered Boxplot component.
+ */
 const Boxplot = ({ containerId, data }) => {
   const boxplotRef = useRef(null);
   const [topN, setTopN] = useState(30); // State to manage the number of top boxplots
@@ -234,6 +246,7 @@ const Boxplot = ({ containerId, data }) => {
 
     boxSvg.call(zoom);
 
+    // Add zoom functionality
     function zoomed(event) {
       const newX = event.transform.rescaleX(xScaleBox);
       xAxisBox.call(d3.axisBottom(newX));
@@ -263,6 +276,7 @@ const Boxplot = ({ containerId, data }) => {
     }
   }, [data, topN]);
 
+  //handles the number of Boxplots the user wants
   const handleTopNChange = (event) => {
     const value = parseInt(event.target.value, 10);
 
@@ -273,7 +287,10 @@ const Boxplot = ({ containerId, data }) => {
 
   return (
     <div>
-      <label htmlFor="topN" className="input-label">
+      <label
+        htmlFor="topN"
+        className="input-label"
+      >
         Number of Proteins (1 - 40):
       </label>
       <input

@@ -12,6 +12,7 @@ const VolcanoPlot = ({
   details = [],
   xlabel = "",
   ylabel = "",
+  groupNames = { groupA: "A", groupB: "B" },
 }) => {
   pval = -Math.log10(pval);
   foldChange = Math.log2(foldChange);
@@ -66,6 +67,19 @@ const VolcanoPlot = ({
       .attr("value", "1")
       .style("width", "50%");
     document.getElementById("zoom-slider").disabled = true;
+
+    const { groupA, groupB } = groupNames;
+
+    // Add the title
+    svg
+      .append("text")
+      .attr("x", 800) // Center the title
+      .attr("y", 30) // Adjust the y position (e.g., at 20px from the top)
+      .attr("text-anchor", "middle") // Center align the text
+      .style("font-size", "24px") // Set font size
+      .style("font-weight", "bold") // Make it bold
+      .style("text-decoration", "underline") // Underline the text
+      .text(`${groupA} Over ${groupB}`);
 
     // Defining the clip path to restrict drawing within the chart area
     svg
@@ -344,10 +358,20 @@ const VolcanoPlot = ({
   };
 
   return (
-    <div ref={chartRef} id="chart" className="volcano graph-container">
+    <div
+      ref={chartRef}
+      id="chart"
+      className="volcano graph-container"
+    >
       {data ? (
-        <div className="reset-button-container" style={resetButtonMargin}>
-          <button onClick={resetZoom} className="reset-button">
+        <div
+          className="reset-button-container"
+          style={resetButtonMargin}
+        >
+          <button
+            onClick={resetZoom}
+            className="reset-button"
+          >
             Reset
           </button>
         </div>

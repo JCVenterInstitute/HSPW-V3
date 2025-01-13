@@ -1,19 +1,55 @@
 import "../../D3GraphStyles.css";
 import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
-import { fetchDataFile } from "../../../utils";
-import { Box, Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { ToggleButton, ToggleButtonGroup } from "@mui/material";
+
+/**
+ * GOHeatmapComponent - A React component for rendering a heatmap using D3.js.
+ *
+ * This component generates a heatmap to visualize fold change values for proteins across different
+ * descriptions. The heatmap is interactive with tooltips, a color gradient legend, and supports
+ * toggling between "All Samples" and "Compressed graph" views. The component cleans the provided
+ * data by removing extra double quotes and processes it to match proteins with fold change values.
+ *
+ * Props:
+ * - `tableData` (Array of Objects): The data used for generating the heatmap, containing descriptions
+ *   and core enrichment information. The first 25 rows are used for plotting.
+ * - `allData` (Array of Objects): Additional data containing protein fold change values.
+ *
+ * State:
+ * - `data1` (Array of Objects): Cleaned data from `tableData` for the heatmap.
+ * - `data2` (Array of Objects): Cleaned data from `allData` used for fold change values.
+ * - `activeTab` (String): The currently selected tab, which determines the view mode ("All Samples"
+ *   or "Compressed graph").
+ *
+ * UseEffect Hooks:
+ * - First `useEffect`: Cleans and updates `data1` and `data2` when `tableData` or `allData` props change.
+ * - Second `useEffect`: Renders the heatmap using D3.js whenever `data1`, `data2`, or `activeTab`
+ *   state changes. Includes setup for SVG elements, axes, grid lines, tiles, and tooltips.
+ *
+ * Methods:
+ * - `cleanData(data)`: Cleans the data by removing leading and trailing double quotes from all fields.
+ * - `drawBarChart(data)`: Handles the D3.js drawing operations including setting up scales, axes, grid lines,
+ *   heatmap tiles, tooltips, and legend.
+ * - `handleTabClick(tab)`: Updates the `activeTab` state when a tab is clicked.
+ * - `wrap(text, width)`: Wraps text labels for y-axis to fit within specified width.
+ *
+ * @param {Object} props - The props object containing `tableData` and `allData`.
+ * @returns {JSX.Element} - A `div` containing the heatmap SVG, tab buttons, and tooltip.
+ */
 
 const GOHeatmapComponent = ({ tableData, allData }) => {
   const svgRef = useRef();
   const [data1, setData1] = useState([]);
   const [data2, setData2] = useState([]);
-  const [activeTab, setActiveTab] = useState("All Samples");
+  const [activeTab, setActiveTab] = useState("All Samples"); // State for active tab
 
+  // Dimensions and margins for the SVG container
   const margin = { top: 20, right: 30, bottom: 150, left: 200 };
   const width = 900 - margin.left - margin.right;
   const height = 950 - margin.top - margin.bottom;
 
+  // Function to clean data by removing quotes
   const cleanData = (data) => {
     return data.map((d) => {
       const cleanedData = {};
@@ -24,9 +60,10 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
     });
   };
 
+  // Effect hook to update data1 and data2 when props change
   useEffect(() => {
     try {
-      setData1(cleanData(tableData.slice(0, 25)));
+      setData1(cleanData(tableData.slice(0, 25))); //Slice the first 25 rows from Data1
       setData2(cleanData(allData));
     } catch (error) {
       console.error("Incorrect File:", error);
@@ -57,8 +94,9 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
       const proteins = Array.from(new Set(data2.map((d) => d["Protein"])));
       const Descriptions = Array.from(
         new Set(data1.map((d) => d["Description"]))
-      );
+      ); // Get unique descriptions
 
+      // Create a mapping of proteins to fold change values
       const proteinFoldChange = {};
       data2.forEach((d) => {
         const protein = d["Protein"];
@@ -66,6 +104,7 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
         proteinFoldChange[protein] = foldChange;
       });
 
+      // Prepare heatmap data
       const heatmapData = data1.flatMap((d) => {
         const proteins = d["core_enrichment"].split("/");
         return proteins.map((protein) => ({
@@ -75,11 +114,14 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
         }));
       });
 
+      // Filter valid data points
       const validData = heatmapData.filter((d) => !isNaN(d["Fold.Change"]));
 
       let filteredProteins = proteins;
 
       let finalValidData = validData;
+
+      // Apply filter based on the active tab
       if (activeTab === "Compressed graph") {
         filteredProteins = new Set(
           validData.filter((d) => d["Protein"]).map((d) => d["Protein"])
@@ -89,10 +131,12 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
         );
       }
 
+      // Define color scale for heatmap
       const colorScale = d3
         .scaleSequential(d3.interpolateRdBu)
         .domain(d3.extent(data2, (d) => +d["Fold.Change"]));
 
+      // Define x and y axis
       const xScale = d3
         .scaleBand()
         .domain(Array.from(filteredProteins))
@@ -132,6 +176,7 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
         .attr("y2", (d) => yScale(d))
         .attr("stroke", "#e0e0e0");
 
+      // Append heatmap tiles (rectangles)
       plot
         .selectAll(".tile")
         .data(finalValidData)
@@ -203,6 +248,7 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
         .style("font-weight", "bold")
         .text("Description");
 
+      //Add legend
       const legendWidth = 300;
       const legendHeight = 10;
 
@@ -266,6 +312,7 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
     setActiveTab(tab);
   };
 
+  // Function to wrap text for y axis labels
   function wrap(text, width) {
     text.each(function () {
       const text = d3.select(this);
@@ -346,7 +393,10 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
         </ToggleButtonGroup>
       </div>
       <svg ref={svgRef}></svg>
-      <div id="tooltip" className="tooltip"></div>
+      <div
+        id="tooltip"
+        className="tooltip"
+      ></div>
     </div>
   );
 };

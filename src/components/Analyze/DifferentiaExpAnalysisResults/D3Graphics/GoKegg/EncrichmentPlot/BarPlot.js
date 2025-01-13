@@ -2,13 +2,43 @@ import "../../D3GraphStyles.css";
 import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
 
-const BarChartComponent = ({ plotData }) => {
-  const [data, setData] = useState(null);
-  const svgRef = useRef();
+/**
+ * BarChartComponent - A React component for rendering a bar chart using D3.js.
+ *
+ * This component takes `plotData` as a prop and generates a bar chart where each bar represents
+ * a data entry with a count value. The chart includes tooltips, a color gradient legend, and
+ * customizable axes. The component also performs data cleaning to remove extra double quotes
+ * from data values before rendering the chart.
+ *
+ * Props:
+ * - `plotData` (Array of Objects): An array of data objects where each object represents a data row
+ *   with various properties including `Description`, `Count`, and `p.adjust`. The data is used to
+ *   populate the bars in the chart.
+ *
+ * State:
+ * - `data` (Array of Objects): The cleaned and processed data to be displayed in the bar chart.
+ *
+ * UseEffect Hooks:
+ * - First `useEffect`: Cleans and processes the `plotData` prop. Takes the first 20 rows, removes
+ *   double quotes from the relevant fields, and updates the `data` state.
+ * - Second `useEffect`: Triggers the `drawBarChart` function whenever the `data` state is updated.
+ *
+ * Methods:
+ * - `drawBarChart(data)`: Draws the bar chart using D3.js. This includes setting up the SVG, scales,
+ *   axes, bars, labels, and tooltips. It also defines a color scale based on `p.adjust` values and
+ *   adds a legend for visual reference.
+ *
+ * @param {Object} props - The props object containing `plotData`.
+ * @returns {JSX.Element} - A `div` containing the SVG element for the bar chart.
+ */
 
-  const margin = { top: 20, right: 10, bottom: 50, left: 280 };
+const BarChartComponent = ({ plotData, title }) => {
+  const [data, setData] = useState(null);
+  const svgRef = useRef(); // Ref for accessing the SVG DOM element
+
+  const margin = { top: 20, right: 10, bottom: 50, left: 300 };
   const width = 1200 - margin.left - margin.right;
-  const height = 700 - margin.top - margin.bottom;
+  const height = 1200 - margin.top - margin.bottom;
 
   useEffect(() => {
     // Remove double quotes from all relevant fields in the data
@@ -32,6 +62,25 @@ const BarChartComponent = ({ plotData }) => {
       drawBarChart(data);
     }
   }, [data]);
+
+  // Wrap text with a specific number of words per line
+  const wrapText = (text, wordsPerLine) => {
+    text.each(function () {
+      const textElement = d3.select(this);
+      const words = textElement.text().split(/\s+/); // Split text into words
+      textElement.text(null); // Clear existing text
+
+      // Group words into chunks of `wordsPerLine`
+      for (let i = 0; i < words.length; i += wordsPerLine) {
+        const chunk = words.slice(i, i + wordsPerLine).join(" ");
+        textElement
+          .append("tspan")
+          .attr("x", -10) // Keep `tspan` aligned with the tick
+          .attr("dy", i === 0 ? "0em" : "1.2em") // Adjust line spacing
+          .text(chunk);
+      }
+    });
+  };
 
   const drawBarChart = (data) => {
     // Clear existing SVG content
@@ -59,7 +108,7 @@ const BarChartComponent = ({ plotData }) => {
       .scaleBand()
       .domain(data.map((d) => d.Description))
       .range([0, height])
-      .padding(0.2); // Increase the gap between bars
+      .padding(0.4); // Increase the gap between bars
 
     // X scale (for counts)
     const x = d3
@@ -73,9 +122,22 @@ const BarChartComponent = ({ plotData }) => {
       .append("g")
       .attr("class", "axis y-axis")
       .call(d3.axisLeft(y))
-      .selectAll(".tick line")
-      .attr("x2", width)
-      .attr("stroke-opacity", 0.1);
+      .selectAll(".tick text")
+      .style("font-size", "14px")
+      .style("text-anchor", "end")
+      .attr("x", -10)
+      .call(wrapText, 4);
+
+    // Add Title to graph
+    svg
+      .append("text")
+      .attr("x", width / 2) // Center the title
+      .attr("y", 0) // Adjust the y position (e.g., at 20px from the top)
+      .attr("text-anchor", "middle") // Center align the text
+      .style("font-size", "24px") // Set font size
+      .style("font-weight", "bold") // Make it bold
+      .style("text-decoration", "underline") // Underline the text
+      .text(`${title}`); // Set the title text
 
     // X axis with label and grid lines
     svg
@@ -92,7 +154,8 @@ const BarChartComponent = ({ plotData }) => {
       .attr("x", width / 2)
       .attr("y", height + margin.bottom - 10)
       .attr("text-anchor", "middle")
-      .text("Count");
+      .text("Count")
+      .style("font-size", "22px");
 
     // Define color scale based on p.adjust values
     const colorScale = d3
@@ -157,7 +220,8 @@ const BarChartComponent = ({ plotData }) => {
       .attr("x", (d) => x(+d["Count"]) + 5)
       .text((d) => d["Count"])
       .attr("text-anchor", "start")
-      .attr("alignment-baseline", "middle");
+      .attr("alignment-baseline", "middle")
+      .style("font-size", "22px");
 
     // Legend
     const legendHeight = 150;
@@ -204,7 +268,7 @@ const BarChartComponent = ({ plotData }) => {
       .attr("y", -5) // Adjust the y position for the text
       .attr("text-anchor", "middle")
       .text("p.adjust")
-      .style("font-size", "12px")
+      .style("font-size", "22px")
       .style("fill", "#333"); // Adjust font size and color as needed
 
     const legendScale = d3
@@ -218,7 +282,8 @@ const BarChartComponent = ({ plotData }) => {
       .append("g")
       .attr("class", "axis legend-axis")
       .attr("transform", `translate(${legendWidth}, 0)`)
-      .call(legendAxis);
+      .call(legendAxis)
+      .style("font-size", "22px");
   };
 
   return (

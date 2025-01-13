@@ -1,9 +1,10 @@
 import React from "react";
-import main_feature from "../../assets/hero.jpeg";
 import { Typography, Container } from "@mui/material";
-import ClustalOmegaSequenceParameters from "../../components/MultipleSequenceAlignment/ClustalOmegaSequenceParameters";
 import { Helmet } from "react-helmet";
-import BreadCrumb from "../../components/Breadcrumbs";
+
+import ClustalOmegaSequenceParameters from "../../components/MultipleSequenceAlignment/ClustalOmegaSequenceParameters";
+import BreadCrumb from "../../components/Layout/Breadcrumbs";
+import main_feature from "../../assets/hero.jpeg";
 
 const ClustalOmega = () => {
   const breadcrumbPath = [

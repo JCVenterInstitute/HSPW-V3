@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import { handleDownload } from "./utils";
 import { fileMapping } from "./Constants";
 import { getTabOptions } from "./utils";
-import { DockOutlined, GraphicEq } from "@mui/icons-material";
-import { map } from "d3v7";
 
 const TabOptions = ({
   tab = null,
@@ -77,9 +75,14 @@ const TabOptions = ({
 
     let graphs = document.getElementsByClassName("graph-container");
 
+    // If scale is greater than 1, image is cut off when downloaded in Chrome
+    // If scale is too low, the image is blurry for other browsers when downloaded
+    const isChrome = navigator.userAgent.toLowerCase().includes("chrome");
+    const scale = isChrome ? 1 : 5;
+
     const downloadSVG = (graph) =>
       d3ToPng(graph, selectedSection, {
-        scale: 5,
+        scale,
         format: "webp",
         quality: 1,
         download: true,
@@ -110,6 +113,7 @@ const TabOptions = ({
         <ToggleButton
           className="tab-button"
           key={`${selectedSection}-tab-${i}`}
+          sx={{ fontSize: "13px" }}
           value={tab}
         >
           {tab}
@@ -126,7 +130,7 @@ const TabOptions = ({
             setTab(newTab);
           }
         }}
-        sx={{ ...style.tabStyle, marginTop: "10px" }}
+        sx={{ ...style.tabStyle }}
       >
         {tabButtons}
       </ToggleButtonGroup>
@@ -136,37 +140,38 @@ const TabOptions = ({
   return (
     <Box
       id="option-tab-box"
-      sx={{ display: "flex" }}
+      sx={{ display: "flex", alignItems: "center" }}
     >
-      <Box style={{ display: "flex", width: "100%", maxWidth: "950px" }}>
+      <Box style={{ display: "flex", width: "100%", maxWidth: "1100px" }}>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           {createTabGroup(selectedSection)}
         </Box>
       </Box>
-      {selectedSection !== "Download" && (
-        <Box sx={style.downloadButton}>
-          {tab &&
-          (tab == "Visualization" ||
-            tab == "GSEA Ridge plot" ||
-            tab == "Enrichment Plot") ? (
-            <Button
-              variant="contained"
-              onClick={downloadD3Plots}
-            >
-              Download
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              onClick={() => {
-                handleDownload(jobId, fileName);
-              }}
-            >
-              Download
-            </Button>
-          )}
-        </Box>
-      )}
+      {selectedSection !== "Download" &&
+        selectedSection !== "Network Analysis" && (
+          <Box sx={style.downloadButton}>
+            {tab &&
+            (tab === "Visualization" ||
+              tab === "GSEA Ridge plot" ||
+              tab === "Enrichment Plot") ? (
+              <Button
+                variant="contained"
+                onClick={downloadD3Plots}
+              >
+                Download
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                onClick={() => {
+                  handleDownload(jobId, fileName);
+                }}
+              >
+                Download
+              </Button>
+            )}
+          </Box>
+        )}
     </Box>
   );
 };

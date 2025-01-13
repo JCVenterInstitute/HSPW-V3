@@ -14,15 +14,15 @@ import { useParams } from "react-router";
 import ProtvistaUniprot from "protvista-uniprot";
 import "font-awesome/css/font-awesome.min.css";
 import "resize-observer-polyfill";
+import { Helmet } from "react-helmet";
+import { Link as ReactLink } from "react-router-dom";
 
 import BChart from "../../../components/SalivaryProtein/TwoSidedBarChart";
 import CommentTable from "../../../components/SalivaryProtein/CommentTable";
 import GlycanTable from "../../../components/SalivaryProtein/GlycanTable";
 import main_feature from "../../../assets/hero.jpeg";
 import "../../style.css";
-import { Link as ReactLink } from "react-router-dom";
-import BreadCrumb from "../../../components/Breadcrumbs";
-import { Helmet } from "react-helmet";
+import BreadCrumb from "../../../components/Layout/Breadcrumbs";
 
 window.customElements.define("protvista-uniprot", ProtvistaUniprot);
 
@@ -38,7 +38,6 @@ const th = {
 
 const ProteinDetail = (props) => {
   const params = useParams();
-  const url = `${process.env.REACT_APP_API_ENDPOINT}/api/salivary-protein/${params["proteinid"]}`;
 
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState("");
@@ -53,48 +52,6 @@ const ProteinDetail = (props) => {
     { path: "Salivary Proteins", link: "/salivary-protein" },
     { path: params["proteinid"] },
   ];
-
-  const fetchProtein = async () => {
-    const response = await axios.get(url);
-    const json = response.data;
-    return json;
-  };
-
-  const fetchAbundance = async () => {
-    const resp = await axios.get(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/abundance-score/${params["proteinid"]}`
-    );
-    const abundanceData = resp.data;
-    return abundanceData;
-  };
-
-  const processData = async () => {
-    const proteinResult = await fetchProtein().catch(console.error);
-    const abundanceData = await fetchAbundance();
-
-    if (proteinResult) {
-      setData(proteinResult);
-      setAbundanceData(abundanceData);
-
-      if (proteinResult[0]._source.salivary_proteins) {
-        const cites = proteinResult[0]._source.salivary_proteins.cites;
-        const promises = [];
-
-        for (let i = 0; i < cites.length; i++) {
-          const id = cites[i].split(":")[1];
-          promises.push(fetchPubMed(id));
-        }
-
-        const pubmedDetails = await Promise.all(promises);
-
-        setauthorName(pubmedDetails.map((detail) => detail.authorName));
-        setYear(pubmedDetails.map((detail) => detail.yearTitle));
-        setJournal(pubmedDetails.map((detail) => detail.journalTitle));
-      }
-
-      setLoading(false);
-    }
-  };
 
   const fetchPubMed = async (id) => {
     const pubmedLink = `${process.env.REACT_APP_API_ENDPOINT}/api/citation/${id}`;
@@ -127,6 +84,49 @@ const ProteinDetail = (props) => {
   };
 
   useEffect(() => {
+    const fetchAbundance = async () => {
+      const resp = await axios.get(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/abundance-score/${params["proteinid"]}`
+      );
+      const abundanceData = resp.data;
+      return abundanceData;
+    };
+
+    const fetchProtein = async () => {
+      const url = `${process.env.REACT_APP_API_ENDPOINT}/api/salivary-protein/${params["proteinid"]}`;
+      const response = await axios.get(url);
+      const json = response.data;
+      return json;
+    };
+
+    const processData = async () => {
+      const proteinResult = await fetchProtein().catch(console.error);
+      const abundanceData = await fetchAbundance();
+
+      if (proteinResult) {
+        setData(proteinResult);
+        setAbundanceData(abundanceData);
+
+        if (proteinResult[0]._source.salivary_proteins) {
+          const cites = proteinResult[0]._source.salivary_proteins.cites;
+          const promises = [];
+
+          for (let i = 0; i < cites.length; i++) {
+            const id = cites[i].split(":")[1];
+            promises.push(fetchPubMed(id));
+          }
+
+          const pubmedDetails = await Promise.all(promises);
+
+          setauthorName(pubmedDetails.map((detail) => detail.authorName));
+          setYear(pubmedDetails.map((detail) => detail.yearTitle));
+          setJournal(pubmedDetails.map((detail) => detail.journalTitle));
+        }
+
+        setLoading(false);
+      }
+    };
+
     processData();
   }, []);
 
@@ -849,7 +849,6 @@ const ProteinDetail = (props) => {
                       abundance_score,
                       disease_state,
                       experiment_count,
-                      isoform,
                       peptide_count,
                       tissue_id,
                       tissue_term,

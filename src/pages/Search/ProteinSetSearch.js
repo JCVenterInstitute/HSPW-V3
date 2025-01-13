@@ -1,5 +1,4 @@
 import React, { useRef, useState, useCallback } from "react";
-import main_feature from "../../assets/hero.jpeg";
 import {
   Button,
   FormControl,
@@ -13,9 +12,11 @@ import {
 } from "@mui/material";
 import { AgGridReact } from "ag-grid-react";
 import { Link } from "react-router-dom";
-import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
-import BreadCrumb from "../../components/Breadcrumbs";
 import { Helmet } from "react-helmet";
+
+import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
+import BreadCrumb from "../../components/Layout/Breadcrumbs";
+import main_feature from "../../assets/hero.jpeg";
 
 function ProteinLinkComponent(props) {
   return (
@@ -149,7 +150,6 @@ const ProteinSetSearch = () => {
       headerName: "Protein Name",
       field: "protein_name",
       headerClass: ["header-border"],
-      cellClass: ["table-border"],
       cellClass: ["table-border", "protein-set-search-cell"],
     },
     {

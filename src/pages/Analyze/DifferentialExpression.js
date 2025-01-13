@@ -12,7 +12,9 @@ import {
   IconButton,
   FormGroup,
   FormControlLabel,
+  Tooltip,
 } from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
 import { styled } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -35,8 +37,7 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 
 import CustomLoadingOverlay from "./CustomLoadingOverlay";
-import PageHeader from "../../components/PageHeader";
-import main_feature from "../../assets/hero.jpeg";
+import PageHeader from "../../components/Layout/PageHeader";
 
 const toExcelColumn = (colIndex) => {
   let column = "";
@@ -115,7 +116,12 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const Accordion = styled((props) => (
-  <MuiAccordion disableGutters elevation={0} square {...props} />
+  <MuiAccordion
+    disableGutters
+    elevation={0}
+    square
+    {...props}
+  />
 ))(({ theme }) => ({
   marginBottom: "15px",
   "&:not(:last-child)": {
@@ -196,6 +202,7 @@ const DifferentialExpression = () => {
   const [upperLimit, setUpperLimit] = useState(20000);
   const [inputData, setInputData] = useState("");
   const [fileIsValid, setFileIsValid] = useState(true);
+  const [groupNames, setGroupNames] = useState({ groupA: "A", groupB: "B" });
 
   useEffect(() => {
     // Apply the filter whenever the limits change
@@ -714,6 +721,25 @@ const DifferentialExpression = () => {
     }
   };
 
+  const handleGroupNameChange = (e, group) => {
+    const { value } = e.target;
+
+    setGroupNames((prev) => {
+      const newGroupName = prev;
+      const defaultGroups = { groupA: "A", groupB: "B" };
+
+      if (value === "") {
+        // Use default A or B as name if name not provided
+        newGroupName[group] = defaultGroups[group];
+      } else {
+        newGroupName[group] =
+          `Group ${group === "groupA" ? "1" : "2"}: ${value}`;
+      }
+
+      return newGroupName;
+    });
+  };
+
   const handleAnalyze = async () => {
     if (!fileName) {
       if (groupARowData.length === 0 || groupBRowData.length === 0) {
@@ -768,8 +794,6 @@ const DifferentialExpression = () => {
 
     const jobId = `differential-expression-${formattedDate}`;
 
-    const workingDirectory = `/home/ec2-user/differential-expression-result/${year}-${month}-${day}/${jobId}`;
-
     Swal.fire({
       title: "Submitting the job, please wait...",
       showConfirmButton: false,
@@ -800,7 +824,7 @@ const DifferentialExpression = () => {
                 seconds,
               },
               formattedDate,
-              workingDirectory,
+              groupNames,
             }
           )
           .then(() => {
@@ -811,9 +835,6 @@ const DifferentialExpression = () => {
             }, 3000);
           });
       } else {
-        console.log("> Group A", groupARowData);
-        console.log("> Group B", groupBRowData);
-
         await axios
           .post(
             `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze`,
@@ -835,7 +856,7 @@ const DifferentialExpression = () => {
                 seconds,
               },
               formattedDate,
-              workingDirectory,
+              groupNames,
             }
           )
           .then(() => {
@@ -1081,7 +1102,10 @@ const DifferentialExpression = () => {
             );
           })}
         </Box>
-        <Container maxWidth="false" sx={{ margin: "30px 0 30px 20px" }}>
+        <Container
+          maxWidth="false"
+          sx={{ margin: "30px 0 30px 20px" }}
+        >
           <Box sx={{ display: "flex" }}>
             <Box
               style={{
@@ -1178,7 +1202,10 @@ const DifferentialExpression = () => {
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
               >
                 {recordsPerPageList.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
+                  <MenuItem
+                    key={option.value}
+                    value={option.value}
+                  >
                     {option.label}
                   </MenuItem>
                 ))}
@@ -1209,7 +1236,10 @@ const DifferentialExpression = () => {
                 }}
               >
                 {Array.from({ length: totalPageNumber }, (_, index) => (
-                  <MenuItem key={index + 1} value={index + 1}>
+                  <MenuItem
+                    key={index + 1}
+                    value={index + 1}
+                  >
                     {index + 1}
                   </MenuItem>
                 ))}
@@ -1323,14 +1353,29 @@ const DifferentialExpression = () => {
               ></AgGridReact>
             </div>
           </Box>
-          <Grid container spacing={8}>
-            <Grid item xs={6}>
+          <Grid
+            container
+            spacing={8}
+          >
+            <Grid
+              item
+              xs={6}
+            >
               <Box sx={{ m: 4, justifyContent: "center", display: "center" }}>
-                <Stack direction="row" spacing={5}>
-                  <Button variant="contained" onClick={handleAddGroupA}>
+                <Stack
+                  direction="row"
+                  spacing={5}
+                >
+                  <Button
+                    variant="contained"
+                    onClick={handleAddGroupA}
+                  >
                     Add
                   </Button>
-                  <Button variant="outlined" onClick={handleDeleteGroupA}>
+                  <Button
+                    variant="outlined"
+                    onClick={handleDeleteGroupA}
+                  >
                     Delete
                   </Button>
                 </Stack>
@@ -1358,13 +1403,25 @@ const DifferentialExpression = () => {
                 ></AgGridReact>
               </div>
             </Grid>
-            <Grid item xs={6}>
+            <Grid
+              item
+              xs={6}
+            >
               <Box sx={{ m: 4, justifyContent: "center", display: "center" }}>
-                <Stack direction="row" spacing={5}>
-                  <Button variant="contained" onClick={handleAddGroupB}>
+                <Stack
+                  direction="row"
+                  spacing={5}
+                >
+                  <Button
+                    variant="contained"
+                    onClick={handleAddGroupB}
+                  >
                     Add
                   </Button>
-                  <Button variant="outlined" onClick={handleDeleteGroupB}>
+                  <Button
+                    variant="outlined"
+                    onClick={handleDeleteGroupB}
+                  >
                     Delete
                   </Button>
                 </Stack>
@@ -1534,10 +1591,53 @@ const DifferentialExpression = () => {
             }}
           ></div>
           <Box>
-            <Typography variant="h5" sx={{ fontFamily: "Lato" }}>
+            <Typography
+              variant="h5"
+              sx={{ fontFamily: "Lato" }}
+            >
               ANALYSIS OPTIONS
             </Typography>
             <Box>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  color: "#1463B9",
+                  fontFamily: "Montserrat",
+                  fontWeight: 600,
+                  mt: 3,
+                  display: "inline-flex",
+                  alignItems: "center",
+                }}
+              >
+                Group Names
+                <Tooltip
+                  describeChild
+                  placement="right"
+                  title="Group names only apply when not using your own submitted files"
+                >
+                  <InfoIcon sx={{ fontSize: "1rem", ml: 0.5 }} />
+                </Tooltip>
+                :
+              </Typography>
+              <br />
+              <TextField
+                id="outlined-required"
+                label="Group A"
+                defaultValue="A"
+                sx={{ mr: 3, mt: 1 }}
+                onChange={(e) => {
+                  handleGroupNameChange(e, "groupA");
+                }}
+              />
+              <TextField
+                id="outlined-required"
+                label="Group B"
+                defaultValue="B"
+                sx={{ mr: 3, mt: 1 }}
+                onChange={(e) => {
+                  handleGroupNameChange(e, "groupB");
+                }}
+              />
               <Typography
                 variant="subtitle1"
                 sx={{
@@ -1762,7 +1862,11 @@ const DifferentialExpression = () => {
                 Wilcoxon Signed-rank Test
               </Typography>
             </Box>
-            <Button variant="contained" sx={{ mt: 5 }} onClick={handleAnalyze}>
+            <Button
+              variant="contained"
+              sx={{ mt: 5 }}
+              onClick={handleAnalyze}
+            >
               ANALYZE
             </Button>
           </Box>

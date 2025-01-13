@@ -2,19 +2,18 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import "./App.css";
-import NavBar from "./components/NavBar.js";
+import NavBar from "./components/Layout/NavBar.js";
 import Home from "./pages";
 import Download from "./pages/Help/Download.js";
 import AnalysisHome from "./pages/AnalysisHome";
 import Gene from "./pages/Browse/Gene/Gene.js";
 import Contact from "./pages/Help/Contact.js";
-import Footer from "./components/Footer.js";
+import Footer from "./components/Layout/Footer.js";
 import ProteinSignature from "./pages/Browse/ProteinSignature/ProteinSignature.js";
 import ProteinCluster from "./pages/Browse/ProteinCluster/ProteinCluster.js";
 import GeneDetail from "./pages/Browse/Gene/GeneDetail.js";
 import SalivaryProtein from "./pages/Browse/SalivaryProtein/SalivaryProtein";
 import ProteinDetail from "./pages/Browse/SalivaryProtein/ProteinDetail";
-import Analysis from "./pages/Analysis.js";
 import Citation from "./pages/Browse/Citation/Citation";
 import CitationDetail from "./pages/Browse/Citation/CitationDetail";
 import ProteinSignatureDetail from "./pages/Browse/ProteinSignature/ProteinSignatureDetail.js";
@@ -50,7 +49,9 @@ import UploadExperiment from "./pages/UploadExperiment.js";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import ScrollToTop from "./components/ScrollToTop.js";
 import ApiPage from "./pages/ApiPage.js";
-ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
+
+if (process.env.REACT_APP_DEPLOY_ENV === "PROD")
+  ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
 
 const theme = createTheme({
   breakpoints: {
@@ -214,10 +215,6 @@ function App() {
                 path="/api-description"
                 element={<ApiPage />}
               />
-              {/* <Route
-                path="/analysis"
-                element={<Analysis />}
-              /> */}
               <Route
                 path="/privacy-policy"
                 element={<PrivacyPolicyPage />}

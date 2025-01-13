@@ -17,7 +17,7 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import XMLParser from "react-xml-parser";
 import { Helmet } from "react-helmet";
-import BreadCrumb from "../../components/Breadcrumbs";
+import BreadCrumb from "../../components/Layout/Breadcrumbs";
 
 const PsiBlastResults = () => {
   const { jobId } = useParams();
@@ -159,10 +159,10 @@ const PsiBlastResults = () => {
         fileSuffix === "txt"
           ? toolOutput
           : fileSuffix === "xml"
-          ? xmlOutput
-          : fileSuffix === "svg"
-          ? visualSvgOutput
-          : "",
+            ? xmlOutput
+            : fileSuffix === "svg"
+              ? visualSvgOutput
+              : "",
     };
     const blob = new Blob([fileInfo.content], {
       type: "text/plain",

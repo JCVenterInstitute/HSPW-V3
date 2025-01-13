@@ -9,7 +9,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 
 import MainFeature from "../../../assets/hero.jpeg";
-import BreadCrumb from "../../../components/Breadcrumbs";
+import BreadCrumb from "../../../components/Layout/Breadcrumbs";
 import { Helmet } from "react-helmet";
 
 const Cluster_Detail = (props) => {
