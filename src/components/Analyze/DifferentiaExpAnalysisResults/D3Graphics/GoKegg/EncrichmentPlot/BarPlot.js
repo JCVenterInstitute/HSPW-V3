@@ -265,7 +265,7 @@ const BarChartComponent = ({ plotData, title }) => {
     legend
       .append("text")
       .attr("x", legendWidth / 2)
-      .attr("y", -15) // Adjust the y position for the text
+      .attr("y", -5) // Adjust the y position for the text
       .attr("text-anchor", "middle")
       .text("p.adjust")
       .style("font-size", "22px")
