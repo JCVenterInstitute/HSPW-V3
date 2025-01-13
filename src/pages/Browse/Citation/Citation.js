@@ -1,10 +1,10 @@
 import React from "react";
 
-import CitationTable from "../../../components/CitationTable";
+import CitationTable from "../../../components/Tables/CitationTable";
 import MainFeature from "../../../assets/hero.jpeg";
 import "../../style.css";
 import { Container } from "@mui/material";
-import BreadCrumb from "../../../components/Breadcrumbs";
+import BreadCrumb from "../../../components/Layout/Breadcrumbs";
 import { Helmet } from "react-helmet";
 
 const CitationPage = () => {

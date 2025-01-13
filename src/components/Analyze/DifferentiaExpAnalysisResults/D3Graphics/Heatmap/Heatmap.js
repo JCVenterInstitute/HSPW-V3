@@ -2,6 +2,17 @@ import "../D3GraphStyles.css";
 import React, { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
 
+/**
+ * HeatmapComponent renders a heatmap visualization using D3.js within a React component.
+ *
+ * @param {Object} props - The component properties.
+ * @param {string} props.jobId - The job ID for data fetching.
+ * @param {string} props.fileName - The file name for the data to be loaded.
+ * @param {number} props.numbVolcanoSamples - The number of volcano samples to display.
+ * @param {string} props.tab - The current tab to determine which data to load.
+ *
+ * @returns {JSX.Element} - The rendered React component.
+ */
 const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
   const svgRef = useRef();
   const resetButtonRef = useRef(null);
@@ -12,6 +23,7 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
   const width = 1000 - margin.left - margin.right;
   const height = 1050 - margin.top - margin.bottom;
 
+  // Function to clean data by removing quotes
   const cleanData = (data) => {
     return data.slice(1).map((d) => {
       const cleanedData = {};
@@ -23,6 +35,7 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
   };
 
   useEffect(() => {
+    // Function to load and clean data based on the current tab
     const loadData = async () => {
       let cleanedData = cleanData(fileName);
       if (tab.startsWith("Top")) {
@@ -32,7 +45,7 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
     };
 
     loadData();
-  }, [jobId, fileName, tab]);
+  }, [jobId, fileName, tab]); // Re-load data when dependencies change
 
   useEffect(() => {
     if (data.length > 0) {
@@ -73,7 +86,7 @@ const HeatmapComponent = ({ jobId, fileName, numbVolcanoSamples, tab }) => {
         .range([height, 0])
         .padding(0.1);
 
-      // Add zoom functionality
+      // Add zoom functionality and apply it to the SVG
       const zoomed = (event) => {
         const { transform } = event;
         plot.attr("transform", transform);

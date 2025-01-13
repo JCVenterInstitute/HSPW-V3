@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import main_feature from "../../assets/hero.jpeg";
 import {
   Typography,
   Container,
@@ -17,7 +16,9 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import XMLParser from "react-xml-parser";
 import { Helmet } from "react-helmet";
-import BreadCrumb from "../../components/Breadcrumbs";
+
+import BreadCrumb from "../../components/Layout/Breadcrumbs";
+import main_feature from "../../assets/hero.jpeg";
 
 const InterProScanResults = () => {
   const { jobId } = useParams();
@@ -148,12 +149,12 @@ const InterProScanResults = () => {
         fileSuffix === "xml"
           ? xmlOutput
           : fileSuffix === "tsv"
-          ? tsvOutput
-          : fileSuffix === "gff3"
-          ? gffOutput
-          : fileSuffix === "json"
-          ? JSON.stringify(jsonOutput)
-          : "",
+            ? tsvOutput
+            : fileSuffix === "gff3"
+              ? gffOutput
+              : fileSuffix === "json"
+                ? JSON.stringify(jsonOutput)
+                : "",
     };
 
     const blob = new Blob([fileInfo.content], {

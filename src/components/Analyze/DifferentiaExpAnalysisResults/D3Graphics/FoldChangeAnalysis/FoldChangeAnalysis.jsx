@@ -3,10 +3,6 @@ import React, { useEffect, useRef } from "react";
 import { createLegend } from "../../utils";
 
 import * as d3 from "d3v7";
-// import data from "../../data/statistical_parametric_test.csv";
-
-// Fold.Change
-// log2.FC.
 
 const FoldChangePlot = ({ data, fc }) => {
   const plotConfig = {
@@ -50,9 +46,8 @@ const FoldChangePlot = ({ data, fc }) => {
     },
   };
 
-  const chartRef = useRef(null),
-    svgRef = useRef(null),
-    zoomRef = useRef(null);
+  const svgRef = useRef(null);
+  const zoomRef = useRef(null);
 
   const createScatterPlot = async (config, containerRef) => {
     const {
@@ -317,9 +312,19 @@ const FoldChangePlot = ({ data, fc }) => {
   };
 
   return (
-    <div id="FoldChangeGraph" className="graph-container" ref={containerRef}>
-      <div className="reset-button-container" style={resetButtonMargin}>
-        <button onClick={resetZoom} className="reset-button">
+    <div
+      id="FoldChangeGraph"
+      className="graph-container"
+      ref={containerRef}
+    >
+      <div
+        className="reset-button-container"
+        style={resetButtonMargin}
+      >
+        <button
+          onClick={resetZoom}
+          className="reset-button"
+        >
           Reset
         </button>
       </div>

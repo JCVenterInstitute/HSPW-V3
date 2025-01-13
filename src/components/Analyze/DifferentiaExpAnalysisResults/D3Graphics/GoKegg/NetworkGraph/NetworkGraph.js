@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import cytoscape from "cytoscape";
 import Select from "react-select";
-import { fetchDataFile } from "../../../utils.js";
+
 import "./NetworkGraph.css";
 
 // Function for creating random color
@@ -228,7 +228,10 @@ const NetworkGraph = ({ plotData }) => {
             onKeyPress={handleKeyPress} // Add the event listener here
             className="input-field"
           />
-          <button onClick={handleSearch} className="search-button">
+          <button
+            onClick={handleSearch}
+            className="search-button"
+          >
             Search
           </button>
           {message && <p className="message">{message}</p>}
@@ -251,7 +254,10 @@ const NetworkGraph = ({ plotData }) => {
         maxMenuHeight={150}
         className="mb-4"
       />
-      <div id="cy" style={{ width: "100%", height: "1600px" }}></div>
+      <div
+        id="cy"
+        style={{ width: "100%", height: "1600px" }}
+      ></div>
     </div>
   );
 };

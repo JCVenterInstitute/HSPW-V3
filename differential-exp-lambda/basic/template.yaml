@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Differential Analysis Basic Lambda. Everything up to Random Forest
+
+Parameters:
+  DeployEnv:
+    Type: String
+    Default: DEV
+    AllowedValues:
+      - DEV
+      - PROD
+  ApiStage:
+    Type: String
+    Description: The APIGateway stage name.
+    Default: v1
+  S3BucketName:
+    Type: String
+  SupportEmail:
+    Type: String
+  AwsRegion:
+    Type: String
+  SubmissionTable:
+    Type: String
+
+Resources:
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub "Differential-Analysis-Basic-${DeployEnv}"
+      StageName: !Ref ApiStage
+      EndpointConfiguration: REGIONAL
+      BinaryMediaTypes:
+        - "*/*"
+
+  ApiFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Metadata:
+      DockerContext: .
+      Dockerfile: Dockerfile
+    Properties:
+      PackageType: Image
+      FunctionName: !Sub "Differential-Analysis-Basic-${DeployEnv}"
+      Description: Differential Analysis Basic
+      Role: arn:aws:iam::552623730819:role/HSP-Api-Execution-Role
+      MemorySize: 3584
+      Timeout: 900
+      Environment:
+        Variables:
+          S3_BUCKET_NAME: !Ref S3BucketName
+          SUPPORT_EMAIL: !Ref SupportEmail
+          REGION: !Ref AwsRegion
+          SUBMISSIONS_TABLE: !Ref SubmissionTable
+      Events:
+        ProxyApiRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /
+            Method: ANY
+        ProxyApiGreedy:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /{proxy+} # direct pass through of any route after /
+            Method: ANY

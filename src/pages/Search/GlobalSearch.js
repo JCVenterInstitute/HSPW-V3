@@ -1,15 +1,16 @@
 import { useState } from "react";
-import main_feature from "../../assets/hero.jpeg";
 import { Container, TextField, Button, Box, Typography } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { Helmet } from "react-helmet";
+
 import Genes from "../../components/Search/GlobalSearch/Genes";
 import ProteinClusters from "../../components/Search/GlobalSearch/ProteinClusters";
 import ProteinSignatures from "../../components/Search/GlobalSearch/ProteinSignatures";
 import Proteins from "../../components/Search/GlobalSearch/Proteins";
 import PubMedCitations from "../../components/Search/GlobalSearch/PubMedCitations";
 import SalivaryProteins from "../../components/Search/GlobalSearch/SalivaryProteins";
-import BreadCrumb from "../../components/Breadcrumbs";
-import { Helmet } from "react-helmet";
+import BreadCrumb from "../../components/Layout/Breadcrumbs";
+import main_feature from "../../assets/hero.jpeg";
 
 const GlobalSearch = () => {
   const [searchText, setSearchText] = useState("");

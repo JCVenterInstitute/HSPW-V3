@@ -3,7 +3,7 @@ import { Container } from "@mui/material";
 import { useParams, useSearchParams } from "react-router-dom";
 
 import OptionsBar from "../../components/Analyze/DifferentiaExpAnalysisResults/OptionsBar";
-import PageHeader from "../../components/PageHeader";
+import PageHeader from "../../components/Layout/PageHeader";
 import ResultSection from "../../components/Analyze/DifferentiaExpAnalysisResults/ResultSection";
 
 const breadcrumbPath = [

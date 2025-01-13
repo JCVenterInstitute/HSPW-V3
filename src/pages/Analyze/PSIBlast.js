@@ -1,9 +1,10 @@
 import React from "react";
-import main_feature from "../../assets/hero.jpeg";
 import { Typography, Container } from "@mui/material";
-import PsiBlastSequenceParameters from "../../components/MultipleSequenceAlignment/PsiBlastSequenceParameters";
-import BreadCrumb from "../../components/Breadcrumbs";
 import { Helmet } from "react-helmet";
+
+import PsiBlastSequenceParameters from "../../components/MultipleSequenceAlignment/PsiBlastSequenceParameters";
+import BreadCrumb from "../../components/Layout/Breadcrumbs";
+import main_feature from "../../assets/hero.jpeg";
 
 const PSIBlast = () => {
   const breadcrumbPath = [

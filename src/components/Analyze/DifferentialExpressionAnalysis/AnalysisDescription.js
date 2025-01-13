@@ -1,3 +1,36 @@
+const EnrichmentDescriptions = {
+  "Enrichment Plot":
+    "Over-Representation Analysis (ORA) is a standard method to check if specific biological functions or processes are found more frequently in a list of genes from experiments, such as those differentially expressed (DEGs). By default, the background includes all genes that have annotations and, in the case of humans, the entire human proteome. It is important to adjust p-values carefully for multiple comparisons to ensure accurate results. The enrichGO() and enrichKEGG() functions were implemented in the clusterProfiler package and are used for the gene ontology and KEGG pathway over-representation test. The p-value adjustment was performed using the Benjamini-Hochberg False Discovery Rate (FDR) method.",
+  "Enriched terms & connected genes":
+    "To understand that genes can belong to multiple categories, we used the cnetplot() function from the clusterProfiler package. This function helps us see the connections between genes and biological concepts, such as Gene Ontology (GO) terms or KEGG pathways, in a network format.",
+};
+
+const GSEADescriptions = {
+  "Ridge plot":
+    "The ridge plot shows how core-enriched proteins are expressed in GSEA-enriched categories. It helps users quickly see which pathways are upregulated and which are downregulated.",
+  "Heatmap plot":
+    "The heatplot works like a cnetplot but shows relationships as a heatmap. A gene-concept network can become complicated when users want to display many significant terms. The heatplot makes the results more apparent and helps users quickly identify expression patterns.",
+  "Tree cluster plot":
+    "The `treeplot()` function helps group related terms through hierarchical clustering. It uses pairwise similarities calculated by the `pairwise_termsim()` function, which applies Jaccard’s similarity index (JC) and the Ward.D method. The `treeplot()` function divides the tree into five smaller subtrees and labels these using common words. This method simplifies the results and makes it easier for users to understand the information.",
+};
+
+const GoDescriptions = {
+  "Enrichment Plot": EnrichmentDescriptions["Enrichment Plot"],
+  "Enriched terms & connected genes":
+    EnrichmentDescriptions["Enriched terms & connected genes"],
+  "GSEA Ridge plot": GSEADescriptions["Ridge plot"],
+  "GSEA Heatmap plot": GSEADescriptions["Heatmap plot"],
+  "GSEA Tree cluster plot": GSEADescriptions["Tree cluster plot"],
+};
+
+const KeggDescriptions = {
+  "Enrichment Plot": EnrichmentDescriptions["Enrichment Plot"],
+  "Enriched terms & connected genes":
+    EnrichmentDescriptions["Enriched terms & connected genes"],
+  "GSEA Ridge plot": GSEADescriptions["Ridge plot"],
+  "GSEA Heatmap plot": GSEADescriptions["Heatmap plot"],
+};
+
 const description = {
   "Volcano Plot":
     "Volcano plot combines results from Fold Change (FC) Analysis and T-tests into one single graph, which allows users to intuitively select significant proteins based on either biological significance, statistical significance, or both. Please refer to the Fold Change and T-test web pages for details of the underlying calculations. The figure shows the important proteins identified by the volcano plot. The data matrix shows the details of these proteins.",
@@ -29,6 +62,13 @@ const description = {
     Outlier:
       "Outliers are depicted in the plot based on the outlying measures derived from the Random Forest classification model.",
   },
+  "GO Biological Process": GoDescriptions,
+  "GO Molecular Function": GoDescriptions,
+  "GO Cellular Component": GoDescriptions,
+  "KEGG Pathway": KeggDescriptions,
+  "KEGG Module": KeggDescriptions,
+  "Network Analysis":
+    "The protein-protein association networks were generated utilizing STRINGdb. The analysis focused exclusively on the significantly differentially abundant proteins to identify their interacting partners, employing the default settings available within the R environment through STRINGdb.",
 };
 
 export default description;

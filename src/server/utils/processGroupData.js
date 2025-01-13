@@ -54,7 +54,7 @@ const createCsvString = (data) => {
   // Create each row
   const rows = data.map((sample) => {
     return [
-      sample.Identifier,
+      sample.Identifier.replaceAll("#", ""), // remove # from identifiers, causes issue with rScript
       sample.Group,
       ...proteinIds.map((id) => sample[id] || "0"),
     ].join("\t");
@@ -66,20 +66,21 @@ const createCsvString = (data) => {
 exports.processGroupData = async (
   { groupAData, groupBData },
   timestamp,
-  formattedDate
+  formattedDate,
+  groupNames
 ) => {
   console.log("> Processing Group Data");
 
-  console.log("> Group A", groupAData);
-  console.log("> Group B", groupBData);
+  // console.log("> Group A", groupAData);
+  // console.log("> Group B", groupBData);
 
   const { processedSamples: processedGroupA } = await processSamples(
     groupAData,
-    "A"
+    groupNames && groupNames.groupA ? groupNames.groupA : "A"
   );
   const { processedSamples: processedGroupB } = await processSamples(
     groupBData,
-    "B"
+    groupNames && groupNames.groupB ? groupNames.groupB : "B"
   );
 
   const combinedData = [...processedGroupA, ...processedGroupB];
@@ -87,7 +88,7 @@ exports.processGroupData = async (
   // Create CSV string
   const csvString = createCsvString(combinedData);
 
-  console.log("> CSV String", csvString);
+  // console.log("> CSV String", csvString);
 
   const contentType = "text/csv";
 
@@ -101,7 +102,7 @@ exports.processGroupData = async (
     contentType,
   });
 
-  console.log("> Presigned URL", presignedUrl);
+  // console.log("> Presigned URL", presignedUrl);
 
   const response = await axios.put(presignedUrl, csvString, {
     headers: {

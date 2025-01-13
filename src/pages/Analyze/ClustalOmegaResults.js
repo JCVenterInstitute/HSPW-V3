@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import main_feature from "../../assets/hero.jpeg";
 import {
   Typography,
   Container,
@@ -14,12 +13,14 @@ import {
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import "react-tabs/style/react-tabs.css";
 import XMLParser from "react-xml-parser";
 import { MSAView, MSAModel } from "react-msaview";
-import "./alignmentTool.css";
 import { Helmet } from "react-helmet";
-import BreadCrumb from "../../components/Breadcrumbs";
+import "react-tabs/style/react-tabs.css";
+
+import BreadCrumb from "../../components/Layout/Breadcrumbs";
+import main_feature from "../../assets/hero.jpeg";
+import "./alignmentTool.css";
 
 const ClustalOmegaResults = () => {
   const { jobId } = useParams();

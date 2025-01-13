@@ -30,6 +30,10 @@ module.exports = {
         OS_HOSTNAME:
           "https://search-hspw-dev2-dmdd32xae4fmxh7t4g6skv67aa.us-east-2.es.amazonaws.com",
         API_ENDPOINT: "http://localhost:8000",
+        BASIC_ANALYSIS_API:
+          "https://5l82pcxy2a.execute-api.us-east-2.amazonaws.com/Stage/",
+        ADVANCE_ANALYSIS_API:
+          "https://hlrvtk7j1f.execute-api.us-east-2.amazonaws.com/Stage/",
       },
       env_prod: {
         DEPLOY_ENV: "prod",
@@ -56,6 +60,10 @@ module.exports = {
         OS_HOSTNAME:
           "https://search-hspw-prod-y77jqnl5zklvuwu3k66anbowhi.us-east-2.es.amazonaws.com",
         API_ENDPOINT: "http://localhost:8000",
+        BASIC_ANALYSIS_API:
+          "https://vjllt843hb.execute-api.us-east-2.amazonaws.com/Stage/",
+        ADVANCE_ANALYSIS_API:
+          "https://o32vc26ibc.execute-api.us-east-2.amazonaws.com/Stage/",
       },
     },
   ],

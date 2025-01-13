@@ -12,6 +12,12 @@ import Jessica from "../../../assets/team-members/Jessica-Welch.jpg";
 import Markus from "../../../assets/team-members/Markus-Hardt.jpeg";
 import Yanhui from "../../../assets/team-members/Yanhui-Zhang.jpg";
 import William from "../../../assets/team-members/William-Lau.jpg";
+import Shubham from "../../../assets/team-members/Shubham-Deshmukh.jpg";
+import Anthony from "../../../assets/team-members/Anthony-Vo.jpg";
+import Andrew from "../../../assets/team-members/Andrew-LaPointe.jpg";
+import Rhea from "../../../assets/team-members/Rhea-Hinger.jpg";
+import Shuv from "../../../assets/team-members/Shuvrajyoti-Deb.jpg";
+import Nikhil from "../../../assets/team-members/Nikhil-Singh.jpg";
 
 const memberInfo = [
   {
@@ -62,7 +68,7 @@ const memberInfo = [
         imageName: "Mickey-Zheng.jpg",
         image: Mickey,
         description:
-          "<b>Mickey Zheng, B.S.</b> Mickey is a Software Engineer in the Informatics Department at the J. Craig Venter Institute (JCVI). He works on full-stack development and data management on the HSP and iDPCC projects. He is knowledgeable in an array of programming languages like JavaScript, and adept in utilizing cloud technologies such as AWS.",
+          "<b>Mickey Zheng, B.S.</b> Mickey is a Software Engineer in the Informatics Department at the J. Craig Venter Institute (JCVI) specializing in full-stack development and data management for the HSP and iDPCC project. Skilled in multiple programming languages, including JavaScript and Python, and experienced with frameworks like Next.js and React.js. Proficient in leveraging AWS and other cloud technologies to support scalable solutions.",
       },
       {
         imageName: "Link-Wu.jpg",
@@ -114,12 +120,54 @@ const memberInfo = [
         imageName: "William-Lau.jpg",
         image: William,
         description:
-          "<b>William Lau , B.S., M.S., Ph.D.</b> William Lau has been a bioinformatics scientist/staff computer engineer and group leader at the National Institutes of Health (NIH) since 2005.  He obtained both of his BS and MS in Biomedical Engineering, and a doctorate in Bioinformatics.  He has a strong track record of working across disciplines and with both computational and experimental biologists to develop and apply quantitative methods to answer research questions.  He has also led the development of several biomedical database systems and web applications for use by NIH researchers as well as the broader scientific community. His current research focuses on using systems biology approaches to unravel the intricacies of the immune system network, resulting in multiple publications as co-first author in high impact journals.   William has received the NIH Director’s Award and several CIT/NIAID Merit Awards for his contributions to the NIH’s missions.",
+          "<b>William Lau, B.S., M.S., Ph.D.</b> William Lau has been a bioinformatics scientist/staff computer engineer and group leader at the National Institutes of Health (NIH) since 2005.  He obtained both of his BS and MS in Biomedical Engineering, and a doctorate in Bioinformatics.  He has a strong track record of working across disciplines and with both computational and experimental biologists to develop and apply quantitative methods to answer research questions.  He has also led the development of several biomedical database systems and web applications for use by NIH researchers as well as the broader scientific community. His current research focuses on using systems biology approaches to unravel the intricacies of the immune system network, resulting in multiple publications as co-first author in high impact journals.   William has received the NIH Director’s Award and several CIT/NIAID Merit Awards for his contributions to the NIH’s missions.",
       },
       {
         imageName: "Floyd-Dewhirst.jpg",
         image: Floyd,
         description: `<b>Floyd E. Dewhirst, DDS, Ph.D.</b> Floyd has been a research scientist at The Forsyth Institute where he has been continuously funded by NIDCR for the past 43 years. He is known for his work on organisms comprising the human oral microbiome and the creation of the <a href="https://www.homd.org/" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">Human Oral Microbiome Database</a>  Exit Disclaimer. His current research focuses on culturing as-yet-uncultured bacteria, determining their genome sequences and understanding their role in human health and disease.`,
+      },
+    ],
+  },
+  {
+    title: "Past Interns",
+    id: "past-interns",
+    members: [
+      {
+        imageName: "Andrew-LaPointe.jpg",
+        image: Andrew,
+        description:
+          "<b>Andrew LaPointe</b> Andrew LaPointe is a student of Computer Science and software engineering. His skills include full-stack web development, D3, and scripting. Past projects include Erlang OTP, Express JS, and, Python applications.",
+      },
+      {
+        imageName: "Anthony-Vo.jpg",
+        image: Anthony,
+        description:
+          "<b>Anthony Vo, B.S.</b> Anthony has a degree in Computer Science from the University of Maryland. While he was an intern at J. Craig Venter Institute (JCVI), he helped to develop some of the D3 visuals for the differential analysis. He has a range of knowledge in programming languages such as JavaScript, Java and Python.",
+      },
+      {
+        imageName: "Nikhil-Singh.jpg",
+        image: Nikhil,
+        description:
+          "<b>Nikhil Singh</b> Nikhil is a Software Developer currently contributing to bioinformatics and computational projects at the J. Craig Venter Institute (JCVI), with expertise in full-stack development focused on JavaScript, Python, and AWS. He specializes in building data-driven applications and advanced visualizations with tools like Next.js, React, and D3.js, along with hands-on experience in distributed systems and cloud technologies such as AWS services. He is dedicated to developing scalable, impactful solutions through cloud integrations and is an enthusiastic contributor to open-source projects.",
+      },
+      {
+        imageName: "Rhea-Hinger.jpg",
+        image: Rhea,
+        description:
+          "<b>Rhea Hinger, M.A.</b> Rhea holds a Master’s in Graphic Design from the Maryland Institute College of Art. She was an intern at J. Craig Venter Institute (JCVI) where she helped with the UI-UX Design. She is skilled in communication design, wire framing and user research.",
+      },
+      {
+        imageName: "Shubham-Deshmukh.jpg",
+        image: Shubham,
+        description:
+          "<b>Shubham Deshmukh, B.S., M.S.</b> Shubham is a Computer Science graduate student at Virginia Tech with extensive experience in software engineering, machine learning, and data visualization. He has contributed to impactful projects such as the Human Salivary Proteome (HSP) at JCVI and developed advanced algorithms for environmental data analysis. With expertise in Python, JavaScript, React, D3.js, AWS, and Docker, Shubham is particularly passionate about data science, machine learning, and computer vision.",
+      },
+      {
+        imageName: "Shuvrajyoti-Deb.jpg",
+        image: Shuv,
+        description:
+          "<b>Shuvrajyoti Debroy, B.S., M.S.</b> Shuv is a Software Engineer with a masters degree in data science. During his internship, he contributed to the HSP data pipeline. He has a range of experience with machine learning, statistical analysis, and data visualization.",
       },
     ],
   },

@@ -1,0 +1,14 @@
+{
+  "name": "stacks",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "sam:build:core": "rm -rf .aws-sam && sam build --config-env core",
+    "deploy:app:core:dev": "sam deploy --config-env dev",
+    "complete:app:core:dev": "npm run sam:build:core && npm run deploy:app:core:dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

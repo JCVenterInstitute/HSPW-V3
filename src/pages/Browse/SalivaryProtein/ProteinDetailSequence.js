@@ -8,12 +8,12 @@ import "font-awesome/css/font-awesome.min.css";
 import { useParams } from "react-router";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
+import { Container } from "@mui/material";
+import { Helmet } from "react-helmet";
 
 import MainFeature from "../../../assets/hero.jpeg";
+import BreadCrumb from "../../../components/Layout/Breadcrumbs";
 import "../../style.css";
-import { Container } from "@mui/material";
-import BreadCrumb from "../../../components/Breadcrumbs";
-import { Helmet } from "react-helmet";
 
 const ProteinDetailSequence = (props) => {
   const params = useParams();
