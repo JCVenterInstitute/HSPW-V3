@@ -9,15 +9,14 @@ import {
   Container,
   Avatar,
 } from "@mui/material";
-import logo from "../../assets/logo/hspw-logo.png";
-import React from "react";
 import PopupState, { bindMenu, bindHover } from "material-ui-popup-state";
 import HoverMenu from "material-ui-popup-state/HoverMenu";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"; // Importing the icon
-import logo from "../assets/hspw-logo.png";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+
+import { AuthContext } from "../../services/AuthContext"; // Import the logout method
+import logo from "../../assets/logo/hspw-logo.png";
 import MobileNavBar from "./MobileNavBar";
-import { AuthContext } from "../services/AuthContext"; // Import the logout method
 
 const navMenuStyles = {
   marginRight: "20px",

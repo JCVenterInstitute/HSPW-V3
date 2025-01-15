@@ -14,7 +14,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 import React, { useContext, useState, useEffect } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { AuthContext } from "../services/AuthContext";
+
+import { AuthContext } from "../../services/AuthContext";
 
 const MobileNavBar = () => {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
