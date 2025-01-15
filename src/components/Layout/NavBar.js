@@ -1,3 +1,4 @@
+import React, { useState, useEffect, useContext } from "react";
 import {
   AppBar,
   Toolbar,
@@ -6,15 +7,17 @@ import {
   Box,
   useMediaQuery,
   Container,
+  Avatar,
 } from "@mui/material";
 import logo from "../../assets/logo/hspw-logo.png";
 import React from "react";
-import PopupState from "material-ui-popup-state";
-import { bindHover, bindMenu } from "material-ui-popup-state/hooks";
+import PopupState, { bindMenu, bindHover } from "material-ui-popup-state";
 import HoverMenu from "material-ui-popup-state/HoverMenu";
-import { ArrowDropDownIcon } from "@mui/x-date-pickers";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"; // Importing the icon
+import logo from "../assets/hspw-logo.png";
 import MobileNavBar from "./MobileNavBar";
-import { Link } from "react-router-dom";
+import { AuthContext } from "../services/AuthContext"; // Import the logout method
 
 const navMenuStyles = {
   marginRight: "20px",
@@ -23,6 +26,31 @@ const navMenuStyles = {
 
 export const NavBar = () => {
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down("lg"));
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation(); // Hook to track location changes
+  const { session, logout } = useContext(AuthContext);
+
+  console.log(session);
+  useEffect(() => {
+    if (session && session.isValid()) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [location, session]); // Run useEffect whenever the location changes
+
+  const handleLogout = async () => {
+    try {
+      await logout(); // Call the Cognito sign out method
+      setIsLoggedIn(false);
+      navigate("/");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
+
+  console.log("Rendering NavBar with isLoggedIn:", isLoggedIn);
 
   return (
     <Container maxWidth="xl">
@@ -74,7 +102,7 @@ export const NavBar = () => {
                   variant="popover"
                 >
                   {(popupState) => (
-                    <React.Fragment>
+                    <>
                       <Button
                         size="large"
                         style={navMenuStyles}
@@ -125,7 +153,7 @@ export const NavBar = () => {
                           Publications
                         </MenuItem>
                       </HoverMenu>
-                    </React.Fragment>
+                    </>
                   )}
                 </PopupState>
                 <PopupState
@@ -133,7 +161,7 @@ export const NavBar = () => {
                   variant="popover"
                 >
                   {(popupState) => (
-                    <React.Fragment>
+                    <>
                       <Button
                         variant="text"
                         size="large"
@@ -179,7 +207,7 @@ export const NavBar = () => {
                           Protein Search By Identifiers
                         </MenuItem>
                       </HoverMenu>
-                    </React.Fragment>
+                    </>
                   )}
                 </PopupState>
                 <PopupState
@@ -187,7 +215,7 @@ export const NavBar = () => {
                   variant="popover"
                 >
                   {(popupState) => (
-                    <React.Fragment>
+                    <>
                       <Button
                         size="large"
                         style={navMenuStyles}
@@ -232,7 +260,7 @@ export const NavBar = () => {
                           Protein Similarity Search (BLAST)
                         </MenuItem>
                       </HoverMenu>
-                    </React.Fragment>
+                    </>
                   )}
                 </PopupState>
                 <PopupState
@@ -240,7 +268,7 @@ export const NavBar = () => {
                   variant="popover"
                 >
                   {(popupState) => (
-                    <React.Fragment>
+                    <>
                       <Button
                         size="large"
                         style={navMenuStyles}
@@ -294,9 +322,64 @@ export const NavBar = () => {
                           Contact Us
                         </MenuItem>
                       </HoverMenu>
-                    </React.Fragment>
+                    </>
                   )}
                 </PopupState>
+                {isLoggedIn ? (
+                  <PopupState
+                    popupId="account-menu"
+                    variant="popover"
+                  >
+                    {(popupState) => (
+                      <>
+                        <Button
+                          {...bindHover(popupState)}
+                          size="large"
+                          style={navMenuStyles}
+                          startIcon={<Avatar alt="User Avatar" />}
+                          endIcon={<ArrowDropDownIcon />}
+                        >
+                          Account
+                        </Button>
+                        <HoverMenu
+                          {...bindMenu(popupState)}
+                          anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "left",
+                          }}
+                          transformOrigin={{
+                            vertical: "top",
+                            horizontal: "left",
+                          }}
+                        >
+                          <MenuItem
+                            component={Link}
+                            to="/profile"
+                          >
+                            Profile
+                          </MenuItem>
+                          <MenuItem
+                            component={Link}
+                            to="/submissions"
+                          >
+                            Submissions
+                          </MenuItem>
+                          <MenuItem onClick={handleLogout}>Log out</MenuItem>
+                        </HoverMenu>
+                      </>
+                    )}
+                  </PopupState>
+                ) : (
+                  <Button
+                    color="primary"
+                    size="large"
+                    style={navMenuStyles}
+                    component={Link}
+                    to="/login"
+                  >
+                    Log in
+                  </Button>
+                )}
               </>
             )}
           </div>
