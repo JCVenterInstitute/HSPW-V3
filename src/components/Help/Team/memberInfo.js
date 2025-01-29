@@ -2,10 +2,8 @@ import Stefan from "../../../assets/team-members/Stefan-Ruhl.jpg";
 import Kathryn from "../../../assets/team-members/Kathryn-Kauffman.jpg";
 import Marcelo from "../../../assets/team-members/Marcelo-Freire.jpg";
 import Indresh from "../../../assets/team-members/Indresh-Singh.jpeg";
-import Harinder from "../../../assets/team-members/Harinder-Singh.jpeg";
 import Max from "../../../assets/team-members/Max-Qian.jpg";
 import Mickey from "../../../assets/team-members/Mickey-Zheng.jpg";
-import Link from "../../../assets/team-members/Link-Wu.jpg";
 import Floyd from "../../../assets/team-members/Floyd-Dewhirst.jpg";
 import Tsute from "../../../assets/team-members/Tsute-Chen.jpg";
 import Jessica from "../../../assets/team-members/Jessica-Welch.jpg";
@@ -54,12 +52,6 @@ const memberInfo = [
           "<b>Indresh Singh, MSc</b> Indresh is a Sr. Software Engineer, leading Informatics Core Services (ICS) at the J. Craig Venter Institute (JCVI). His expertise is; high-thoughput computing, genomic data analysis, data visualization, software development, and scalable infrastructure development and deployment in local and cloud environment.",
       },
       {
-        imageName: "Harinder-Singh.jpeg",
-        image: Harinder,
-        description:
-          "<b>Harinder Singh, Ph.D.</b> Harinder is a Staff Scientist in the Infectious Disease Department at the J. Craig Venter Institute (JCVI). Dr. Singh's area of research is mostly focused on various data analysis, data mining, development of prediction algorithms and databases and bioinformatics pipelines for the scientific community.",
-      },
-      {
         imageName: "Max-Qian.jpg",
         image: Max,
         description: `<b>Yu "Max" Qian, Ph.D.</b>	Max is an Associate Professor in the Informatics Department at the J. Craig Venter Institute (JCVI). He specializes in immunology bioinformatics and computational cytometry. Trained in computer science, he developed novel algorithms for computational analysis of transcriptomics, proteomics, and clinical data using machine learning and integrative/deconvolutional analysis.`,
@@ -69,11 +61,6 @@ const memberInfo = [
         image: Mickey,
         description:
           "<b>Mickey Zheng, B.S.</b> Mickey is a Software Engineer in the Informatics Department at the J. Craig Venter Institute (JCVI) specializing in full-stack development and data management for the HSP and iDPCC project. Skilled in multiple programming languages, including JavaScript and Python, and experienced with frameworks like Next.js and React.js. Proficient in leveraging AWS and other cloud technologies to support scalable solutions.",
-      },
-      {
-        imageName: "Link-Wu.jpg",
-        image: Link,
-        description: `<b>I-Lin (Link) Wu, B.S.</b>	Link is a Software Engineer in the Informatics Department at the J. Craig Venter Institute (JCVI). He has a strong background in full-stack development and data management, and he has played a pivotal role in HSP project and iDPCC project. With expertise in a variety of programming languages and tools, including JavaScript, Java, Python, C++, and cloud services like AWS and Azure, Link excels in creating efficient, scalable solutions.`,
       },
     ],
   },
