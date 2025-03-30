@@ -17,11 +17,9 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { useParams } from "react-router-dom";
-import { Helmet } from "react-helmet";
 
 import CustomLoadingOverlay from "./CustomLoadingOverlay";
-import BreadCrumb from "../../../components/Layout/Breadcrumbs";
-import MainFeature from "../../../assets/hero.jpeg";
+import PageHeader from "../../../components/Layout/PageHeader";
 
 const generateColumnDefs = (data) => {
   if (!data || data.length === 0) return [];
@@ -228,25 +226,11 @@ const ExperimentProteinDetail = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Experiment Protein Detail</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{
-          backgroundImage: `url(${MainFeature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1
-            className="head_title"
-            align="left"
-          >
-            Protein: {uniprotid}
-          </h1>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={`HSP | Experiment Protein Detail`}
+        title={`Protein: ${uniprotid}`}
+        breadcrumb={breadcrumbPath}
+      />
       <Container
         sx={{ mt: 2 }}
         maxWidth="xl"

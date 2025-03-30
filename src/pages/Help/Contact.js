@@ -31,10 +31,8 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import axios from "axios";
 import Swal from "sweetalert2";
 import ReCAPTCHA from "react-google-recaptcha";
-import { Helmet } from "react-helmet";
 
-import BreadCrumb from "../../components/Layout/Breadcrumbs";
-import main_feature from "../../assets/hero.jpeg";
+import PageHeader from "../../components/Layout/PageHeader";
 
 const Contact = () => {
   const RECAPTCHA_PUBLIC_KEY = process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY;
@@ -240,24 +238,17 @@ const Contact = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Contact</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        className="head_background"
-        style={{ backgroundImage: `url(${main_feature})` }}
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Contact Us</h1>
-          <p className="head_text">
-            Let us know if you have any questions, comments, or suggestions!
-            Please provide as much details as possible to help us better respond
-            to your inquiry. Screenshots of pages in question can be submitted
-            along with your message if desired.
-          </p>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={"HSP | Contact"}
+        title={"Contact Us"}
+        breadcrumb={breadcrumbPath}
+        description={
+          "Let us know if you have any questions, comments, or suggestions!\
+            Please provide as much details as possible to help us better respond\
+            to your inquiry. Screenshots of pages in question can be submitted\
+            along with your message if desired."
+        }
+      />
       <Container maxWidth="xl">
         <Box
           component="fieldset"

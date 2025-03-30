@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import Chart from "react-google-charts";
 import LinearProgress from "@mui/material/LinearProgress";
+import { Container } from "@mui/material";
 import Box from "@mui/material/Box";
 
 import GeneTable from "../../../components/Tables/GeneTable";
-import MainFeature from "../../../assets/hero.jpeg";
-import { Container } from "@mui/material";
-import BreadCrumb from "../../../components/Layout/Breadcrumbs";
-import { Helmet } from "react-helmet";
+import PageHeader from "../../../components/Layout/PageHeader";
 
 export const options = {
   vAxis: { title: "Count" },
@@ -53,23 +51,16 @@ const Gene = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Genes</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        className="head_background"
-        style={{ backgroundImage: `url(${MainFeature})` }}
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Gene</h1>
-          <p className="head_text">
-            A gene is a locatable region of genomic sequence, corresponding to a
-            unit of inheritance, which is associated with regulatory regions,
-            transcribed regions, and or other functional sequence regions.
-          </p>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={"HSP | Genes"}
+        title={"Gene"}
+        breadcrumb={breadcrumbPath}
+        description={
+          "A gene is a locatable region of genomic sequence, corresponding to a\
+            unit of inheritance, which is associated with regulatory regions,\
+            transcribed regions, and or other functional sequence regions."
+        }
+      />
       <Container maxWidth="xl">
         <h2 style={{ textAlign: "center", marginTop: "10px" }}>
           Chromosome location of the genes

@@ -18,7 +18,7 @@ const PageHeader = ({ tabTitle, breadcrumb, title, description }) => {
       >
         <Container maxWidth="xl">
           <h1 className="head_title">{title}</h1>
-          <p className="head_text">{description}</p>
+          {description && <p className="head_text">{description}</p>}
         </Container>
       </div>
     </>

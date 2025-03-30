@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import main_feature from "../../assets/hero.jpeg";
 import {
   Typography,
   Container,
@@ -14,10 +13,10 @@ import {
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import "react-tabs/style/react-tabs.css";
 import XMLParser from "react-xml-parser";
-import { Helmet } from "react-helmet";
-import BreadCrumb from "../../components/Layout/Breadcrumbs";
+
+import PageHeader from "../../components/Layout/PageHeader";
+import "react-tabs/style/react-tabs.css";
 
 const PsiBlastResults = () => {
   const { jobId } = useParams();
@@ -184,18 +183,11 @@ const PsiBlastResults = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Protein Similarity Search Results</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{ backgroundImage: `url(${main_feature})` }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Protein Similarity Search</h1>
-          <p className="head_text">
-            BLAST stands for Basic Local Alignment Search Tool. The emphasis of
+      <PageHeader
+        tabTitle={`HSP | Protein Similarity Search Results`}
+        title={`Protein Similarity Search`}
+        breadcrumb={breadcrumbPath}
+        description={`BLAST stands for Basic Local Alignment Search Tool. The emphasis of
             this tool is to find regions of sequence similarity, which will
             yield functional and evolutionary clues about the structure and
             function of your novel sequence. Position specific iterative BLAST
@@ -205,10 +197,8 @@ const PsiBlastResults = () => {
             position-specific scoring matrices derived during the search, this
             tool is used to detect distant evolutionary relationships. PHI-BLAST
             functionality is available to use patterns to restrict search
-            results.
-          </p>
-        </Container>
-      </div>
+            results.`}
+      />
       <Container maxWidth="xl">
         <Typography
           variant="h5"

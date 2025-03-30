@@ -15,10 +15,8 @@ import axios from "axios";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import XMLParser from "react-xml-parser";
-import { Helmet } from "react-helmet";
 
-import BreadCrumb from "../../components/Layout/Breadcrumbs";
-import main_feature from "../../assets/hero.jpeg";
+import PageHeader from "../../components/Layout/PageHeader";
 
 const InterProScanResults = () => {
   const { jobId } = useParams();
@@ -177,25 +175,16 @@ const InterProScanResults = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Protein Signature Search Results</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{ backgroundImage: `url(${main_feature})` }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Protein Signature Search</h1>
-          <p className="head_text">
-            InterProScan is a tool that combines different protein signature
+      <PageHeader
+        tabTitle={`HSP | Protein Signature Search Results`}
+        title={`Protein Signature Search`}
+        breadcrumb={breadcrumbPath}
+        description={` InterProScan is a tool that combines different protein signature
             recognition methods into one resource. The number of signature
             databases and their associated scanning tools, as well as the
             further refinement procedures, increases the complexity of the
-            problem.
-          </p>
-        </Container>
-      </div>
+            problem.`}
+      />
       <Container maxWidth="xl">
         <Typography
           variant="h5"

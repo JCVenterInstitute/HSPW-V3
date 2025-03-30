@@ -6,10 +6,8 @@ import {
   Typography,
 } from "@mui/material";
 import FontAwesome from "react-fontawesome";
-import { Helmet } from "react-helmet";
 
-import BreadCrumb from "../../components/Layout/Breadcrumbs";
-import MainFeature from "../../assets/hero.jpeg";
+import PageHeader from "../../components/Layout/PageHeader";
 
 const sections = [
   "Notice",
@@ -24,20 +22,11 @@ const DisclaimerPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Disclaimer</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{
-          backgroundImage: `url(${MainFeature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">General Disclaimer</h1>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={"HSP | Disclaimer"}
+        title={"General Disclaimer"}
+        breadcrumb={breadcrumbPath}
+      />
       <Container
         maxWidth="xl"
         sx={{ my: 4 }}
