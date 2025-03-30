@@ -31,6 +31,7 @@ export const NavBar = () => {
   const { session, logout } = useContext(AuthContext);
 
   console.log(session);
+
   useEffect(() => {
     if (session && session.isValid()) {
       setIsLoggedIn(true);

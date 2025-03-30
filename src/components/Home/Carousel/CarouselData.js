@@ -1,7 +1,5 @@
-import first_bg from "../assets/first-bg.png";
-import second_bg from "../assets/second-bg.png";
-import third_bg from "../assets/third-bg.png";
-import hero from "../assets/hero.jpeg";
+import second_bg from "../../../assets/second-bg.png";
+import hero from "../../../assets/hero.jpeg";
 
 export const contents = [
   {
