@@ -13,7 +13,7 @@ import {
 import PropTypes from "prop-types";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import main_feature from "../assets/hero.jpeg";
+import main_feature from "../assets/backgrounds/hero.jpeg";
 import FontAwesome from "react-fontawesome";
 
 import {

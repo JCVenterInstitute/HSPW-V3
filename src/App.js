@@ -1,5 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+
+// Google Analytics
+import ReactGA from "react-ga4";
 
 import "./App.css";
 import NavBar from "./components/Layout/NavBar.js";
@@ -46,12 +50,8 @@ import Signup from "./pages/UserAuth/Signup.js";
 import Login from "./pages/UserAuth/Login.js";
 import Profile from "./pages/UserAuth/Profile.js";
 import AuthGuard from "./services/AuthGuard.js";
-
-// Google Analytics
-import ReactGA from "react-ga4";
 import NotFoundPage from "./pages/NotFoundPage.js";
 import UploadExperiment from "./pages/UploadExperiment.js";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
 import ScrollToTop from "./components/ScrollToTop.js";
 import ApiPage from "./pages/ApiPage.js";
 import ForgotPassword from "./pages/UserAuth/ForgotPassword.js";
