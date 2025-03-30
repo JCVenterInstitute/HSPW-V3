@@ -7,7 +7,7 @@ import {
   ListItemText,
 } from "@mui/material";
 
-import memberInfo from "../../components/Help/Team/memberInfo";
+import memberInfo from "../../data/teamMemberData";
 import PageHeader from "../../components/Layout/PageHeader";
 
 const Team = () => {
