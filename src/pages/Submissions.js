@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
-import { AuthContext } from "../services/AuthContext";
 import { AgGridReact } from "ag-grid-react";
-import { Paper, Box, IconButton, Typography } from "@mui/material";
+import { Paper, Box, IconButton, Typography, Container } from "@mui/material";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import LinkIcon from "@mui/icons-material/Link";
 import EditIcon from "@mui/icons-material/Edit";
 import Swal from "sweetalert2";
+
+import { AuthContext } from "../services/AuthContext";
 import CustomCell from "../components/CustomCell";
+import PageHeader from "../components/Layout/PageHeader";
 
 const Submissions = () => {
   const { user, _ } = useContext(AuthContext);
@@ -28,9 +30,7 @@ const Submissions = () => {
       });
 
     if (rowData.length === 0) {
-      fetch(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/test-user-local`
-      )
+      fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${username}`)
         .then((response) => response.json())
         .then((data) => {
           const pinnedRows = data.filter((row) => row.important);
@@ -219,7 +219,7 @@ const Submissions = () => {
             case "complete":
               return {
                 backgroundColor: "green",
-                color: "white",
+                color: "green",
                 height: "100%",
                 display: "flex",
                 alignItems: "center",
@@ -288,6 +288,10 @@ const Submissions = () => {
       sortable: true,
       cellStyle: { borderRight: "1px solid #ccc" },
       cellRenderer: (params) => {
+        if (!params.value) {
+          return <CustomCell value="" />; // Handle invalid date
+        }
+
         // Remove the fractional seconds part
         const rawDate = params.value.split(".")[0]; // Splits the date at the fractional seconds part
         const date = new Date(rawDate.replace(" ", "T")); // Replace the space with 'T' to comply with ISO 8601
@@ -349,37 +353,20 @@ const Submissions = () => {
   };
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "#f5f5f5",
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: "20px",
-        boxSizing: "border-box",
-      }}
-    >
-      <Paper
-        elevation={3}
-        sx={{
-          padding: "2rem",
-          width: "100%",
-          maxWidth: "1200px",
-          height: "80vh",
-          display: "flex",
-          flexDirection: "column",
-          border: "1px solid #ccc",
-          borderRadius: "10px",
-        }}
+    <>
+      <PageHeader
+        title={"Submissions"}
+        tabTitle={"HSP | Submissions"}
+        breadcrumb={[
+          { path: "Home", link: "/" },
+          { path: "Account" },
+          { path: "Submissions" },
+        ]}
+      />
+      <Container
+        maxWidth="xl"
+        sx={{ marginTop: "25px" }}
       >
-        <Typography
-          variant="h4"
-          gutterBottom
-          sx={{ mb: 3 }}
-        >
-          Submissions
-        </Typography>
         <div
           className="ag-theme-material ag-cell-wrap-text ag-theme-alpine"
           style={{
@@ -401,8 +388,8 @@ const Submissions = () => {
             domLayout="autoHeight"
           />
         </div>
-      </Paper>
-    </Box>
+      </Container>
+    </>
   );
 };
 

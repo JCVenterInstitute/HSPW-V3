@@ -38,6 +38,7 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 
 import CustomLoadingOverlay from "./CustomLoadingOverlay";
 import PageHeader from "../../components/Layout/PageHeader";
+import userpool from "../../userpool";
 
 const toExcelColumn = (colIndex) => {
   let column = "";
@@ -802,6 +803,9 @@ const DifferentialExpression = () => {
     });
     Swal.showLoading();
 
+    const currUser = userpool.getCurrentUser();
+    const username = currUser.getUsername();
+
     try {
       if (fileName) {
         await axios
@@ -825,6 +829,7 @@ const DifferentialExpression = () => {
               },
               formattedDate,
               groupNames,
+              username,
             }
           )
           .then(() => {
@@ -857,6 +862,7 @@ const DifferentialExpression = () => {
               },
               formattedDate,
               groupNames,
+              username,
             }
           )
           .then(() => {

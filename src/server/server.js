@@ -1512,7 +1512,7 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
       timestamp,
       formattedDate,
       groupNames,
-      // username,
+      username,
     } = req.body;
 
     console.log(
@@ -1527,7 +1527,7 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
     );
 
     const basicAnalysisRequestBody = {
-      // username: username ? username : "test-user-local",
+      username: username ? username : "test-user-local",
       input_file: inputFile,
       log_normalized: logNorm,
       stat_test: parametricTest,
@@ -1541,18 +1541,17 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
     console.log("> Request Body", basicAnalysisRequestBody);
 
     // Run basic differential expression analysis
-    const basicResponse = await axios.post(
-      process.env.BASIC_ANALYSIS_API,
-      basicAnalysisRequestBody
-    );
+    const basicResponse = await axios
+      .post(process.env.BASIC_ANALYSIS_API, basicAnalysisRequestBody)
+      .then((res) => res.data);
 
-    console.log("> Basic Analysis Response", basicResponse.message);
+    console.log("> Basic Analysis Response", basicResponse);
 
     const advanceAnalysisRequestBody = {
       input_file: inputFile,
       pValueCutoff: 0.85,
       qValueCutoff: 0.8,
-      // submission_id: basicResponse.submission_id,
+      submission_id: basicResponse.submission_id,
     };
 
     // Start advance differential expression analysis
@@ -1587,7 +1586,7 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
       timestamp,
       formattedDate,
       groupNames,
-      // username,
+      username,
     } = req.body;
 
     console.log(
@@ -1597,7 +1596,7 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
     const inputFile = await processFile(inputData, timestamp, formattedDate);
 
     const basicAnalysisRequestBody = {
-      // username: username ? username : "test-user-local",
+      username: username ? username : "test-user-local",
       input_file: inputFile,
       log_normalized: logNorm,
       stat_test: parametricTest,
@@ -1611,12 +1610,11 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
     console.log("> Request Body", basicAnalysisRequestBody);
 
     // Run basic differential expression analysis
-    const basicResponse = await axios.post(
-      process.env.BASIC_ANALYSIS_API,
-      basicAnalysisRequestBody
-    );
+    const basicResponse = await axios
+      .post(process.env.BASIC_ANALYSIS_API, basicAnalysisRequestBody)
+      .then((res) => res.data);
 
-    console.log("> Basic Analysis Response", basicResponse.message);
+    console.log("> Basic Analysis Response", basicResponse);
 
     const advanceAnalysisRequestBody = {
       input_file: inputFile,
@@ -1626,13 +1624,11 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
     };
 
     // Start advance differential expression analysis
-    const advanceResponse = await axios.post(
-      process.env.ADVANCE_ANALYSIS_API,
-      advanceAnalysisRequestBody,
-      {
+    const advanceResponse = await axios
+      .post(process.env.ADVANCE_ANALYSIS_API, advanceAnalysisRequestBody, {
         timeout: 60000,
-      }
-    );
+      })
+      .then((res) => res.data);
 
     console.log("> Advance Analysis Response", advanceResponse.message);
 
@@ -1685,7 +1681,7 @@ app.post(
 
 app.get("/api/submissions/:username", async (req, res) => {
   const { username } = req.params;
-  console.log(username);
+
   const params = {
     TableName: "hsp-analysis-submissions-DEV",
     IndexName: "username-index", // If you're using a GSI based on username
