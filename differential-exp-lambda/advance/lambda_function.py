@@ -128,11 +128,11 @@ def update_submission_status(id, new_status):
     try:
         response = table.update_item(
             Key={"id": id},
-            UpdateExpression="SET #s = :new_status, completion_date = :new_date",
+            UpdateExpression="SET #s = :new_status, completion_date = :completion_date",
             ExpressionAttributeNames={"#s": "status"},
             ExpressionAttributeValues={
                 ":new_status": new_status,
-                "completion_date": str(datetime.now()),
+                ":completion_date": str(datetime.now()),
             },
             ReturnValues="UPDATED_NEW",
         )

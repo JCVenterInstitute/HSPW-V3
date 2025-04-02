@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { Paper, Box, IconButton, Typography, Container } from "@mui/material";
+import { IconButton, Typography, Container } from "@mui/material";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import LinkIcon from "@mui/icons-material/Link";
 import EditIcon from "@mui/icons-material/Edit";
@@ -205,46 +205,36 @@ const Submissions = () => {
       cellStyle: { borderRight: "1px solid #ccc" },
       cellRenderer: (params) => {
         const getStatusStyle = (status) => {
+          const cellStyle = {
+            color: "white",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+          };
+
           switch (status.toLowerCase()) {
             case "failed":
               return {
+                ...cellStyle,
                 backgroundColor: "red",
-                color: "white",
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "100%",
               };
             case "complete":
               return {
+                ...cellStyle,
                 backgroundColor: "green",
-                color: "green",
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "100%",
               };
             case "running":
               return {
+                ...cellStyle,
                 backgroundColor: "yellow",
                 color: "black",
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "100%",
               };
             default:
               return {
+                ...cellStyle,
                 backgroundColor: "gray",
-                color: "white",
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "100%",
               };
           }
         };
@@ -261,23 +251,21 @@ const Submissions = () => {
       sortable: true,
       cellStyle: { borderRight: "1px solid #ccc" },
       cellRenderer: (params) => {
-        // Remove the fractional seconds part
-        const rawDate = params.value.split(".")[0]; // Splits the date at the fractional seconds part
-        const date = new Date(rawDate.replace(" ", "T")); // Replace the space with 'T' to comply with ISO 8601
-        if (!isNaN(date.getTime())) {
-          // Check if the date is valid
-          const formattedDate = new Intl.DateTimeFormat("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "2-digit",
-            hour: "numeric",
-            minute: "numeric",
-            second: "numeric",
-          }).format(date);
-          return <CustomCell value={formattedDate} />;
-        } else {
-          return <CustomCell value="" />; // Handle invalid date
-        }
+        const isoTimestamp = params.value.split(".")[0].replace(" ", "T") + "Z"; // Append 'Z' to indicate UTC
+        const utcDate = new Date(isoTimestamp);
+
+        // Check if the date is valid
+        const formattedDate = new Intl.DateTimeFormat("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "2-digit",
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric",
+          timeZone: "America/New_York", // Convert to EST/EDT
+        }).format(utcDate);
+
+        return <CustomCell value={formattedDate} />;
       },
     },
     {
