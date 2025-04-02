@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import zipfile
 from botocore.exceptions import ClientError
+from datetime import datetime
 
 
 # Print all files in the given directory
@@ -118,7 +119,7 @@ def send_email(sender_email, recipient_email, body):
         print("Email sent! Message ID:", response["MessageId"])
 
 
-# Update the submission status after completion
+# Update the submission status & completion date after analysis finishes
 def update_submission_status(id, new_status):
     dynamodb = boto3.resource("dynamodb")
     table_name = os.environ.get("SUBMISSIONS_TABLE")
@@ -127,9 +128,12 @@ def update_submission_status(id, new_status):
     try:
         response = table.update_item(
             Key={"id": id},
-            UpdateExpression="SET #s = :new_status",
+            UpdateExpression="SET #s = :new_status, completion_date = :new_date",
             ExpressionAttributeNames={"#s": "status"},
-            ExpressionAttributeValues={":new_status": new_status},
+            ExpressionAttributeValues={
+                ":new_status": new_status,
+                "completion_date": str(datetime.now()),
+            },
             ReturnValues="UPDATED_NEW",
         )
         print("Update succeeded:", response)
@@ -242,7 +246,7 @@ def main(event):
     upload_files_to_s3(s3_bucket_name, directory_name, subdirectory)
     print("> Successfully uploaded results to S3")
 
-    # update_submission_status(submission_id, "Done")
+    update_submission_status(submission_id, "Complete")
 
     return {
         "statusCode": 200,  # HTTP status code for successful response
