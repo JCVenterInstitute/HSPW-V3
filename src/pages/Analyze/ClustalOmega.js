@@ -1,10 +1,8 @@
 import React from "react";
 import { Typography, Container } from "@mui/material";
-import { Helmet } from "react-helmet";
 
 import ClustalOmegaSequenceParameters from "../../components/MultipleSequenceAlignment/ClustalOmegaSequenceParameters";
-import BreadCrumb from "../../components/Layout/Breadcrumbs";
-import main_feature from "../../assets/hero.jpeg";
+import PageHeader from "../../components/Layout/PageHeader";
 
 const ClustalOmega = () => {
   const breadcrumbPath = [
@@ -15,27 +13,18 @@ const ClustalOmega = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Multiple Sequence Alignment</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        className="head_background"
-        style={{ backgroundImage: `url(${main_feature})` }}
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Multiple Sequence Alignment</h1>
-          <p className="head_text">
-            Multiple sequence alignment program that detects similarities and
+      <PageHeader
+        tabTitle={`HSP | Multiple Sequence Alignment`}
+        title={`Multiple Sequence Alignment`}
+        breadcrumb={breadcrumbPath}
+        description={`Multiple sequence alignment program that detects similarities and
             differences among DNA or protein sequences to predict the functions
             and structures of proteins and to identify new members of protein
             families. Clustal Omega is a new multiple sequence alignment program
             that uses seeded guide trees and HMM profile-profile techniques to
             generate alignments between three or more sequences. This service is
-            provided by the European Bioinformatics Institute (EBI).
-          </p>
-        </Container>
-      </div>
+            provided by the European Bioinformatics Institute (EBI).`}
+      />
       <Container maxWidth="xl">
         <Typography
           variant="h5"

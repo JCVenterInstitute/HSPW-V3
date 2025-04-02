@@ -15,11 +15,9 @@ import axios from "axios";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import XMLParser from "react-xml-parser";
 import { MSAView, MSAModel } from "react-msaview";
-import { Helmet } from "react-helmet";
-import "react-tabs/style/react-tabs.css";
 
-import BreadCrumb from "../../components/Layout/Breadcrumbs";
-import main_feature from "../../assets/hero.jpeg";
+import PageHeader from "../../components/Layout/PageHeader";
+import "react-tabs/style/react-tabs.css";
 import "./alignmentTool.css";
 
 const ClustalOmegaResults = () => {
@@ -158,26 +156,17 @@ const ClustalOmegaResults = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Multiple Sequence Alignment Results</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{ backgroundImage: `url(${main_feature})` }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Multiple Sequence Alignment</h1>
-          <p className="head_text">
-            ClustalW is a general purpose multiple sequence alignment program
+      <PageHeader
+        tabTitle={`HSP | Multiple Sequence Alignment Results`}
+        title={`Multiple Sequence Alignment`}
+        breadcrumb={breadcrumbPath}
+        description={`ClustalW is a general purpose multiple sequence alignment program
             for DNA or proteins. It produces biologically meaningful multiple
             sequence alignments of divergent sequences. It calculates the best
             match for the selected sequences, and lines them up so that the
             identities, similarities and differences can be seen. This service
-            is provided by the European Bioinformatics Institute (EBI).
-          </p>
-        </Container>
-      </div>
+            is provided by the European Bioinformatics Institute (EBI).`}
+      />
       <Container maxWidth="xl">
         <Typography
           variant="h5"

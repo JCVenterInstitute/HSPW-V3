@@ -1,15 +1,13 @@
 import React from "react";
-import main_feature from "../../assets/hero.jpeg";
 import { Typography, Container, Grid } from "@mui/material";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet";
 
 import FlyerFront from "../../assets/flyers/hspw-flyer-front.png";
 import FlyerBack from "../../assets/flyers/hspw-flyer-back.png";
 import LegacyFlyerBack from "../../assets/flyers/2022-HSP-Wiki-flyer-back.png";
 import LegacyFlyerFront from "../../assets/flyers/2022-HSP-Wiki-flyer-front.png";
-import BreadCrumb from "../../components/Layout/Breadcrumbs";
+import PageHeader from "../../components/Layout/PageHeader";
 
 const About = () => {
   const breadcrumbPath = [
@@ -18,27 +16,21 @@ const About = () => {
     { path: "About" },
   ];
 
+  const description =
+    "For many decades, researchers have known that saliva is important\
+            for chewing, tasting, swallowing, and as the first step in\
+            digestion. A multitude of proteins and other molecules present in\
+            saliva also play vital roles in control of viral and bacterial\
+            functions in the context of health and disease.";
+
   return (
     <>
-      <Helmet>
-        <title>HSP | About</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        className="head_background"
-        style={{ backgroundImage: `url(${main_feature})` }}
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">About</h1>
-          <p className="head_text">
-            For many decades, researchers have known that saliva is important
-            for chewing, tasting, swallowing, and as the first step in
-            digestion. A multitude of proteins and other molecules present in
-            saliva also play vital roles in control of viral and bacterial
-            functions in the context of health and disease.
-          </p>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={"HSP | About"}
+        title={"About"}
+        breadcrumb={breadcrumbPath}
+        description={description}
+      />
       <Container
         maxWidth="xl"
         sx={{ mt: 4 }}

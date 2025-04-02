@@ -1,9 +1,4 @@
 import React from "react";
-import main_feature from "../assets/hero.jpeg";
-import differential from "../assets/icons/icon-heatmap.png";
-import msa from "../assets/icons/icon-msa-alignment.png";
-import blast from "../assets/icons/icon-protein-blast.png";
-import signature from "../assets/icons/icon-protein-signature.png";
 import { StyledEngineProvider } from "@mui/material/styles";
 import {
   Card,
@@ -14,8 +9,12 @@ import {
   Link,
   Typography,
 } from "@mui/material";
-import BreadCrumb from "../components/Layout/Breadcrumbs";
-import { Helmet } from "react-helmet";
+
+import PageHeader from "../components/Layout/PageHeader";
+import differential from "../assets/icons/icon-heatmap.png";
+import msa from "../assets/icons/icon-msa-alignment.png";
+import blast from "../assets/icons/icon-protein-blast.png";
+import signature from "../assets/icons/icon-protein-signature.png";
 
 class analysisHome extends React.Component {
   constructor(props) {
@@ -71,26 +70,15 @@ class analysisHome extends React.Component {
     let page = this.state.pages[this.state.activePage];
     return (
       <React.StrictMode>
-        <Helmet>
-          <title>HSP | Analysis</title>
-        </Helmet>
-        <BreadCrumb path={this.state.breadcrumbPath} />
-        <StyledEngineProvider injectFirst>
-          <div
-            style={{
-              backgroundImage: `url(${main_feature})`,
-            }}
-            className="head_background"
-          >
-            <Container maxWidth="xl">
-              <h1 className="head_title">Analysis</h1>
-              <p className="head_text">
-                Analysis will identify proteins with differential abundance
+        <PageHeader
+          tabTitle={`HSP | Analysis`}
+          title={`Analysis`}
+          breadcrumb={this.state.breadcrumbPath}
+          description={` Analysis will identify proteins with differential abundance
                 between experiments in Groups A and B based on their normalized
-                spectral counts.
-              </p>
-            </Container>
-          </div>
+                spectral counts.`}
+        />
+        <StyledEngineProvider injectFirst>
           <div
             id="application"
             data-layout={page.layout}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import axios from "axios";
-import main_feature from "../../assets/hero.jpeg";
+import main_feature from "../../assets/backgrounds/hero.jpeg";
 
 const GoTable = () => {
   const [isLoading, setLoading] = useState(true);

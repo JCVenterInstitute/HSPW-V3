@@ -1,9 +1,10 @@
 import React from "react";
-import { contents } from "./CarouselData.js";
-import "./Carousel.css";
-import Chord from "./Chord.js";
 import { Container, CardMedia } from "@mui/material";
 import Carousel from "react-material-ui-carousel";
+
+import { contents } from "./CarouselData.js";
+import "./Carousel.css";
+import Chord from "../Chord.js";
 
 function Banner() {
   return (

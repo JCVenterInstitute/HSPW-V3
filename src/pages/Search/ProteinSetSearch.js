@@ -12,11 +12,9 @@ import {
 } from "@mui/material";
 import { AgGridReact } from "ag-grid-react";
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet";
 
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
-import BreadCrumb from "../../components/Layout/Breadcrumbs";
-import main_feature from "../../assets/hero.jpeg";
+import PageHeader from "../../components/Layout/PageHeader";
 
 function ProteinLinkComponent(props) {
   return (
@@ -206,32 +204,24 @@ const ProteinSetSearch = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Protein Set Search</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{
-          backgroundImage: `url(${main_feature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Protein Set Search</h1>
-          <p className="head_text">
+      <PageHeader
+        tabTitle={`HSP | Protein Set Search`}
+        title={`Protein Set Search`}
+        breadcrumb={breadcrumbPath}
+        description={
+          <React.Fragment>
             Use the form below to search for salivary proteins stored in this
             database. Enter on each line one accession number or gene symbol.
             Accepted identifier types include UniProt, International Protein
             Index (IPI), RefSeq, Protein Data Bank (PDB), and Ensembl. To ensure
             accurate results, please use genes symbols (e.g. AMY2B) approved by
-            the HUGO Gene Nomenclature Committee.
-          </p>
-          <p className="head_text">
+            the HUGO Gene Nomenclature Committee. <br />
+            <br />
             If you have a large set of proteins, please consider making multiple
             searches with no more than 100 proteins at a time.
-          </p>
-        </Container>
-      </div>
+          </React.Fragment>
+        }
+      />
       <Container maxWidth="xl">
         <form
           name="proteinSetSearch"

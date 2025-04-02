@@ -1,11 +1,8 @@
 import React from "react";
 
 import CitationTable from "../../../components/Tables/CitationTable";
-import MainFeature from "../../../assets/hero.jpeg";
+import PageHeader from "../../../components/Layout/PageHeader";
 import "../../style.css";
-import { Container } from "@mui/material";
-import BreadCrumb from "../../../components/Layout/Breadcrumbs";
-import { Helmet } from "react-helmet";
 
 const CitationPage = () => {
   const breadcrumbPath = [
@@ -16,24 +13,15 @@ const CitationPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Publications</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{
-          backgroundImage: `url(${MainFeature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Publication</h1>
-          <p className="head_text">
-            Publications page includes id, authors and links to full text
-            articles.
-          </p>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={"HSP | Publications"}
+        title={"Publication"}
+        breadcrumb={breadcrumbPath}
+        description={
+          "Publications page includes id, authors and links to full text\
+            articles."
+        }
+      />
       <CitationTable />
     </>
   );

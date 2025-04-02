@@ -4,7 +4,7 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { Container } from "@mui/material";
 
-import { DATA } from "../../data/data";
+import { DATA } from "../../data/downloadTableData.js";
 import MetaDataIcon from "../../assets/download-table-icons/MetaDataIcon.png";
 import MzTabIcon from "../../assets/download-table-icons/MzTabIcon.png";
 import RawIcon from "../../assets/download-table-icons/RawIcon.png";

@@ -2,7 +2,7 @@ import * as React from "react";
 import { StyledEngineProvider } from "@mui/material/styles";
 import { Helmet } from "react-helmet";
 
-import Banner from "../components/Carousel.js";
+import Banner from "../components/Home/Carousel/Carousel.js";
 import salivary_protein from "../assets/icons/icon-salivary-protein.png";
 import analysis from "../assets/icons/icon-analyze.png";
 import download from "../assets/icons/icon-download.png";

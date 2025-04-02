@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import React, { useRef, useEffect, useState } from "react";
-import "./index.css";
+import "../index.css";
 // create the svg are
 
 const Chord = (props) => {

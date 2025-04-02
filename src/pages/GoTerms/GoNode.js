@@ -7,8 +7,9 @@ import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
-import main_feature from "../../assets/hero.jpeg";
 import FontAwesome from "react-fontawesome";
+
+import main_feature from "../../assets/backgrounds/hero.jpeg";
 
 const th = {
   backgroundColor: "#1463B9",
