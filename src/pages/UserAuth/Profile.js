@@ -1,5 +1,4 @@
 import { useState, useContext, useEffect } from "react";
-import { AuthContext } from "../../services/AuthContext";
 import {
   TextField,
   Button,
@@ -18,8 +17,11 @@ import {
   Paper,
 } from "@mui/material";
 import Swal from "sweetalert2";
+
+import { AuthContext } from "../../services/AuthContext";
 import { formRegex, initialPasswordRequirements } from "./AuthConsts";
 import PasswordField from "../../components/PasswordField";
+import PageHeader from "../../components/Layout/PageHeader";
 
 const Profile = () => {
   const { user, session } = useContext(AuthContext);
@@ -27,6 +29,7 @@ const Profile = () => {
   const [passwordRequirements, setPasswordRequirements] = useState(
     initialPasswordRequirements
   );
+
   const [userData, setUserData] = useState({
     username: "",
     title: "",
@@ -40,27 +43,19 @@ const Profile = () => {
   const [formData, setFormData] = useState({
     oldPassword: "",
     oldPasswordErr: "",
-
     email: "",
     emailErr: "",
-
     newPassword: "",
     newPasswordErr: "",
-
     confirmNewPassword: "",
     confirmNewPasswordErr: "",
-
     title: "",
-
     givenName: "",
     givenNameErr: "",
-
     middleInitial: "",
     middleInitialErr: "",
-
     familyName: "",
     familyNameErr: "",
-
     institution: "",
     institutionErr: "",
   });
@@ -79,9 +74,11 @@ const Profile = () => {
           }
 
           const attributeMap = {};
+
           attributes.forEach((attribute) => {
             attributeMap[attribute.Name] = attribute.Value;
           });
+
           setUserData({
             username:
               userData.username === ""
@@ -392,297 +389,313 @@ const Profile = () => {
   };
 
   return (
-    <Grid
-      container
-      justifyContent="center"
-      //alignItems="center"
-      sx={{ backgroundColor: "#f5f5f5" }}
-    >
-      <Container maxWidth="md">
-        {" "}
-        {/* Updated to make container wider */}
-        <Box sx={{ mt: 4, mb: 4 }}>
-          <Paper
-            elevation={3}
-            sx={{ padding: "2rem", borderRadius: "10px", marginY: "20px" }}
+    <>
+      <PageHeader
+        title={"Profile"}
+        tabTitle={"HSP | Profile"}
+        breadcrumb={[
+          { path: "Home", link: "/" },
+          { path: "Account" },
+          { path: "Profile" },
+        ]}
+      />
+      <Grid
+        container
+        justifyContent="center"
+        //alignItems="center"
+        sx={{ backgroundColor: "#f5f5f5" }}
+      >
+        <Container maxWidth="md">
+          {/* Updated to make container wider */}
+          <Box sx={{ mt: 4, mb: 4 }}>
+            <Paper
+              elevation={3}
+              sx={{ padding: "2rem", borderRadius: "10px", marginY: "20px" }}
+            >
+              <Typography
+                variant="h4"
+                gutterBottom
+              >
+                {userData.username}'s Profile
+              </Typography>
+
+              {/* Display user information */}
+              <Grid
+                container
+                spacing={2}
+              >
+                <Grid
+                  item
+                  xs={12}
+                >
+                  <Typography variant="body1">
+                    <strong>Title:</strong> {userData.title}
+                  </Typography>
+                </Grid>
+                <Grid
+                  item
+                  xs={4}
+                >
+                  <Typography variant="body1">
+                    <strong>First Name:</strong> {userData.firstName}
+                  </Typography>
+                </Grid>
+                <Grid
+                  item
+                  xs={4}
+                >
+                  <Typography variant="body1">
+                    <strong>Middle Initial:</strong> {userData.middleInitial}
+                  </Typography>
+                </Grid>
+                <Grid
+                  item
+                  xs={4}
+                >
+                  <Typography variant="body1">
+                    <strong>Last Name:</strong> {userData.lastName}
+                  </Typography>
+                </Grid>
+                <Grid
+                  item
+                  xs={12}
+                >
+                  <Typography variant="body1">
+                    <strong>Email:</strong> {userData.email}
+                  </Typography>
+                </Grid>
+                <Grid
+                  item
+                  xs={12}
+                >
+                  <Typography variant="body1">
+                    <strong>Institution:</strong> {userData.institution}
+                  </Typography>
+                </Grid>
+              </Grid>
+
+              <Box sx={{ mt: 3 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleDialogOpen}
+                >
+                  Edit Profile
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={handlePasswordDialogOpen}
+                  sx={{ ml: 2 }}
+                >
+                  Change Password
+                </Button>
+              </Box>
+            </Paper>
+          </Box>
+          {/* Dialog for editing user information */}
+          <Dialog
+            open={isDialogOpen}
+            onClose={handleDialogClose}
+            maxWidth="md"
+            fullWidth
           >
-            <Typography
-              variant="h4"
-              gutterBottom
-            >
-              {userData.username}'s Profile
-            </Typography>
-
-            {/* Display user information */}
-            <Grid
-              container
-              spacing={2}
-            >
+            <DialogTitle>Edit Profile</DialogTitle>
+            <DialogContent>
               <Grid
-                item
-                xs={12}
+                container
+                spacing={2}
               >
-                <Typography variant="body1">
-                  <strong>Title:</strong> {userData.title}
-                </Typography>
+                <Grid
+                  item
+                  xs={12}
+                >
+                  <FormControl
+                    fullWidth
+                    margin="normal"
+                  >
+                    <InputLabel id="form-box-title-field">Title</InputLabel>
+                    <Select
+                      labelId="form-box-title-field"
+                      value={formData.title}
+                      onChange={(e) => formDataUpdate("title", e.target.value)}
+                      label="Title"
+                    >
+                      <MenuItem value={""}>Title</MenuItem>
+                      <MenuItem value={"Dr."}>Dr.</MenuItem>
+                      <MenuItem value={"Mrs."}>Mrs.</MenuItem>
+                      <MenuItem value={"Ms."}>Ms.</MenuItem>
+                      <MenuItem value={"Mr."}>Mr.</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid
+                  item
+                  xs={4}
+                >
+                  <TextField
+                    label="First Name"
+                    name="firstName"
+                    value={formData.givenName}
+                    onChange={(e) =>
+                      formDataUpdate("givenName", e.target.value)
+                    }
+                    onBlur={() => fieldValidation("givenName", "givenNameErr")}
+                    fullWidth
+                    error={Boolean(formData.givenNameErr)}
+                    helperText={formData.givenNameErr}
+                  />
+                </Grid>
+                <Grid
+                  item
+                  xs={4}
+                >
+                  <TextField
+                    label="Middle Initial"
+                    name="middleInitial"
+                    value={formData.middleInitial}
+                    onChange={(e) =>
+                      formDataUpdate("middleInitial", e.target.value)
+                    }
+                    onBlur={() =>
+                      fieldValidation("middleInitial", "middleInitialErr")
+                    }
+                    inputProps={{
+                      maxLength: 1,
+                      style: { textTransform: "uppercase" },
+                    }}
+                    fullWidth
+                    error={Boolean(formData.middleInitialErr)}
+                    helperText={formData.middleInitialErr}
+                  />
+                </Grid>
+                <Grid
+                  item
+                  xs={4}
+                >
+                  <TextField
+                    label="Last Name"
+                    name="lastName"
+                    value={formData.familyName}
+                    onChange={(e) =>
+                      formDataUpdate("familyName", e.target.value)
+                    }
+                    onBlur={() =>
+                      fieldValidation("familyName", "familyNameErr")
+                    }
+                    fullWidth
+                    error={Boolean(formData.familyNameErr)}
+                    helperText={formData.familyNameErr}
+                  />
+                </Grid>
+                <Grid
+                  item
+                  xs={12}
+                >
+                  <TextField
+                    label="Email"
+                    name="email"
+                    value={formData.email}
+                    onChange={(e) => formDataUpdate("email", e.target.value)}
+                    onBlur={() => fieldValidation("email", "emailErr")}
+                    fullWidth
+                    error={Boolean(formData.emailErr)}
+                    helperText={formData.emailErr}
+                  />
+                </Grid>
+                <Grid
+                  item
+                  xs={12}
+                >
+                  <TextField
+                    label="Institution"
+                    name="institution"
+                    value={formData.institution}
+                    onChange={(e) =>
+                      formDataUpdate("institution", e.target.value)
+                    }
+                    onBlur={() =>
+                      fieldValidation("institution", "institutionErr")
+                    }
+                    fullWidth
+                    error={Boolean(formData.institutionErr)}
+                    helperText={formData.institutionErr}
+                  />
+                </Grid>
               </Grid>
-              <Grid
-                item
-                xs={4}
-              >
-                <Typography variant="body1">
-                  <strong>First Name:</strong> {userData.firstName}
-                </Typography>
-              </Grid>
-              <Grid
-                item
-                xs={4}
-              >
-                <Typography variant="body1">
-                  <strong>Middle Initial:</strong> {userData.middleInitial}
-                </Typography>
-              </Grid>
-              <Grid
-                item
-                xs={4}
-              >
-                <Typography variant="body1">
-                  <strong>Last Name:</strong> {userData.lastName}
-                </Typography>
-              </Grid>
-              <Grid
-                item
-                xs={12}
-              >
-                <Typography variant="body1">
-                  <strong>Email:</strong> {userData.email}
-                </Typography>
-              </Grid>
-              <Grid
-                item
-                xs={12}
-              >
-                <Typography variant="body1">
-                  <strong>Institution:</strong> {userData.institution}
-                </Typography>
-              </Grid>
-            </Grid>
-
-            <Box sx={{ mt: 3 }}>
+            </DialogContent>
+            <DialogActions>
               <Button
-                variant="contained"
-                color="primary"
-                onClick={handleDialogOpen}
-              >
-                Edit Profile
-              </Button>
-
-              <Button
-                variant="outlined"
+                onClick={handleDialogClose}
                 color="secondary"
-                onClick={handlePasswordDialogOpen}
-                sx={{ ml: 2 }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSave}
+                color="primary"
+                disabled={isSaveDisabled}
+              >
+                Save Changes
+              </Button>
+            </DialogActions>
+          </Dialog>
+          {/* Dialog for changing password */}
+          <Dialog
+            open={passwordDialogOpen}
+            onClose={handlePasswordDialogClose}
+            maxWidth="sm"
+            fullWidth
+          >
+            <DialogTitle>Change Password</DialogTitle>
+            <Container>
+              <TextField
+                label="Current Password"
+                type="password"
+                value={formData.oldPassword}
+                onChange={(e) => formDataUpdate("oldPassword", e.target.value)}
+                error={Boolean(formData.oldPasswordErr)}
+                helperText={formData.oldPasswordErr}
+                fullWidth
+                margin="normal"
+              />
+              <PasswordField
+                password={formData.newPassword}
+                confirmPassword={formData.confirmNewPassword}
+                passwordRequirements={passwordRequirements}
+                onPasswordChange={(value) => passwordUpdate(value)}
+                onConfirmPasswordChange={(value) =>
+                  formDataUpdate("confirmNewPassword", value)
+                }
+                passwordError={formData.newPasswordErr}
+                confirmPasswordError={formData.confirmNewPasswordErr}
+                setPasswordError={(value) =>
+                  formDataUpdate("newPasswordErr", value)
+                }
+                setConfirmPasswordError={(value) =>
+                  formDataUpdate("confirmNewPasswordErr", value)
+                }
+              />
+            </Container>
+            <DialogActions>
+              <Button
+                onClick={handlePasswordDialogClose}
+                color="secondary"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handlePasswordChange}
+                color="primary"
               >
                 Change Password
               </Button>
-            </Box>
-          </Paper>
-        </Box>
-        {/* Dialog for editing user information */}
-        <Dialog
-          open={isDialogOpen}
-          onClose={handleDialogClose}
-          maxWidth="md"
-          fullWidth
-        >
-          <DialogTitle>Edit Profile</DialogTitle>
-          <DialogContent>
-            <Grid
-              container
-              spacing={2}
-            >
-              <Grid
-                item
-                xs={12}
-              >
-                <FormControl
-                  fullWidth
-                  margin="normal"
-                >
-                  <InputLabel id="form-box-title-field">Title</InputLabel>
-                  <Select
-                    labelId="form-box-title-field"
-                    value={formData.title}
-                    onChange={(e) => formDataUpdate("title", e.target.value)}
-                    label="Title"
-                  >
-                    <MenuItem value={""}>Title</MenuItem>
-                    <MenuItem value={"Dr."}>Dr.</MenuItem>
-                    <MenuItem value={"Mrs."}>Mrs.</MenuItem>
-                    <MenuItem value={"Ms."}>Ms.</MenuItem>
-                    <MenuItem value={"Mr."}>Mr.</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid
-                item
-                xs={4}
-              >
-                <TextField
-                  label="First Name"
-                  name="firstName"
-                  value={formData.givenName}
-                  onChange={(e) => formDataUpdate("givenName", e.target.value)}
-                  onBlur={() => fieldValidation("givenName", "givenNameErr")}
-                  fullWidth
-                  error={Boolean(formData.givenNameErr)}
-                  helperText={formData.givenNameErr}
-                />
-              </Grid>
-              <Grid
-                item
-                xs={4}
-              >
-                <TextField
-                  label="Middle Initial"
-                  name="middleInitial"
-                  value={formData.middleInitial}
-                  onChange={(e) =>
-                    formDataUpdate("middleInitial", e.target.value)
-                  }
-                  onBlur={() =>
-                    fieldValidation("middleInitial", "middleInitialErr")
-                  }
-                  inputProps={{
-                    maxLength: 1,
-                    style: { textTransform: "uppercase" },
-                  }}
-                  fullWidth
-                  error={Boolean(formData.middleInitialErr)}
-                  helperText={formData.middleInitialErr}
-                />
-              </Grid>
-              <Grid
-                item
-                xs={4}
-              >
-                <TextField
-                  label="Last Name"
-                  name="lastName"
-                  value={formData.familyName}
-                  onChange={(e) => formDataUpdate("familyName", e.target.value)}
-                  onBlur={() => fieldValidation("familyName", "familyNameErr")}
-                  fullWidth
-                  error={Boolean(formData.familyNameErr)}
-                  helperText={formData.familyNameErr}
-                />
-              </Grid>
-              <Grid
-                item
-                xs={12}
-              >
-                <TextField
-                  label="Email"
-                  name="email"
-                  value={formData.email}
-                  onChange={(e) => formDataUpdate("email", e.target.value)}
-                  onBlur={() => fieldValidation("email", "emailErr")}
-                  fullWidth
-                  error={Boolean(formData.emailErr)}
-                  helperText={formData.emailErr}
-                />
-              </Grid>
-              <Grid
-                item
-                xs={12}
-              >
-                <TextField
-                  label="Institution"
-                  name="institution"
-                  value={formData.institution}
-                  onChange={(e) =>
-                    formDataUpdate("institution", e.target.value)
-                  }
-                  onBlur={() =>
-                    fieldValidation("institution", "institutionErr")
-                  }
-                  fullWidth
-                  error={Boolean(formData.institutionErr)}
-                  helperText={formData.institutionErr}
-                />
-              </Grid>
-            </Grid>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={handleDialogClose}
-              color="secondary"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSave}
-              color="primary"
-              disabled={isSaveDisabled}
-            >
-              Save Changes
-            </Button>
-          </DialogActions>
-        </Dialog>
-        {/* Dialog for changing password */}
-        <Dialog
-          open={passwordDialogOpen}
-          onClose={handlePasswordDialogClose}
-          maxWidth="sm"
-          fullWidth
-        >
-          <DialogTitle>Change Password</DialogTitle>
-          <Container>
-            <TextField
-              label="Current Password"
-              type="password"
-              value={formData.oldPassword}
-              onChange={(e) => formDataUpdate("oldPassword", e.target.value)}
-              error={Boolean(formData.oldPasswordErr)}
-              helperText={formData.oldPasswordErr}
-              fullWidth
-              margin="normal"
-            />
-            <PasswordField
-              password={formData.newPassword}
-              confirmPassword={formData.confirmNewPassword}
-              passwordRequirements={passwordRequirements}
-              onPasswordChange={(value) => passwordUpdate(value)}
-              onConfirmPasswordChange={(value) =>
-                formDataUpdate("confirmNewPassword", value)
-              }
-              passwordError={formData.newPasswordErr}
-              confirmPasswordError={formData.confirmNewPasswordErr}
-              setPasswordError={(value) =>
-                formDataUpdate("newPasswordErr", value)
-              }
-              setConfirmPasswordError={(value) =>
-                formDataUpdate("confirmNewPasswordErr", value)
-              }
-            />
-          </Container>
-          <DialogActions>
-            <Button
-              onClick={handlePasswordDialogClose}
-              color="secondary"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handlePasswordChange}
-              color="primary"
-            >
-              Change Password
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Container>
-    </Grid>
+            </DialogActions>
+          </Dialog>
+        </Container>
+      </Grid>
+    </>
   );
 };
 
