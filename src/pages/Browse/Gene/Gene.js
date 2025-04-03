@@ -4,8 +4,8 @@ import LinearProgress from "@mui/material/LinearProgress";
 import { Container } from "@mui/material";
 import Box from "@mui/material/Box";
 
-import GeneTable from "../../../components/Tables/GeneTable";
-import PageHeader from "../../../components/Layout/PageHeader";
+import GeneTable from "@Components/Tables/GeneTable";
+import PageHeader from "@Components/Layout/PageHeader";
 
 export const options = {
   vAxis: { title: "Count" },

@@ -16,10 +16,10 @@ import "font-awesome/css/font-awesome.min.css";
 import "resize-observer-polyfill";
 import { Link as ReactLink } from "react-router-dom";
 
-import BChart from "../../../components/SalivaryProtein/TwoSidedBarChart";
-import CommentTable from "../../../components/SalivaryProtein/CommentTable";
-import GlycanTable from "../../../components/SalivaryProtein/GlycanTable";
-import PageHeader from "../../../components/Layout/PageHeader";
+import BChart from "@Components/SalivaryProtein/TwoSidedBarChart";
+import CommentTable from "@Components/SalivaryProtein/CommentTable";
+import GlycanTable from "@Components/SalivaryProtein/GlycanTable";
+import PageHeader from "@Components/Layout/PageHeader";
 import "../../style.css";
 
 window.customElements.define("protvista-uniprot", ProtvistaUniprot);

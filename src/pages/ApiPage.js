@@ -41,7 +41,7 @@ import {
   studyAbundance,
   studyAbundanceMapping,
 } from "../utils/ApiDocData";
-import BreadCrumb from "../components/Layout/Breadcrumbs";
+import BreadCrumb from "@Components/Layout/Breadcrumbs";
 import { Helmet } from "react-helmet";
 
 const sharedStyles = {

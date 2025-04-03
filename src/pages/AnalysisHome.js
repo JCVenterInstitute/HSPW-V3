@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 
-import PageHeader from "../components/Layout/PageHeader";
+import PageHeader from "@Components/Layout/PageHeader";
 import differential from "../assets/icons/icon-heatmap.png";
 import msa from "../assets/icons/icon-msa-alignment.png";
 import blast from "../assets/icons/icon-protein-blast.png";

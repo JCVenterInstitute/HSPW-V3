@@ -8,7 +8,7 @@ import { useParams } from "react-router";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 
-import PageHeader from "../../../components/Layout/PageHeader";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const Cluster_Detail = (props) => {
   const [isLoading, setLoading] = useState(true);

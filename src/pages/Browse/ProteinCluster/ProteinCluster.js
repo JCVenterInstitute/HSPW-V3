@@ -4,8 +4,8 @@ import Chart from "react-google-charts";
 import Box from "@mui/material/Box";
 import { Container } from "@mui/material";
 
-import Cluster from "../../../components/Tables/ProteinClusterTable";
-import PageHeader from "../../../components/Layout/PageHeader";
+import Cluster from "@Components/Tables/ProteinClusterTable";
+import PageHeader from "@Components/Layout/PageHeader";
 import "../../style.css";
 
 export const options = {

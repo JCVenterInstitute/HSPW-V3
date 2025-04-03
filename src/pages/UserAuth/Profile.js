@@ -20,8 +20,8 @@ import Swal from "sweetalert2";
 
 import { AuthContext } from "../../services/AuthContext";
 import { formRegex, initialPasswordRequirements } from "./AuthConsts";
-import PasswordField from "../../components/PasswordField";
-import PageHeader from "../../components/Layout/PageHeader";
+import PasswordField from "@Components/PasswordField";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const Profile = () => {
   const { user, session } = useContext(AuthContext);

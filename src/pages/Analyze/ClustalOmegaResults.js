@@ -16,7 +16,7 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import XMLParser from "react-xml-parser";
 import { MSAView, MSAModel } from "react-msaview";
 
-import PageHeader from "../../components/Layout/PageHeader";
+import PageHeader from "@Components/Layout/PageHeader";
 import "react-tabs/style/react-tabs.css";
 import "./alignmentTool.css";
 

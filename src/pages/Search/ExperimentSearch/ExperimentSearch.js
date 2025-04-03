@@ -1,5 +1,5 @@
-import ExperimentSearchTable from "../../../components/Search/ExperimentSearch/ExperimentSearchTable";
-import PageHeader from "../../../components/Layout/PageHeader";
+import ExperimentSearchTable from "@Components/Search/ExperimentSearch/ExperimentSearchTable";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const ExperimentSearch = () => {
   const breadcrumbPath = [

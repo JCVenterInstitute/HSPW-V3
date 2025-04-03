@@ -32,7 +32,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import ReCAPTCHA from "react-google-recaptcha";
 
-import PageHeader from "../../components/Layout/PageHeader";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const Contact = () => {
   const RECAPTCHA_PUBLIC_KEY = process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY;

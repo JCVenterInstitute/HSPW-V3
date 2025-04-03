@@ -13,11 +13,12 @@ import {
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
-import userpool from "../../userpool";
 import Swal from "sweetalert2";
-import { formRegex, initialPasswordRequirements } from "./AuthConsts";
-import PasswordField from "../../components/PasswordField";
 import ReCAPTCHA from "react-google-recaptcha";
+
+import { formRegex, initialPasswordRequirements } from "./AuthConsts";
+import PasswordField from "@Components/PasswordField";
+import userpool from "../../userpool";
 
 const Signup = () => {
   const navigate = useNavigate();

@@ -1,8 +1,8 @@
 import React from "react";
 import FontAwesome from "react-fontawesome";
 
-import Protein from "../../../components/SalivaryProtein/SalivaryProteinTable.js";
-import PageHeader from "../../../components/Layout/PageHeader.js";
+import Protein from "@Components/SalivaryProtein/SalivaryProteinTable.js";
+import PageHeader from "@Components/Layout/PageHeader.js";
 import "../../style.css";
 
 const SalivaryProtein = () => {

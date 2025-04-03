@@ -4,8 +4,8 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 import { Container } from "@mui/material";
 
-import ProteinSignatureTable from "../../../components/Tables/ProteinSignatureTable";
-import PageHeader from "../../../components/Layout/PageHeader";
+import ProteinSignatureTable from "@Components/Tables/ProteinSignatureTable";
+import PageHeader from "@Components/Layout/PageHeader";
 import "../../style.css";
 
 export const data = [

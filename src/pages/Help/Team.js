@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 
 import memberInfo from "../../data/teamMemberData";
-import PageHeader from "../../components/Layout/PageHeader";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const Team = () => {
   const breadcrumbPath = [

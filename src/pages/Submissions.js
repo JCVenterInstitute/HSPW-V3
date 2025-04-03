@@ -7,8 +7,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import Swal from "sweetalert2";
 
 import { AuthContext } from "../services/AuthContext";
-import CustomCell from "../components/CustomCell";
-import PageHeader from "../components/Layout/PageHeader";
+import CustomCell from "@Components/CustomCell";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const Submissions = () => {
   const { user, _ } = useContext(AuthContext);

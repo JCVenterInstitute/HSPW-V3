@@ -7,7 +7,7 @@ import FlyerFront from "../../assets/flyers/hspw-flyer-front.png";
 import FlyerBack from "../../assets/flyers/hspw-flyer-back.png";
 import LegacyFlyerBack from "../../assets/flyers/2022-HSP-Wiki-flyer-back.png";
 import LegacyFlyerFront from "../../assets/flyers/2022-HSP-Wiki-flyer-front.png";
-import PageHeader from "../../components/Layout/PageHeader";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const About = () => {
   const breadcrumbPath = [

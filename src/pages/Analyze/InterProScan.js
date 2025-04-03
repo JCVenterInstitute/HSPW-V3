@@ -1,8 +1,8 @@
 import React from "react";
 import { Typography, Container } from "@mui/material";
 
-import InterProScanSequenceParameters from "../../components/MultipleSequenceAlignment/InterProScanSequenceParameters";
-import PageHeader from "../../components/Layout/PageHeader";
+import InterProScanSequenceParameters from "@Components/MultipleSequenceAlignment/InterProScanSequenceParameters";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const InterProScan = () => {
   const breadcrumbPath = [

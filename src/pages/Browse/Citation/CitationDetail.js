@@ -6,7 +6,7 @@ import { useParams } from "react-router";
 import FontAwesome from "react-fontawesome";
 import { Box, Container, LinearProgress } from "@mui/material";
 
-import PageHeader from "../../../components/Layout/PageHeader";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const th = {
   background: "#f2f2f2",

@@ -18,8 +18,8 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { useParams } from "react-router-dom";
 
-import LoadingOverlay from "../../../components/Shared/LoadingOverlay";
-import PageHeader from "../../../components/Layout/PageHeader";
+import LoadingOverlay from "@Components/Shared/LoadingOverlay";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const generateColumnDefs = (data) => {
   if (!data || data.length === 0) return [];

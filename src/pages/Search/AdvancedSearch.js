@@ -27,10 +27,10 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Link } from "react-router-dom";
 
-import SearchResultsTable from "../../components/Search/SearchResultsTable";
-import SelectAllTransferList from "../../components/Search/SelectAllTransferList";
-import LoadingOverlay from "../../components/Shared/LoadingOverlay";
-import PageHeader from "../../components/Layout/PageHeader";
+import SearchResultsTable from "@Components/Search/SearchResultsTable";
+import SelectAllTransferList from "@Components/Search/SelectAllTransferList";
+import LoadingOverlay from "@Components/Shared/LoadingOverlay";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const generateColumnDefs = (entity, data) => {
   if (!data || data.length === 0) return [];

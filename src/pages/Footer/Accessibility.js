@@ -1,6 +1,6 @@
 import { Container, Typography } from "@mui/material";
 
-import PageHeader from "../../components/Layout/PageHeader";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const AccessibilityPage = () => {
   const breadcrumbPath = [

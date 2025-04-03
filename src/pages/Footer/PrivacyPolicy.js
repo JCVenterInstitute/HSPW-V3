@@ -6,7 +6,7 @@ import {
   ListItemText,
 } from "@mui/material";
 
-import PageHeader from "../../components/Layout/PageHeader";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const sections = [
   "User Accounts and Authorship",

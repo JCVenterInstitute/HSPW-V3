@@ -14,8 +14,8 @@ import LaunchIcon from "@mui/icons-material/Launch";
 import { Container } from "@mui/material";
 import { Link } from "react-router-dom";
 
-import ExperimentProteinTable from "../../../components/Search/ExperimentSearch/ExperimentProteinTable";
-import PageHeader from "../../../components/Layout/PageHeader";
+import ExperimentProteinTable from "@Components/Search/ExperimentSearch/ExperimentProteinTable";
+import PageHeader from "@Components/Layout/PageHeader";
 import "../../style.css";
 
 const th = {

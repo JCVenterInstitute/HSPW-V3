@@ -1,8 +1,8 @@
 import React from "react";
 import { Typography, Container } from "@mui/material";
 
-import ClustalOmegaSequenceParameters from "../../components/MultipleSequenceAlignment/ClustalOmegaSequenceParameters";
-import PageHeader from "../../components/Layout/PageHeader";
+import ClustalOmegaSequenceParameters from "@Components/MultipleSequenceAlignment/ClustalOmegaSequenceParameters";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const ClustalOmega = () => {
   const breadcrumbPath = [

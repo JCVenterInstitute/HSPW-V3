@@ -2,9 +2,9 @@ import { useState } from "react";
 import { Container } from "@mui/material";
 import { useParams, useSearchParams } from "react-router-dom";
 
-import OptionsBar from "../../components/Analyze/DifferentiaExpAnalysisResults/OptionsBar";
-import PageHeader from "../../components/Layout/PageHeader";
-import ResultSection from "../../components/Analyze/DifferentiaExpAnalysisResults/ResultSection";
+import OptionsBar from "@Components/Analyze/DifferentiaExpAnalysisResults/OptionsBar";
+import PageHeader from "@Components/Layout/PageHeader";
+import ResultSection from "@Components/Analyze/DifferentiaExpAnalysisResults/ResultSection";
 
 const breadcrumbPath = [
   { path: "Home", link: "/" },

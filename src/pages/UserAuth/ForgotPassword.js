@@ -11,10 +11,11 @@ import {
 import { CognitoUser } from "amazon-cognito-identity-js";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import userpool from "../../userpool";
-import PasswordField from "../../components/PasswordField";
-import { initialPasswordRequirements } from "./AuthConsts";
 import ReCAPTCHA from "react-google-recaptcha";
+
+import userpool from "../../userpool";
+import PasswordField from "@Components/PasswordField";
+import { initialPasswordRequirements } from "./AuthConsts";
 
 const ForgotPassword = () => {
   const [formData, setFormData] = useState({

@@ -1,7 +1,7 @@
 import React from "react";
 
-import CitationTable from "../../../components/Tables/CitationTable";
-import PageHeader from "../../../components/Layout/PageHeader";
+import CitationTable from "@Components/Tables/CitationTable";
+import PageHeader from "@Components/Layout/PageHeader";
 import "../../style.css";
 
 const CitationPage = () => {

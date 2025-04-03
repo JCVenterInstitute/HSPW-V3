@@ -2,10 +2,10 @@ import * as React from "react";
 import { Helmet } from "react-helmet";
 import { Container, Grid, Link } from "@mui/material";
 
-import HomeCarousel from "../components/Home/Carousel/Carousel.js";
-import CardComponent from "../components/Shared/Card.js";
+import HomeCarousel from "@Components/Home/Carousel/Carousel.js";
+import CardComponent from "@Components/Shared/Card.js";
 import { cardData } from "../data/homePageCards.js";
-import HomeBanner from "../components/Home/HomeBanner.js";
+import HomeBanner from "@Components/Home/HomeBanner.js";
 
 const Home = () => {
   return (

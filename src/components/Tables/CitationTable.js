@@ -33,7 +33,7 @@ import { Link } from "react-router-dom";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 
-import LoadingOverlay from "../../components/Shared/LoadingOverlay";
+import LoadingOverlay from "@Components/Shared/LoadingOverlay";
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
 import "../Filter.css";
 

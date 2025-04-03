@@ -1,7 +1,7 @@
 import React from "react";
 
-import DownloadTable from "../../components/Download/DownloadTable.js";
-import PageHeader from "../../components/Layout/PageHeader.js";
+import DownloadTable from "@Components/Download/DownloadTable.js";
+import PageHeader from "@Components/Layout/PageHeader.js";
 import "../style.css";
 
 const Download = () => {

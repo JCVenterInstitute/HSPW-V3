@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 
-import PageHeader from "../components/Layout/PageHeader";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const sections = ["Experiment Submission", "Data Format and Data Standards"];
 

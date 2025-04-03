@@ -1,8 +1,8 @@
 import React from "react";
 import { Typography, Container } from "@mui/material";
 
-import PsiBlastSequenceParameters from "../../components/MultipleSequenceAlignment/PsiBlastSequenceParameters";
-import PageHeader from "../../components/Layout/PageHeader";
+import PsiBlastSequenceParameters from "@Components/MultipleSequenceAlignment/PsiBlastSequenceParameters";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const PSIBlast = () => {
   const breadcrumbPath = [

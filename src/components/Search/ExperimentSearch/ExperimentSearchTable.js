@@ -25,7 +25,7 @@ import axios from "axios";
 import ClearIcon from "@mui/icons-material/Clear";
 import { Link } from "react-router-dom";
 
-import LoadingOverlay from "../../../components/Shared/LoadingOverlay";
+import LoadingOverlay from "@Components/Shared/LoadingOverlay";
 import { ReactComponent as DownloadLogo } from "../../../assets/table-icon/download.svg";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";

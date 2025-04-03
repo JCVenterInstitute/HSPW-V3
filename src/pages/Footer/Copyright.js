@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import FontAwesome from "react-fontawesome";
 
-import PageHeader from "../../components/Layout/PageHeader";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const sections = ["Citation Guidelines", "Contacting Us"];
 

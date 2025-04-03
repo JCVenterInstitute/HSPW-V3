@@ -15,7 +15,7 @@ import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
 import { Container } from "@mui/material";
 
-import PageHeader from "../../../components/Layout/PageHeader";
+import PageHeader from "@Components/Layout/PageHeader";
 import "../../style.css";
 
 const th = {

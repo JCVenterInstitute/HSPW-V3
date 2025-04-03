@@ -36,8 +36,8 @@ import Papa from "papaparse";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 
-import LoadingOverlay from "../../components/Shared/LoadingOverlay";
-import PageHeader from "../../components/Layout/PageHeader";
+import LoadingOverlay from "@Components/Shared/LoadingOverlay";
+import PageHeader from "@Components/Layout/PageHeader";
 import userpool from "../../userpool";
 
 const toExcelColumn = (colIndex) => {

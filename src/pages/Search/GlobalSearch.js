@@ -2,13 +2,13 @@ import { useState } from "react";
 import { Container, TextField, Button, Box, Typography } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
-import Genes from "../../components/Search/GlobalSearch/Genes";
-import ProteinClusters from "../../components/Search/GlobalSearch/ProteinClusters";
-import ProteinSignatures from "../../components/Search/GlobalSearch/ProteinSignatures";
-import Proteins from "../../components/Search/GlobalSearch/Proteins";
-import PubMedCitations from "../../components/Search/GlobalSearch/PubMedCitations";
-import SalivaryProteins from "../../components/Search/GlobalSearch/SalivaryProteins";
-import PageHeader from "../../components/Layout/PageHeader";
+import Genes from "@Components/Search/GlobalSearch/Genes";
+import ProteinClusters from "@Components/Search/GlobalSearch/ProteinClusters";
+import ProteinSignatures from "@Components/Search/GlobalSearch/ProteinSignatures";
+import Proteins from "@Components/Search/GlobalSearch/Proteins";
+import PubMedCitations from "@Components/Search/GlobalSearch/PubMedCitations";
+import SalivaryProteins from "@Components/Search/GlobalSearch/SalivaryProteins";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const GlobalSearch = () => {
   const [searchText, setSearchText] = useState("");

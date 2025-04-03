@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import LoadingOverlay from "../../../components/Shared/LoadingOverlay";
+import LoadingOverlay from "@Components/Shared/LoadingOverlay";
 
 const generateColumnDefs = (entity, data) => {
   if (!data || data.length === 0) return [];
