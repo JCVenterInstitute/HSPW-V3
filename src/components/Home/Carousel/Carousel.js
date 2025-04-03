@@ -6,7 +6,7 @@ import { contents } from "./CarouselData.js";
 import "./Carousel.css";
 import Chord from "../Chord.js";
 
-function Banner() {
+function HomeCarousel() {
   return (
     <Carousel
       interval={10000}
@@ -55,4 +55,4 @@ function Banner() {
   );
 }
 
-export default Banner;
+export default HomeCarousel;
