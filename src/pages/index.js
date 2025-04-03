@@ -3,7 +3,6 @@ import { Helmet } from "react-helmet";
 import { Container, Grid, Link } from "@mui/material";
 
 import HomeCarousel from "../components/Home/Carousel/Carousel.js";
-import "../components/BasicCard.css";
 import CardComponent from "../components/Shared/Card.js";
 import { cardData } from "../data/homePageCards.js";
 import HomeBanner from "../components/Home/HomeBanner.js";

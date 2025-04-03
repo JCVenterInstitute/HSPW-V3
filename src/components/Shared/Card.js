@@ -1,5 +1,7 @@
 import { Card, CardContent, CardMedia, Typography } from "@mui/material";
 
+import "./BasicCard.css";
+
 const CardComponent = ({ rawContent, title, blurb, imageSrc }) => {
   const styles = {
     card: {

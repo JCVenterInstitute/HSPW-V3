@@ -69,9 +69,10 @@ export const NavBar = () => {
               <MobileNavBar />
             ) : (
               <>
-                {menuData.map((m) => {
+                {menuData.map((m, i) => {
                   return (
                     <NavBarMenuItem
+                      key={`navbar-item-${i}`}
                       mainMenu={m.mainMenu}
                       subMenu={m.subMenu}
                     />
