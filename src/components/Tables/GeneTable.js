@@ -21,7 +21,7 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import Typography from "@mui/material/Typography";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
+import { ReactComponent as DownloadLogo } from "@Assets/table-icon/download.svg";
 import "../Filter.css";
 import "../Table.css";
 import { Link } from "react-router-dom";

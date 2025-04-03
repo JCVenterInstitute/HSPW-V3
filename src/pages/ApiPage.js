@@ -12,9 +12,9 @@ import {
 } from "@mui/material";
 import PropTypes from "prop-types";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-
-import main_feature from "../assets/backgrounds/hero.jpeg";
 import FontAwesome from "react-fontawesome";
+
+import MainFeature from "@Assets/backgrounds/hero.jpeg";
 
 import {
   salivaryProtein,
@@ -200,7 +200,7 @@ const ApiPage = () => {
       <BreadCrumb path={breadcrumbPath} />
       <div
         className="head_background"
-        style={{ backgroundImage: `url(${main_feature})` }}
+        style={{ backgroundImage: `url(${MainFeature})` }}
       >
         <Container maxWidth="xl">
           <h1 className="head_title">API</h1>

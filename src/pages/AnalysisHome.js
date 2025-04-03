@@ -11,10 +11,10 @@ import {
 } from "@mui/material";
 
 import PageHeader from "@Components/Layout/PageHeader";
-import differential from "../assets/icons/icon-heatmap.png";
-import msa from "../assets/icons/icon-msa-alignment.png";
-import blast from "../assets/icons/icon-protein-blast.png";
-import signature from "../assets/icons/icon-protein-signature.png";
+import differential from "@Assets/icons/icon-heatmap.png";
+import msa from "@Assets/icons/icon-msa-alignment.png";
+import blast from "@Assets/icons/icon-protein-blast.png";
+import signature from "@Assets/icons/icon-protein-signature.png";
 
 class analysisHome extends React.Component {
   constructor(props) {

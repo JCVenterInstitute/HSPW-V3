@@ -6,7 +6,7 @@ import { saveAs } from "file-saver";
 
 import AnalysisFilter from "@Components/AnalysisFilter.js";
 import Table from "@Components/Tables/CsvToJsonTable.js";
-import heatmap from "../assets/top100var_heatmap_626170.png";
+import heatmap from "@Assets/top100var_heatmap_626170.png";
 import "./style.css";
 import { Helmet } from "react-helmet";
 

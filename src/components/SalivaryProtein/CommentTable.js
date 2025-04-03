@@ -16,7 +16,7 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ClearIcon from "@mui/icons-material/Clear";
 import { Link } from "react-router-dom";
-import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
+import { ReactComponent as DownloadLogo } from "@Assets/table-icon/download.svg";
 import "../Filter.css";
 
 function LinkComponent(props) {

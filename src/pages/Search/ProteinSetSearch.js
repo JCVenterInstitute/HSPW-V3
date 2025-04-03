@@ -13,7 +13,7 @@ import {
 import { AgGridReact } from "ag-grid-react";
 import { Link } from "react-router-dom";
 
-import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
+import { ReactComponent as DownloadLogo } from "@Assets/table-icon/download.svg";
 import PageHeader from "@Components/Layout/PageHeader";
 
 function ProteinLinkComponent(props) {

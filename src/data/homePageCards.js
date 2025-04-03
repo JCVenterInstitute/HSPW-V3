@@ -1,12 +1,13 @@
-import SalivaryProtein from "../assets/icons/icon-salivary-protein.png";
-import Analysis from "../assets/icons/icon-analyze.png";
-import Download from "../assets/icons/icon-download.png";
-import Upload from "../assets/icons/icon-upload.png";
-import Publications from "../assets/icons/icon-publications.png";
-import Gene from "../assets/icons/icon-gene.png";
-import ProteinCluster from "../assets/icons/icon-clustering.png";
-import Api from "../assets/icons/icon-api.png";
 import { Container, Typography } from "@mui/material";
+
+import SalivaryProtein from "@Assets/icons/icon-salivary-protein.png";
+import Analysis from "@Assets/icons/icon-analyze.png";
+import Download from "@Assets/icons/icon-download.png";
+import Upload from "@Assets/icons/icon-upload.png";
+import Publications from "@Assets/icons/icon-publications.png";
+import Gene from "@Assets/icons/icon-gene.png";
+import ProteinCluster from "@Assets/icons/icon-clustering.png";
+import Api from "@Assets/icons/icon-api.png";
 
 const liStyle = {
   padding: "5px 15px",

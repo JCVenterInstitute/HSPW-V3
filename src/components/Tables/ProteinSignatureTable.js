@@ -27,7 +27,7 @@ import { styled } from "@mui/material/styles";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { Link } from "react-router-dom";
 
-import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
+import { ReactComponent as DownloadLogo } from "@Assets/table-icon/download.svg";
 import LoadingOverlay from "../Shared/LoadingOverlay";
 import "../Filter.css";
 import "../Table.css";

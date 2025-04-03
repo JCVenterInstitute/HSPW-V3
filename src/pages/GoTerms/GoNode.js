@@ -9,7 +9,7 @@ import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import FontAwesome from "react-fontawesome";
 
-import main_feature from "../../assets/backgrounds/hero.jpeg";
+import MainFeature from "@Assets/backgrounds/hero.jpeg";
 
 const th = {
   backgroundColor: "#1463B9",
@@ -126,7 +126,7 @@ const GoNode = () => {
     <>
       <div
         style={{
-          backgroundImage: `url(${main_feature})`,
+          backgroundImage: `url(${MainFeature})`,
         }}
         className="head_background"
       >

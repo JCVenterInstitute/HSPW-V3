@@ -34,7 +34,7 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 
 import LoadingOverlay from "@Components/Shared/LoadingOverlay";
-import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
+import { ReactComponent as DownloadLogo } from "@Assets/table-icon/download.svg";
 import "../Filter.css";
 
 const recordsPerPageList = [

@@ -30,7 +30,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import LoadingOverLay from "../Shared/LoadingOverlay.js";
 import CustomGroupHeader from "../AgGrid/CustomGroupHeader.jsx";
 import CustomHeader from "../AgGrid/CustomHeader.jsx";
-import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
+import { ReactComponent as DownloadLogo } from "@Assets/table-icon/download.svg";
 import "../Filter.css";
 import "../Table.css";
 import NormalizationSwitch from "./NormalizationSwitch.js";

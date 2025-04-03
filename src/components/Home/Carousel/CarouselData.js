@@ -1,5 +1,5 @@
-import second_bg from "../../../assets/backgrounds/second-bg.png";
-import hero from "../../../assets/backgrounds/hero.jpeg";
+import second_bg from "@Assets/backgrounds/second-bg.png";
+import hero from "@Assets/backgrounds/hero.jpeg";
 
 export const contents = [
   {

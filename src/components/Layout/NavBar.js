@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { AppBar, Toolbar, Box, useMediaQuery, Container } from "@mui/material";
 
 import { AuthContext } from "../../services/AuthContext"; // Import the logout method
-import logo from "../../assets/logo/hspw-logo.png";
+import logo from "@Assets/logo/hspw-logo.png";
 import MobileNavBar from "./MobileNavBar";
 import NavBarMenuItem from "./NavBarButton";
 import { menuData } from "../../data/navbarData";
