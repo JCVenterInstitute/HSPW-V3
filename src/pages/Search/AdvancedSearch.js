@@ -29,7 +29,7 @@ import { Link } from "react-router-dom";
 
 import SearchResultsTable from "../../components/Search/SearchResultsTable";
 import SelectAllTransferList from "../../components/Search/SelectAllTransferList";
-import CustomLoadingOverlay from "../../components/Search/CustomLoadingOverlay";
+import LoadingOverlay from "../../components/Shared/LoadingOverlay";
 import PageHeader from "../../components/Layout/PageHeader";
 
 const generateColumnDefs = (entity, data) => {
@@ -158,7 +158,7 @@ const AdvancedSearch = () => {
   };
 
   const loadingOverlayComponent = useMemo(() => {
-    return CustomLoadingOverlay;
+    return LoadingOverlay;
   }, []);
 
   const flattenData = (hits) => {

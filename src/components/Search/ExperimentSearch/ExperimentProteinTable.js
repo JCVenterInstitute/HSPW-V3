@@ -15,7 +15,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import CustomLoadingOverlay from "../CustomLoadingOverlay";
+import LoadingOverlay from "../../../components/Shared/LoadingOverlay";
 import { Link } from "react-router-dom";
 
 const generateColumnDefs = (data) => {
@@ -146,7 +146,7 @@ const ExperimentProteinTable = ({ experiment_id_key, search_engine }) => {
   };
 
   const loadingOverlayComponent = useMemo(() => {
-    return CustomLoadingOverlay;
+    return LoadingOverlay;
   }, []);
 
   const fetchData = async (page = currentPage, pageSize = recordsPerPage) => {

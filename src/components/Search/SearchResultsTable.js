@@ -1,8 +1,10 @@
 import { useState, useMemo, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
+
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import CustomLoadingOverlay from "./CustomLoadingOverlay";
+import LoadingOverlay from "../../components/Shared/LoadingOverlay";
+
 import { Box } from "@mui/material";
 
 const SearchResultsTable = ({
@@ -156,7 +158,7 @@ const SearchResultsTable = ({
   };
 
   const loadingOverlayComponent = useMemo(() => {
-    return CustomLoadingOverlay;
+    return LoadingOverlay;
   }, []);
 
   const onGridReady = (params) => {

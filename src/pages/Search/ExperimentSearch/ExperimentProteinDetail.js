@@ -18,7 +18,7 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { useParams } from "react-router-dom";
 
-import CustomLoadingOverlay from "./CustomLoadingOverlay";
+import LoadingOverlay from "../../../components/Shared/LoadingOverlay";
 import PageHeader from "../../../components/Layout/PageHeader";
 
 const generateColumnDefs = (data) => {
@@ -171,7 +171,7 @@ const ExperimentProteinDetail = () => {
   };
 
   const loadingOverlayComponent = useMemo(() => {
-    return CustomLoadingOverlay;
+    return LoadingOverlay;
   }, []);
 
   const fetchData = async (page = currentPage, pageSize = recordsPerPage) => {

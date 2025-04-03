@@ -28,7 +28,7 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { Link } from "react-router-dom";
 
 import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
-import CustomLoadingOverlay from "../CustomLoadingOverlay";
+import LoadingOverlay from "../Shared/LoadingOverlay";
 import "../Filter.css";
 import "../Table.css";
 
@@ -202,7 +202,7 @@ const ProteinSignatureTable = () => {
   const [sortedColumn, setSortedColumn] = useState(null);
 
   const loadingOverlayComponent = useMemo(() => {
-    return CustomLoadingOverlay;
+    return LoadingOverlay;
   }, []);
 
   /**

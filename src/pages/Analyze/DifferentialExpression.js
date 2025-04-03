@@ -36,7 +36,7 @@ import Papa from "papaparse";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 
-import CustomLoadingOverlay from "./CustomLoadingOverlay";
+import LoadingOverlay from "../../components/Shared/LoadingOverlay";
 import PageHeader from "../../components/Layout/PageHeader";
 import userpool from "../../userpool";
 
@@ -231,7 +231,7 @@ const DifferentialExpression = () => {
   };
 
   const loadingOverlayComponent = useMemo(() => {
-    return CustomLoadingOverlay;
+    return LoadingOverlay;
   }, []);
 
   const onGridReady = useCallback((params) => {
