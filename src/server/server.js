@@ -5,6 +5,12 @@ const { Client } = require("@opensearch-project/opensearch");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const createAwsOpensearchConnector = require("aws-opensearch-connector");
 const path = require("path");
+const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+const {
+  DynamoDBDocumentClient,
+  QueryCommand,
+  UpdateCommand,
+} = require("@aws-sdk/lib-dynamodb");
 
 const { processGroupData } = require("./utils/processGroupData");
 const { processFile } = require("./utils/processFile");
@@ -14,21 +20,20 @@ const { generatePresignedUrls } = require("./utils/generatePresignedUrls");
 const { createContact } = require("./utils/createContact");
 const { getSSMParameter } = require("./utils/utils");
 const { sendSupportEmail } = require("./utils/sendSupportEmail");
-const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const {
-  DynamoDBDocumentClient,
-  QueryCommand,
-  UpdateCommand,
-} = require("@aws-sdk/lib-dynamodb");
+const salivaryProteinRouter = require("./routes/salivaryProteinRouter");
+const proteinClusterRouter = require("./routes/proteinClusterRouter");
 
 const app = express();
-
 app.use(cors());
 app.use(express.json({ limit: "200mb" }));
 app.use(express.urlencoded({ limit: "200mb", extended: true }));
 app.use(express.static("build"));
 app.use("/static", express.static(path.join(__dirname, "./build/static")));
 app.use("/doc", express.static(path.join(__dirname, "./documentation/")));
+
+app.use("/api/salivary-proteins", salivaryProteinRouter);
+
+app.use("/api/protein-cluster", proteinClusterRouter);
 
 const host = process.env.OS_HOSTNAME;
 
@@ -51,307 +56,9 @@ const getClient = async () => {
 const ddbClient = new DynamoDBClient({ region: "us-east-2" });
 const docClient = DynamoDBDocumentClient.from(ddbClient);
 
-/***************************
- * Protein Cluster Endpoints
- ***************************/
-
-async function getClusterMemberCount() {
-  var client = await getClient();
-
-  var response = await client.search({
-    index: process.env.INDEX_PROTEIN_CLUSTER,
-    body: {
-      size: 0,
-      aggs: {
-        number_of_members_2: {
-          filter: {
-            term: {
-              number_of_members: 2,
-            },
-          },
-        },
-        number_of_members_3: {
-          filter: {
-            term: {
-              number_of_members: 3,
-            },
-          },
-        },
-        number_of_members_4: {
-          filter: {
-            term: {
-              number_of_members: 4,
-            },
-          },
-        },
-        number_of_members_5: {
-          filter: {
-            term: {
-              number_of_members: 5,
-            },
-          },
-        },
-        number_of_members_6: {
-          filter: {
-            term: {
-              number_of_members: 6,
-            },
-          },
-        },
-        number_of_members_7: {
-          filter: {
-            term: {
-              number_of_members: 7,
-            },
-          },
-        },
-        number_of_members_8: {
-          filter: {
-            term: {
-              number_of_members: 8,
-            },
-          },
-        },
-        number_of_members_9: {
-          filter: {
-            term: {
-              number_of_members: 9,
-            },
-          },
-        },
-        number_of_members_10_or_more: {
-          filter: {
-            script: {
-              script: {
-                source: "doc['number_of_members'].value >= params.param1",
-                params: {
-                  param1: 10,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
-  return response.body.aggregations;
-}
-
-app.get("/api/protein-cluster-member-count", (req, res) => {
-  let a = getClusterMemberCount();
-
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function getAllProteinSearchClusterData() {
-  // Initialize the client.
-  var client = await getClient();
-
-  var query = {
-    size: 10000,
-    query: {
-      match_all: {},
-    },
-  };
-
-  var response = await client.search({
-    index: process.env.INDEX_PROTEIN_CLUSTER,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-}
-
-app.get("/api/protein-cluster", (req, res) => {
-  let a = getAllProteinSearchClusterData();
-
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function getProteinClusterById(id) {
-  var client = await getClient();
-
-  var query = {
-    query: {
-      bool: {
-        filter: [
-          {
-            term: {
-              "uniprot_id.keyword": id,
-            },
-          },
-        ],
-      },
-    },
-  };
-
-  var response = await client.search({
-    index: process.env.INDEX_PROTEIN_CLUSTER,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-}
-
-app.get("/api/protein-cluster/:id", (req, res) => {
-  let a = getProteinClusterById(req.params.id);
-
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function queryProteinCluster(
-  size,
-  from,
-  filter,
-  sort = null,
-  keyword = null
-) {
-  const client = await getClient();
-
-  const payload = {
-    index: process.env.INDEX_PROTEIN_CLUSTER,
-    body: {
-      track_total_hits: true,
-      size: size,
-      from: from,
-      query: {
-        bool: {
-          ...(filter && { filter }),
-          ...(keyword && { must: [keyword] }), // Apply global search if present
-        },
-      },
-      ...(sort && { sort }), // Apply sort if present
-    },
-  };
-
-  const response = await client.search(payload);
-
-  return response.body;
-}
-
-app.post("/api/protein-cluster/:size/:from/", (req, res) => {
-  const { filters, sort, keyword } = req.body;
-  const { size, from } = req.params;
-
-  const results = queryProteinCluster(size, from, filters, sort, keyword);
-
-  results.then((result) => {
-    res.json(result);
-  });
-});
-
 /*****************************
  * Salivary Proteins Endpoints
  *****************************/
-
-async function getSalivaryProteinById(id) {
-  var client = await getClient();
-
-  const query = {
-    query: {
-      bool: {
-        filter: [
-          {
-            term: {
-              "salivary_proteins.uniprot_accession.keyword": id,
-            },
-          },
-        ],
-      },
-    },
-  };
-
-  var response = await client.search({
-    index: process.env.INDEX_SALIVARY_PROTEIN,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-}
-
-app.get("/api/salivary-protein/:id", (req, res) => {
-  let a = getSalivaryProteinById(req.params.id);
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-/**
- * Query data used for Salivary Protein page table
- * @param {Number} size Number of records to return
- * @param {Number} from Starting point for the data page to return
- * @param {Object[]} filter All applied filters applied by user in facet menu
- * @param {Object[]} sort Sort query for column selected to sort by from table
- * @param {Object} keyword String entered by user into search bar
- * @param {Boolean} filterByOr True if using or filters, false otherwise
- */
-async function querySalivaryProtein(
-  size,
-  from,
-  filter,
-  sort = null,
-  keyword = null,
-  filterByOr = false
-) {
-  const client = await getClient();
-
-  const payload = {
-    index: process.env.INDEX_SALIVARY_SUMMARY,
-    body: {
-      track_total_hits: true,
-      size: size,
-      from: from,
-      aggs: {
-        IHC: {
-          terms: {
-            field: "IHC.keyword",
-          },
-        },
-        expert_opinion: {
-          terms: {
-            field: "expert_opinion.keyword",
-          },
-        },
-      },
-      query: {
-        bool: {
-          ...(filterByOr === true ? { should: filter } : { filter }),
-          ...(keyword && { must: [keyword] }), // Apply global search if present
-        },
-      },
-      ...(sort && { sort }), // Apply sort if present
-    },
-  };
-
-  const response = await client.search(payload);
-
-  return response.body;
-}
-
-// Used by Salivary Proteins table
-app.post("/api/salivary-proteins/:size/:from/", (req, res) => {
-  const { filters, sort, keyword, filterByOr } = req.body;
-  const { size, from } = req.params;
-
-  const results = querySalivaryProtein(
-    size,
-    from,
-    filters,
-    sort,
-    keyword,
-    filterByOr
-  );
-
-  results.then((result) => {
-    res.json(result);
-  });
-});
 
 async function queryProteins(size, from, filter, sort = null, keyword = null) {
   const client = await getClient();

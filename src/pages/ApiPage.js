@@ -273,7 +273,7 @@ const ApiPage = () => {
               name={"Salivary Proteins"}
               schema={salivaryProtein}
               mapping={salivaryProteinMapping}
-              endpoint={"/api/salivary-protein/:uniprot-id"}
+              endpoint={"/api/salivary-proteins/:uniprot-id"}
               queryParamDescription={
                 "Query params `:uniprot-id`. Uniprot id of salivary protein to fetch."
               }

@@ -91,7 +91,7 @@ const ProteinDetail = (props) => {
     };
 
     const fetchProtein = async () => {
-      const url = `${process.env.REACT_APP_API_ENDPOINT}/api/salivary-protein/${params["proteinid"]}`;
+      const url = `${process.env.REACT_APP_API_ENDPOINT}/api/salivary-proteins/${params["proteinid"]}`;
       const response = await axios.get(url);
       const json = response.data;
       return json;

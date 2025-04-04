@@ -40,7 +40,7 @@ const ProteinCluster = () => {
 
   useEffect(() => {
     fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/protein-cluster-member-count`
+      `${process.env.REACT_APP_API_ENDPOINT}/api/protein-cluster/member-count`
     )
       .then((res) => res.json())
       .then((data) => {
