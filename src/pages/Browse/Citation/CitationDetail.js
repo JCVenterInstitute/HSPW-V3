@@ -39,7 +39,7 @@ const Citation_detail = (props) => {
   const [data, setData] = useState("");
   const params = useParams();
 
-  const url = `${process.env.REACT_APP_API_ENDPOINT}/api/citation/${params["citationid"]}`;
+  const url = `${process.env.REACT_APP_API_ENDPOINT}/api/citations/${params["citationid"]}`;
 
   const breadcrumbPath = [
     { path: "Home", link: "/" },

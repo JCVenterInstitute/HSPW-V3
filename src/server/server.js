@@ -20,8 +20,10 @@ const { generatePresignedUrls } = require("./utils/generatePresignedUrls");
 const { createContact } = require("./utils/createContact");
 const { getSSMParameter } = require("./utils/utils");
 const { sendSupportEmail } = require("./utils/sendSupportEmail");
+
 const salivaryProteinRouter = require("./routes/salivaryProteinRouter");
 const proteinClusterRouter = require("./routes/proteinClusterRouter");
+const citationRouter = require("./routes/citationRouter");
 
 const app = express();
 app.use(cors());
@@ -32,8 +34,9 @@ app.use("/static", express.static(path.join(__dirname, "./build/static")));
 app.use("/doc", express.static(path.join(__dirname, "./documentation/")));
 
 app.use("/api/salivary-proteins", salivaryProteinRouter);
-
 app.use("/api/protein-cluster", proteinClusterRouter);
+
+app.use("/api/citations", citationRouter);
 
 const host = process.env.OS_HOSTNAME;
 
@@ -241,95 +244,6 @@ async function queryProteinSignature(
 
   return response.body;
 }
-
-// Used by Protein Signature Browse page table
-app.post("/api/protein-signature/:size/:from/", (req, res) => {
-  const { filters, sort, keyword } = req.body;
-  const { size, from } = req.params;
-
-  const results = queryProteinSignature(size, from, filters, sort, keyword);
-
-  results.then((result) => {
-    res.json(result);
-  });
-});
-
-/********************
- * Citation Endpoints
- ********************/
-
-async function getCitationById(index, id) {
-  var client = await getClient();
-
-  var query = {
-    query: {
-      match: {
-        "PubMed_ID.keyword": id,
-      },
-    },
-  };
-
-  var response = await client.search({
-    index: index,
-    body: query,
-  });
-  return response.body.hits.hits;
-}
-
-app.get("/api/citation/:id", (req, res) => {
-  let a = getCitationById(process.env.INDEX_CITATION, req.params.id);
-
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function queryCitationData(
-  size,
-  from,
-  filter,
-  sort = null,
-  keyword = null
-) {
-  const client = await getClient();
-
-  const returnFields = ["PubMed_ID", "PubDate", "Title", "journal_title"];
-
-  const payload = {
-    index: process.env.INDEX_CITATION,
-    body: {
-      track_total_hits: true,
-      size: size,
-      from: from,
-      query: {
-        bool: {
-          ...(filter && { filter }),
-          ...(keyword && { must: [keyword] }), // Apply global search if present
-        },
-      },
-      ...(sort && { sort }), // Apply sort if present
-      _source: returnFields,
-    },
-  };
-
-  console.log("> payload", JSON.stringify(payload.body));
-
-  const response = await client.search(payload);
-
-  return response.body;
-}
-
-// Used by Citation Browse page table
-app.post("/api/citations/:size/:from/", (req, res) => {
-  const { filters, sort, keyword } = req.body;
-  const { size, from } = req.params;
-
-  const results = queryCitationData(size, from, filters, sort, keyword);
-
-  results.then((result) => {
-    res.json(result);
-  });
-});
 
 /******************************
  * For Homepage Chord Component

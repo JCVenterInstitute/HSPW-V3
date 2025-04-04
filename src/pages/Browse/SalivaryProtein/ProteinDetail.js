@@ -52,7 +52,7 @@ const ProteinDetail = (props) => {
   ];
 
   const fetchPubMed = async (id) => {
-    const pubmedLink = `${process.env.REACT_APP_API_ENDPOINT}/api/citation/${id}`;
+    const pubmedLink = `${process.env.REACT_APP_API_ENDPOINT}/api/citations/${id}`;
     const response = await fetch(pubmedLink);
     if (!response.ok) {
       const message = `An error has occurred: ${response.status}`;
