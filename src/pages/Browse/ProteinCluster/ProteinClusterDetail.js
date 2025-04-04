@@ -25,7 +25,7 @@ const Cluster_Detail = (props) => {
   const fetchProteinData = async (memberId) => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/study-protein-uniprot/${memberId}`
+        `${process.env.REACT_APP_API_ENDPOINT}/api/study-protein/protein-uniprot/${memberId}`
       );
 
       if (!response.ok) {

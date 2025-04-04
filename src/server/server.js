@@ -24,6 +24,7 @@ const { sendSupportEmail } = require("./utils/sendSupportEmail");
 const salivaryProteinRouter = require("./routes/salivaryProteinRouter");
 const proteinClusterRouter = require("./routes/proteinClusterRouter");
 const citationRouter = require("./routes/citationRouter");
+const studyProteinRouter = require("./routes/studyProteinRouter");
 
 const app = express();
 app.use(cors());
@@ -35,8 +36,8 @@ app.use("/doc", express.static(path.join(__dirname, "./documentation/")));
 
 app.use("/api/salivary-proteins", salivaryProteinRouter);
 app.use("/api/protein-cluster", proteinClusterRouter);
-
 app.use("/api/citations", citationRouter);
+app.use("/api/study-protein", studyProteinRouter);
 
 const host = process.env.OS_HOSTNAME;
 
@@ -640,94 +641,6 @@ app.post("/api/study/", async (req, res) => {
   });
 });
 
-/*************************
- * Study Protein Endpoints
- ************************/
-
-const searchStudyProtein = async (experiment_id_key) => {
-  // Initialize the client.
-  const client = await getClient();
-
-  const query = {
-    size: 10000,
-    query: {
-      query_string: {
-        default_field: "experiment_id_key",
-        query: experiment_id_key,
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: process.env.INDEX_STUDY_PROTEIN,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-};
-
-app.get("/api/study-protein/:id", async (req, res) => {
-  searchStudyProtein(req.params.id).then((response) => {
-    res.json(response);
-  });
-});
-
-const searchStudyProteinUniprot = async (uniprot_id) => {
-  // Initialize the client.
-  const client = await getClient();
-
-  const query = {
-    size: 10000,
-    query: {
-      query_string: {
-        default_field: "Uniprot_id",
-        query: uniprot_id,
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: process.env.INDEX_STUDY_PROTEIN,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-};
-
-app.get("/api/study-protein-uniprot/:id", async (req, res) => {
-  searchStudyProteinUniprot(req.params.id).then((response) => {
-    res.json(response);
-  });
-});
-
-// Used for Cluster Details page
-const bulkStudyProteins = async (ids) => {
-  // Initialize the client.
-  const client = await getClient();
-
-  const query = {
-    size: 10000,
-    query: {
-      terms: {
-        ["Uniprot_id.keyword"]: ids,
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: process.env.INDEX_STUDY_PROTEIN,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-};
-
-app.post("/api/study-protein/", async (req, res) => {
-  bulkStudyProteins(req.body.ids).then((response) => {
-    res.json(response);
-  });
-});
-
 /**********************************
  * For Protein Signature Pie Chart
  *********************************/
@@ -1206,7 +1119,6 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
       parametricTest,
       timestamp,
       formattedDate,
-      groupNames,
       username,
     } = req.body;
 
