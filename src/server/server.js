@@ -25,8 +25,10 @@ const salivaryProteinRouter = require("./routes/salivaryProteinRouter");
 const proteinClusterRouter = require("./routes/proteinClusterRouter");
 const citationRouter = require("./routes/citationRouter");
 const studyProteinRouter = require("./routes/studyProteinRouter");
+const geneRouter = require("./routes/geneRouter");
 
 const app = express();
+
 app.use(cors());
 app.use(express.json({ limit: "200mb" }));
 app.use(express.urlencoded({ limit: "200mb", extended: true }));
@@ -38,6 +40,7 @@ app.use("/api/salivary-proteins", salivaryProteinRouter);
 app.use("/api/protein-cluster", proteinClusterRouter);
 app.use("/api/citations", citationRouter);
 app.use("/api/study-protein", studyProteinRouter);
+app.use("/api/genes", geneRouter);
 
 const host = process.env.OS_HOSTNAME;
 
@@ -93,79 +96,6 @@ app.post("/api/proteins/:size/:from/", (req, res) => {
   const { size, from } = req.params;
 
   const results = queryProteins(size, from, filters, sort, keyword);
-
-  results.then((result) => {
-    res.json(result);
-  });
-});
-
-/****************
- * Gene Endpoints
- ****************/
-
-async function getGeneById(id) {
-  var client = await getClient();
-
-  var query = {
-    query: {
-      bool: {
-        filter: [
-          {
-            term: {
-              "GeneID.keyword": id,
-            },
-          },
-        ],
-      },
-    },
-  };
-
-  var response = await client.search({
-    index: process.env.INDEX_GENE,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-}
-
-app.get("/genes/:id", (req, res) => {
-  let a = getGeneById(req.params.id);
-
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function queryGenes(size, from, filter, sort = null, keyword = null) {
-  const client = await getClient();
-
-  const payload = {
-    index: process.env.INDEX_GENE,
-    body: {
-      track_total_hits: true,
-      size: size,
-      from: from,
-      query: {
-        bool: {
-          ...(filter && { filter }),
-          ...(keyword && { must: [keyword] }), // Apply global search if present
-        },
-      },
-      ...(sort && { sort }), // Apply sort if present
-    },
-  };
-
-  const response = await client.search(payload);
-
-  return response.body;
-}
-
-// Used by Gene Browse Page table
-app.post("/api/genes/:size/:from/", (req, res) => {
-  const { filters, sort, keyword } = req.body;
-  const { size, from } = req.params;
-
-  const results = queryGenes(size, from, filters, sort, keyword);
 
   results.then((result) => {
     res.json(result);

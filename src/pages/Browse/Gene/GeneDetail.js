@@ -48,7 +48,7 @@ const GeneDetail = (props) => {
 
   useEffect(() => {
     const fetchGenes = async () => {
-      const url = `${process.env.REACT_APP_API_ENDPOINT}/genes/${params["geneid"]}`;
+      const url = `${process.env.REACT_APP_API_ENDPOINT}/api/genes/${params["geneid"]}`;
 
       const response = await fetch(url);
 
