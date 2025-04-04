@@ -26,6 +26,8 @@ const proteinClusterRouter = require("./routes/proteinClusterRouter");
 const citationRouter = require("./routes/citationRouter");
 const studyProteinRouter = require("./routes/studyProteinRouter");
 const geneRouter = require("./routes/geneRouter");
+const proteinSignatureRouter = require("./routes/proteinSignatureRouter");
+const studyRouter = require("./routes/studyRouter");
 
 const app = express();
 
@@ -41,6 +43,8 @@ app.use("/api/protein-cluster", proteinClusterRouter);
 app.use("/api/citations", citationRouter);
 app.use("/api/study-protein", studyProteinRouter);
 app.use("/api/genes", geneRouter);
+app.use("/api/protein-signature", proteinSignatureRouter);
+app.use("/api/study", studyRouter);
 
 const host = process.env.OS_HOSTNAME;
 
@@ -101,80 +105,6 @@ app.post("/api/proteins/:size/:from/", (req, res) => {
     res.json(result);
   });
 });
-
-/*****************************
- * Protein Signature Endpoints
- *****************************/
-
-async function getProteinSignatureById(id) {
-  var client = await getClient();
-
-  var query = {
-    query: {
-      bool: {
-        filter: [
-          {
-            term: {
-              "InterPro ID.keyword": id,
-            },
-          },
-        ],
-      },
-    },
-  };
-
-  var response = await client.search({
-    index: process.env.INDEX_PROTEIN_SIGNATURE,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-}
-
-app.get("/api/protein-signature/:id", (req, res) => {
-  let a = getProteinSignatureById(req.params.id);
-
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function queryProteinSignature(
-  size,
-  from,
-  filter,
-  sort = null,
-  keyword = null
-) {
-  const client = await getClient();
-
-  const payload = {
-    index: process.env.INDEX_PROTEIN_SIGNATURE,
-    body: {
-      track_total_hits: true,
-      size: size,
-      from: from,
-      query: {
-        bool: {
-          ...(filter && { filter }),
-          ...(keyword && { must: [keyword] }), // Apply global search if present
-        },
-      },
-      ...(sort && { sort }), // Apply sort if present
-      aggs: {
-        Type: {
-          terms: {
-            field: "Type.keyword",
-          },
-        },
-      },
-    },
-  };
-
-  const response = await client.search(payload);
-
-  return response.body;
-}
 
 /******************************
  * For Homepage Chord Component
@@ -449,125 +379,6 @@ app.get("/api/go-nodes-usage/:id", (req, res) => {
   let a = searchGoNodesUsage(req.params.id);
   a.then(function (result) {
     res.json(result);
-  });
-});
-
-/******************
- * Study Endpoints
- *****************/
-
-const searchAllStudy = async () => {
-  // Initialize the client.
-  const client = await getClient();
-
-  const query = {
-    size: 10000,
-    query: {
-      match_all: {},
-    },
-    aggs: {
-      sample_type: {
-        terms: {
-          field: "sample_type.keyword",
-        },
-      },
-      institution: {
-        terms: {
-          field: "institution.keyword",
-        },
-      },
-      condition_type: {
-        terms: {
-          field: "condition_type.keyword",
-        },
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: process.env.INDEX_STUDY,
-    body: query,
-  });
-
-  return response.body;
-};
-
-app.get("/api/study/", async (req, res) => {
-  searchAllStudy().then((response) => {
-    res.json(response);
-  });
-});
-
-const searchStudy = async (id) => {
-  // Initialize the client.
-  const client = await getClient();
-
-  const query = {
-    size: 10000,
-    query: {
-      query_string: {
-        default_field: "experiment_id_key",
-        query: id,
-      },
-    },
-    aggs: {
-      sample_type: {
-        terms: {
-          field: "sample_type.keyword",
-        },
-      },
-      institution: {
-        terms: {
-          field: "institution.keyword",
-        },
-      },
-      condition_type: {
-        terms: {
-          field: "condition_type.keyword",
-        },
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: process.env.INDEX_STUDY,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-};
-
-app.get("/api/study/:id", async (req, res) => {
-  searchStudy(req.params.id).then((response) => {
-    res.json(response);
-  });
-});
-
-// Used for Cluster Details page
-const bulkStudySearch = async (ids) => {
-  // Initialize the client.
-  const client = await getClient();
-
-  const query = {
-    size: 10000,
-    query: {
-      terms: {
-        experiment_id_key: ids,
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: process.env.INDEX_STUDY,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-};
-
-app.post("/api/study/", async (req, res) => {
-  bulkStudySearch(req.body.ids).then((response) => {
-    res.json(response);
   });
 });
 
