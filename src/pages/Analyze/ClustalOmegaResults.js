@@ -33,6 +33,7 @@ const ClustalOmegaResults = () => {
 
   const checkStatus = async () => {
     const parameterDetailArray = [];
+
     const status = await axios
       .get(`https://www.ebi.ac.uk/Tools/services/rest/clustalo/status/${jobId}`)
       .then((res) => res.data);
@@ -49,9 +50,19 @@ const ClustalOmegaResults = () => {
         .then((res) => res.data);
       parameterDetailArray.push(parameterDetail);
     }
+
     setParameterDetail([...parameterDetailArray]);
 
     if (status === "FINISHED") {
+      // Update Submission status & completion date
+      await axios.put(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
+        {
+          status: "Complete",
+          completion_date: new Date().toISOString(),
+        }
+      );
+
       setIsFinished(true);
     } else {
       // Continue checking after 5 seconds
@@ -61,12 +72,15 @@ const ClustalOmegaResults = () => {
 
   const getResults = async () => {
     let type = "aln-clustal";
+
     const resultTypes = await axios
       .get(
         `https://www.ebi.ac.uk/Tools/services/rest/clustalo/resulttypes/${jobId}`
       )
       .then((res) => res.data.types);
+
     console.log("> Result Types", resultTypes);
+
     for (const resultType of resultTypes) {
       if (resultType === "aln-clustal_num") {
         type = "aln-clustal_num";
@@ -78,6 +92,7 @@ const ClustalOmegaResults = () => {
       //   .then((res) => res.data);
       // console.log(result);
     }
+
     const [inputSequence, output, alignmentResult, submissionDetail] =
       await Promise.all([
         axios
