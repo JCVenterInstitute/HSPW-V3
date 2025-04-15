@@ -28,6 +28,7 @@
     "he": "^1.2.0",
     "nodemailer": "^6.9.7",
     "stream-json": "^1.8.0",
+    "uuid": "^11.1.0",
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
