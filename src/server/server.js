@@ -5,12 +5,6 @@ const { Client } = require("@opensearch-project/opensearch");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const createAwsOpensearchConnector = require("aws-opensearch-connector");
 const path = require("path");
-const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const {
-  DynamoDBDocumentClient,
-  QueryCommand,
-  UpdateCommand,
-} = require("@aws-sdk/lib-dynamodb");
 
 const { processGroupData } = require("./utils/processGroupData");
 const { processFile } = require("./utils/processFile");
@@ -28,6 +22,7 @@ const studyProteinRouter = require("./routes/studyProteinRouter");
 const geneRouter = require("./routes/geneRouter");
 const proteinSignatureRouter = require("./routes/proteinSignatureRouter");
 const studyRouter = require("./routes/studyRouter");
+const submissionRouter = require("./routes/submissionRouter");
 
 const app = express();
 
@@ -45,6 +40,7 @@ app.use("/api/study-protein", studyProteinRouter);
 app.use("/api/genes", geneRouter);
 app.use("/api/protein-signature", proteinSignatureRouter);
 app.use("/api/study", studyRouter);
+app.use("/api/submissions", submissionRouter);
 
 const host = process.env.OS_HOSTNAME;
 
@@ -62,10 +58,6 @@ const getClient = async () => {
     node: host,
   });
 };
-
-// Initialize DynamoDB client
-const ddbClient = new DynamoDBClient({ region: "us-east-2" });
-const docClient = DynamoDBDocumentClient.from(ddbClient);
 
 /*****************************
  * Salivary Proteins Endpoints
@@ -952,76 +944,6 @@ app.post(
 /*********************
  * Misc Util Endpoints
  *********************/
-
-app.get("/api/submissions/:username", async (req, res) => {
-  const { username } = req.params;
-
-  const params = {
-    TableName: "hsp-analysis-submissions-DEV",
-    IndexName: "username-index", // If you're using a GSI based on username
-    KeyConditionExpression: "#username = :username",
-    ExpressionAttributeNames: {
-      "#username": "username",
-    },
-    ExpressionAttributeValues: {
-      ":username": username, // Use the provided username in the request params
-    },
-  };
-
-  try {
-    // Perform the DynamoDB query
-    const data = await docClient.send(new QueryCommand(params));
-
-    if (data.Items) {
-      // Send the retrieved items as a response
-      res.status(200).json(data.Items);
-    } else {
-      // Handle case where no items are found
-      res.status(404).json({ message: "No submissions found for this user." });
-    }
-  } catch (err) {
-    // Handle any errors
-    console.error("Error querying DynamoDB:", err);
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: err.message });
-  }
-});
-
-app.put("/api/submissions/:id", async (req, res) => {
-  const { id } = req.params;
-  const updateFields = req.body; // Expecting dynamic fields in the request body, e.g. { important: true, name: "New Name" }
-
-  // Dynamically construct the UpdateExpression and ExpressionAttribute values
-  let UpdateExpression = "SET";
-  const ExpressionAttributeNames = {};
-  const ExpressionAttributeValues = {};
-
-  // Loop through the fields in the request body and build the update parameters
-  Object.keys(updateFields).forEach((key, index) => {
-    const comma = index === 0 ? "" : ",";
-    UpdateExpression += `${comma} #${key} = :${key}`;
-    ExpressionAttributeNames[`#${key}`] = key;
-    ExpressionAttributeValues[`:${key}`] = updateFields[key];
-  });
-
-  const params = {
-    TableName: "hsp-analysis-submissions-DEV", // Update to match your table name
-    Key: { id }, // Primary key for the table
-    UpdateExpression,
-    ExpressionAttributeNames,
-    ExpressionAttributeValues,
-    ReturnValues: "ALL_NEW", // Return all updated values
-  };
-
-  try {
-    const result = await docClient.send(new UpdateCommand(params));
-    res.status(200).json(result.Attributes); // Respond with updated attributes
-  } catch (error) {
-    console.error("Error updating submission:", error);
-    res.status(500).json({ error: "Failed to update submission" });
-  }
-});
 
 app.get("/api/download-template-data", async (req, res) => {
   // S3 download parameters
