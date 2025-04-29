@@ -59,7 +59,9 @@ const ClustalOmegaSequenceParameters = ({ url }) => {
             `https://www.ebi.ac.uk/Tools/services/rest/${url}/parameterdetails/${parameter}`
           )
           .then((res) => res.data);
+
         parameterDetailArray.push(parameterDetail);
+
         defaultValue[parameterDetail.name] = {
           name: parameter,
           value:
@@ -71,9 +73,11 @@ const ClustalOmegaSequenceParameters = ({ url }) => {
 
       if (defaultValue["Output alignment format"]) {
         defaultValue["Output alignment format"].value = "clustal";
+
         const index = parameterDetailArray.findIndex(
           (object) => object.name === "Output alignment format"
         );
+
         // Swap the options so that the default value becomes clustalW
         [
           parameterDetailArray[index].values.values[0],
@@ -138,7 +142,7 @@ const ClustalOmegaSequenceParameters = ({ url }) => {
       // Create submission in HSP to track
       const submissionPayload = {
         user: username,
-        type: "Clustal Omega",
+        type: "Multiple Sequence Alignment",
         link: `/${url}/results/${jobId}`,
         status: "Running",
         id: jobId,
@@ -313,6 +317,8 @@ const ClustalOmegaSequenceParameters = ({ url }) => {
                           </Grid>
                         </Grid>
                       );
+                    } else {
+                      return null;
                     }
                   })}
                 </Grid>
