@@ -17,7 +17,9 @@ const Submissions = () => {
   const username = user ? user.getUsername() : "test-user-local";
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${username}`)
+    fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/user/${username}`
+    )
       .then((response) => response.json())
       .then((data) => {
         const pinnedRows = data.filter((row) => row.important);
@@ -30,7 +32,9 @@ const Submissions = () => {
       });
 
     if (rowData.length === 0) {
-      fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${username}`)
+      fetch(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/user/${username}`
+      )
         .then((response) => response.json())
         .then((data) => {
           const pinnedRows = data.filter((row) => row.important);

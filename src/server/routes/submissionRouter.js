@@ -4,7 +4,9 @@ const submissionController = require("../controllers/submissionController");
 
 const router = express.Router();
 
-router.get("/:username", submissionController.fetchSubmissionByUser);
+router.get("/user/:username", submissionController.fetchSubmissionByUser);
+
+router.get("/:id", submissionController.getSubmissionById);
 
 router.put("/:id", submissionController.updateSubmission);
 

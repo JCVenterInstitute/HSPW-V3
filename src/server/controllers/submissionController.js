@@ -1,4 +1,4 @@
-const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+const { DynamoDBClient, GetItemCommand } = require("@aws-sdk/client-dynamodb");
 const {
   DynamoDBDocumentClient,
   QueryCommand,
@@ -11,12 +11,39 @@ const { v4: uuidv4 } = require("uuid");
 const ddbClient = new DynamoDBClient({ region: "us-east-2" });
 const docClient = DynamoDBDocumentClient.from(ddbClient);
 
+// Fetch a submission by id
+const getSubmissionById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    console.log("> Fetch submission with id", id);
+
+    const command = new GetCommand({
+      TableName: "hsp-analysis-submissions-DEV",
+      Key: { id },
+    });
+
+    const data = await docClient.send(command);
+
+    console.log("> Data", data);
+
+    if (data.Item) {
+      res.status(200).json(data.Item);
+    } else {
+      res.status(404).json({ message: "No submissions found for this user." });
+    }
+  } catch (err) {
+    console.error("Error fetching submission:", error);
+    res.status(500).json({ error: "Failed to fetch submission" });
+  }
+};
+
 /**
  * Fetch all submissions for a specific user
  */
 const fetchSubmissionByUser = async (req, res) => {
   try {
-    console.log("> Fetching submissions for user");
+    console.log("> Fetching submissions for user", req.params);
 
     const { username } = req.params;
 
@@ -89,6 +116,7 @@ const createSubmission = async (req, res) => {
  * Update a submission by ID
  */
 const updateSubmission = async (req, res) => {
+  console.log("> Updating Submission", req.body);
   try {
     const { id } = req.params;
     const updateFields = req.body; // Expecting dynamic fields in the request body, e.g. { important: true, name: "New Name" }
@@ -124,6 +152,7 @@ const updateSubmission = async (req, res) => {
 };
 
 module.exports = {
+  getSubmissionById,
   fetchSubmissionByUser,
   createSubmission,
   updateSubmission,
