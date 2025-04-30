@@ -30,27 +30,51 @@ const InterProScanResults = () => {
   const [submissionDetail, setSubmissionDetail] = useState(null);
   const [parameterDetail, setParameterDetail] = useState([]);
 
+  useEffect(() => {
+    const fetchParameterDetails = async () => {
+      const parameterDetailArray = [];
+
+      const parameters = await axios
+        .get(`https://www.ebi.ac.uk/Tools/services/rest/iprscan5/parameters`)
+        .then((res) => res.data.parameters);
+
+      for (const parameter of parameters) {
+        const parameterDetail = await axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/parameterdetails/${parameter}`
+          )
+          .then((res) => res.data);
+        parameterDetailArray.push(parameterDetail);
+      }
+      setParameterDetail([...parameterDetailArray]);
+    };
+
+    fetchParameterDetails();
+  }, []);
+
   const checkStatus = async () => {
-    const parameterDetailArray = [];
     const status = await axios
       .get(`https://www.ebi.ac.uk/Tools/services/rest/iprscan5/status/${jobId}`)
       .then((res) => res.data);
 
-    const parameters = await axios
-      .get(`https://www.ebi.ac.uk/Tools/services/rest/iprscan5/parameters`)
-      .then((res) => res.data.parameters);
-
-    for (const parameter of parameters) {
-      const parameterDetail = await axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/parameterdetails/${parameter}`
-        )
-        .then((res) => res.data);
-      parameterDetailArray.push(parameterDetail);
-    }
-    setParameterDetail([...parameterDetailArray]);
+    console.log("> Status", status);
 
     if (status === "FINISHED") {
+      const submission = await axios.get(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
+      );
+
+      // Update Submission status & completion date if not already in complete status
+      if (submission.status !== "Complete") {
+        await axios.put(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
+          {
+            status: "Complete",
+            completion_date: new Date().toISOString(),
+          }
+        );
+      }
+
       setIsFinished(true);
     } else {
       // Continue checking after 5 seconds
@@ -64,15 +88,7 @@ const InterProScanResults = () => {
         `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/resulttypes/${jobId}`
       )
       .then((res) => res.data.types);
-    console.log("> Result Types", resultTypes);
-    // for (const resultType of resultTypes) {
-    //   const result = await axios
-    //     .get(
-    //       `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/${resultType.identifier}`
-    //     )
-    //     .then((res) => res.data);
-    //   console.log(result);
-    // }
+
     const [
       inputSequence,
       log,
@@ -122,7 +138,7 @@ const InterProScanResults = () => {
     const submissionDetailJson = new XMLParser().parseFromString(
       submissionDetail
     );
-    // console.log(submissionDetailJson);
+
     setInputSequence(inputSequence);
     setOutput(log);
     setXmlOutput(xmlOutput ? xmlOutput : "No Output");
