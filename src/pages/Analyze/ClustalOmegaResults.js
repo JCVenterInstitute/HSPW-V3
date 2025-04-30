@@ -54,14 +54,20 @@ const ClustalOmegaResults = () => {
     setParameterDetail([...parameterDetailArray]);
 
     if (status === "FINISHED") {
-      // Update Submission status & completion date
-      await axios.put(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
-        {
-          status: "Complete",
-          completion_date: new Date().toISOString(),
-        }
+      const submission = await axios.get(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
       );
+
+      if (submission.status !== "Complete") {
+        // Update Submission status & completion date if not already marked as complete
+        await axios.put(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
+          {
+            status: "Complete",
+            completion_date: new Date().toISOString(),
+          }
+        );
+      }
 
       setIsFinished(true);
     } else {
