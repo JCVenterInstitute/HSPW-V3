@@ -149,7 +149,7 @@ def record_submission(event, submission_id):
         "link": f"/differential-expression/results/{submission_path}?logNorm={log_normalized}&heatmap={heat_map_number}&foldChange={fold_threshold}&pValue={p_val}&pType={p_raw}&parametricTest={stat_test}",
         "status": "Running",
         "submission_date": str(datetime.now()),
-        "type": "differential expression analysis",
+        "type": "Differential Expression Analysis",
         "username": event.get("username"),
     }
 

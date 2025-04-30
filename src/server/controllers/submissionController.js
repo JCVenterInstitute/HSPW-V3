@@ -4,6 +4,7 @@ const {
   QueryCommand,
   UpdateCommand,
   PutCommand,
+  GetCommand,
 } = require("@aws-sdk/lib-dynamodb");
 const { v4: uuidv4 } = require("uuid");
 
@@ -32,7 +33,7 @@ const getSubmissionById = async (req, res) => {
     } else {
       res.status(404).json({ message: "No submissions found for this user." });
     }
-  } catch (err) {
+  } catch (error) {
     console.error("Error fetching submission:", error);
     res.status(500).json({ error: "Failed to fetch submission" });
   }
