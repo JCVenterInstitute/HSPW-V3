@@ -309,24 +309,27 @@ const Submissions = () => {
       minWidth: 105,
       resizable: false,
       cellStyle: { borderRight: "none" },
-      cellRenderer: (params) => (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <IconButton
-            component="a"
-            href={params.value}
-            target="_blank"
-            rel="noopener noreferrer"
+      cellRenderer: (params) => {
+        const disableLink = params.data.status === "Expired";
+
+        return (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
           >
-            <LinkIcon sx={{ color: "blue" }} />
-          </IconButton>
-        </div>
-      ),
+            <IconButton
+              component="a"
+              href={params.value}
+              disabled={disableLink}
+            >
+              <LinkIcon sx={{ color: disableLink ? "gray" : "blue" }} />
+            </IconButton>
+          </div>
+        );
+      },
     },
   ];
 
