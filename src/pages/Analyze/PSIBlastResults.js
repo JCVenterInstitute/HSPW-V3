@@ -31,27 +31,51 @@ const PsiBlastResults = () => {
   const [submissionDetail, setSubmissionDetail] = useState(null);
   const [parameterDetail, setParameterDetail] = useState([]);
 
+  useEffect(() => {
+    const fetchParameters = async () => {
+      const parameterDetailArray = [];
+
+      const parameters = await axios
+        .get(`https://www.ebi.ac.uk/Tools/services/rest/psiblast/parameters`)
+        .then((res) => res.data.parameters);
+
+      for (const parameter of parameters) {
+        const parameterDetail = await axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/psiblast/parameterdetails/${parameter}`
+          )
+          .then((res) => res.data);
+
+        parameterDetailArray.push(parameterDetail);
+      }
+
+      setParameterDetail([...parameterDetailArray]);
+    };
+
+    fetchParameters();
+  }, []);
+
   const checkStatus = async () => {
-    const parameterDetailArray = [];
     const status = await axios
       .get(`https://www.ebi.ac.uk/Tools/services/rest/psiblast/status/${jobId}`)
       .then((res) => res.data);
 
-    const parameters = await axios
-      .get(`https://www.ebi.ac.uk/Tools/services/rest/psiblast/parameters`)
-      .then((res) => res.data.parameters);
-
-    for (const parameter of parameters) {
-      const parameterDetail = await axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/parameterdetails/${parameter}`
-        )
-        .then((res) => res.data);
-      parameterDetailArray.push(parameterDetail);
-    }
-    setParameterDetail([...parameterDetailArray]);
-
     if (status === "FINISHED") {
+      const submission = await axios.get(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
+      );
+
+      // Update Submission status & completion date if not already in complete status
+      if (submission.status !== "Complete") {
+        await axios.put(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
+          {
+            status: "Complete",
+            completion_date: new Date().toISOString(),
+          }
+        );
+      }
+
       setIsFinished(true);
     } else {
       // Continue checking after 5 seconds
@@ -60,23 +84,6 @@ const PsiBlastResults = () => {
   };
 
   const getResults = async () => {
-    const resultTypes = await axios
-      .get(
-        `https://www.ebi.ac.uk/Tools/services/rest/psiblast/resulttypes/${jobId}`
-      )
-      .then((res) => res.data.types);
-    console.log("> Result Types", resultTypes);
-    // for (const resultType of resultTypes) {
-    //   if (resultType.identifier === "visual-jpg") {
-    //     continue;
-    //   }
-    //   const result = await axios
-    //     .get(
-    //       `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/${resultType.identifier}`
-    //     )
-    //     .then((res) => res.data);
-    //   console.log(result);
-    // }
     const [
       inputSequence,
       toolOutput,
