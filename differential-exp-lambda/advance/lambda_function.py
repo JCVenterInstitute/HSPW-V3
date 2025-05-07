@@ -147,117 +147,132 @@ def main(event):
     pValueCutoff = event.get("pValueCutoff")
     qValueCutoff = event.get("qValueCutoff")
 
-    print(f"> Input File Name: {input_file}")
-    print(f"> pValueCutoff: {pValueCutoff}")
-    print(f"> qValueCutoff: {qValueCutoff}")
+    try:
+        print(f"> Input File Name: {input_file}")
+        print(f"> pValueCutoff: {pValueCutoff}")
+        print(f"> qValueCutoff: {qValueCutoff}")
 
-    dirName = os.path.basename(input_file)
+        dirName = os.path.basename(input_file)
 
-    # Download input file from S3
-    print("> Attempting to download input file from S3")
-    s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
-    file_name = f"{input_file}/all_data.tsv"
-    download_destination = f"/tmp/{dirName}/all_data.tsv"
+        # Download input file from S3
+        print("> Attempting to download input file from S3")
+        s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
+        file_name = f"{input_file}/all_data.tsv"
+        download_destination = f"/tmp/{dirName}/all_data.tsv"
 
-    print("> Download File", file_name)
-    print("> Download Destination", download_destination)
-    download_file_from_s3(s3_bucket_name, file_name, download_destination)
-    print("> Successfully downloaded input file from s3")
+        print("> Download File", file_name)
+        print("> Download Destination", download_destination)
+        download_file_from_s3(s3_bucket_name, file_name, download_destination)
+        print("> Successfully downloaded input file from s3")
 
-    # Copy R Scripts to new dir (Create dir if it doesn't exist)
-    print("> Attempting to copy R Script to input directory")
-    target_directory = f"/tmp/{dirName}/"
-    print("> Target directory", target_directory)
+        # Copy R Scripts to new dir (Create dir if it doesn't exist)
+        print("> Attempting to copy R Script to input directory")
+        target_directory = f"/tmp/{dirName}/"
+        print("> Target directory", target_directory)
 
-    source_path = "./go_bp.R"
-    target_path = os.path.join(target_directory, "go_bp.R")
-    shutil.copyfile(source_path, target_path)
+        source_path = "./go_bp.R"
+        target_path = os.path.join(target_directory, "go_bp.R")
+        shutil.copyfile(source_path, target_path)
 
-    source_path = "./go_cc.R"
-    target_path = os.path.join(target_directory, "go_cc.R")
-    shutil.copyfile(source_path, target_path)
+        source_path = "./go_cc.R"
+        target_path = os.path.join(target_directory, "go_cc.R")
+        shutil.copyfile(source_path, target_path)
 
-    source_path = "./go_mf.R"
-    target_path = os.path.join(target_directory, "go_mf.R")
-    shutil.copyfile(source_path, target_path)
+        source_path = "./go_mf.R"
+        target_path = os.path.join(target_directory, "go_mf.R")
+        shutil.copyfile(source_path, target_path)
 
-    source_path = "./kegg.R"
-    target_path = os.path.join(target_directory, "kegg.R")
-    shutil.copyfile(source_path, target_path)
+        source_path = "./kegg.R"
+        target_path = os.path.join(target_directory, "kegg.R")
+        shutil.copyfile(source_path, target_path)
 
-    source_path = "./stringdbR.r"
-    target_path = os.path.join(target_directory, "stringdbR.r")
-    shutil.copyfile(source_path, target_path)
+        source_path = "./stringdbR.r"
+        target_path = os.path.join(target_directory, "stringdbR.r")
+        shutil.copyfile(source_path, target_path)
 
-    print("> Successfully copied R Scripts to input directory")
-    dir_files(f"/tmp/{dirName}")
+        print("> Successfully copied R Scripts to input directory")
+        dir_files(f"/tmp/{dirName}")
 
-    # Navigate to new dir & run R Script
-    print("> Attempting to run analysis")
-    os.chdir(f"/tmp/{dirName}")
+        # Navigate to new dir & run R Script
+        print("> Attempting to run analysis")
+        os.chdir(f"/tmp/{dirName}")
 
-    command = ["Rscript", "go_cc.R", str(pValueCutoff), str(qValueCutoff)]
-    result = subprocess.run(command)
-    print(f"> Go_CC Analysis ran. Process return code: {result.returncode}")
+        command = ["Rscript", "go_cc.R", str(pValueCutoff), str(qValueCutoff)]
+        result = subprocess.run(command)
+        print(f"> Go_CC Analysis ran. Process return code: {result.returncode}")
 
-    command = ["Rscript", "go_bp.R", str(pValueCutoff), str(qValueCutoff)]
-    result = subprocess.run(command)
-    print(f"> Go_Bp Analysis ran. Process return code: {result.returncode}")
+        command = ["Rscript", "go_bp.R", str(pValueCutoff), str(qValueCutoff)]
+        result = subprocess.run(command)
+        print(f"> Go_Bp Analysis ran. Process return code: {result.returncode}")
 
-    command = ["Rscript", "go_mf.R", str(pValueCutoff), str(qValueCutoff)]
-    result = subprocess.run(command)
-    print(f"> Go_Mf Analysis ran. Process return code: {result.returncode}")
+        command = ["Rscript", "go_mf.R", str(pValueCutoff), str(qValueCutoff)]
+        result = subprocess.run(command)
+        print(f"> Go_Mf Analysis ran. Process return code: {result.returncode}")
 
-    command = ["Rscript", "kegg.R", str(pValueCutoff), str(qValueCutoff)]
-    result = subprocess.run(command)
-    print(f"> Kegg Analysis ran. Process return code: {result.returncode}")
+        command = ["Rscript", "kegg.R", str(pValueCutoff), str(qValueCutoff)]
+        result = subprocess.run(command)
+        print(f"> Kegg Analysis ran. Process return code: {result.returncode}")
 
-    dir_files(f"/tmp/{dirName}")
+        dir_files(f"/tmp/{dirName}")
 
-    command = ["Rscript", "stringdbR.r"]
-    result = subprocess.run(command)
-    print(f"> String DB R script ran. Process return code: {result.returncode}")
+        command = ["Rscript", "stringdbR.r"]
+        result = subprocess.run(command)
+        print(f"> String DB R script ran. Process return code: {result.returncode}")
 
-    # Create Zip file with the output files
-    files_to_zip = [
-        "egocc_gene_net.tsv",
-        "gsebp.tsv",
-        "kegg.tsv",
-        "egobp.tsv",
-        "egomf.tsv",
-        "all_data.tsv",
-        "egobp_gene_net.tsv",
-        "gsecc.tsv",
-        "gsekk.tsv",
-        "egocc.tsv",
-        "egomf_gene_net.tsv",
-        "gsemf.tsv",
-        "string.csv",
-    ]
+        # Create Zip file with the output files
+        files_to_zip = [
+            "egocc_gene_net.tsv",
+            "gsebp.tsv",
+            "kegg.tsv",
+            "egobp.tsv",
+            "egomf.tsv",
+            "all_data.tsv",
+            "egobp_gene_net.tsv",
+            "gsecc.tsv",
+            "gsekk.tsv",
+            "egocc.tsv",
+            "egomf_gene_net.tsv",
+            "gsemf.tsv",
+            "string.csv",
+        ]
 
-    zip_files("./", files_to_zip, "go_kegg_set.zip")
+        zip_files("./", files_to_zip, "go_kegg_set.zip")
 
-    dir_files(f"/tmp/{dirName}")
+        dir_files(f"/tmp/{dirName}")
 
-    # 7. Upload results generated by R Script
-    print("> Attempting to upload results to S3")
-    directory_name = f"/tmp/{dirName}"
-    subdirectory = f"{input_file}"
-    upload_files_to_s3(s3_bucket_name, directory_name, subdirectory)
-    print("> Successfully uploaded results to S3")
+        # 7. Upload results generated by R Script
+        print("> Attempting to upload results to S3")
+        directory_name = f"/tmp/{dirName}"
+        subdirectory = f"{input_file}"
+        upload_files_to_s3(s3_bucket_name, directory_name, subdirectory)
+        print("> Successfully uploaded results to S3")
 
-    update_submission_status(submission_id, "Complete")
+        update_submission_status(submission_id, "Complete")
 
-    return {
-        "statusCode": 200,  # HTTP status code for successful response
-        "body": json.dumps(
-            {"message": "Basic Analysis Complete"}
-        ),  # JSON-encoded response body
-        "headers": {
-            "Content-Type": "application/json"  # Indicates the type of content being returned
-        },
-        "isBase64Encoded": False,  # Indicates that the response body is not base64 encoded
-    }
+        return {
+            "statusCode": 200,  # HTTP status code for successful response
+            "body": json.dumps(
+                {"message": "Basic Analysis Complete"}
+            ),  # JSON-encoded response body
+            "headers": {
+                "Content-Type": "application/json"  # Indicates the type of content being returned
+            },
+            "isBase64Encoded": False,  # Indicates that the response body is not base64 encoded
+        }
+
+    except Exception as e:
+        update_submission_status(submission_id, "Failed")
+
+        return {
+            "statusCode": 500,
+            "body": json.dumps(
+                {
+                    "message": str(e),
+                }
+            ),
+            "headers": {"Content-Type": "application/json"},
+            "isBase64Encoded": False,
+        }
 
 
 def handler(event, context):
