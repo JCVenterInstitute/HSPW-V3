@@ -5,10 +5,24 @@ import PushPinIcon from "@mui/icons-material/PushPin";
 import LinkIcon from "@mui/icons-material/Link";
 import EditIcon from "@mui/icons-material/Edit";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 import { AuthContext } from "../services/AuthContext";
 import CustomCell from "@Components/CustomCell";
 import PageHeader from "@Components/Layout/PageHeader";
+
+/**
+ * Check if submission is expired. A submission is expired if it's not a differential expression analysis & the complete date is past 7 days old
+ * @param {string} dateString Date of submission completion
+ * @return {boolean} True if submission is expired, false otherwise
+ */
+export const isExpired = (dateString) => {
+  const givenDate = new Date(dateString);
+  const currentDate = new Date();
+  const differenceInMilliseconds = currentDate - givenDate;
+  const differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24);
+  return differenceInDays > 7;
+};
 
 const Submissions = () => {
   const { user, _ } = useContext(AuthContext);
@@ -17,28 +31,40 @@ const Submissions = () => {
   const username = user ? user.getUsername() : "test-user-local";
 
   useEffect(() => {
-    fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/user/${username}`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        const pinnedRows = data.filter((row) => row.important);
-        const unpinnedRows = data.filter((row) => !row.important);
-        setPinnedTopRowData(pinnedRows);
-        setRowData(unpinnedRows);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-
     if (rowData.length === 0) {
       fetch(
         `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/user/${username}`
       )
         .then((response) => response.json())
         .then((data) => {
+          data = data.map((submission) => {
+            // We only store differential expression analysis submission
+            // All other analysis results are stored on ebi for max of 7 days
+            if (
+              submission.type !== "Differential Expression Analysis" &&
+              submission.status === "Complete" &&
+              isExpired(submission.completion_date)
+            ) {
+              // Update submission status to expired
+              axios.put(
+                `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${submission.id}`,
+                {
+                  status: "Expired",
+                }
+              );
+
+              return {
+                ...submission,
+                status: "Expired",
+              };
+            }
+
+            return submission;
+          });
+
           const pinnedRows = data.filter((row) => row.important);
           const unpinnedRows = data.filter((row) => !row.important);
+
           setPinnedTopRowData(pinnedRows);
           setRowData(unpinnedRows);
         })
@@ -350,6 +376,9 @@ const Submissions = () => {
       <PageHeader
         title={"Submissions"}
         tabTitle={"HSP | Submissions"}
+        description={
+          "View pass submissions. Differential Expression Analysis submissions are stored for thirty (30) days, but all other submissions expire after seven (7) days."
+        }
         breadcrumb={[
           { path: "Home", link: "/" },
           { path: "Account" },
