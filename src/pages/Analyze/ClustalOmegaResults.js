@@ -15,6 +15,7 @@ import axios from "axios";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import XMLParser from "react-xml-parser";
 import { MSAView, MSAModel } from "react-msaview";
+import Swal from "sweetalert2";
 
 import PageHeader from "@Components/Layout/PageHeader";
 import "react-tabs/style/react-tabs.css";
@@ -31,29 +32,52 @@ const ClustalOmegaResults = () => {
   const [parameterDetail, setParameterDetail] = useState([]);
   const [model, setModel] = useState(null);
 
-  const checkStatus = async () => {
-    const parameterDetailArray = [];
+  useEffect(() => {
+    const fetchParameters = async () => {
+      const parameterDetailArray = [];
 
+      const parameters = await axios
+        .get(`https://www.ebi.ac.uk/Tools/services/rest/clustalo/parameters`)
+        .then((res) => res.data.parameters);
+
+      for (const parameter of parameters) {
+        const parameterDetail = await axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/parameterdetails/${parameter}`
+          )
+          .then((res) => res.data);
+        parameterDetailArray.push(parameterDetail);
+      }
+
+      setParameterDetail([...parameterDetailArray]);
+    };
+
+    fetchParameters();
+  }, []);
+
+  const checkStatus = async () => {
     const status = await axios
       .get(`https://www.ebi.ac.uk/Tools/services/rest/clustalo/status/${jobId}`)
       .then((res) => res.data);
 
-    const parameters = await axios
-      .get(`https://www.ebi.ac.uk/Tools/services/rest/clustalo/parameters`)
-      .then((res) => res.data.parameters);
+    console.log("> Status", status);
 
-    for (const parameter of parameters) {
-      const parameterDetail = await axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/clustalo/parameterdetails/${parameter}`
-        )
-        .then((res) => res.data);
-      parameterDetailArray.push(parameterDetail);
-    }
+    if (status === "NOT_FOUND") {
+      await axios.put(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
+        {
+          status: "Expired",
+        }
+      );
 
-    setParameterDetail([...parameterDetailArray]);
-
-    if (status === "FINISHED") {
+      Swal.fire({
+        icon: "error",
+        title: "Submission Has Expired",
+        text: "Multiple Sequence Alignment submissions are only stored for 7 days. Redirecting back to submissions page.",
+      }).then(() => {
+        window.location.href = `/submissions`;
+      });
+    } else if (status === "FINISHED") {
       const submission = await axios.get(
         `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
       );
@@ -84,8 +108,6 @@ const ClustalOmegaResults = () => {
         `https://www.ebi.ac.uk/Tools/services/rest/clustalo/resulttypes/${jobId}`
       )
       .then((res) => res.data.types);
-
-    console.log("> Result Types", resultTypes);
 
     for (const resultType of resultTypes) {
       if (resultType === "aln-clustal_num") {

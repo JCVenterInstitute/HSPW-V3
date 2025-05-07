@@ -15,6 +15,7 @@ import axios from "axios";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import XMLParser from "react-xml-parser";
+import Swal from "sweetalert2";
 
 import PageHeader from "@Components/Layout/PageHeader";
 
@@ -59,7 +60,22 @@ const InterProScanResults = () => {
 
     console.log("> Status", status);
 
-    if (status === "FINISHED") {
+    if (status === "NOT_FOUND") {
+      await axios.put(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
+        {
+          status: "Expired",
+        }
+      );
+
+      Swal.fire({
+        icon: "error",
+        title: "Submission Has Expired",
+        text: "Multiple Sequence Alignment submissions are only stored for 7 days. Redirecting back to submissions page.",
+      }).then(() => {
+        window.location.href = `/submissions`;
+      });
+    } else if (status === "FINISHED") {
       const submission = await axios.get(
         `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
       );

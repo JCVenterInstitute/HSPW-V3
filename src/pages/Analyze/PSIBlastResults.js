@@ -14,6 +14,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import XMLParser from "react-xml-parser";
+import Swal from "sweetalert2";
 
 import PageHeader from "@Components/Layout/PageHeader";
 import "react-tabs/style/react-tabs.css";
@@ -60,7 +61,22 @@ const PsiBlastResults = () => {
       .get(`https://www.ebi.ac.uk/Tools/services/rest/psiblast/status/${jobId}`)
       .then((res) => res.data);
 
-    if (status === "FINISHED") {
+    if (status === "NOT_FOUND") {
+      await axios.put(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
+        {
+          status: "Expired",
+        }
+      );
+
+      Swal.fire({
+        icon: "error",
+        title: "Submission Has Expired",
+        text: "Multiple Sequence Alignment submissions are only stored for 7 days. Redirecting back to submissions page.",
+      }).then(() => {
+        window.location.href = `/submissions`;
+      });
+    } else if (status === "FINISHED") {
       const submission = await axios.get(
         `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
       );
@@ -84,6 +100,12 @@ const PsiBlastResults = () => {
   };
 
   const getResults = async () => {
+    const fetchResults = (jobId, type) => {
+      return axios.get(
+        `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/${type}`
+      );
+    };
+
     const [
       inputSequence,
       toolOutput,
@@ -94,52 +116,20 @@ const PsiBlastResults = () => {
       outputDetail,
       submissionDetail,
     ] = await Promise.all([
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/sequence`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/out`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/wrapper_out`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/xml`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/visual-svg`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/visual-png`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/json`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/submission`
-        )
-        .then((res) => res.data),
+      fetchResults(jobId, "sequence").then((res) => res.data),
+      fetchResults(jobId, "out").then((res) => res.data),
+      fetchResults(jobId, "wrapper_out").then((res) => res.data),
+      fetchResults(jobId, "xml").then((res) => res.data),
+      fetchResults(jobId, "visual-svg").then((res) => res.data),
+      fetchResults(jobId, "visual-png").then((res) => res.data),
+      fetchResults(jobId, "json").then((res) => res.data),
+      fetchResults(jobId, "submission").then((res) => res.data),
     ]);
 
     const submissionDetailJson = new XMLParser().parseFromString(
       submissionDetail
     );
-    // console.log(submissionDetailJson);
+
     setInputSequence(inputSequence);
     setToolOutput(toolOutput);
     setOutput(output);
@@ -601,4 +591,5 @@ const PsiBlastResults = () => {
     </>
   );
 };
+
 export default PsiBlastResults;
