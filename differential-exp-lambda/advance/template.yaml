@@ -119,6 +119,7 @@ Resources:
           SUPPORT_EMAIL: !Ref SupportEmail
           SUBMISSIONS_TABLE: !Ref SubmissionTable
           REGION: !Ref AwsRegion
+          DEPLOY_ENV: !Ref DeployEnv
       Timeout: 900
 
   AdvanceAnalysisTrigger:

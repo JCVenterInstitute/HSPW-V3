@@ -46,6 +46,7 @@ Resources:
       Timeout: 900
       Environment:
         Variables:
+          DEPLOY_ENV: !Ref DeployEnv
           S3_BUCKET_NAME: !Ref S3BucketName
           SUPPORT_EMAIL: !Ref SupportEmail
           REGION: !Ref AwsRegion

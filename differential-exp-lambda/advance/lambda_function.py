@@ -108,7 +108,7 @@ def send_email(sender_email, recipient_email, body):
                 },
                 "Subject": {
                     "Charset": "UTF-8",
-                    "Data": "Differential Expression Keg/Go Analysis Failed",
+                    "Data": f"[${os.environ.get("DEPLOY_ENV")}] Advance Differential Expression Analysis Failed",
                 },
             },
             Source=sender_email,
