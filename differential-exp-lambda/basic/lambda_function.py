@@ -108,7 +108,7 @@ def send_email(sender_email, recipient_email, body):
                 },
                 "Subject": {
                     "Charset": "UTF-8",
-                    "Data": f"[{os.getenv("DEPLOY_ENV")}] Differential Expression Analysis Failed",
+                    "Data": f'[{os.getenv("DEPLOY_ENV")}] Differential Expression Analysis Failed',
                 },
             },
             Source=sender_email,
