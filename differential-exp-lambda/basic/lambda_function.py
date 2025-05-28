@@ -374,6 +374,12 @@ def main(event):
 def handler(event, context):
     print("> Received event:", json.dumps(event, indent=2))
 
+    if event.get("httpMethod") == "GET":
+        return {
+            "statusCode": 200,
+            "body": json.dumps({"message": "Basic Analysis API Pinged"}),
+        }
+
     if event.get("httpMethod") != "POST":
         return {
             "statusCode": 405,

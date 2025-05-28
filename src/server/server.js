@@ -786,6 +786,12 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
       `> Log Norm: ${logNorm}, Heatmap #: ${numberOfDifferentiallyAbundantProteinsInHeatmap}, Fold Threshold: ${foldChangeThreshold}, P Val Threshold: ${pValueThreshold}, P Value Type: ${pValueType}, Parametric Test: ${parametricTest}`
     );
 
+    // Ping Lambdas to prevent cold start when trying to run analysis
+    const wakeLambdas = await Promise.all([
+      axios.get(process.env.BASIC_ANALYSIS_API).then((res) => res.data),
+      axios.get(process.env.ADVANCE_ANALYSIS_API).then((res) => res.data),
+    ]);
+
     const inputFile = await processGroupData(
       req.body,
       timestamp,
@@ -858,6 +864,12 @@ app.post("/api/differential-expression/analyze-file", async (req, res) => {
     console.log(
       `> Log Norm: ${logNorm}, Heatmap #: ${numberOfDifferentiallyAbundantProteinsInHeatmap}, Fold Threshold: ${foldChangeThreshold}, P Val Threshold: ${pValueThreshold}, P Value Type: ${pValueType}, Parametric Test: ${parametricTest}`
     );
+
+    // Ping Lambdas to prevent cold start when trying to run analysis
+    const pingLambdas = await Promise.all([
+      axios.get(process.env.BASIC_ANALYSIS_API).then((res) => res.data),
+      axios.get(process.env.ADVANCE_ANALYSIS_API).then((res) => res.data),
+    ]);
 
     const inputFile = await processFile(inputData, timestamp, formattedDate);
 
