@@ -410,7 +410,7 @@ def main():
         sample_ids = [row.split(',')[0] for row in csv_string.split("Sample ID")[1].strip().split('\n')[2:] if row.strip() and row.split(',')[0]]
         for sample_id in sample_ids:
             sample_csv = csv_string.split("Sample ID")
-            sample_csv[1] = [row for i, row in enumerate(sample_csv[1].split('\n')) if i < 2 or i == len(sample_csv[1].split('\n')) row.split(',')[0] == sample_id ]
+            sample_csv[1] = [row for i, row in enumerate(sample_csv[1].split('\n')) if i < 2 or i == len(sample_csv[1].split('\n')) or row.startswith(sample_id) ]
 
     mz_tab, protein_df, peptide_df = parse_experiment(args.file)
 
