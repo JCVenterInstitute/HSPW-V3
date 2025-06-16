@@ -170,16 +170,18 @@ def calculate_abundance(normalized_value, total_count_over_length):
         normalized_value / total_count_over_length if total_count_over_length > 0 else 0
     )
 
-
+# Split input csv into 4 seperate csvs
 def split_csv(csv):
     seperate = csv.split("\n,")
     return seperate
-    
+
+# Count number of trailing commas due to differing amount of headers in each csv 
 def count_trailing_commas(header):
     num_of_commas = header.count(',')
     trailing_commas = num_of_commas - header.rstrip(',').count(',')
     return trailing_commas
 
+# Recombine csv that was further split whilst removing trailing commas
 def recombine_csv_array(csv_array):
     recombined_csv = ""
     
@@ -187,9 +189,14 @@ def recombine_csv_array(csv_array):
         recombined_csv += x + "\n"
     
     return recombined_csv
+
+def rename_csv_headers(csv):
     
+
+# Clean csv by splitting input csv into 4 useable csvs 
 def clean_csv(csv):
     cleansed_csv = csv.split('\n')
+
     
     if cleansed_csv[0].startswith(','):
         cleansed_csv.pop(0)
@@ -201,19 +208,18 @@ def clean_csv(csv):
     return recombine_csv_array(cleansed_csv)
 
 
-# Parse mzTab file
-def parse_experiment(file_path, file_type):
+# Parse mzTab file or csv file
+def parse_experiment(file_path, csv):
     mz_tab, protein_df, peptide_df, metadata_df = None
-    
-    if file_type == "mztab":
+
+    if csv:
+        split_array = split_csv(csv_string)
+        protein_df = pd.read_csv(StringIO(clean_csv(split_array[2])))
+        peptide_df = pd.read_csv(StringIO(clean_csv(split_array[3])))
+    else:
         mz_tab = mztab.MzTab(file_path)
         protein_df = mz_tab.protein_table
         peptide_df = mz_tab.spectrum_match_table
-    else:
-        csv_string = open(file_path, 'r', encoding='utf-8').read()
-        split_array = split_csv(csv_string)
-        protein_df = pd.read_csv(StringIO(split_array[2]))
-        peptide_df = pd.read_csv(StringIO(split_array[3]))
 
     # Add columns to protein DataFrame
     protein_df["Sequence"] = None
@@ -399,12 +405,13 @@ def main():
     )
 
     args = parser.parse_args()
+    if(args.file.split('.')[-1].lower() == "csv"):
+        csv_string = open(args.file, 'r', encoding='utf-8').read()
+        sample_ids = [row.split(',')[0] for row in csv_string.split("Sample ID")[1].strip().split('\n')[2:] if row.strip() and row.split(',')[0]]
+        for sample_id in sample_ids:
+            sample_csv = csv_string.split("Sample ID")
+            sample_csv[1] = [row for i, row in enumerate(sample_csv[1].split('\n')) if i < 2 or i == len(sample_csv[1].split('\n')) row.split(',')[0] == sample_id ]
 
     mz_tab, protein_df, peptide_df = parse_experiment(args.file)
-
-    split_array = split_csv(example)
-    print(split_array)
-    for x in split_array[1:]:
-        clean_csv(x)
 
 main()
