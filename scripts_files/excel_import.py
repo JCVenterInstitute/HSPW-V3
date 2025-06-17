@@ -10,6 +10,14 @@ from pyteomics import mztab
 from pyteomics.parser import xcleave, expasy_rules
 from urllib.parse import urlparse, parse_qs, urlencode
 
+csv_to_mztab_headers = {
+    "protein accession":"accession",
+    "Quantification Type":"mzTab-type",
+    "Calculated n":"calc_mass_to_charge",
+    "Peptide Sequence":"sequence",
+    "Mascot score":"search_engine_score[1]",
+}
+
 
 # Extract valid UniProt accession from a possibly malformed accession string
 def clean_accession(accession):
@@ -170,10 +178,6 @@ def calculate_abundance(normalized_value, total_count_over_length):
         normalized_value / total_count_over_length if total_count_over_length > 0 else 0
     )
 
-# Split input csv into 4 seperate csvs
-def split_csv(csv):
-    seperate = csv.split("\n,")
-    return seperate
 
 # Count number of trailing commas due to differing amount of headers in each csv 
 def count_trailing_commas(header):
@@ -181,22 +185,20 @@ def count_trailing_commas(header):
     trailing_commas = num_of_commas - header.rstrip(',').count(',')
     return trailing_commas
 
-# Recombine csv that was further split whilst removing trailing commas
-def recombine_csv_array(csv_array):
-    recombined_csv = ""
-    
-    for x in csv_array:
-        recombined_csv += x + "\n"
-    
-    return recombined_csv
 
-def rename_csv_headers(csv):
+def rename_headers(csv):
+    renamed_csv = csv.split('\n')
     
+    renamed_csv[0] = ','.join([
+        csv_to_mztab_headers[header] if header in csv_to_mztab_headers
+        else header.lower() for header in renamed_csv[0].split(',')
+    ])
+    
+    return '\n'.join(renamed_csv)
 
-# Clean csv by splitting input csv into 4 useable csvs 
+# Clean csvs of trailing commas caused by stack csvs in 1 file and modifying headers to match mztab headers
 def clean_csv(csv):
     cleansed_csv = csv.split('\n')
-
     
     if cleansed_csv[0].startswith(','):
         cleansed_csv.pop(0)
@@ -204,18 +206,21 @@ def clean_csv(csv):
     trailing_commas = count_trailing_commas(cleansed_csv[0])
     if trailing_commas > 0:
         cleansed_csv = [string[:-trailing_commas] for string in cleansed_csv]
-        
-    return recombine_csv_array(cleansed_csv)
-
+    
+    return '\n'.join(cleansed_csv)
 
 # Parse mzTab file or csv file
-def parse_experiment(file_path, csv):
-    mz_tab, protein_df, peptide_df, metadata_df = None
+def parse_experiment(file_path="", csv=None):
+    mz_tab = protein_df = peptide_df = metadata_dict = None
 
     if csv:
-        split_array = split_csv(csv_string)
-        protein_df = pd.read_csv(StringIO(clean_csv(split_array[2])))
-        peptide_df = pd.read_csv(StringIO(clean_csv(split_array[3])))
+        # Split input csv into 3 seperate csvs
+        print(csv)
+        split_array = csv.split("\n,")
+        metadata = clean_csv(split_array[0]).split('\n')
+        metadata_dict = dict(zip(metadata[0].split(','),metadata[1].split(',')))
+        protein_df = pd.read_csv(StringIO(rename_headers(clean_csv(split_array[1]))))
+        peptide_df = pd.read_csv(StringIO(rename_headers(clean_csv(split_array[2]))))
     else:
         mz_tab = mztab.MzTab(file_path)
         protein_df = mz_tab.protein_table
@@ -305,20 +310,42 @@ def parse_experiment(file_path, csv):
         )
         protein_df.at[i, "Cleavage Abundance"] = float(cleavage_abundance)
 
-    return mz_tab, protein_df, peptide_df
+    return mz_tab, protein_df, peptide_df, metadata_dict
 
 
 # Generate study JSON
-def generate_study_json(input_json, experiment_id_key, mztab_file, mz_tab):
+def generate_study_json(input_json, experiment_id_key, sample_name, metadata, is_csv=False):
     if input_json is None:
         study = {}
     else:
         study = input_json.copy()
 
     study["experiment_id_key"] = experiment_id_key
-    study["experiment_type"] = mz_tab.metadata.get("mzTab-type", "unknown")
-    study["experiment_short_title"] = mz_tab.metadata.get("description", "unknown")
-    study["sample_name"] = os.path.basename(mztab_file).split(".")[0]
+    study["experiment_type"] = metadata.get("mzTab-type", "unknown")
+    study["experiment_short_title"] = metadata.get("description", "unknown")
+    study["sample_name"] = sample_name
+
+    if is_csv:
+        study["experiment_group_id"] = metadata.get("experiment_group_id","unknown")
+        study["Study_name"] = metadata.get("","unknown")
+        study["institution"] = metadata.get("institution","unknown")
+        study["contact_name"] = metadata.get("contact name","unknown")
+        study["contact_information"] = metadata.get("contact information","unknown")
+        study["experiment_created_date"] = metadata.get("study created date","unknown")
+        study["reference_line"] = metadata.get("reference_line","unknown")
+        study["PubMed_ID"] = metadata.get("pubmed ids","unknown")
+        study["Taxononomy_Species"] = metadata.get("","unknown")
+        study["Taxononomy_ID"] = metadata.get("","unknown")
+        study["sample_type"] = metadata.get("","unknown")
+        study["experiment_title"] = metadata.get("","unknown")
+        study["experiment_short_title"] = metadata.get("","unknown")
+        study["sample_description_comment"] = metadata.get("","unknown")
+        study["condition_type"] = metadata.get("","unknown")
+        study["bto_ac"] = metadata.get("","unknown")
+        study["bto_term_list"] = metadata.get("","unknown")
+
+
+    
 
     return study
 
@@ -365,12 +392,15 @@ def generate_study_peptide(peptide_df, experiment_id_key):
 
     for _, row in peptide_df.iterrows():
         spectra_ref = row.get("spectra_ref", "unknown")
+
         spectra_numb = re.search(r"scan=(\d+)", spectra_ref)
+        if spectra_numb:
+            spectra_numb = spectra_numb.group(1)
 
         peptide = {
             "experiment_id_key": experiment_id_key,
             "uniprot_accession": row["accession"],
-            "spectrum_number": spectra_numb.group(1),
+            "spectrum_number": spectra_numb,
             "mass": row.get("exp_mass_to_charge", "unknown"),
             "charge": row.get("charge", "unknown"),
             "mz_ratio": row.get("calc_mass_to_charge", "unknown"),
@@ -389,12 +419,73 @@ def save_json(data, file_path):
     with open(file_path, "w") as json_file:
         json.dump(data, json_file, indent=4)
 
+# Replicates csv into many csv's containing only only 1 sample
+def seperate_sample_csvs(csv):
+    sample_csvs = []
+     # Parse list of sample IDs from csv string
+    sample_ids = [row.split(',')[0] for row in csv.split("Sample ID")[1].strip().split('\n')[1:] if row.strip() and row.split(',')[0]]
+
+    for sample_id in sample_ids:
+        sample_csv = csv.split("Sample ID")
+        # Filters sample csv and cleans it of trailing commas
+        sample_csv[1] = (",,Sample ID" + '\n'.join([
+            row for i, row in enumerate(sample_csv[1].split('\n')) if i < 1 
+            or i == len(sample_csv[1].split('\n'))-1
+            or row.startswith(sample_id) 
+        ])).split('\n')
+        # Combines sample csv with metadata
+        sample_csv[0] = rename_headers('\n'.join([a+b for a,b in zip(sample_csv[0].split('\n'), sample_csv[1])])) + '\n'
+        # Filters protein csv and renames headers to match mztab format
+        sample_csv[2] = rename_headers("Sample ID" + '\n'.join([
+            row for i, row in enumerate(sample_csv[2].split('\n')) if i < 1
+            or i == len(sample_csv[2].split('\n'))-1
+            or row.startswith(sample_id) 
+            or row.startswith(',')
+        ]))
+        # Filters peptide csv and renames headers to match mztab format
+        sample_csv[3] = rename_headers("Sample ID" + '\n'.join([
+            row for i, row in enumerate(sample_csv[3].split('\n')) if i < 1
+            or row.startswith(sample_id)
+            or row.startswith(',')
+        ]))
+        # Removes sample csv
+        sample_csv.pop(1)
+        # Stacks csvs for parsing
+        sample_csv = "".join(sample_csv)
+        sample_csvs.append(sample_csv)
+    return sample_csvs
+
+def generate_all_jsons(output_dir, sample_name, study, study_protein, study_peptide):
+    os.makedirs(output_dir, exist_ok=True)
+
+    save_json(
+        study,
+        os.path.join(
+            output_dir,
+            sample_name + "_study.json",
+        ),
+    )
+    save_json(
+        study_protein,
+        os.path.join(
+            output_dir,
+            sample_name + "_study_protein.json",
+        ),
+    )
+    save_json(
+        study_peptide,
+        os.path.join(
+            output_dir,
+            sample_name + "_study_peptide.json",
+        ),
+    )
+
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Parse mzTab, JSON file, and experiment ID to output study files."
+        description="Parse experiment file, JSON file, and experiment ID to output study files."
     )
-    parser.add_argument("file", type=str, help="Path to the experiment file")
+    parser.add_argument("file", type=str, help="Path to the experiment file(mzTab or CSV)")
     parser.add_argument("experiment_id", type=int, help="Experiment ID")
     parser.add_argument("output_dir", type=str, help="Path to output directory")
     parser.add_argument(
@@ -405,13 +496,68 @@ def main():
     )
 
     args = parser.parse_args()
+
+    input_json = None
+    if args.json_file:
+        with open(args.json_file, "r") as f:
+            input_json = json.load(f)
+
     if(args.file.split('.')[-1].lower() == "csv"):
+        # Parse CSV file to string format 
         csv_string = open(args.file, 'r', encoding='utf-8').read()
-        sample_ids = [row.split(',')[0] for row in csv_string.split("Sample ID")[1].strip().split('\n')[2:] if row.strip() and row.split(',')[0]]
-        for sample_id in sample_ids:
-            sample_csv = csv_string.split("Sample ID")
-            sample_csv[1] = [row for i, row in enumerate(sample_csv[1].split('\n')) if i < 2 or i == len(sample_csv[1].split('\n')) or row.startswith(sample_id) ]
+        csv_list = seperate_sample_csvs(csv_string)
+        for csv in csv_list:
+            _, protein_df, peptide_df, metadata = parse_experiment(csv=csv)
+            print(metadata)
+            total_protein_count = protein_df.shape[0]
+            total_peptide_count = peptide_df.shape[0]
 
-    mz_tab, protein_df, peptide_df = parse_experiment(args.file)
+            study = generate_study_json(input_json, args.experiment_id, metadata["sample name"], metadata)
 
-main()
+            accessions = (
+                protein_df["accession"].dropna().apply(clean_accession).dropna().tolist()
+            )
+            uniparc_mapping = fetch_uniparc_ids(accessions)
+
+            study_protein = generate_study_protein(
+                protein_df,
+                args.experiment_id,
+                uniparc_mapping,
+                total_protein_count,
+                total_peptide_count,
+            )
+
+            study_peptide = generate_study_peptide(peptide_df, args.experiment_id)
+
+            generate_all_jsons(args.output_dir, metadata["sample name"], study, study_protein, study_peptide)
+
+    
+    else:
+        mz_tab, protein_df, peptide_df, _ = parse_experiment(args.file)
+        total_protein_count = protein_df.shape[0]
+        total_peptide_count = peptide_df.shape[0]
+
+        
+        # Generate UniParc mapping for the proteins
+        accessions = (
+            protein_df["accession"].dropna().apply(clean_accession).dropna().tolist()
+        )
+        uniparc_mapping = fetch_uniparc_ids(accessions)
+
+        sample_name = os.path.basename(args.mztab_file).split(".")[0]
+        study = generate_study_json(input_json, args.experiment_id, sample_name, mz_tab.metadata)
+
+        # Pass the uniparc_mapping to generate_study_protein
+        study_protein = generate_study_protein(
+            protein_df,
+            args.experiment_id,
+            uniparc_mapping,
+            total_protein_count,
+            total_peptide_count,
+        )
+        study_peptide = generate_study_peptide(peptide_df, args.experiment_id)
+
+        generate_all_jsons(args.output_dir, sample_name, study, study_protein, study_peptide)
+
+if __name__ == "__main__":
+    main()
