@@ -5,6 +5,7 @@ import json
 import os
 import time
 import re
+from csv import reader
 from io import StringIO
 from pyteomics import mztab
 from pyteomics.parser import xcleave, expasy_rules
@@ -160,7 +161,6 @@ def fetch_uniparc_ids(accessions):
         print(f"Error fetching UniParc IDs: {str(e)}")
     return uparc_mapping  # Only returning the mapping of UniProt to UniParc IDs
 
-
 # Calculate cleavage abundance
 def calculate_cleavage_abundance(
     peptide_count_over_cleavages, total_peptide_count_over_cleavages
@@ -218,7 +218,7 @@ def parse_experiment(file_path="", csv=None):
         print(csv)
         split_array = csv.split("\n,")
         metadata = clean_csv(split_array[0]).split('\n')
-        metadata_dict = dict(zip(metadata[0].split(','),metadata[1].split(',')))
+        metadata_dict = dict(zip(next(reader(StringIO(metadata[0]))),next(reader(StringIO(metadata[1])))))
         protein_df = pd.read_csv(StringIO(rename_headers(clean_csv(split_array[1]))))
         peptide_df = pd.read_csv(StringIO(rename_headers(clean_csv(split_array[2]))))
     else:
@@ -428,7 +428,7 @@ def seperate_sample_csvs(csv):
     for sample_id in sample_ids:
         sample_csv = csv.split("Sample ID")
         # Filters sample csv and cleans it of trailing commas
-        sample_csv[1] = (",,Sample ID" + '\n'.join([
+        sample_csv[1] = ("Sample ID" + '\n'.join([
             row for i, row in enumerate(sample_csv[1].split('\n')) if i < 1 
             or i == len(sample_csv[1].split('\n'))-1
             or row.startswith(sample_id) 
@@ -528,6 +528,7 @@ def main():
             )
 
             study_peptide = generate_study_peptide(peptide_df, args.experiment_id)
+            print(metadata)
 
             generate_all_jsons(args.output_dir, metadata["sample name"], study, study_protein, study_peptide)
 
@@ -544,7 +545,7 @@ def main():
         )
         uniparc_mapping = fetch_uniparc_ids(accessions)
 
-        sample_name = os.path.basename(args.mztab_file).split(".")[0]
+        sample_name = os.path.basename(args.file).split(".")[0]
         study = generate_study_json(input_json, args.experiment_id, sample_name, mz_tab.metadata)
 
         # Pass the uniparc_mapping to generate_study_protein
