@@ -327,22 +327,22 @@ def generate_study_json(input_json, experiment_id_key, sample_name, metadata, is
 
     if is_csv:
         study["experiment_group_id"] = metadata.get("experiment_group_id","unknown")
-        study["Study_name"] = metadata.get("","unknown")
+        study["Study_name"] = metadata.get("description","unknown")
         study["institution"] = metadata.get("institution","unknown")
         study["contact_name"] = metadata.get("contact name","unknown")
         study["contact_information"] = metadata.get("contact information","unknown")
         study["experiment_created_date"] = metadata.get("study created date","unknown")
         study["reference_line"] = metadata.get("reference_line","unknown")
         study["PubMed_ID"] = metadata.get("pubmed ids","unknown")
-        study["Taxononomy_Species"] = metadata.get("","unknown")
-        study["Taxononomy_ID"] = metadata.get("","unknown")
-        study["sample_type"] = metadata.get("","unknown")
-        study["experiment_title"] = metadata.get("","unknown")
-        study["experiment_short_title"] = metadata.get("","unknown")
-        study["sample_description_comment"] = metadata.get("","unknown")
-        study["condition_type"] = metadata.get("","unknown")
-        study["bto_ac"] = metadata.get("","unknown")
-        study["bto_term_list"] = metadata.get("","unknown")
+        study["Taxononomy_Species"] = metadata.get("taxononomy species","unknown")
+        study["Taxononomy_ID"] = metadata.get("taxononomy id","unknown")
+        study["sample_type"] = metadata.get("sample_type","unknown")
+        study["experiment_title"] = metadata.get("study title","unknown")
+        study["experiment_short_title"] = metadata.get("study short title","unknown")
+        study["sample_description_comment"] = metadata.get("sample description","unknown")
+        study["condition_type"] = metadata.get("condition type","unknown")
+        study["bto_ac"] = metadata.get("bto_ac","unknown")
+        study["bto_term_list"] = metadata.get("bto_term_list","unknown")
 
 
     
@@ -512,7 +512,7 @@ def main():
             total_protein_count = protein_df.shape[0]
             total_peptide_count = peptide_df.shape[0]
 
-            study = generate_study_json(input_json, args.experiment_id, metadata["sample name"], metadata)
+            study = generate_study_json(input_json, args.experiment_id, metadata["sample name"], metadata, is_csv=True)
 
             accessions = (
                 protein_df["accession"].dropna().apply(clean_accession).dropna().tolist()
