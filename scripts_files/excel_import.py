@@ -339,8 +339,8 @@ def generate_study_json(input_json, experiment_id_key, sample_name, metadata, is
         study["experiment_short_title"] = metadata.get("study short title","unknown")
         study["sample_description_comment"] = metadata.get("sample description","unknown")
         study["condition_type"] = metadata.get("condition type","unknown")
-        study["bto_ac"] = metadata.get("bto_ac","unknown")
-        study["bto_term_list"] = metadata.get("bto_term_list","unknown")
+        study["bto_ac"] = json.loads(metadata.get("bto_ac","unknown"))
+        study["bto_term_list"] = json.loads(metadata.get("bto_term_list","unknown"))
 
 
     
@@ -394,7 +394,7 @@ def generate_study_peptide(peptide_df, experiment_id_key):
         spectra_numb = re.search(r"scan=(\d+)", spectra_ref)
         if spectra_numb:
             spectra_numb = spectra_numb.group(1)
-            
+
         peptide = {
             "experiment_id_key": experiment_id_key,
             "uniprot_accession": row["accession"],
