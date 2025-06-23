@@ -14,9 +14,10 @@ from urllib.parse import urlparse, parse_qs, urlencode
 csv_to_mztab_headers = {
     "protein accession":"accession",
     "Quantification Type":"mzTab-type",
-    "Calculated n":"calc_mass_to_charge",
     "Peptide Sequence":"sequence",
     "Mascot score":"search_engine_score[1]",
+    "Experimental m/z":"exp_mass_to_charge",
+    "Calculated m/z":"calc_mass_to_charge",
 }
 
 
@@ -124,8 +125,6 @@ def get_id_mapping_results_search(url):
 
 # Main function to fetch UniParc IDs
 def fetch_uniparc_ids(accessions):
-    print(accessions)
-
     cleaned_accessions = [
         clean_accession(acc) for acc in accessions if clean_accession(acc)
     ]
@@ -215,7 +214,6 @@ def parse_experiment(file_path="", csv=None):
 
     if csv:
         # Split input csv into 3 seperate csvs
-        print(csv)
         split_array = csv.split("\n,")
         metadata = clean_csv(split_array[0]).split('\n')
         metadata_dict = dict(zip(next(reader(StringIO(metadata[0]))),next(reader(StringIO(metadata[1])))))
@@ -396,7 +394,7 @@ def generate_study_peptide(peptide_df, experiment_id_key):
         spectra_numb = re.search(r"scan=(\d+)", spectra_ref)
         if spectra_numb:
             spectra_numb = spectra_numb.group(1)
-
+            
         peptide = {
             "experiment_id_key": experiment_id_key,
             "uniprot_accession": row["accession"],
@@ -508,7 +506,6 @@ def main():
         csv_list = seperate_sample_csvs(csv_string)
         for csv in csv_list:
             _, protein_df, peptide_df, metadata = parse_experiment(csv=csv)
-            print(metadata)
             total_protein_count = protein_df.shape[0]
             total_peptide_count = peptide_df.shape[0]
 
@@ -528,7 +525,6 @@ def main():
             )
 
             study_peptide = generate_study_peptide(peptide_df, args.experiment_id)
-            print(metadata)
 
             generate_all_jsons(args.output_dir, metadata["sample name"], study, study_protein, study_peptide)
 
