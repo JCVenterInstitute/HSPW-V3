@@ -145,6 +145,29 @@ const ClustalOmegaResults = () => {
           .then((res) => res.data),
       ]);
 
+    const ebi_data = {
+      inputSequence: inputSequence,
+      output: output,
+      alignmentResult: alignmentResult,
+      submissionDetail: submissionDetail,
+    };
+
+    try {
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/s3JSONUpload/${jobId}/ebi_data.json`,
+        ebi_data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Combined JSON file uploaded via backend.");
+      console.log("Backend upload response:", res.data);
+    } catch {
+      console.error("Upload failed:", error.response?.data || error.message);
+    }
+
     const sequenceMatch = output.match(/Read (\d+) sequences/);
     const numberOfSequences = parseInt(sequenceMatch[1], 10);
 
