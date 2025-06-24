@@ -100,31 +100,85 @@ const PsiBlastResults = () => {
   };
 
   const getResults = async () => {
-    const fetchResults = (jobId, type) => {
-      return axios.get(
-        `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/${type}`
-      );
-    };
-
-    const [
-      inputSequence,
+    const presignedUrl = await axios
+      .get(`${process.env.REACT_APP_API_ENDPOINT}/api/getJSONFile`, {
+        params: { s3Key: `jobs/ebi_data/${jobId}/ebi_data.json` },
+      })
+      .then((res) => res.data.url);
+    const fileResponse = await fetch(presignedUrl);
+    let inputSequence,
       toolOutput,
       output,
       xmlOutput,
       visualSvgOutput,
       visualPngOutput,
       outputDetail,
-      submissionDetail,
-    ] = await Promise.all([
-      fetchResults(jobId, "sequence").then((res) => res.data),
-      fetchResults(jobId, "out").then((res) => res.data),
-      fetchResults(jobId, "wrapper_out").then((res) => res.data),
-      fetchResults(jobId, "xml").then((res) => res.data),
-      fetchResults(jobId, "visual-svg").then((res) => res.data),
-      fetchResults(jobId, "visual-png").then((res) => res.data),
-      fetchResults(jobId, "json").then((res) => res.data),
-      fetchResults(jobId, "submission").then((res) => res.data),
-    ]);
+      submissionDetail = null;
+
+    if (fileResponse.statusText == "OK") {
+      const fileData = await fileResponse.json();
+      inputSequence = fileData.inputSequence;
+      toolOutput = fileData.toolOutput;
+      output = fileData.output;
+      xmlOutput = fileData.xmlOutput;
+      visualSvgOutput = fileData.visualSvgOutput;
+      visualPngOutput = fileData.visualPngOutput;
+      outputDetail = fileData.outputDetail;
+      submissionDetail = fileData.submissionDetail;
+      console.log("AWS download complete");
+    } else {
+      const fetchResults = (jobId, type) => {
+        return axios.get(
+          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/${type}`
+        );
+      };
+
+      [
+        inputSequence,
+        toolOutput,
+        output,
+        xmlOutput,
+        visualSvgOutput,
+        visualPngOutput,
+        outputDetail,
+        submissionDetail,
+      ] = await Promise.all([
+        fetchResults(jobId, "sequence").then((res) => res.data),
+        fetchResults(jobId, "out").then((res) => res.data),
+        fetchResults(jobId, "wrapper_out").then((res) => res.data),
+        fetchResults(jobId, "xml").then((res) => res.data),
+        fetchResults(jobId, "visual-svg").then((res) => res.data),
+        fetchResults(jobId, "visual-png").then((res) => res.data),
+        fetchResults(jobId, "json").then((res) => res.data),
+        fetchResults(jobId, "submission").then((res) => res.data),
+      ]);
+      const ebi_data = {
+        inputSequence: inputSequence,
+        toolOutput: toolOutput,
+        output: output,
+        xmlOutput: xmlOutput,
+        visualSvgOutput: visualSvgOutput,
+        visualPngOutput: visualPngOutput,
+        outputDetail: outputDetail,
+        submissionDetail: submissionDetail,
+      };
+
+      try {
+        const res = await axios.post(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/s3JSONUpload/${jobId}/ebi_data.json`,
+          ebi_data,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log("Combined JSON file uploaded via backend.");
+        console.log("Backend upload response:", res.data);
+      } catch (error) {
+        console.error("Upload failed:", error.response?.data || error.message);
+      }
+    }
 
     const submissionDetailJson = new XMLParser().parseFromString(
       submissionDetail

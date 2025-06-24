@@ -105,51 +105,101 @@ const InterProScanResults = () => {
       )
       .then((res) => res.data.types);
 
-    const [
-      inputSequence,
+    const presignedUrl = await axios
+      .get(`${process.env.REACT_APP_API_ENDPOINT}/api/getJSONFile`, {
+        params: { s3Key: `jobs/ebi_data/${jobId}/ebi_data.json` },
+      })
+      .then((res) => res.data.url);
+    const fileResponse = await fetch(presignedUrl);
+    let inputSequence,
       log,
       xmlOutput,
       tsvOutput,
       gffOutput,
       jsonOutput,
-      submissionDetail,
-    ] = await Promise.all([
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/sequence`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/log`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/xml`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/tsv`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/gff`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/json`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/submission`
-        )
-        .then((res) => res.data),
-    ]);
+      submissionDetail = null;
+
+    if (fileResponse.statusText == "OK") {
+      const fileData = await fileResponse.json();
+      inputSequence = fileData.inputSequence;
+      log = fileData.log;
+      xmlOutput = fileData.xmlOutput;
+      tsvOutput = fileData.tsvOutput;
+      gffOutput = fileData.gffOutput;
+      jsonOutput = fileData.jsonOutput;
+      submissionDetail = fileData.submissionDetail;
+      console.log("AWS download complete");
+    } else {
+      [
+        inputSequence,
+        log,
+        xmlOutput,
+        tsvOutput,
+        gffOutput,
+        jsonOutput,
+        submissionDetail,
+      ] = await Promise.all([
+        axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/sequence`
+          )
+          .then((res) => res.data),
+        axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/log`
+          )
+          .then((res) => res.data),
+        axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/xml`
+          )
+          .then((res) => res.data),
+        axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/tsv`
+          )
+          .then((res) => res.data),
+        axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/gff`
+          )
+          .then((res) => res.data),
+        axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/json`
+          )
+          .then((res) => res.data),
+        axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/submission`
+          )
+          .then((res) => res.data),
+      ]);
+      const ebi_data = {
+        inputSequence: inputSequence,
+        xmlOutput: xmlOutput,
+        tsvOutput: tsvOutput,
+        gffOutput: gffOutput,
+        jsonOutput: jsonOutput,
+        submissionDetail: submissionDetail,
+      };
+
+      try {
+        const res = await axios.post(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/s3JSONUpload/${jobId}/ebi_data.json`,
+          ebi_data,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log("Combined JSON file uploaded via backend.");
+        console.log("Backend upload response:", res.data);
+      } catch (error) {
+        console.error("Upload failed:", error.response?.data || error.message);
+      }
+    }
 
     const submissionDetailJson = new XMLParser().parseFromString(
       submissionDetail
