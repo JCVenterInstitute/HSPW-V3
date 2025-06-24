@@ -999,6 +999,27 @@ app.get("/api/go-kegg-check/:jobId/:fileName", async (req, res) => {
   return res.send({ exists: fileExists });
 });
 
+app.get("/api/getJSONFile", async (req, res) => {
+  const { s3Key } = req.query;
+  const bucketName = process.env.DIFFERENTIAL_S3_BUCKET;
+
+  if (!s3Key) {
+    return res.status(400).json({ error: "Missing s3Key parameter." });
+  }
+
+  try {
+    const presignedUrl = await s3Download({ bucketName, s3Key });
+    res.json({ url: presignedUrl });
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        error: "Error generating S3 presigned URL.",
+        details: error.message,
+      });
+  }
+});
+
 app.post("/api/s3JSONUpload/:jobId/:fileName", async (req, res) => {
   const jsonData = req.body;
 
@@ -1006,16 +1027,6 @@ app.post("/api/s3JSONUpload/:jobId/:fileName", async (req, res) => {
 
   const jobId = req.params.jobId;
   const fileName = req.params.fileName;
-  // console.log("> Processing jobId: ", jobId);
-  // console.log("> Uploading file: ", fileName);
-
-  // S3 Upload parameters
-  // const params = {
-  //   bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
-  //   s3Key: `jobs/ebi_data/${jobId}/${fileName}`,
-  //   data: Buffer.from(JSON.stringify(jsonData)),
-  //   contentType: "application/json",
-  // };
 
   try {
     const result = await s3Upload({
