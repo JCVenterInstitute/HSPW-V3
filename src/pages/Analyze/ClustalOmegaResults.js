@@ -121,51 +121,71 @@ const ClustalOmegaResults = () => {
       // console.log(result);
     }
 
-    const [inputSequence, output, alignmentResult, submissionDetail] =
-      await Promise.all([
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/sequence`
-          )
-          .then((res) => res.data),
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/out`
-          )
-          .then((res) => res.data),
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/${type}`
-          )
-          .then((res) => res.data),
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/submission`
-          )
-          .then((res) => res.data),
-      ]);
+    const presignedUrl = await axios
+      .get(`${process.env.REACT_APP_API_ENDPOINT}/api/getJSONFile`, {
+        params: { s3Key: `jobs/ebi_data/${jobId}/ebi_data.json` },
+      })
+      .then((res) => res.data.url);
+    const fileResponse = await fetch(presignedUrl);
+    let inputSequence,
+      output,
+      alignmentResult,
+      submissionDetail = null;
 
-    const ebi_data = {
-      inputSequence: inputSequence,
-      output: output,
-      alignmentResult: alignmentResult,
-      submissionDetail: submissionDetail,
-    };
+    if (fileResponse.statusText == "OK") {
+      const fileData = await fileResponse.json();
+      inputSequence = fileData.inputSequence;
+      output = fileData.output;
+      alignmentResult = fileData.alignmentResult;
+      submissionDetail = fileData.submissionDetail;
+      console.log("AWS download complete");
+    } else {
+      [inputSequence, output, alignmentResult, submissionDetail] =
+        await Promise.all([
+          axios
+            .get(
+              `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/sequence`
+            )
+            .then((res) => res.data),
+          axios
+            .get(
+              `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/out`
+            )
+            .then((res) => res.data),
+          axios
+            .get(
+              `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/${type}`
+            )
+            .then((res) => res.data),
+          axios
+            .get(
+              `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/submission`
+            )
+            .then((res) => res.data),
+        ]);
 
-    try {
-      const res = await axios.post(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/s3JSONUpload/${jobId}/ebi_data.json`,
-        ebi_data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log("Combined JSON file uploaded via backend.");
-      console.log("Backend upload response:", res.data);
-    } catch {
-      console.error("Upload failed:", error.response?.data || error.message);
+      const ebi_data = {
+        inputSequence: inputSequence,
+        output: output,
+        alignmentResult: alignmentResult,
+        submissionDetail: submissionDetail,
+      };
+
+      try {
+        const res = await axios.post(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/s3JSONUpload/${jobId}/ebi_data.json`,
+          ebi_data,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log("Combined JSON file uploaded via backend.");
+        console.log("Backend upload response:", res.data);
+      } catch (error) {
+        console.error("Upload failed:", error.response?.data || error.message);
+      }
     }
 
     const sequenceMatch = output.match(/Read (\d+) sequences/);
