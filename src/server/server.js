@@ -1011,27 +1011,21 @@ app.get("/api/getJSONFile", async (req, res) => {
     const presignedUrl = await s3Download({ bucketName, s3Key });
     res.json({ url: presignedUrl });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        error: "Error generating S3 presigned URL.",
-        details: error.message,
-      });
+    res.status(500).json({
+      error: "Error generating S3 presigned URL.",
+      details: error.message,
+    });
   }
 });
 
-app.post("/api/s3JSONUpload/:jobId/:fileName", async (req, res) => {
-  const jsonData = req.body;
-
-  if (!jsonData) return res.status(400).send("No data received.");
-
-  const jobId = req.params.jobId;
-  const fileName = req.params.fileName;
+app.post("/api/s3JSONUpload", async (req, res) => {
+  const { s3Key, jsonData } = req.body;
+  if (!jsonData || !s3Key) return res.status(400).send("No data received.");
 
   try {
     const result = await s3Upload({
       bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
-      s3Key: `jobs/ebi_data/${jobId}/${fileName}`,
+      s3Key: s3Key,
       data: Buffer.from(JSON.stringify(jsonData)),
       contentType: "application/json",
     });
