@@ -135,7 +135,7 @@ const ClustalOmegaResults = () => {
     const presignedUrl = await axios
       .get(`${process.env.REACT_APP_API_ENDPOINT}/api/getJSONFile`, {
         params: {
-          s3Key: `users/${username}/${date}/clustalOmega/${jobId}/ebi_data.json`,
+          s3Key: `users/${username}/clustalOmega/${date}/${jobId}/ebi_data.json`,
         },
       })
       .then((res) => res.data.url);
@@ -185,7 +185,7 @@ const ClustalOmegaResults = () => {
       };
 
       awsJsonUpload(
-        `users/${username}/${date}/clustalOmega/${jobId}/ebi_data.json`,
+        `users/${username}/clustalOmega/${date}/${jobId}/ebi_data.json`,
         ebi_data
       );
     }

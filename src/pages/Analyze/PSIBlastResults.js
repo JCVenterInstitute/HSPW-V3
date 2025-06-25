@@ -115,7 +115,7 @@ const PsiBlastResults = () => {
     const presignedUrl = await axios
       .get(`${process.env.REACT_APP_API_ENDPOINT}/api/getJSONFile`, {
         params: {
-          s3Key: `users/${username}/${date}/proteinSimilaritySearch/${jobId}/ebi_data.json`,
+          s3Key: `users/${username}/proteinSimilaritySearch/${date}/${jobId}/ebi_data.json`,
         },
       })
       .then((res) => res.data.url);
@@ -178,7 +178,7 @@ const PsiBlastResults = () => {
       };
 
       awsJsonUpload(
-        `users/${username}/${date}/proteinSimilaritySearch/${jobId}/ebi_data.json`,
+        `users/${username}/proteinSimilaritySearch/${date}/${jobId}/ebi_data.json`,
         ebi_data
       );
     }
