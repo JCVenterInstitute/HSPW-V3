@@ -9,6 +9,7 @@ const path = require("path");
 const { processGroupData } = require("./utils/processGroupData");
 const { processFile } = require("./utils/processFile");
 const { s3Download, checkFileExists } = require("./utils/s3Download");
+const { s3Upload } = require("./utils/s3Upload");
 const { formQuery } = require("./utils/formQuery");
 const { generatePresignedUrls } = require("./utils/generatePresignedUrls");
 const { createContact } = require("./utils/createContact");
@@ -996,6 +997,45 @@ app.get("/api/go-kegg-check/:jobId/:fileName", async (req, res) => {
 
   console.log("> File Exists", fileExists);
   return res.send({ exists: fileExists });
+});
+
+app.get("/api/getJSONFile", async (req, res) => {
+  const { s3Key } = req.query;
+  const bucketName = process.env.DIFFERENTIAL_S3_BUCKET;
+
+  if (!s3Key) {
+    return res.status(400).json({ error: "Missing s3Key parameter." });
+  }
+
+  try {
+    const presignedUrl = await s3Download({ bucketName, s3Key });
+    res.json({ url: presignedUrl });
+  } catch (error) {
+    res.status(500).json({
+      error: "Error generating S3 presigned URL.",
+      details: error.message,
+    });
+  }
+});
+
+app.post("/api/s3JSONUpload", async (req, res) => {
+  const { s3Key, jsonData } = req.body;
+  if (!jsonData || !s3Key) return res.status(400).send("No data received.");
+
+  try {
+    const result = await s3Upload({
+      bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
+      s3Key: s3Key,
+      data: Buffer.from(JSON.stringify(jsonData)),
+      contentType: "application/json",
+    });
+    res.json({ message: "JSON uploaded to S3!", s3Result: result });
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ error: "Upload to S3 failed.", details: err.message });
+  }
 });
 
 app.get("/api/s3Download/:jobId/:fileName", async (req, res) => {

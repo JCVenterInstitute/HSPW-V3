@@ -9,66 +9,28 @@ const path = require("path");
  */
 
 /**
- * Generates a presigned url and uploads a file to S3.
+ * Uploads data to S3 directly (no presigned URL).
  * @param {object} options
  * @param {string} options.bucketName
  * @param {string} options.s3Key
- * @param {string} options.contentType File mime type.
- * @param {any} options.data The metadata for geneflow to process
- * @returns {Promise}
+ * @param {Buffer|string} options.data  // JSON as Buffer or string
+ * @param {string} options.contentType  // e.g., 'application/json'
+ * @returns {Promise} S3 upload result
  */
-exports.s3Upload = ({
-  directoryPath,
-  bucketName,
-  s3KeyPrefix,
-  contentType,
-}) => {
-  fs.readdir(directoryPath, async (err, files) => {
-    if (err) {
-      console.error("Could not list the directory.", err);
-      process.exit(1);
-    }
-
-    for (const file of files) {
-      const filePath = path.join(directoryPath, file);
-      if (file === ".DS_Store") {
-        continue;
-      }
-      const s3Key = `${s3KeyPrefix}/${file}`; // Define how you want the S3 key to be named
-
-      try {
-        const presignedUrl = await getPresignUrl({
-          bucketName,
-          s3Key,
-          contentType,
-        });
-
-        const response = await axios.put(
-          presignedUrl,
-          fs.createReadStream(filePath),
-          {
-            headers: {
-              "Content-Type": contentType,
-              "Content-Length": fs.statSync(filePath).size,
-            },
-          }
-        );
-
-        console.log(`> Successfully uploaded file: ${file}`);
-      } catch (error) {
-        console.error("Error uploading file:", error.message);
-      }
-    }
-  });
-};
-
-exports.getPresignUrl = async ({ bucketName, s3Key, contentType }) => {
+exports.s3Upload = async ({ bucketName, s3Key, data, contentType }) => {
   const params = {
     Bucket: bucketName,
     Key: s3Key,
+    Body: data,
     ContentType: contentType,
   };
   const s3Client = new S3Client({ region: "us-east-2" });
-  const command = new PutObjectCommand(params);
-  return await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+  try {
+    const result = await s3Client.send(new PutObjectCommand(params));
+    console.log(`✔️ Successfully uploaded to S3: ${s3Key}`);
+    return result;
+  } catch (error) {
+    console.error(`❌ Error uploading to S3: ${error.message}`);
+    throw error;
+  }
 };

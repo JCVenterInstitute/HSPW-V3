@@ -11,10 +11,8 @@ const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 /**
  * Generates a presigned url and downloads a file from S3.
- * @param {object} options
  * @param {string} options.bucketName
  * @param {string} options.s3Key
- * @param {any} options.data The metadata for geneflow to process
  * @returns {Promise}
  */
 exports.s3Download = async ({ bucketName, s3Key }) => {

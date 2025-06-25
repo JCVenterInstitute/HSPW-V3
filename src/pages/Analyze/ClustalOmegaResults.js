@@ -16,6 +16,7 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import XMLParser from "react-xml-parser";
 import { MSAView, MSAModel } from "react-msaview";
 import Swal from "sweetalert2";
+import { awsJsonUpload } from "../../utils/AwsJsonUpload";
 
 import PageHeader from "@Components/Layout/PageHeader";
 import "react-tabs/style/react-tabs.css";
@@ -56,34 +57,38 @@ const ClustalOmegaResults = () => {
   }, []);
 
   const checkStatus = async () => {
-    const status = await axios
-      .get(`https://www.ebi.ac.uk/Tools/services/rest/clustalo/status/${jobId}`)
-      .then((res) => res.data);
+    const submission = await axios.get(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
+    );
+    if (submission.data.status == "Complete") {
+      console.log("Submission already completed");
+      setIsFinished(true);
+    } else {
+      const status = await axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/clustalo/status/${jobId}`
+        )
+        .then((res) => res.data);
 
-    console.log("> Status", status);
+      console.log("> Status", status);
 
-    if (status === "NOT_FOUND") {
-      await axios.put(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
-        {
-          status: "Expired",
-        }
-      );
+      if (status === "NOT_FOUND") {
+        await axios.put(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
+          {
+            status: "Expired",
+          }
+        );
 
-      Swal.fire({
-        icon: "error",
-        title: "Submission Has Expired",
-        text: "Multiple Sequence Alignment submissions are only stored for 7 days. Redirecting back to submissions page.",
-      }).then(() => {
-        window.location.href = `/submissions`;
-      });
-    } else if (status === "FINISHED") {
-      const submission = await axios.get(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
-      );
-
-      if (submission.status !== "Complete") {
-        // Update Submission status & completion date if not already marked as complete
+        Swal.fire({
+          icon: "error",
+          title: "Submission Has Expired",
+          text: "Multiple Sequence Alignment submissions are only stored for 7 days. Redirecting back to submissions page.",
+        }).then(() => {
+          window.location.href = `/submissions`;
+        });
+      } else if (status === "FINISHED") {
+        // Update Submission status & completion date
         await axios.put(
           `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
           {
@@ -91,17 +96,23 @@ const ClustalOmegaResults = () => {
             completion_date: new Date().toISOString(),
           }
         );
-      }
 
-      setIsFinished(true);
-    } else {
-      // Continue checking after 5 seconds
-      setTimeout(checkStatus, 5000);
+        setIsFinished(true);
+      } else {
+        // Continue checking after 5 seconds
+        setTimeout(checkStatus, 5000);
+      }
     }
   };
 
   const getResults = async () => {
     let type = "aln-clustal";
+    const submission = await axios.get(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
+    );
+    console.log(submission);
+    let username = submission.data.username;
+    let date = submission.data.submission_date.split("T")[0];
 
     const resultTypes = await axios
       .get(
@@ -121,29 +132,63 @@ const ClustalOmegaResults = () => {
       // console.log(result);
     }
 
-    const [inputSequence, output, alignmentResult, submissionDetail] =
-      await Promise.all([
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/sequence`
-          )
-          .then((res) => res.data),
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/out`
-          )
-          .then((res) => res.data),
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/${type}`
-          )
-          .then((res) => res.data),
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/submission`
-          )
-          .then((res) => res.data),
-      ]);
+    const presignedUrl = await axios
+      .get(`${process.env.REACT_APP_API_ENDPOINT}/api/getJSONFile`, {
+        params: {
+          s3Key: `users/${username}/${date}/clustalOmega/${jobId}/ebi_data.json`,
+        },
+      })
+      .then((res) => res.data.url);
+    const fileResponse = await fetch(presignedUrl);
+    let inputSequence,
+      output,
+      alignmentResult,
+      submissionDetail = null;
+
+    if (fileResponse.statusText == "OK") {
+      const fileData = await fileResponse.json();
+      inputSequence = fileData.inputSequence;
+      output = fileData.output;
+      alignmentResult = fileData.alignmentResult;
+      submissionDetail = fileData.submissionDetail;
+      console.log("AWS download complete");
+    } else {
+      [inputSequence, output, alignmentResult, submissionDetail] =
+        await Promise.all([
+          axios
+            .get(
+              `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/sequence`
+            )
+            .then((res) => res.data),
+          axios
+            .get(
+              `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/out`
+            )
+            .then((res) => res.data),
+          axios
+            .get(
+              `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/${type}`
+            )
+            .then((res) => res.data),
+          axios
+            .get(
+              `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/submission`
+            )
+            .then((res) => res.data),
+        ]);
+
+      const ebi_data = {
+        inputSequence: inputSequence,
+        output: output,
+        alignmentResult: alignmentResult,
+        submissionDetail: submissionDetail,
+      };
+
+      awsJsonUpload(
+        `users/${username}/${date}/clustalOmega/${jobId}/ebi_data.json`,
+        ebi_data
+      );
+    }
 
     const sequenceMatch = output.match(/Read (\d+) sequences/);
     const numberOfSequences = parseInt(sequenceMatch[1], 10);

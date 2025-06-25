@@ -15,6 +15,7 @@ import axios from "axios";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import XMLParser from "react-xml-parser";
 import Swal from "sweetalert2";
+import { awsJsonUpload } from "../../utils/AwsJsonUpload";
 
 import PageHeader from "@Components/Layout/PageHeader";
 import "react-tabs/style/react-tabs.css";
@@ -57,32 +58,36 @@ const PsiBlastResults = () => {
   }, []);
 
   const checkStatus = async () => {
-    const status = await axios
-      .get(`https://www.ebi.ac.uk/Tools/services/rest/psiblast/status/${jobId}`)
-      .then((res) => res.data);
+    const submission = await axios.get(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
+    );
+    if (submission.data.status == "Complete") {
+      console.log("Submission already complete");
+      setIsFinished(true);
+    } else {
+      const status = await axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/status/${jobId}`
+        )
+        .then((res) => res.data);
 
-    if (status === "NOT_FOUND") {
-      await axios.put(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
-        {
-          status: "Expired",
-        }
-      );
+      if (status === "NOT_FOUND") {
+        await axios.put(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
+          {
+            status: "Expired",
+          }
+        );
 
-      Swal.fire({
-        icon: "error",
-        title: "Submission Has Expired",
-        text: "Multiple Sequence Alignment submissions are only stored for 7 days. Redirecting back to submissions page.",
-      }).then(() => {
-        window.location.href = `/submissions`;
-      });
-    } else if (status === "FINISHED") {
-      const submission = await axios.get(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
-      );
-
-      // Update Submission status & completion date if not already in complete status
-      if (submission.status !== "Complete") {
+        Swal.fire({
+          icon: "error",
+          title: "Submission Has Expired",
+          text: "Multiple Sequence Alignment submissions are only stored for 7 days. Redirecting back to submissions page.",
+        }).then(() => {
+          window.location.href = `/submissions`;
+        });
+      } else if (status === "FINISHED") {
+        // Update Submission status & completion date
         await axios.put(
           `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
           {
@@ -90,41 +95,93 @@ const PsiBlastResults = () => {
             completion_date: new Date().toISOString(),
           }
         );
-      }
 
-      setIsFinished(true);
-    } else {
-      // Continue checking after 5 seconds
-      setTimeout(checkStatus, 5000);
+        setIsFinished(true);
+      } else {
+        // Continue checking after 5 seconds
+        setTimeout(checkStatus, 5000);
+      }
     }
   };
 
   const getResults = async () => {
-    const fetchResults = (jobId, type) => {
-      return axios.get(
-        `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/${type}`
-      );
-    };
+    const submission = await axios.get(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
+    );
+    console.log(submission);
+    let username = submission.data.username;
+    let date = submission.data.submission_date.split("T")[0];
 
-    const [
-      inputSequence,
+    const presignedUrl = await axios
+      .get(`${process.env.REACT_APP_API_ENDPOINT}/api/getJSONFile`, {
+        params: {
+          s3Key: `users/${username}/${date}/proteinSimilaritySearch/${jobId}/ebi_data.json`,
+        },
+      })
+      .then((res) => res.data.url);
+    const fileResponse = await fetch(presignedUrl);
+    let inputSequence,
       toolOutput,
       output,
       xmlOutput,
       visualSvgOutput,
       visualPngOutput,
       outputDetail,
-      submissionDetail,
-    ] = await Promise.all([
-      fetchResults(jobId, "sequence").then((res) => res.data),
-      fetchResults(jobId, "out").then((res) => res.data),
-      fetchResults(jobId, "wrapper_out").then((res) => res.data),
-      fetchResults(jobId, "xml").then((res) => res.data),
-      fetchResults(jobId, "visual-svg").then((res) => res.data),
-      fetchResults(jobId, "visual-png").then((res) => res.data),
-      fetchResults(jobId, "json").then((res) => res.data),
-      fetchResults(jobId, "submission").then((res) => res.data),
-    ]);
+      submissionDetail = null;
+
+    if (fileResponse.statusText == "OK") {
+      const fileData = await fileResponse.json();
+      inputSequence = fileData.inputSequence;
+      toolOutput = fileData.toolOutput;
+      output = fileData.output;
+      xmlOutput = fileData.xmlOutput;
+      visualSvgOutput = fileData.visualSvgOutput;
+      visualPngOutput = fileData.visualPngOutput;
+      outputDetail = fileData.outputDetail;
+      submissionDetail = fileData.submissionDetail;
+      console.log("AWS download complete");
+    } else {
+      const fetchResults = (jobId, type) => {
+        return axios.get(
+          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/${type}`
+        );
+      };
+
+      [
+        inputSequence,
+        toolOutput,
+        output,
+        xmlOutput,
+        visualSvgOutput,
+        visualPngOutput,
+        outputDetail,
+        submissionDetail,
+      ] = await Promise.all([
+        fetchResults(jobId, "sequence").then((res) => res.data),
+        fetchResults(jobId, "out").then((res) => res.data),
+        fetchResults(jobId, "wrapper_out").then((res) => res.data),
+        fetchResults(jobId, "xml").then((res) => res.data),
+        fetchResults(jobId, "visual-svg").then((res) => res.data),
+        fetchResults(jobId, "visual-png").then((res) => res.data),
+        fetchResults(jobId, "json").then((res) => res.data),
+        fetchResults(jobId, "submission").then((res) => res.data),
+      ]);
+      const ebi_data = {
+        inputSequence: inputSequence,
+        toolOutput: toolOutput,
+        output: output,
+        xmlOutput: xmlOutput,
+        visualSvgOutput: visualSvgOutput,
+        visualPngOutput: visualPngOutput,
+        outputDetail: outputDetail,
+        submissionDetail: submissionDetail,
+      };
+
+      awsJsonUpload(
+        `users/${username}/${date}/proteinSimilaritySearch/${jobId}/ebi_data.json`,
+        ebi_data
+      );
+    }
 
     const submissionDetailJson = new XMLParser().parseFromString(
       submissionDetail
