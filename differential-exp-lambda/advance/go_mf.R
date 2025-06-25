@@ -4,6 +4,10 @@ library(enrichplot)
 library(ggupset)
 library(ggplot2)
 all_dataa <- read.table("all_data.tsv",sep="\t",header=T)
+
+# Strip rn column to only the part before the first space or dash
+all_dataa$rn <- sub("^([^ -]+).*", "\\1", all_dataa$rn)
+
 all_data <- subset(all_dataa, p.value < 0.056)
 id_fc <- all_data$Fold.Change
 names(id_fc) <- all_data$rn

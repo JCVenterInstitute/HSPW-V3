@@ -41,7 +41,6 @@ const Submissions = () => {
             // We only store differential expression analysis submission
             // All other analysis results are stored on ebi for max of 7 days
             if (
-              submission.type !== "Differential Expression Analysis" &&
               submission.status === "Complete" &&
               isExpired(submission.completion_date)
             ) {
@@ -377,7 +376,7 @@ const Submissions = () => {
         title={"Submissions"}
         tabTitle={"HSP | Submissions"}
         description={
-          "View pass submissions. Differential Expression Analysis submissions are stored for thirty (30) days, but all other submissions expire after seven (7) days."
+          "View past submissions. All submissions expire after seven (7) days."
         }
         breadcrumb={[
           { path: "Home", link: "/" },

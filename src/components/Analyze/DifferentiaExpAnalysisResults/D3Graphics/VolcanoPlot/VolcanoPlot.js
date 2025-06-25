@@ -222,11 +222,10 @@ const VolcanoPlot = ({
       })
       .on(
         "click",
-        (_, d) =>
-          window.open(
-            "https://salivaryproteome.org/protein/" +
-              d[datakeys[0]].replace(/['"]+/g, "")
-          ),
+        (_, d) => {
+          const proteinId = d["Protein"].split("-")[0].trim();
+          window.open("/protein/" + proteinId);
+        },
         "_blank"
       );
 
@@ -313,12 +312,14 @@ const VolcanoPlot = ({
     // Function that dynamically creates a tooltip for a circle
     function tooltipDetails(d) {
       var output = `<strong>Primary Accession</strong>: ${d[datakeys[0]]}`;
+
       details.forEach(
         (detail) =>
           (output = output.concat(
             `<br/><strong>${detail}</strong>: ${d[detail]}`
           ))
       );
+
       return output;
     }
 

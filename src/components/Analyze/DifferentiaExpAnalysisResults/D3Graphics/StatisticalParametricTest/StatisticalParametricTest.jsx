@@ -295,11 +295,10 @@ const StatisticalParametricPlot = ({ data, pval }) => {
       })
       .on(
         "click",
-        (_, d) =>
-          window.open(
-            "https://salivaryproteome.org/protein/" +
-              d["Protein"].replace(/^"(.*)"$/, "$1")
-          ),
+        (_, d) => {
+          const proteinId = d["Protein"].split("-")[0].trim();
+          window.open("/protein/" + proteinId);
+        },
         "_blank"
       );
     createLegend(svg, plotConfig.legendDict, 25, 40, 20);
@@ -325,12 +324,19 @@ const StatisticalParametricPlot = ({ data, pval }) => {
   };
 
   return (
-    <div className="graph-container" id="statParaTest" ref={containerRef}>
+    <div
+      className="graph-container"
+      id="statParaTest"
+      ref={containerRef}
+    >
       <div
         className="reset-button-container download-ignored"
         style={resetButtonMargin}
       >
-        <button onClick={resetZoom} className="reset-button">
+        <button
+          onClick={resetZoom}
+          className="reset-button"
+        >
           Reset
         </button>
       </div>
