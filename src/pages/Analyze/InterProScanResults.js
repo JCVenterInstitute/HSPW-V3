@@ -16,6 +16,7 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import XMLParser from "react-xml-parser";
 import Swal from "sweetalert2";
+import { awsJsonUpload } from "../../utils/AwsJsonUpload";
 
 import PageHeader from "@Components/Layout/PageHeader";
 
@@ -54,34 +55,38 @@ const InterProScanResults = () => {
   }, []);
 
   const checkStatus = async () => {
-    const status = await axios
-      .get(`https://www.ebi.ac.uk/Tools/services/rest/iprscan5/status/${jobId}`)
-      .then((res) => res.data);
+    const submission = await axios.get(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
+    );
+    if (submission.data.status == "Complete") {
+      console.log("Submission already complete");
+      setIsFinished(true);
+    } else {
+      const status = await axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/status/${jobId}`
+        )
+        .then((res) => res.data);
 
-    console.log("> Status", status);
+      console.log("> Status", status);
 
-    if (status === "NOT_FOUND") {
-      await axios.put(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
-        {
-          status: "Expired",
-        }
-      );
+      if (status === "NOT_FOUND") {
+        await axios.put(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
+          {
+            status: "Expired",
+          }
+        );
 
-      Swal.fire({
-        icon: "error",
-        title: "Submission Has Expired",
-        text: "Multiple Sequence Alignment submissions are only stored for 7 days. Redirecting back to submissions page.",
-      }).then(() => {
-        window.location.href = `/submissions`;
-      });
-    } else if (status === "FINISHED") {
-      const submission = await axios.get(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
-      );
-
-      // Update Submission status & completion date if not already in complete status
-      if (submission.status !== "Complete") {
+        Swal.fire({
+          icon: "error",
+          title: "Submission Has Expired",
+          text: "Multiple Sequence Alignment submissions are only stored for 7 days. Redirecting back to submissions page.",
+        }).then(() => {
+          window.location.href = `/submissions`;
+        });
+      } else if (status === "FINISHED") {
+        // Update Submission status & completion date
         await axios.put(
           `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
           {
@@ -89,16 +94,23 @@ const InterProScanResults = () => {
             completion_date: new Date().toISOString(),
           }
         );
-      }
 
-      setIsFinished(true);
-    } else {
-      // Continue checking after 5 seconds
-      setTimeout(checkStatus, 5000);
+        setIsFinished(true);
+      } else {
+        // Continue checking after 5 seconds
+        setTimeout(checkStatus, 5000);
+      }
     }
   };
 
   const getResults = async () => {
+    const submission = await axios.get(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
+    );
+    console.log(submission);
+    let username = submission.data.username;
+    let date = submission.data.submission_date.split("T")[0];
+
     const resultTypes = await axios
       .get(
         `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/resulttypes/${jobId}`
@@ -107,7 +119,9 @@ const InterProScanResults = () => {
 
     const presignedUrl = await axios
       .get(`${process.env.REACT_APP_API_ENDPOINT}/api/getJSONFile`, {
-        params: { s3Key: `jobs/ebi_data/${jobId}/ebi_data.json` },
+        params: {
+          s3Key: `users/${username}/${date}/proteinSignatureSearch/${jobId}/ebi_data.json`,
+        },
       })
       .then((res) => res.data.url);
     const fileResponse = await fetch(presignedUrl);
@@ -184,21 +198,10 @@ const InterProScanResults = () => {
         submissionDetail: submissionDetail,
       };
 
-      try {
-        const res = await axios.post(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/s3JSONUpload/${jobId}/ebi_data.json`,
-          ebi_data,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        console.log("Combined JSON file uploaded via backend.");
-        console.log("Backend upload response:", res.data);
-      } catch (error) {
-        console.error("Upload failed:", error.response?.data || error.message);
-      }
+      awsJsonUpload(
+        `users/${username}/${date}/proteinSignatureSearch/${jobId}/ebi_data.json`,
+        ebi_data
+      );
     }
 
     const submissionDetailJson = new XMLParser().parseFromString(
