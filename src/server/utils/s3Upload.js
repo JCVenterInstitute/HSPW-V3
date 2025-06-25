@@ -34,3 +34,14 @@ exports.s3Upload = async ({ bucketName, s3Key, data, contentType }) => {
     throw error;
   }
 };
+
+exports.getPresignUrl = async ({ bucketName, s3Key, contentType }) => {
+  const params = {
+    Bucket: bucketName,
+    Key: s3Key,
+    ContentType: contentType,
+  };
+  const s3Client = new S3Client({ region: "us-east-2" });
+  const command = new PutObjectCommand(params);
+  return await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+};
