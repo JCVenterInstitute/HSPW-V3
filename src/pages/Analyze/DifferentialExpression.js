@@ -202,7 +202,7 @@ const DifferentialExpression = () => {
   const [lowerLimit, setLowerLimit] = useState(0);
   const [upperLimit, setUpperLimit] = useState(20000);
   const [inputData, setInputData] = useState("");
-  const [fileIsValid, setFileIsValid] = useState(true);
+  const [fileIsValid, setFileIsValid] = useState(false);
   const [groupNames, setGroupNames] = useState({ groupA: "A", groupB: "B" });
 
   useEffect(() => {
@@ -1604,46 +1604,51 @@ const DifferentialExpression = () => {
               ANALYSIS OPTIONS
             </Typography>
             <Box>
-              <Typography
-                variant="subtitle1"
-                sx={{
-                  color: "#1463B9",
-                  fontFamily: "Montserrat",
-                  fontWeight: 600,
-                  mt: 3,
-                  display: "inline-flex",
-                  alignItems: "center",
-                }}
-              >
-                Group Names
-                <Tooltip
-                  describeChild
-                  placement="right"
-                  title="Group names only apply when not using your own submitted files"
-                >
-                  <InfoIcon sx={{ fontSize: "1rem", ml: 0.5 }} />
-                </Tooltip>
-                :
-              </Typography>
-              <br />
-              <TextField
-                id="outlined-required"
-                label="Group A"
-                defaultValue="A"
-                sx={{ mr: 3, mt: 1 }}
-                onChange={(e) => {
-                  handleGroupNameChange(e, "groupA");
-                }}
-              />
-              <TextField
-                id="outlined-required"
-                label="Group B"
-                defaultValue="B"
-                sx={{ mr: 3, mt: 1 }}
-                onChange={(e) => {
-                  handleGroupNameChange(e, "groupB");
-                }}
-              />
+              {/* Hide group name form section when submitting via file */}
+              {fileIsValid ? null : (
+                <>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      color: "#1463B9",
+                      fontFamily: "Montserrat",
+                      fontWeight: 600,
+                      mt: 3,
+                      display: "inline-flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    Group Names
+                    <Tooltip
+                      describeChild
+                      placement="right"
+                      title="Group names only apply when not using your own submitted files"
+                    >
+                      <InfoIcon sx={{ fontSize: "1rem", ml: 0.5 }} />
+                    </Tooltip>
+                    :
+                  </Typography>
+                  <br />
+                  <TextField
+                    id="outlined-required"
+                    label="Group A"
+                    defaultValue="A"
+                    sx={{ mr: 3, mt: 1 }}
+                    onChange={(e) => {
+                      handleGroupNameChange(e, "groupA");
+                    }}
+                  />
+                  <TextField
+                    id="outlined-required"
+                    label="Group B"
+                    defaultValue="B"
+                    sx={{ mr: 3, mt: 1 }}
+                    onChange={(e) => {
+                      handleGroupNameChange(e, "groupB");
+                    }}
+                  />
+                </>
+              )}
               <Typography
                 variant="subtitle1"
                 sx={{
