@@ -661,7 +661,6 @@ const DifferentialExpression = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0]; // Get the selected file
     if (file) {
-      setFileName(file.name);
       const reader = new FileReader();
       reader.onload = (event) => {
         const content = event.target.result;
@@ -677,6 +676,7 @@ const DifferentialExpression = () => {
           return;
         }
         setFileIsValid(true);
+        setFileName(file.name);
         setInputData(content);
       };
       reader.readAsText(file); // Read the file as text
@@ -774,7 +774,7 @@ const DifferentialExpression = () => {
       }
     }
 
-    if (!fileIsValid) {
+    if (!fileIsValid && inputData !== "") {
       Swal.fire({
         icon: "error",
         title: "Invalid File",
@@ -1733,45 +1733,6 @@ const DifferentialExpression = () => {
                 }}
                 sx={{ width: "80px" }}
               />
-              {/* <Typography
-                variant="subtitle1"
-                sx={{
-                  color: "#1463B9",
-                  fontFamily: "Montserrat",
-                  fontWeight: 600,
-                  mt: 3,
-                }}
-              >
-                Cluster Samples:
-              </Typography>
-              <Checkbox
-                icon={<CircleUnchecked />}
-                checkedIcon={<CircleCheckedFilled />}
-                checked={clusterSamples === "T"}
-                onChange={() => setClusterSamples("T")}
-                sx={{ paddingLeft: 0 }}
-              />
-              <Typography
-                display="inline"
-                variant="body2"
-                sx={{ fontFamily: "Lato", color: "#464646", mr: 2 }}
-              >
-                Yes
-              </Typography>
-              <Checkbox
-                icon={<CircleUnchecked />}
-                checkedIcon={<CircleCheckedFilled />}
-                checked={clusterSamples === "F"}
-                onChange={() => setClusterSamples("F")}
-                sx={{ paddingLeft: 0 }}
-              />
-              <Typography
-                display="inline"
-                variant="body2"
-                sx={{ fontFamily: "Lato", color: "#464646", mr: 2 }}
-              >
-                No
-              </Typography> */}
               <Typography
                 variant="subtitle1"
                 sx={{
