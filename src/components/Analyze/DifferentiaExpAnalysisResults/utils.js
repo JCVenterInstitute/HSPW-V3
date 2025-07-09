@@ -79,6 +79,7 @@ export const fetchDataFile = async (jobId, fileName) => {
         }
       ).data,
       downloadUrl: response.data.url,
+      originalData: dataText, // Return the original data text for debugging
     };
   } catch (error) {
     console.error("Error fetching data file:", fileName);

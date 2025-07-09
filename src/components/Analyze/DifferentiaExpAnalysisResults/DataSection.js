@@ -154,10 +154,10 @@ const DataSection = ({
       });
 
       // Get the group names gor A & B
-      getGroupNames(fileDict["data_original.csv"].data);
+      // Need to use original data since the parsed data sometimes reorders the groups
+      getGroupNames(fileDict["data_original.csv"].originalData);
 
       setAllFiles(fileDict);
-      console.log(fileDict);
     } catch (err) {
       console.error("> Error fetching all data file", err);
     } finally {
@@ -166,9 +166,15 @@ const DataSection = ({
   };
 
   const getGroupNames = (data) => {
-    const labels = data[0];
-    const uniqueVals = [...new Set(Object.values(labels))];
-    let groupNames = uniqueVals.filter((val) => val !== "Label");
+    // Get the second line (labels)
+    const labels = data.split("\n")[1];
+    // Split by comma, remove quotes, and get unique values
+    const uniqueVals = [
+      ...new Set(labels.split(",").map((val) => val.replace(/"/g, ""))),
+    ];
+
+    // Remove "Label" if present
+    const groupNames = uniqueVals.filter((val) => val !== "Label");
 
     if (groupNames.length !== 2) return;
 
