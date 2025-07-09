@@ -12,16 +12,17 @@ import CustomCell from "@Components/CustomCell";
 import PageHeader from "@Components/Layout/PageHeader";
 
 /**
- * Check if submission is expired. A submission is expired if it's not a differential expression analysis & the complete date is past 7 days old
+ * Check if submission is expired. A submission is expired if the complete date is past {expirationDays} days old
  * @param {string} dateString Date of submission completion
+ * @param {number} expirationDays Number of days passed until a submission is considered expired. Default is 7
  * @return {boolean} True if submission is expired, false otherwise
  */
-export const isExpired = (dateString) => {
+export const isExpired = (dateString, expirationDays = 7) => {
   const givenDate = new Date(dateString);
   const currentDate = new Date();
   const differenceInMilliseconds = currentDate - givenDate;
   const differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24);
-  return differenceInDays > 7;
+  return differenceInDays > expirationDays;
 };
 
 const Submissions = () => {
@@ -41,6 +42,7 @@ const Submissions = () => {
             // We only store differential expression analysis submission
             // All other analysis results are stored on ebi for max of 7 days
             if (
+              submission.type !== "Differential Expression Analysis" &&
               submission.status === "Complete" &&
               isExpired(submission.completion_date)
             ) {
@@ -405,8 +407,9 @@ const Submissions = () => {
             defaultColDef={defColumnDefs}
             suppressMovable
             enableCellTextSelection={true}
-            paginationPageSize={50}
+            paginationPageSize={15}
             domLayout="autoHeight"
+            pagination={true}
           />
         </div>
       </Container>
