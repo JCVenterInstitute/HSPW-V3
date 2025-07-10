@@ -30,6 +30,7 @@ def clean_accession(accession):
     return None
 
 def fetch_protein_name(accession):
+    print(f"fetching protein name for {accession}")
     params = {
         "fields": [
             "protein_name"
@@ -38,7 +39,7 @@ def fetch_protein_name(accession):
     headers = {
         "accept": "application/json"
     }
-    url = f"https://www.uniprot.org/uniprotkb/{accession}"
+    url = f"https://rest.uniprot.org/uniprotkb/{accession}"
     response = requests.get(url, headers=headers, params=params)
 
     # Handle rate-limiting by UniProt
@@ -48,9 +49,8 @@ def fetch_protein_name(accession):
         response = requests.get(url, headers=headers, params=params)
 
     if response.status_code == 200:
-        # data = json.loads(response.text)
-        print(response.text)
-        return "success"
+        data = response.json()
+        return data["proteinDescription"]["recommendedName"]["fullName"]["value"]
     else:
         print(f"Error fetching {accession}: Status code {response.status_code}")
         return None
@@ -395,7 +395,7 @@ def generate_study_protein(
             # "protein_sequence": row['Sequence'],
             "protein_sequence_length": row["Length"],
             "abundance": row["Abundance"],
-            "protein_name": fetch_protein_name(clean_accession),
+            "protein_name": fetch_protein_name(cleaned_accession),
             "protein_score": row.get("best_search_engine_score[1]", "unknown"),
             "peptide_count": row["Peptide Count"],
             "experiment_protein_count": total_protein_count,
