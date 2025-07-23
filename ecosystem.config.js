@@ -24,7 +24,7 @@ module.exports = {
         INDEX_GO_NODES: "go_nodes",
         INDEX_GO_EDGES: "go_edges",
         INDEX_STUDY: "study",
-        INDEX_STUDY_PROTEIN: "study_protein_012924",
+        INDEX_STUDY_PROTEIN: "study_protein_070925",
         INDEX_PEPTIDE: "peptide_013024",
         INDEX_STUDY_PEPTIDE_ABUNDANCE: "study_peptide_abundance_020124",
         OS_HOSTNAME:
