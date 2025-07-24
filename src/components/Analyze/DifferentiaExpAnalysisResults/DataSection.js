@@ -198,12 +198,12 @@ const DataSection = ({
           if (tab === "Visualization") {
             displayResult = (
               <VolcanoPlot
-                data={allFiles["all_data.tsv"].data}
+                data={allFiles["volcano.csv"].data}
                 pval={searchParams.get("pValue")}
                 foldChange={searchParams.get("foldChange")}
-                xCol={8}
-                yCol={5}
-                details={["p.value", "Fold.Change"]}
+                xCol={2}
+                yCol={4}
+                details={["-log10(p)", "log2(FC)"]}
                 xlabel="Log2(FC)"
                 ylabel="-Log10(p)"
                 groupNames={groupNames}
