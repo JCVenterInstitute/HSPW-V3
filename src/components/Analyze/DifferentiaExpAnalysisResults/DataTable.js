@@ -32,7 +32,7 @@ const DataTable = ({
       headerTooltip: inputTooltips[header],
       cellStyle: {
         textAlign: "left",
-        width: "200%",
+        width: "200px",
         borderLeftWidth: columnDefs.length === 0 ? "0px" : "1px",
       },
       resizable: true,
@@ -51,7 +51,10 @@ const DataTable = ({
   });
 
   return (
-    <Container className="data-section-table" sx={{ margin: "0px" }}>
+    <Container
+      className="data-section-table"
+      sx={{ margin: "0px" }}
+    >
       <div
         className="ag-theme-material ag-theme-alpine"
         style={{
