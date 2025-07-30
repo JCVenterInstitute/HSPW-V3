@@ -107,11 +107,15 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
       // Prepare heatmap data
       const heatmapData = data1.flatMap((d) => {
         const proteins = d["core_enrichment"].split("/");
-        return proteins.map((protein) => ({
-          ...d,
-          Protein: protein,
-          "Fold.Change": proteinFoldChange[protein] || 0,
-        }));
+        return proteins.map((protein) => {
+          const rawFC = proteinFoldChange[protein] || 0;
+          const log2FC = Math.sign(rawFC) * Math.log2(Math.abs(rawFC) || 1e-6);
+          return {
+            ...d,
+            Protein: protein,
+            "Fold.Change": log2FC,
+          };
+        });
       });
 
       // Filter valid data points
@@ -132,9 +136,20 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
       }
 
       // Define color scale for heatmap
+      // const colorScale = d3
+      //   .scaleSequential(d3.interpolateRdBu)
+      //   .domain(d3.extent(data2, (d) => +d["Fold.Change"]));
+
+      //Constant Color Scale
+      // const colorScale = d3
+      //   .scaleSequential(d3.interpolateRdBu)
+      //   .domain([5, -5]); // Adjust range if needed based on your data
+
+      //Dynamic Color Scale
+      const log2FCs = validData.map((d) => d["Fold.Change"]);
       const colorScale = d3
         .scaleSequential(d3.interpolateRdBu)
-        .domain(d3.extent(data2, (d) => +d["Fold.Change"]));
+        .domain([d3.max(log2FCs), d3.min(log2FCs)]); // Inverted for RdBu
 
       // Define x and y axis
       const xScale = d3
