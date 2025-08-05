@@ -11,5 +11,6 @@ nav:
   - Searching: searching.md
   - Differential Expression Analysis: differential-expression-analysis.md
   - Experiments: experiment-search.md
+  - MzTab File Conversion: proteome-discoverer-conversion.md
   # - Protein Similarity Search: protein-similarity-search.md
   # - Help: help.md

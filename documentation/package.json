@@ -7,6 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
+    "start": "mkdocs serve",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "mkdocs build -d ../src/server/documentation",
     "build:local": "mkdocs build",

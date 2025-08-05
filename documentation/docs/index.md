@@ -9,6 +9,7 @@
 - [Experiment](./experiment-search.md)
 - [Differential Expression Analysis](./differential-expression-analysis.md)
 - [Protein Signature Search](./protein-signature.md)
+- [MzTab File Conversion](./proteome-discoverer-conversion.md)
 <!--
 - [Protein Similarity Search (BLAST)](./protein-similarity-search.md)
 - [Help](./help.md) -->

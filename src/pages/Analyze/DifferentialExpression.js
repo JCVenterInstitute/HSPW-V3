@@ -65,8 +65,7 @@ const validateFile = (fileContent) => {
       // Check headers
       if (data[0][0] !== "Identifiers" || data[0][1] !== "Group") {
         isValid = false;
-        errorMessage =
-          'The first row must have "Identifiers" in column 1 and "Group" in column 2';
+        errorMessage = `The first row must have "Identifiers" in column 1 and "Group" in column 2: ${data[0][0]}, ${data[0][1]}`;
         return;
       }
 
