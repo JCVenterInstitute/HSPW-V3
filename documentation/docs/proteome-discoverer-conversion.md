@@ -1,4 +1,6 @@
-# Converting Proteomic Thermo Raw files to mzTab using Proteome Discoverer
+# MzTab File Conversion
+
+## Converting Proteomic Thermo Raw files to mzTab using Proteome Discoverer
 
 Example files to convert can be found here: [https://www.ebi.ac.uk/pride/archive/projects/PXD033661](https://www.ebi.ac.uk/pride/archive/projects/PXD033661)
 
@@ -28,9 +30,9 @@ Example files to convert can be found here: [https://www.ebi.ac.uk/pride/archive
 
 - Click `Open Common`, in the `ProcessingWF_Tribrid` folder, select `PWF_Tribrid_Basic_SequestHT_IT__HCD_CID`
 
-  - `PWF_Tribrid_Basic_SequestHT_OT__HCD_CID` is also okay
+      - `PWF_Tribrid_Basic_SequestHT_OT__HCD_CID` is also okay
 
-    ![Open Common](./img/proteome-discoverer-conversion/proteomics/8-open-common.png)
+  ![Open Common](./img/proteome-discoverer-conversion/proteomics/8-open-common.png)
 
 - It is likely you will have to change parameters for two nodes `Spectrum Files` RC and `Sequest HT`. To open parameters, click on the node - the parameters will show up on the left. For the Spectrum Files RC node, you will need to select what Protein Database to use (which will be a `.fasta` file that you will have to upload see tutorial at bottom). Hit the drop down menu next to Protein Database to select which database to use.
 
@@ -38,9 +40,7 @@ Example files to convert can be found here: [https://www.ebi.ac.uk/pride/archive
 
 - You must also choose your desired Protein Database for SequestHT. The parameters must also be changed as per the following 2 screenshots. \*If the sample has been treated with an alkylating reagent, remove the carbamidomethylation parameter & replace with none.
 
-  ![Input Data](./img/proteome-discoverer-conversion/proteomics/10-input-data.png)
-
-  ![Input Data](./img/proteome-discoverer-conversion/proteomics/11-input-data.png)
+  ![Input Data](./img/proteome-discoverer-conversion/proteomics/10-input-data.png) ![Input Data](./img/proteome-discoverer-conversion/proteomics/11-input-data.png)
 
 - Now click Run!
 
@@ -54,7 +54,7 @@ Example files to convert can be found here: [https://www.ebi.ac.uk/pride/archive
 
   ![Export](./img/proteome-discoverer-conversion/proteomics/14-export.png)
 
-# Converting Peptidomic Thermo Raw Files to mzTab Using Proteome Discoverer
+## Converting Peptidomic Thermo Raw Files to mzTab Using Proteome Discoverer
 
 - Create new study in Proteome Discoverer
 - Select Input Files Tab and click “Add Files” to add files to be converted
@@ -111,7 +111,7 @@ Example files to convert can be found here: [https://www.ebi.ac.uk/pride/archive
 
   ![Export](./img/proteome-discoverer-conversion/peptidomics/15-export.png)
 
-# Uploading .fasta File to Proteome Discoverer
+## Uploading .fasta File to Proteome Discoverer
 
 - Navigate to the “Maintain FASTA Files” page in the “Administration” tab.
 

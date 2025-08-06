@@ -22,7 +22,7 @@
 
 ![Differential Expression Random Forest Feature](./img/differential-expression/random-forest-feature.png)
 
-![Differential Expression Random Forest Outlier](./img/differential-expression/random-forest-Outlier.png)
+![Differential Expression Random Forest Outlier](./img/differential-expression/random-forest-outlier.png)
 
 ![Differential Expression Input Data](./img/differential-expression/input-data.png)
 
