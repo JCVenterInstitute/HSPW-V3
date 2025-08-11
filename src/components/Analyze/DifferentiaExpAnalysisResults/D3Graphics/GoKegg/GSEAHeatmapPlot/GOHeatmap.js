@@ -214,7 +214,7 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
                 `<strong>Description:</strong> ${
                   d["Description"] || "N/A"
                 }<br>` +
-                `<strong>Fold Change:</strong> ${d["Fold.Change"]}`
+                `<strong>log2FC:</strong> ${d["Fold.Change"]}`
             );
         })
         .on("mouseout", function () {
@@ -319,7 +319,7 @@ const GOHeatmapComponent = ({ tableData, allData }) => {
         )
         .style("font-size", "12px")
         .style("font-weight", "bold")
-        .text("Fold Change");
+        .text("log2FC");
     }
   }, [data1, data2, activeTab]);
 
