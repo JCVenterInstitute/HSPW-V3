@@ -56,6 +56,7 @@ import ScrollToTop from "@Components/ScrollToTop.js";
 import ApiPage from "./pages/ApiPage.js";
 import ForgotPassword from "./pages/UserAuth/ForgotPassword.js";
 import Submissions from "./pages/Submissions.js";
+import S3Explorer from "./pages/S3Explorer/S3Explorer.tsx";
 
 if (process.env.REACT_APP_DEPLOY_ENV === "PROD")
   ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
@@ -301,6 +302,14 @@ function App() {
                   element={
                     <AuthGuard>
                       <Submissions />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/file-explorer"
+                  element={
+                    <AuthGuard>
+                      <S3Explorer />
                     </AuthGuard>
                   }
                 />
