@@ -1,31 +1,80 @@
-![Differential Expression Submission Table](./img/differential-expression/table.png)
+# ![Differential Expression Submission Table](./img/differential-expression/title.png)
 
-![Differential Expression Submission Group](./img/differential-expression/submission-groups.png)
+## How to Submit an Analysis
 
-![Differential Expression Analysis Submission Options](./img/differential-expression/differential-expression-options.png)
+![Experiment Table](./img/differential-expression/sample-table.svg)
+![Submission Parameters](./img/differential-expression/submission-params.svg)
 
-![Differential Expression Volcano Plot](./img/differential-expression/volcano-plot.png)
+---
 
-![Differential Expression Heatmap](./img/differential-expression/heatmap.png)
+## Volcano Plot
 
-![Differential Expression Statistical Test](./img/differential-expression/statistical-test.png)
+![Volcano Plot](./img/differential-expression/volcano-plot.svg)
+![Volcano Matrix](./img/differential-expression/volcano-matrix.svg)
 
-![Differential Expression Fold Change](./img/differential-expression/fold-change.png)
+---
 
-![Differential Expression PCA Plot](./img/differential-expression/pca-plot.png)
+## Heatmap
 
-![Differential Expression Venn Diagram](./img/differential-expression/venn-diagram.png)
+![Heatmap](./img/differential-expression/heatmap.svg)
 
-![Differential Expression Normalization Plot](./img/differential-expression/normalization.png)
+---
 
-![Differential Expression Random Forest Classification](./img/differential-expression/random-forest-classification.png)
+## Statistical Parametric Test
 
-![Differential Expression Random Forest Feature](./img/differential-expression/random-forest-feature.png)
+![Statistical Parametric Test](./img/differential-expression/parametric-test.svg)
 
-![Differential Expression Random Forest Outlier](./img/differential-expression/random-forest-outlier.png)
+---
 
-![Differential Expression Input Data](./img/differential-expression/input-data.png)
+## Fold Change Analysis
 
-![Differential Expression Results](./img/differential-expression/result-data.png)
+![Fold Change](./img/differential-expression/fold-change-analysis.svg)
 
-![Differential Expression Results Download](./img/differential-expression/result-download.png)
+---
+
+## Principal Component Analysis (PCA)
+
+![Principal Component Analysis](./img/differential-expression/principal-component.svg)
+
+---
+
+## Venn Diagram
+
+![Venn Diagram](./img/differential-expression/venn-diagram.svg)
+
+---
+
+## Normalization
+
+![Normalization](./img/differential-expression/normalization.svg)
+
+---
+
+## Random Forest
+
+![Random Forest](./img/differential-expression/12.svg)
+
+---
+
+## Feature & Outlier
+
+![Feature and Outlier Graph](./img/differential-expression/feature-outlier.svg)
+
+---
+
+## GO & Kegg Analysis
+
+![Go & Kegg Analysis](./img/differential-expression/go-kegg-analysis.svg)
+![Enrichment Plot](./img/differential-expression/go-kegg-enrichment.svg)
+
+---
+
+## Network Analysis
+
+![Network Analysis Graph](./img/differential-expression/network-analysis.svg)
+
+---
+
+## Results & Download
+
+![Results & Download](./img/differential-expression/results.svg)
