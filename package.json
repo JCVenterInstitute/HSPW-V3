@@ -24,6 +24,7 @@
     "font-awesome": "^4.7.0",
     "html-react-parser": "^5.0.6",
     "material-ui-popup-state": "^5.0.4",
+    "multer": "^2.0.2",
     "numeric": "^1.2.6",
     "papaparse": "^5.4.1",
     "protvista-uniprot": "^2.10.9",

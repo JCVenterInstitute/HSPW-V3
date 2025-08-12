@@ -5,6 +5,19 @@ const { Client } = require("@opensearch-project/opensearch");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const createAwsOpensearchConnector = require("aws-opensearch-connector");
 const path = require("path");
+const multer = require("multer");
+
+const {
+  listS3Objects,
+  getShortcuts,
+  uploadS3Object,
+  uploadS3Folder,
+  deleteS3File,
+  deleteS3Folder,
+  getPermissions,
+  downloadS3Object,
+  updatePermissions,
+} = require("./utils/s3Utils.js");
 
 const { processGroupData } = require("./utils/processGroupData");
 const { processFile } = require("./utils/processFile");
@@ -24,6 +37,7 @@ const geneRouter = require("./routes/geneRouter");
 const proteinSignatureRouter = require("./routes/proteinSignatureRouter");
 const studyRouter = require("./routes/studyRouter");
 const submissionRouter = require("./routes/submissionRouter");
+const upload = multer();
 
 const app = express();
 
@@ -954,6 +968,214 @@ app.post(
   }
 );
 
+/*****************************
+ * S3 Explorer Endpoints
+ *****************************/
+
+app.get("/api/list-s3-objects", async (req, res) => {
+  const { prefix, user } = req.query;
+
+  try {
+    const trimmedPrefix = prefix.replace(/\/$/, "");
+
+    const isAuthorized = await getPermissions(trimmedPrefix, user, "read");
+    if (!isAuthorized) {
+      return res
+        .status(403)
+        .json({ error: "Access denied: Read permission required." });
+    }
+
+    const data = await listS3Objects(prefix);
+    let shortcuts = {};
+    if (trimmedPrefix.endsWith("Shared Folders")) {
+      shortcuts = await getShortcuts(trimmedPrefix);
+    }
+
+    res.json({
+      ...data,
+      shortcuts,
+    });
+  } catch (err) {
+    console.error("Error fetching bucket objects:", err);
+    res.status(500).send("Error fetching bucket objects: " + err);
+  }
+});
+
+// Endpoint to upload a file to S3
+app.post("/api/upload-s3-object", upload.single("file"), async (req, res) => {
+  try {
+    const prefix = req.body.prefix || "";
+    const fileName = req.file?.originalname || req.body.folderName;
+    const user = req.body.user || "";
+    const isAuthorized = await getPermissions(
+      prefix.replace(/\/$/, ""),
+      user,
+      "write"
+    );
+    if (!isAuthorized) {
+      return res
+        .status(403)
+        .json({ error: "Access denied: write permission required." });
+    }
+
+    if (!fileName) {
+      return res.status(400).send("Missing file name.");
+    }
+
+    const data = await uploadS3Object(req.file, prefix, fileName);
+    res.json(data);
+  } catch (err) {
+    console.error("Error uploading file:", err.stack || err);
+    res.status(500).send("Error uploading file: " + err);
+  }
+});
+
+app.post("/api/create-folder", express.json(), async (req, res) => {
+  try {
+    const { prefix, folderName, user } = req.body;
+
+    if (!folderName) {
+      return res.status(400).json({ error: "Missing folder name." });
+    }
+    const isAuthorized = await getPermissions(
+      prefix.replace(/\/$/, ""),
+      user,
+      "write"
+    );
+    if (!isAuthorized) {
+      return res
+        .status(403)
+        .json({ error: "Access denied: write permission required." });
+    }
+
+    await uploadS3Folder(user, prefix, folderName);
+    res.status(200).json({ message: `Folder '${folderName}' created.` });
+  } catch (error) {
+    console.error("Error creating folder:", error);
+    res.status(500).json({ error: "Error creating folder" });
+  }
+});
+
+app.post("/api/share-folder", async (req, res) => {
+  const { folderKey, user, lastModified, targets } = req.body;
+
+  try {
+    const currentPermissions = await getPermissions(
+      folderKey.replace(/\/$/, ""),
+      user,
+      null,
+      true
+    );
+
+    if (currentPermissions._meta?.owner !== user) {
+      return res
+        .status(403)
+        .json({ error: "Only the owner may share this folder" });
+    }
+    let newPermissions = currentPermissions;
+    for (const { username, permissions } of targets) {
+      const sharedFolderKey = `${username}/Shared Folders/`;
+      let userShortcuts = await getShortcuts(
+        sharedFolderKey.replace(/\/$/, "")
+      );
+
+      if (Object.keys(userShortcuts).length === 0) {
+        return res
+          .status(400)
+          .json({ error: `User ${username} does not exist.` });
+      }
+      userShortcuts[folderKey] = {
+        path: folderKey,
+        owner: user,
+        lastModified: lastModified,
+      };
+
+      await uploadS3Object(
+        JSON.stringify(userShortcuts),
+        sharedFolderKey,
+        ".shortcuts"
+      );
+      newPermissions[username] = {
+        read: !!permissions.read,
+        write: !!permissions.write,
+      };
+    }
+    const sharedFolderKey = `${user}/Shared Folders/`;
+    let userShortcuts = await getShortcuts(sharedFolderKey.replace(/\/$/, ""));
+    userShortcuts[folderKey] = {
+      path: folderKey,
+      owner: user,
+      lastModified: lastModified,
+    };
+    await uploadS3Object(
+      JSON.stringify(userShortcuts),
+      sharedFolderKey,
+      ".shortcuts"
+    );
+
+    await updatePermissions(folderKey, newPermissions);
+    res.json({ message: "Folder shared successfully" });
+  } catch (err) {
+    console.error("Share error:", err);
+    return res.status(500).json({ error: "Failed to share folder" });
+  }
+});
+
+// Endpoint to delete a file from S3
+app.delete("/api/delete-s3-file", async (req, res) => {
+  const { key, user } = req.body;
+  const prefix = key.substring(0, key.lastIndexOf("/"));
+
+  try {
+    const isAuthorized = await getPermissions(
+      prefix.replace(/\/$/, ""),
+      user,
+      "write"
+    );
+    if (!isAuthorized) {
+      return res
+        .status(403)
+        .json({ error: "Access denied: write permission required." });
+    }
+
+    if (key.endsWith("/")) {
+      // Folder
+      console.log("\nFolder Found\n");
+      await deleteS3Folder(key);
+      return res.json({ message: "Folder and its contents deleted." });
+    } else {
+      // Single file
+      console.log("\nFile Found\n");
+      await deleteS3File(key);
+      return res.json({ message: "File deleted." });
+    }
+  } catch (error) {
+    console.error("Error deleting S3 object:", error);
+    res.status(500).json({
+      error: "Error deleting S3 object",
+      details: error.message,
+    });
+  }
+});
+
+app.get("/api/generate-download-url", async (req, res) => {
+  const key = req.query.key;
+  console.log(key);
+
+  if (!key) {
+    return res.status(400).json({ error: "Missing 'key' parameter" });
+  }
+
+  try {
+    const url = await downloadS3Object(key);
+
+    return res.json({ url });
+  } catch (err) {
+    console.error("Failed to generate download URL:", err);
+    return res.status(500).json({ error: "Failed to generate URL" });
+  }
+});
+
 /*********************
  * Misc Util Endpoints
  *********************/
@@ -961,7 +1183,7 @@ app.post(
 app.get("/api/download-template-data", async (req, res) => {
   // S3 download parameters
   const params = {
-    bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
+    bucketName: `${process.env.PRIVATE_BUCKET}`,
     s3Key: "inputdata.csv",
   };
 
@@ -972,7 +1194,7 @@ app.get("/api/download-template-data", async (req, res) => {
 app.get("/api/download-data-standard", async (req, res) => {
   // S3 download parameters
   const params = {
-    bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
+    bucketName: `${process.env.PRIVATE_BUCKET}`,
     s3Key: "example_inputdata_template.xlsx",
   };
 
@@ -990,10 +1212,7 @@ app.get("/api/go-kegg-check/:jobId/:fileName", async (req, res) => {
   const day = datePart.substring(6, 8);
   const s3Key = `jobs/${year}-${month}-${day}/${jobId}/${fileName}`;
 
-  const fileExists = await checkFileExists(
-    process.env.DIFFERENTIAL_S3_BUCKET,
-    s3Key
-  );
+  const fileExists = await checkFileExists(process.env.PRIVATE_BUCKET, s3Key);
 
   console.log("> File Exists", fileExists);
   return res.send({ exists: fileExists });
@@ -1001,7 +1220,7 @@ app.get("/api/go-kegg-check/:jobId/:fileName", async (req, res) => {
 
 app.get("/api/getJSONFile", async (req, res) => {
   const { s3Key } = req.query;
-  const bucketName = process.env.DIFFERENTIAL_S3_BUCKET;
+  const bucketName = process.env.PRIVATE_BUCKET;
 
   if (!s3Key) {
     return res.status(400).json({ error: "Missing s3Key parameter." });
@@ -1024,7 +1243,7 @@ app.post("/api/s3JSONUpload", async (req, res) => {
 
   try {
     const result = await s3Upload({
-      bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
+      bucketName: `${process.env.PRIVATE_BUCKET}`,
       s3Key: s3Key,
       data: Buffer.from(JSON.stringify(jsonData)),
       contentType: "application/json",
@@ -1053,7 +1272,7 @@ app.get("/api/s3Download/:jobId/:fileName", async (req, res) => {
 
   // S3 download parameters
   const params = {
-    bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
+    bucketName: `${process.env.PRIVATE_BUCKET}`,
     s3Key: `jobs/${year}-${month}-${day}/${jobId}/${fileName}`,
   };
 

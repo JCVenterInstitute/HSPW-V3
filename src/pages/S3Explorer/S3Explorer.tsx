@@ -16,7 +16,7 @@ const S3Explorer: React.FC = () => {
   const fetchFiles = async () => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_ENDPOINT}/list-s3-objects?prefix=${currentFolder}&user=${user}`
+        `${process.env.REACT_APP_API_ENDPOINT}/api/list-s3-objects?prefix=${currentFolder}&user=${user}`
       );
 
       if (!response.ok) {

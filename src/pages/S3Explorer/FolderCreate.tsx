@@ -30,7 +30,7 @@ const FolderCreate: React.FC<FolderCreateProps> = ({
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_ENDPOINT}/create-folder`,
+        `${process.env.REACT_APP_API_ENDPOINT}/api/create-folder`,
         {
           method: "POST",
           headers: {

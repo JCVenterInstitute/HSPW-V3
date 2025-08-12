@@ -32,7 +32,7 @@ const FileDelete: React.FC<FileDeleteProps> = ({
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_ENDPOINT}/delete-s3-file`,
+        `${process.env.REACT_APP_API_ENDPOINT}/api/delete-s3-file`,
         {
           method: "DELETE",
           headers: {

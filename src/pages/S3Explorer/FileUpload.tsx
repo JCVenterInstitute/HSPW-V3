@@ -44,7 +44,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_ENDPOINT}/upload-s3-object`,
+        `${process.env.REACT_APP_API_ENDPOINT}/api/upload-s3-object`,
         {
           method: "POST",
           body: formData,

@@ -63,7 +63,7 @@ const S3FileList: React.FC<S3FileListProps> = ({
       const response = await fetch(
         `${
           process.env.REACT_APP_API_ENDPOINT
-        }/generate-download-url?key=${encodeURIComponent(fileKey)}`
+        }/api/generate-download-url?key=${encodeURIComponent(fileKey)}`
       );
 
       if (!response.ok) throw new Error("Failed to get download URL");
@@ -159,7 +159,7 @@ const S3FileList: React.FC<S3FileListProps> = ({
       try {
         const currentDate = new Date();
         const res = await fetch(
-          `${process.env.REACT_APP_API_ENDPOINT}/share-folder`,
+          `${process.env.REACT_APP_API_ENDPOINT}/api/share-folder`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
