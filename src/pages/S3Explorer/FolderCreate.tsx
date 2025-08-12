@@ -1,5 +1,6 @@
 import React from "react";
 import Swal from "sweetalert2";
+import { Button } from "@mui/material";
 
 interface FolderCreateProps {
   currentPrefix: string;
@@ -58,12 +59,14 @@ const FolderCreate: React.FC<FolderCreateProps> = ({
   };
 
   return (
-    <button
+    <Button
+      variant="contained"
       onClick={handleCreateFolder}
+      color="secondary"
       className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
     >
       + New Folder
-    </button>
+    </Button>
   );
 };
 

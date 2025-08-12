@@ -1,11 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import S3FileList from "./S3FileList.tsx";
 import FileUpload from "./FileUpload.tsx";
 import FolderCreate from "./FolderCreate.tsx";
 import Swal from "sweetalert2";
+import { AuthContext } from "../../services/AuthContext.js";
+import {
+  Box,
+  Button,
+  Typography,
+  Breadcrumbs,
+  Link,
+  Divider,
+} from "@mui/material";
 
 const S3Explorer: React.FC = () => {
-  const [user, setUser] = useState<string>("ExampleUser");
+  const context_data = useContext(AuthContext);
+  const user = context_data.user.username;
+  //   const [user, setUser] = useState<string>("ExampleUser");
   const [shortcutRoot, setShortcutRoot] = useState<string | null>(null);
   const [files, setFiles] = useState<any>([]);
   const [historyStack, setHistoryStack] = useState<string[]>([]);
@@ -14,6 +25,7 @@ const S3Explorer: React.FC = () => {
   const [isListView, setIsListView] = useState<boolean>(true); // Toggle for view type
 
   const fetchFiles = async () => {
+    console.log(currentFolder);
     try {
       const response = await fetch(
         `${process.env.REACT_APP_API_ENDPOINT}/api/list-s3-objects?prefix=${currentFolder}&user=${user}`
@@ -44,21 +56,21 @@ const S3Explorer: React.FC = () => {
     fetchFiles();
   }, [currentFolder]);
 
-  const changeUser = async () => {
-    const { value: userName } = await Swal.fire({
-      title: "Change Username",
-      input: "text",
-      inputLabel: "New Username",
-      inputPlaceholder: user,
-      showCancelButton: true,
-      inputValidator: (value) => {
-        if (!value) return "Username cannot be empty";
-        return null;
-      },
-    });
-    setUser(userName);
-    fetchFiles();
-  };
+  //   const changeUser = async () => {
+  //     const { value: userName } = await Swal.fire({
+  //       title: "Change Username",
+  //       input: "text",
+  //       inputLabel: "New Username",
+  //       inputPlaceholder: user,
+  //       showCancelButton: true,
+  //       inputValidator: (value) => {
+  //         if (!value) return "Username cannot be empty";
+  //         return null;
+  //       },
+  //     });
+  //     // setUser(userName);
+  //     fetchFiles();
+  //   };
 
   const handleFolderChange = (folder: string, isShortcut = false) => {
     if (historyStack.length < 5) {
@@ -122,61 +134,70 @@ const S3Explorer: React.FC = () => {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-4xl text-center font-bold mb-4">S3 File Explorer</h1>
-
-      <div className="mb-4 flex justify-between items-center">
-        <div className="mb-4 flex justify-between items-left gap-2">
-          <button
+    <Box p={4}>
+      <Box
+        mb={4}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Box
+          display="flex"
+          gap={2}
+        >
+          <Button
+            variant="contained"
             onClick={handleGoBack}
-            className="p-2 bg-blue-500 hover:bg-blue-700 text-white rounded"
           >
             Go Back
-          </button>
+          </Button>
 
-          <button
+          <Button
+            variant="contained"
             onClick={fetchFiles}
-            className="p-2 bg-blue-500 hover:bg-blue-700 text-white rounded"
           >
             {" "}
             Refresh{" "}
-          </button>
-          <button
+          </Button>
+          {/* <Button
+            variant="contained"
             onClick={changeUser}
-            className="p-2 bg-blue-500 hover:bg-blue-700 text-white rounded"
           >
             {" "}
             Current User: {user}{" "}
-          </button>
-        </div>
-        <button
+          </Button> */}
+        </Box>
+        <Button
+          variant="outlined"
           onClick={toggleView}
-          className="p-2 bg-gray-300 rounded"
         >
           {isListView ? "Switch to Grid View" : "Switch to List View"}
-        </button>
-      </div>
+        </Button>
+      </Box>
 
-      <div className="breadcrumb mb-4">
+      <Breadcrumbs
+        separator="›"
+        sx={{ mb: 4 }}
+      >
         {breadcrumb.map((folder, index) => {
           const pathUpTo = breadcrumb.slice(0, index + 1).join("/") + "/";
-
           return (
-            <span key={index}>
-              <span
-                onClick={() => {
-                  handleFolderChange(pathUpTo);
-                }}
-                className="cursor-pointer text-blue-600"
-              >
-                {folder}
-              </span>
-              {index < breadcrumb.length - 1 && " > "}
-            </span>
+            <Link
+              key={index}
+              onClick={() => handleFolderChange(pathUpTo)}
+              sx={{ cursor: "pointer", color: "primary.main" }}
+            >
+              {folder}
+            </Link>
           );
         })}
-      </div>
-      <div className="mb-4 flex justify-between items-center">
+      </Breadcrumbs>
+      <Box
+        mb={4}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+      >
         <FileUpload
           currentPrefix={currentFolder}
           onUploadSuccess={fetchFiles}
@@ -187,7 +208,8 @@ const S3Explorer: React.FC = () => {
           onCreateSuccess={fetchFiles}
           user={user}
         />
-      </div>
+      </Box>
+
       {files.length === 0 ? null : (
         <S3FileList
           files={files.files.filter((file: any) => !file.Key.endsWith("/"))} // Render files only
@@ -201,8 +223,9 @@ const S3Explorer: React.FC = () => {
           onDeleteSuccess={fetchFiles}
         />
       )}
-      <hr />
-    </div>
+
+      <Divider sx={{ mt: 2 }} />
+    </Box>
   );
 };
 

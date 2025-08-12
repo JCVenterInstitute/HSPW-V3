@@ -9,6 +9,25 @@ import {
 } from "react-icons/fa";
 import FileDelete from "./FileDelete.tsx"; // Import the FileDelete component
 import Swal from "sweetalert2";
+import {
+  Box,
+  FormControl,
+  Grid,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 
 enum SortOption {
   ALPHABETICAL = "Alphabetical",
@@ -183,7 +202,7 @@ const S3FileList: React.FC<S3FileListProps> = ({
     });
   };
 
-  const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleSortChange = (event: SelectChangeEvent<SortOption>) => {
     setSortOption(event.target.value as SortOption);
   };
 
@@ -239,42 +258,60 @@ const S3FileList: React.FC<S3FileListProps> = ({
   return (
     <>
       {/* Search Bar */}
-      <div className="mb-4">
-        <input
-          type="text"
+      <Box mb={4}>
+        <TextField
+          fullWidth
+          variant="outlined"
           placeholder="Search files and folders..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="border p-2 rounded w-full"
         />
-      </div>
+      </Box>
 
       {/* Sort Button */}
-      <div className="flex justify-end mb-4">
-        <select
-          value={sortOption}
-          onChange={handleSortChange}
-          className="border p-2 rounded"
+      <Box
+        display="flex"
+        justifyContent="flex-end"
+        mb={4}
+      >
+        <FormControl
+          variant="outlined"
+          size="small"
+          sx={{ minWidth: 200 }}
         >
-          <option value={SortOption.ALPHABETICAL}>Alphabetical</option>
-          <option value={SortOption.DATE_MODIFIED}>Date Modified</option>
-          <option value={SortOption.DATE_CREATED}>Date Created</option>
-        </select>
-      </div>
+          <InputLabel id="sort-select-label">Sort By</InputLabel>
+          <Select
+            labelId="sort-select-label"
+            value={sortOption}
+            onChange={handleSortChange}
+            label="Sort By"
+          >
+            <MenuItem value={SortOption.ALPHABETICAL}>Alphabetical</MenuItem>
+            <MenuItem value={SortOption.DATE_MODIFIED}>Date Modified</MenuItem>
+            <MenuItem value={SortOption.DATE_CREATED}>Date Created</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
 
       {isListView ? (
-        <div className="overflow-auto">
-          <table className="min-w-full bg-white">
-            <thead>
-              <tr>
-                <th className="border px-4 py-2">Type</th>
-                <th className="border px-4 py-2">Name</th>
-                <th className="border px-4 py-2">Last Modified</th>
-                <th className="border px-4 py-2">Size</th>
-                <th className="border px-4 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
+        <TableContainer
+          sx={{ maxHeight: 400, mb: 4, bgcolor: "background.paper" }}
+        >
+          <Table
+            stickyHeader
+            aria-label="file explorer table"
+            size="small"
+          >
+            <TableHead>
+              <TableRow>
+                <TableCell align="center">Type</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>Last Modified</TableCell>
+                <TableCell>Size</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {sortedFolders
                 .filter((folder) =>
                   folder.Prefix.toLowerCase().includes(
@@ -282,43 +319,59 @@ const S3FileList: React.FC<S3FileListProps> = ({
                   )
                 )
                 .map((folder) => (
-                  <tr key={folder.Prefix}>
-                    <td className="border px-4 py-2 text-center">
+                  <TableRow
+                    key={folder.Prefix}
+                    hover
+                  >
+                    <TableCell align="center">
                       <FaFolder
                         size={20}
-                        className="text-blue-500 inline-block"
+                        color="#3b82f6"
                       />
-                    </td>
-
-                    <td
-                      className="border px-4 py-2 cursor-pointer"
+                    </TableCell>
+                    <TableCell
+                      sx={{ cursor: "pointer" }}
                       onClick={() => onFolderChange(folder.Prefix)}
                     >
                       {folder.Prefix.split("/").slice(-2, -1)[0]}
-                    </td>
-                    <td className="border px-4 py-2">{"-"}</td>
-                    <td className="border px-4 py-2">-</td>
-                    <td className="border px-4 py-2">
-                      <div className="flex items-center space-x-4">
-                        <FaShareAlt
-                          size={20}
-                          className="cursor-pointer text-green-500"
-                          onClick={(e) => handleShareFolder(folder.Prefix)}
-                        />
+                    </TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        gap={1}
+                      >
+                        <Tooltip title="Share Folder">
+                          <IconButton
+                            size="small"
+                            onClick={() => handleShareFolder(folder.Prefix)}
+                            color="success"
+                          >
+                            <FaShareAlt />
+                          </IconButton>
+                        </Tooltip>
+
                         <FileDelete
                           fileKey={folder.Prefix}
                           onDeleteSuccess={onDeleteSuccess}
                           user={user}
                         >
-                          <FaTrash
-                            size={20}
-                            className="cursor-pointer text-red-500"
-                          />
+                          <Tooltip title="Delete Folder">
+                            <IconButton
+                              size="small"
+                              color="error"
+                            >
+                              <FaTrash />
+                            </IconButton>
+                          </Tooltip>
                         </FileDelete>
-                      </div>
-                    </td>
-                  </tr>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
                 ))}
+
               {sortedFiles
                 .filter(
                   (file) =>
@@ -326,73 +379,89 @@ const S3FileList: React.FC<S3FileListProps> = ({
                     file.Key.toLowerCase().includes(searchQuery.toLowerCase())
                 )
                 .map((file) => (
-                  <tr key={file.Key}>
-                    <td className=" border px-4 py-2.5 text-center flex justify-center items-center">
+                  <TableRow
+                    key={file.Key}
+                    hover
+                  >
+                    <TableCell align="center">
                       <FaFile
                         size={20}
-                        className="text-gray-500"
+                        color="#6b7280"
                       />
-                    </td>
-                    <td className="border px-4 py-2">
-                      {file.Key.split("/").slice(-1)[0]}
-                    </td>
-                    <td className="border px-4 py-2">
+                    </TableCell>
+                    <TableCell>{file.Key.split("/").slice(-1)[0]}</TableCell>
+                    <TableCell>
                       {new Date(file.LastModified).toLocaleString()}
-                    </td>
-                    <td className="border px-4 py-2">{file.Size} bytes</td>
-                    <td className="border px-4 py-2">
-                      <div className="flex items-center space-x-4">
-                        <FaDownload
-                          size={20}
-                          className="cursor-pointer text-blue-500"
-                          onClick={() => handleDownload(file.Key)}
-                        />
+                    </TableCell>
+                    <TableCell>{file.Size} bytes</TableCell>
+                    <TableCell>
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        gap={1}
+                      >
+                        <Tooltip title="Download File">
+                          <IconButton
+                            size="small"
+                            color="primary"
+                            onClick={() => handleDownload(file.Key)}
+                          >
+                            <FaDownload />
+                          </IconButton>
+                        </Tooltip>
+
                         <FileDelete
                           fileKey={file.Key}
                           onDeleteSuccess={onDeleteSuccess}
                           user={user}
                         >
-                          <FaTrash
-                            size={20}
-                            className="cursor-pointer text-red-500"
-                          />
+                          <Tooltip title="Delete File">
+                            <IconButton
+                              size="small"
+                              color="error"
+                            >
+                              <FaTrash />
+                            </IconButton>
+                          </Tooltip>
                         </FileDelete>
-                      </div>
-                    </td>
-                  </tr>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              {sortedShortcuts.length > 0 && (
-                <>
-                  {sortedShortcuts.map((shortcut) => (
-                    <tr key={shortcut.path}>
-                      <td className="border px-4 py-2 text-center">
-                        <FaExternalLinkAlt
-                          size={20}
-                          className="text-purple-500 inline-block"
-                        />
-                      </td>
-                      <td
-                        className="border px-4 py-2 cursor-pointer"
-                        onClick={() => onFolderChange(shortcut.path, true)}
-                      >
-                        {shortcut.name
-                          ? shortcut.name
-                          : shortcut.path.split("/").at(-2)}
-                      </td>
-                      <td className="border px-4 py-2">
-                        {shortcut.lastModified}
-                      </td>
-                      <td className="border px-4 py-2">-</td>
-                      <td className="border px-4 py-2"></td>
-                    </tr>
-                  ))}
-                </>
-              )}
-            </tbody>
-          </table>
-        </div>
+
+              {sortedShortcuts.length > 0 &&
+                sortedShortcuts.map((shortcut) => (
+                  <TableRow
+                    key={shortcut.path}
+                    hover
+                  >
+                    <TableCell align="center">
+                      <FaExternalLinkAlt
+                        size={20}
+                        color="#8b5cf6"
+                      />
+                    </TableCell>
+                    <TableCell
+                      sx={{ cursor: "pointer" }}
+                      onClick={() => onFolderChange(shortcut.path, true)}
+                    >
+                      {shortcut.name
+                        ? shortcut.name
+                        : shortcut.path.split("/").at(-2)}
+                    </TableCell>
+                    <TableCell>{shortcut.lastModified}</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       ) : (
-        <div className="grid grid-cols-3 gap-4">
+        <Grid
+          container
+          spacing={2}
+        >
           {sortedFolders
             .filter(
               (folder) =>
@@ -403,71 +472,163 @@ const S3FileList: React.FC<S3FileListProps> = ({
                 folder.Prefix.toLowerCase().includes(searchQuery.toLowerCase())
             )
             .map((folder) => (
-              <div
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
                 key={folder.Prefix}
-                className="border p-2 relative"
               >
-                <FaFolder
-                  size={40}
-                  className="text-blue-500"
-                />
-                <p>{folder.Prefix.split("/").slice(-2, -1)[0]}</p>
-                <p>-</p>
-                <div className="absolute top-0 right-0 flex space-x-2 py-5 mr-3">
-                  <FaShareAlt
-                    size={20}
-                    className="text-green-500 cursor-pointer"
-                    onClick={(e) => handleShareFolder(folder.Prefix)}
-                  />
-                  <FileDelete
-                    fileKey={folder.Prefix}
-                    onDeleteSuccess={onDeleteSuccess}
-                    user={user}
-                  >
-                    <FaTrash
-                      size={20}
-                      className="cursor-pointer text-red-500"
+                <Box
+                  border={1}
+                  borderColor="grey.300"
+                  borderRadius={1}
+                  p={2}
+                  position="relative"
+                  height="150px"
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="space-between"
+                >
+                  <Box>
+                    <FaFolder
+                      size={40}
+                      color="#3b82f6"
                     />
-                  </FileDelete>
-                </div>
-              </div>
+                  </Box>
+
+                  <Typography
+                    variant="subtitle1"
+                    noWrap
+                  >
+                    {folder.Prefix.split("/").slice(-2, -1)[0]}
+                  </Typography>
+
+                  <Typography variant="body2">-</Typography>
+
+                  <Box
+                    position="absolute"
+                    top={8}
+                    right={8}
+                    display="flex"
+                    gap={1}
+                    alignItems="center"
+                  >
+                    <Tooltip title="Share Folder">
+                      <IconButton
+                        size="small"
+                        color="success"
+                        onClick={() => handleShareFolder(folder.Prefix)}
+                      >
+                        <FaShareAlt />
+                      </IconButton>
+                    </Tooltip>
+
+                    <FileDelete
+                      fileKey={folder.Prefix}
+                      onDeleteSuccess={onDeleteSuccess}
+                      user={user}
+                    >
+                      <Tooltip title="Delete Folder">
+                        <IconButton
+                          size="small"
+                          color="error"
+                        >
+                          <FaTrash />
+                        </IconButton>
+                      </Tooltip>
+                    </FileDelete>
+                  </Box>
+                </Box>
+              </Grid>
             ))}
+
           {sortedFiles
             .filter((file) =>
               file.Key.toLowerCase().includes(searchQuery.toLowerCase())
             )
             .map((file) => (
-              <div
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
                 key={file.Key}
-                className="border p-2 relative"
               >
-                <FaFile
-                  size={40}
-                  className="text-gray-500"
-                />
-                <p>{file.Key.split("/").slice(-1)[0]}</p>
-                <p>{new Date(file.LastModified).toLocaleString()}</p>
-                <p>{file.Size} bytes</p>
-                <div className="absolute top-0 right-0 flex space-x-2 py-5 mr-3">
-                  <FaDownload
-                    size={20}
-                    className="cursor-pointer text-blue-500"
-                    onClick={() => handleDownload(file.Key)}
-                  />
-                  <FileDelete
-                    fileKey={file.Key}
-                    onDeleteSuccess={onDeleteSuccess}
-                    user={user}
-                  >
-                    <FaTrash
-                      size={20}
-                      className="cursor-pointer text-red-500"
+                <Box
+                  border={1}
+                  borderColor="grey.300"
+                  borderRadius={1}
+                  p={2}
+                  position="relative"
+                  height="150px"
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="space-between"
+                >
+                  <Box>
+                    <FaFile
+                      size={40}
+                      color="#6b7280"
                     />
-                  </FileDelete>
-                </div>
-              </div>
+                  </Box>
+
+                  <Typography
+                    variant="subtitle1"
+                    noWrap
+                  >
+                    {file.Key.split("/").slice(-1)[0]}
+                  </Typography>
+
+                  <Typography
+                    variant="body2"
+                    noWrap
+                  >
+                    {new Date(file.LastModified).toLocaleString()}
+                  </Typography>
+
+                  <Typography
+                    variant="body2"
+                    noWrap
+                  >{`${file.Size} bytes`}</Typography>
+
+                  <Box
+                    position="absolute"
+                    top={8}
+                    right={8}
+                    display="flex"
+                    gap={1}
+                    alignItems="center"
+                  >
+                    <Tooltip title="Download File">
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => handleDownload(file.Key)}
+                      >
+                        <FaDownload />
+                      </IconButton>
+                    </Tooltip>
+
+                    <FileDelete
+                      fileKey={file.Key}
+                      onDeleteSuccess={onDeleteSuccess}
+                      user={user}
+                    >
+                      <Tooltip title="Delete File">
+                        <IconButton
+                          size="small"
+                          color="error"
+                        >
+                          <FaTrash />
+                        </IconButton>
+                      </Tooltip>
+                    </FileDelete>
+                  </Box>
+                </Box>
+              </Grid>
             ))}
-        </div>
+        </Grid>
       )}
     </>
   );

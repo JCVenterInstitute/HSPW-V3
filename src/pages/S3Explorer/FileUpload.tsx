@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import Swal from "sweetalert2";
+import { Button, TextField, Stack } from "@mui/material";
 
 interface FileUploadProps {
   currentPrefix: string;
@@ -67,21 +68,29 @@ const FileUpload: React.FC<FileUploadProps> = ({
   };
 
   return (
-    <form
-      onSubmit={handleUpload}
-      className="py-8"
-    >
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-      />
-      <button
-        type="submit"
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+    <form onSubmit={handleUpload}>
+      <Stack
+        direction="row"
+        spacing={2}
+        py={4}
+        alignItems="center"
       >
-        Upload File
-      </button>
+        <TextField
+          type="file"
+          inputRef={fileInputRef}
+          onChange={handleFileChange}
+          variant="outlined"
+          size="small"
+        />
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          sx={{ fontWeight: "bold", borderRadius: 1 }}
+        >
+          Upload File
+        </Button>
+      </Stack>
     </form>
   );
 };
