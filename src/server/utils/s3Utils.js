@@ -136,11 +136,11 @@ exports.getShortcuts = async (folderName) => {
     return JSON.parse(content);
   } catch (error) {
     if (error.name === "NoSuchKey" || error.Code === "NoSuchKey") {
-      return {}; // Return empty object if file doesn't exist
+      return undefined; // Return empty object if file doesn't exist
     }
 
     console.error("Error reading .shortcuts file:", error);
-    return {}; // Also fallback to empty object on other read errors
+    return undefined; // Also fallback to empty object on other read errors
   }
 };
 

@@ -192,7 +192,7 @@ const S3FileList: React.FC<S3FileListProps> = ({
         );
 
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Sharing failed");
+        if (!res.ok) throw new Error(data.error || "Sharing failed");
 
         Swal.fire("Success", "Folder shared successfully!", "success");
       } catch (err: any) {

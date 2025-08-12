@@ -1079,11 +1079,15 @@ app.post("/api/share-folder", async (req, res) => {
         sharedFolderKey.replace(/\/$/, "")
       );
 
-      if (Object.keys(userShortcuts).length === 0) {
+      if (userShortcuts === undefined) {
+        console.log("User does not Exists");
         return res
           .status(400)
           .json({ error: `User ${username} does not exist.` });
       }
+
+      console.log("User Exists");
+
       userShortcuts[folderKey] = {
         path: folderKey,
         owner: user,
