@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import Swal from "sweetalert2";
 import { Button, TextField, Stack } from "@mui/material";
+import axios from "axios";
 
 interface FileUploadProps {
   currentPrefix: string;
@@ -33,9 +34,13 @@ const FileUpload: React.FC<FileUploadProps> = ({
     formData.append("file", selectedFile);
     formData.append("prefix", currentPrefix);
     formData.append("user", user);
+
     Swal.fire({
       title: "Uploading...",
-      html: "Please do not close or leave this page.",
+      html: `<div style="width:100%;background:#eee;border-radius:5px;">
+             <div id="progress-bar" style="width:0%;background:#3085d6;height:20px;border-radius:5px;"></div>
+           </div>
+           <div id="progress-text" style="margin-top:10px;">0%</div>`,
       allowOutsideClick: false,
       allowEscapeKey: false,
       didOpen: () => {
@@ -44,26 +49,34 @@ const FileUpload: React.FC<FileUploadProps> = ({
     });
 
     try {
-      const response = await fetch(
+      await axios.post(
         `${process.env.REACT_APP_API_ENDPOINT}/api/upload-s3-object`,
+        formData,
         {
-          method: "POST",
-          body: formData,
+          onUploadProgress: (progressEvent) => {
+            const percent = Math.round(
+              (progressEvent.loaded * 100) / (progressEvent.total ?? 1)
+            );
+            const progressBar = document.getElementById("progress-bar");
+            const progressText = document.getElementById("progress-text");
+            if (progressBar) progressBar.style.width = `${percent}%`;
+            if (progressText) progressText.innerText = `${percent}%`;
+          },
         }
       );
-      if (!response.ok) {
-        const error = await response.json();
-        Swal.fire("Upload Failed", `${error.error}`, "error");
-      } else {
-        Swal.fire("Success", "File uploaded successfully!", "success");
-        setSelectedFile(null);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-        onUploadSuccess();
+
+      Swal.fire("Success", "File uploaded successfully!", "success");
+      setSelectedFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
       }
+      onUploadSuccess();
     } catch (error) {
-      Swal.fire("Upload Failed", `${error}`, "error");
+      Swal.fire(
+        "Upload Failed",
+        error?.response?.data?.error || error.message,
+        "error"
+      );
     }
   };
 

@@ -6,6 +6,7 @@ const {
   DeleteObjectsCommand,
   GetObjectCommand,
 } = require("@aws-sdk/client-s3");
+const { Upload } = require("@aws-sdk/lib-storage");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const dotenv = require("dotenv");
 
@@ -144,31 +145,54 @@ exports.getShortcuts = async (folderName) => {
   }
 };
 
-exports.uploadS3Object = async (file, prefix = "", fileName) => {
+// exports.uploadS3Object = async (file, prefix = "", fileName) => {
+//   const key = `${prefix}${fileName}`;
+//   console.log("Uploading: ", file);
+
+//   const actualBody =
+//     typeof file === "string" || Buffer.isBuffer(file)
+//       ? file
+//       : file?.buffer || "";
+
+//   const params = {
+//     Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
+//     Key: key,
+//     Body: actualBody,
+//     ContentType: "application/json", // optional: helpful for .shortcuts
+//   };
+
+//   const command = new PutObjectCommand(params);
+
+//   try {
+//     await client.send(command);
+//     return { message: `Upload successful: ${key}`, key };
+//   } catch (error) {
+//     console.error("Error uploading file to S3: ", error);
+//     throw error;
+//   }
+// };
+
+exports.uploadS3Object = async (file, prefix = "", fileName, onProgress) => {
   const key = `${prefix}${fileName}`;
-  console.log("Uploading: ", file);
 
-  const actualBody =
-    typeof file === "string" || Buffer.isBuffer(file)
-      ? file
-      : file?.buffer || "";
+  const upload = new Upload({
+    client,
+    params: {
+      Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
+      Key: key,
+      Body: file?.buffer || file, // works with buffers
+      ContentType: file?.mimetype || "application/octet-stream",
+    },
+    queueSize: 4, // concurrency
+    partSize: 5 * 1024 * 1024, // 5 MB per part
+  });
 
-  const params = {
-    Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
-    Key: key,
-    Body: actualBody,
-    ContentType: "application/json", // optional: helpful for .shortcuts
-  };
+  upload.on("httpUploadProgress", (progress) => {
+    if (onProgress) onProgress(progress);
+  });
 
-  const command = new PutObjectCommand(params);
-
-  try {
-    await client.send(command);
-    return { message: `Upload successful: ${key}`, key };
-  } catch (error) {
-    console.error("Error uploading file to S3: ", error);
-    throw error;
-  }
+  await upload.done();
+  return { message: `Upload successful: ${key}`, key };
 };
 
 exports.uploadS3Folder = async (
