@@ -96,17 +96,33 @@ const S3FileList: React.FC<S3FileListProps> = ({
   };
 
   const handleShareFolder = async (folderKey: string) => {
+    let currentPermissions: Record<string, any> = {};
+    const response = await fetch(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/get-permissions?folderKey=${encodeURIComponent(folderKey)}&user=${encodeURIComponent(user)}`
+    );
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error("Failed to get permissions:", error);
+    } else {
+      currentPermissions = await response.json();
+    }
+
     await Swal.fire({
       title: "Share Folder",
       html: `
-      <div>
-        <input id="username-input" class="swal2-input" placeholder="Enter username">
-        <button type="button" id="add-user-btn" class="swal2-confirm swal2-styled" style="margin-left: 8px; padding: 4px 10px;">Add</button>
-        <div id="user-list" style="margin-top: 15px; text-align: left;"></div>
+    <div style="text-align: left;">
+      <div style="display: flex; gap: 8px; margin-bottom: 12px; align-items: center;">
+        <input id="username-input" class="swal2-input" placeholder="Enter username" style="flex: 1; height: 36px; margin: 0; box-sizing: border-box;">
+        <button type="button" id="add-user-btn" class="swal2-confirm swal2-styled" style="padding: 0 12px; height: 36px; line-height: 36px;">
+            Add
+        </button>
       </div>
-    `,
+      <div id="user-list" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 8px; border-radius: 6px;"/>
+    </div>
+  `,
       showCancelButton: true,
-      confirmButtonText: "Share",
+      confirmButtonText: "Update",
       didOpen: () => {
         const addBtn = document.getElementById(
           "add-user-btn"
@@ -115,8 +131,36 @@ const S3FileList: React.FC<S3FileListProps> = ({
           "username-input"
         ) as HTMLInputElement;
         const list = document.getElementById("user-list") as HTMLDivElement;
-
         const addedUsers = new Set<string>();
+
+        // Prepopulate existing users here as before...
+        Object.entries(currentPermissions).forEach(([username, perms]) => {
+          if (username === "_meta") return;
+          addedUsers.add(username);
+          const userRow = document.createElement("div");
+          userRow.style.display = "flex";
+          userRow.style.alignItems = "center";
+          userRow.style.justifyContent = "space-between";
+          userRow.style.marginBottom = "6px";
+          userRow.style.padding = "4px 6px";
+          userRow.style.borderBottom = "1px solid #eee";
+          userRow.innerHTML = `
+        <div style="flex:1;">
+          <strong>${username}</strong>
+          <label style="margin-left: 10px;"><input type="checkbox" class="read" ${perms.read ? "checked" : ""}> Read</label>
+          <label style="margin-left: 10px;"><input type="checkbox" class="write" ${perms.write ? "checked" : ""}> Write</label>
+        </div>
+        <button class="remove-user" style="margin-left: 10px; color: red; background:none; border:none; cursor:pointer;">✖</button>
+      `;
+          userRow.setAttribute("data-username", username);
+          list.appendChild(userRow);
+          userRow
+            .querySelector(".remove-user")
+            ?.addEventListener("click", () => {
+              list.removeChild(userRow);
+              addedUsers.delete(username);
+            });
+        });
 
         addBtn.onclick = () => {
           const username = input.value.trim();
@@ -124,28 +168,30 @@ const S3FileList: React.FC<S3FileListProps> = ({
             input.value = "";
             return;
           }
-
           addedUsers.add(username);
-
           const userRow = document.createElement("div");
-          userRow.style.marginTop = "5px";
+          userRow.style.display = "flex";
+          userRow.style.alignItems = "center";
+          userRow.style.justifyContent = "space-between";
+          userRow.style.marginBottom = "6px";
+          userRow.style.padding = "4px 6px";
+          userRow.style.borderBottom = "1px solid #eee";
           userRow.innerHTML = `
+        <div style="flex:1;">
           <strong>${username}</strong>
           <label style="margin-left: 10px;"><input type="checkbox" class="read" checked> Read</label>
           <label style="margin-left: 10px;"><input type="checkbox" class="write"> Write</label>
-          <button class="remove-user" style="margin-left: 10px; color: red;">Remove</button>
-        `;
-
+        </div>
+        <button class="remove-user" style="margin-left: 10px; color: red; background:none; border:none; cursor:pointer;">✖</button>
+      `;
           userRow.setAttribute("data-username", username);
           list.appendChild(userRow);
-
           userRow
             .querySelector(".remove-user")
             ?.addEventListener("click", () => {
               list.removeChild(userRow);
               addedUsers.delete(username);
             });
-
           input.value = "";
         };
       },
@@ -158,22 +204,18 @@ const S3FileList: React.FC<S3FileListProps> = ({
             (div.querySelector(".read") as HTMLInputElement)?.checked ?? false;
           const write =
             (div.querySelector(".write") as HTMLInputElement)?.checked ?? false;
-
           return { username, permissions: { read, write } };
         });
-
         if (users.length === 0) {
           Swal.showValidationMessage("Please add at least one user.");
           return;
         }
-
         return users;
       },
     }).then(async (result) => {
       if (!result.isConfirmed || !result.value) return;
 
       const users = result.value;
-      console.log("line 199: ", users);
 
       try {
         const currentDate = new Date();
