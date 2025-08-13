@@ -1001,6 +1001,23 @@ app.get("/api/list-s3-objects", async (req, res) => {
   }
 });
 
+app.get("/api/get-permissions", async (req, res) => {
+  const { folderKey, user } = req.query;
+
+  try {
+    const permissions = await getPermissions(
+      folderKey.replace(/\/$/, ""),
+      user,
+      null,
+      true
+    );
+    res.json(permissions);
+  } catch (err) {
+    console.error("Error fetching permissions: ", err);
+    res.status(500).send("Error fetching permissions: " + err);
+  }
+});
+
 // Endpoint to upload a file to S3
 app.post("/api/upload-s3-object", upload.single("file"), async (req, res) => {
   try {
@@ -1058,6 +1075,7 @@ app.post("/api/create-folder", express.json(), async (req, res) => {
 
 app.post("/api/share-folder", async (req, res) => {
   const { folderKey, user, lastModified, targets } = req.body;
+  console.log(targets);
 
   try {
     const currentPermissions = await getPermissions(
@@ -1072,7 +1090,10 @@ app.post("/api/share-folder", async (req, res) => {
         .status(403)
         .json({ error: "Only the owner may share this folder" });
     }
-    let newPermissions = currentPermissions;
+
+    let newPermissions = { ...currentPermissions };
+
+    // Process targets
     for (const { username, permissions } of targets) {
       const sharedFolderKey = `${username}/Shared Folders/`;
       let userShortcuts = await getShortcuts(
@@ -1080,41 +1101,61 @@ app.post("/api/share-folder", async (req, res) => {
       );
 
       if (userShortcuts === undefined) {
-        return res
-          .status(400)
-          .json({ error: `User ${username} does not exist.` });
+        console.warn(`User ${username} does not exist, skipping.`);
+        continue;
       }
 
+      // If user has no permissions, remove shortcut
+      if (!permissions.read && !permissions.write) {
+        if (userShortcuts[folderKey]) {
+          delete userShortcuts[folderKey];
+          await uploadS3Object(
+            JSON.stringify(userShortcuts),
+            sharedFolderKey,
+            ".shortcuts"
+          );
+        }
+        // Also remove from newPermissions
+        if (newPermissions[username]) delete newPermissions[username];
+        continue;
+      }
+
+      // Add/update shortcut
       userShortcuts[folderKey] = {
         path: folderKey,
         owner: user,
-        lastModified: lastModified,
+        lastModified,
       };
-
       await uploadS3Object(
         JSON.stringify(userShortcuts),
         sharedFolderKey,
         ".shortcuts"
       );
+
+      // Update permissions
       newPermissions[username] = {
         read: !!permissions.read,
         write: !!permissions.write,
       };
     }
-    const sharedFolderKey = `${user}/Shared Folders/`;
-    let userShortcuts = await getShortcuts(sharedFolderKey.replace(/\/$/, ""));
-    userShortcuts[folderKey] = {
+
+    // Update owner's shortcut
+    const ownerSharedKey = `${user}/Shared Folders/`;
+    let ownerShortcuts = await getShortcuts(ownerSharedKey.replace(/\/$/, ""));
+    ownerShortcuts[folderKey] = {
       path: folderKey,
       owner: user,
-      lastModified: lastModified,
+      lastModified,
     };
     await uploadS3Object(
-      JSON.stringify(userShortcuts),
-      sharedFolderKey,
+      JSON.stringify(ownerShortcuts),
+      ownerSharedKey,
       ".shortcuts"
     );
 
+    // Update .permissions
     await updatePermissions(folderKey, newPermissions);
+
     res.json({ message: "Folder shared successfully" });
   } catch (err) {
     console.error("Share error:", err);
