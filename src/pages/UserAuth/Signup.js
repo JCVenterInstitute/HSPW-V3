@@ -158,6 +158,32 @@ const Signup = () => {
         });
         return;
       }
+      try {
+        fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/create-folder`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prefix: "",
+            folderName: { username },
+            user: { username },
+          }),
+        });
+        fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/create-folder`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prefix: { username },
+            folderName: "Shared Folders",
+            user: { username },
+          }),
+        });
+      } catch (error) {
+        console.error("Error creating folder:", error);
+      }
       Swal.fire({
         title: "User registered successfully",
         text: "Please check email for verification before logging in.",

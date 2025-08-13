@@ -48,6 +48,9 @@ exports.getPermissions = async (
     if (raw) {
       return permissions;
     }
+    if (folderName === "" && mode === "write") {
+      return true;
+    }
 
     if (permissions?.["_meta"]?.["owner"] == userName) {
       return true;
