@@ -91,6 +91,10 @@ export const NavBar = () => {
                         label: "Submissions",
                       },
                       {
+                        link: "/file-explorer",
+                        label: "File Explorer",
+                      },
+                      {
                         link: "/",
                         label: "Log Out",
                         onClick: handleLogout,
