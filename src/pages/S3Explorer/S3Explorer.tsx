@@ -175,10 +175,7 @@ const S3Explorer: React.FC = () => {
         </Button>
       </Box>
 
-      <Breadcrumbs
-        separator="›"
-        sx={{ mb: 4 }}
-      >
+      <Breadcrumbs separator="›">
         {breadcrumb.map((folder, index) => {
           const pathUpTo = breadcrumb.slice(0, index + 1).join("/") + "/";
           return (
@@ -193,7 +190,6 @@ const S3Explorer: React.FC = () => {
         })}
       </Breadcrumbs>
       <Box
-        mb={4}
         display="flex"
         justifyContent="space-between"
         alignItems="center"

@@ -299,23 +299,23 @@ const S3FileList: React.FC<S3FileListProps> = ({
   const { sortedFolders, sortedFiles, sortedShortcuts } = sortFilesAndFolders();
   return (
     <>
-      {/* Search Bar */}
-      <Box mb={4}>
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        gap={2}
+        mb={4}
+      >
+        {/* Search */}
         <TextField
-          fullWidth
           variant="outlined"
           placeholder="Search files and folders..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          sx={{ flexGrow: 1 }}
         />
-      </Box>
 
-      {/* Sort Button */}
-      <Box
-        display="flex"
-        justifyContent="flex-end"
-        mb={4}
-      >
+        {/* Sort */}
         <FormControl
           variant="outlined"
           size="small"
