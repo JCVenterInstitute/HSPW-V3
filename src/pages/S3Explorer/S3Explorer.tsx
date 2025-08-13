@@ -142,13 +142,6 @@ const S3Explorer: React.FC = () => {
             {" "}
             Refresh{" "}
           </Button>
-          {/* <Button
-            variant="contained"
-            onClick={changeUser}
-          >
-            {" "}
-            Current User: {user}{" "}
-          </Button> */}
         </Box>
         <Button
           variant="outlined"
