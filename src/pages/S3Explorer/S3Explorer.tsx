@@ -16,7 +16,6 @@ import {
 const S3Explorer: React.FC = () => {
   const context_data = useContext(AuthContext);
   const user = context_data.user.username;
-  //   const [user, setUser] = useState<string>("ExampleUser");
   const [shortcutRoot, setShortcutRoot] = useState<string | null>(null);
   const [files, setFiles] = useState<any>([]);
   const [historyStack, setHistoryStack] = useState<string[]>([]);
@@ -55,22 +54,6 @@ const S3Explorer: React.FC = () => {
   useEffect(() => {
     fetchFiles();
   }, [currentFolder]);
-
-  //   const changeUser = async () => {
-  //     const { value: userName } = await Swal.fire({
-  //       title: "Change Username",
-  //       input: "text",
-  //       inputLabel: "New Username",
-  //       inputPlaceholder: user,
-  //       showCancelButton: true,
-  //       inputValidator: (value) => {
-  //         if (!value) return "Username cannot be empty";
-  //         return null;
-  //       },
-  //     });
-  //     // setUser(userName);
-  //     fetchFiles();
-  //   };
 
   const handleFolderChange = (folder: string, isShortcut = false) => {
     if (historyStack.length < 5) {
