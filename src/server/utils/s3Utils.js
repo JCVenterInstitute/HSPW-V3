@@ -94,7 +94,6 @@ exports.listS3Objects = async (prefix = "") => {
   try {
     const response = await client.send(command);
 
-    // The response will include CommonPrefixes for folders
     const contents = response.Contents || [];
     const prefixes = response.CommonPrefixes || [];
 
@@ -145,33 +144,6 @@ exports.getShortcuts = async (folderName) => {
   }
 };
 
-// exports.uploadS3Object = async (file, prefix = "", fileName) => {
-//   const key = `${prefix}${fileName}`;
-//   console.log("Uploading: ", file);
-
-//   const actualBody =
-//     typeof file === "string" || Buffer.isBuffer(file)
-//       ? file
-//       : file?.buffer || "";
-
-//   const params = {
-//     Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
-//     Key: key,
-//     Body: actualBody,
-//     ContentType: "application/json", // optional: helpful for .shortcuts
-//   };
-
-//   const command = new PutObjectCommand(params);
-
-//   try {
-//     await client.send(command);
-//     return { message: `Upload successful: ${key}`, key };
-//   } catch (error) {
-//     console.error("Error uploading file to S3: ", error);
-//     throw error;
-//   }
-// };
-
 exports.uploadS3Object = async (file, prefix = "", fileName, onProgress) => {
   const key = `${prefix}${fileName}`;
 
@@ -180,11 +152,11 @@ exports.uploadS3Object = async (file, prefix = "", fileName, onProgress) => {
     params: {
       Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
       Key: key,
-      Body: file?.buffer || file, // works with buffers
+      Body: file?.buffer || file,
       ContentType: file?.mimetype || "application/octet-stream",
     },
-    queueSize: 4, // concurrency
-    partSize: 5 * 1024 * 1024, // 5 MB per part
+    queueSize: 4,
+    partSize: 20 * 1024 * 1024, // 20 MB per part
   });
 
   upload.on("httpUploadProgress", (progress) => {
