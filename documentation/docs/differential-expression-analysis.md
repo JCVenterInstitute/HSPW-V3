@@ -52,7 +52,7 @@
 
 ## Random Forest
 
-![Random Forest](./img/differential-expression/12.svg)
+![Random Forest](./img/differential-expression/random-forest.svg)
 
 ---
 
