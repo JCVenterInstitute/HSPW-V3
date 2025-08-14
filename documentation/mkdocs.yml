@@ -2,15 +2,17 @@ site_name: Human Salivary Proteome Docs
 theme: readthedocs
 nav:
   - Home: "index.md"
-  - Salivary Proteins: salivary-proteins.md
-  - Protein Cluster: protein-cluster.md
-  - Protein Signature: protein-signature.md
-  - Genes: genes.md
-  - Publications: publications.md
-  - Multiple Sequence Alignment: multiple-sequence-alignment.md
-  - Searching: searching.md
-  - Differential Expression Analysis: differential-expression-analysis.md
-  - Experiments: experiment-search.md
-  - MzTab File Conversion: proteome-discoverer-conversion.md
-  # - Protein Similarity Search: protein-similarity-search.md
-  # - Help: help.md
+  - Browse:
+      - Salivary Proteins: salivary-proteins.md
+      - Protein Cluster: protein-cluster.md
+      - Protein Signature: protein-signature.md
+      - Genes: genes.md
+      - Publications: publications.md
+  - Search:
+      - Overview: searching.md
+      - Experiments: experiment-search.md
+  - Analyze:
+      - Multiple Sequence Alignment: multiple-sequence-alignment.md
+      - Differential Expression Analysis: differential-expression-analysis.md
+  - Misc:
+      - MzTab File Conversion: proteome-discoverer-conversion.md
