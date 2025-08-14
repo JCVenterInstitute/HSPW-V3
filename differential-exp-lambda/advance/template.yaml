@@ -126,7 +126,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: advance_trigger.handler
-      Runtime: nodejs16.x
+      Runtime: nodejs20.x
       FunctionName: !Sub "Differential-Analysis-Advance-Trigger-${DeployEnv}"
       Description: Trigger Start of Advance Differential Analysis
       Role: !GetAtt HSPDiffExpRole.Arn

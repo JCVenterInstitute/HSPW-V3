@@ -1,4 +1,4 @@
-const { DynamoDBClient, GetItemCommand } = require("@aws-sdk/client-dynamodb");
+const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const {
   DynamoDBDocumentClient,
   QueryCommand,
@@ -49,7 +49,7 @@ const fetchSubmissionByUser = async (req, res) => {
     const { username } = req.params;
 
     const params = {
-      TableName: "hsp-analysis-submissions-DEV",
+      TableName: `hsp-analysis-submissions-${process.env.DEPLOY_ENV.toUpperCase()}`,
       IndexName: "username-index", // If you're using a GSI based on username
       KeyConditionExpression: "#username = :username",
       ExpressionAttributeNames: {
@@ -88,7 +88,7 @@ const createSubmission = async (req, res) => {
     const { user, type, submissionDate, link, id, name, status } = req.body;
 
     const params = {
-      TableName: "hsp-analysis-submissions-DEV",
+      TableName: `hsp-analysis-submissions-${process.env.DEPLOY_ENV.toUpperCase()}`,
       Item: {
         id: id ? id : uuidv4(),
         important: false,
@@ -136,7 +136,7 @@ const updateSubmission = async (req, res) => {
     });
 
     const params = {
-      TableName: "hsp-analysis-submissions-DEV", // Update to match your table name
+      TableName: `hsp-analysis-submissions-${process.env.DEPLOY_ENV.toUpperCase()}`,
       Key: { id }, // Primary key for the table
       UpdateExpression,
       ExpressionAttributeNames,
