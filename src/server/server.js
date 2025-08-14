@@ -771,6 +771,8 @@ app.get("/api/gene-location-counts/", (req, res) => {
 app.post("/api/differential-expression/analyze", async (req, res) => {
   try {
     const {
+      inputData = null,
+      groupNames = null,
       logNorm,
       numberOfDifferentiallyAbundantProteinsInHeatmap,
       foldChangeThreshold,
@@ -779,26 +781,31 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
       parametricTest,
       timestamp,
       formattedDate,
-      groupNames,
       username,
     } = req.body;
 
-    console.log(
-      `> Log Norm: ${logNorm}, Heatmap #: ${numberOfDifferentiallyAbundantProteinsInHeatmap}, Fold Threshold: ${foldChangeThreshold}, P Val Threshold: ${pValueThreshold}, P Value Type: ${pValueType}, Parametric Test: ${parametricTest}`
-    );
+    let inputFile;
+
+    console.log("> Request Body: %o", req.body);
 
     // Ping Lambdas to prevent cold start when trying to run analysis
-    const wakeLambdas = await Promise.all([
+    await Promise.all([
       axios.get(process.env.BASIC_ANALYSIS_API).then((res) => res.data),
       axios.get(process.env.ADVANCE_ANALYSIS_API).then((res) => res.data),
     ]);
 
-    const inputFile = await processGroupData(
-      req.body,
-      timestamp,
-      formattedDate,
-      groupNames
-    );
+    if (inputData) {
+      // Processing user provided file
+      inputFile = await processFile(inputData, timestamp, formattedDate);
+    } else {
+      // Processing data from HSP
+      inputFile = await processGroupData(
+        req.body,
+        timestamp,
+        formattedDate,
+        groupNames
+      );
+    }
 
     const basicAnalysisRequestBody = {
       username: username ? username : "test-user-local",
@@ -811,108 +818,17 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
       heat_map_number: numberOfDifferentiallyAbundantProteinsInHeatmap,
     };
 
-    console.log("> Input file location", inputFile);
-    console.log("> Request Body", basicAnalysisRequestBody);
+    console.log("> Input file location:", inputFile);
+    console.log("> Basic Analysis Request Body: %o", basicAnalysisRequestBody);
 
-    // Run basic differential expression analysis
-    const basicResponse = await axios
+    // Submit basic differential expression analysis
+    axios
       .post(process.env.BASIC_ANALYSIS_API, basicAnalysisRequestBody)
       .then((res) => res.data);
 
-    console.log("> Basic Analysis Response", basicResponse);
-
-    const advanceAnalysisRequestBody = {
-      input_file: inputFile,
-      pValueCutoff: 0.85,
-      qValueCutoff: 0.8,
-      submission_id: basicResponse.submission_id,
-    };
-
-    // Start advance differential expression analysis
-    const advanceResponse = await axios.post(
-      process.env.ADVANCE_ANALYSIS_API,
-      advanceAnalysisRequestBody,
-      {
-        timeout: 60000,
-      }
-    );
-
-    console.log("> Advance Analysis Response", advanceResponse.message);
-
-    res.status(200).send("Docker run complete");
+    res.status(200).send("Basic analysis complete");
   } catch (error) {
     console.log("> Error", error);
-    console.error(`Error during file operations: ${error.message}`);
-    res.status(500).send(`Server Error: ${error.message}`);
-  }
-});
-
-app.post("/api/differential-expression/analyze-file", async (req, res) => {
-  try {
-    const {
-      inputData,
-      logNorm,
-      numberOfDifferentiallyAbundantProteinsInHeatmap,
-      foldChangeThreshold,
-      pValueThreshold,
-      pValueType,
-      parametricTest,
-      timestamp,
-      formattedDate,
-      username,
-    } = req.body;
-
-    console.log(
-      `> Log Norm: ${logNorm}, Heatmap #: ${numberOfDifferentiallyAbundantProteinsInHeatmap}, Fold Threshold: ${foldChangeThreshold}, P Val Threshold: ${pValueThreshold}, P Value Type: ${pValueType}, Parametric Test: ${parametricTest}`
-    );
-
-    // Ping Lambdas to prevent cold start when trying to run analysis
-    const pingLambdas = await Promise.all([
-      axios.get(process.env.BASIC_ANALYSIS_API).then((res) => res.data),
-      axios.get(process.env.ADVANCE_ANALYSIS_API).then((res) => res.data),
-    ]);
-
-    const inputFile = await processFile(inputData, timestamp, formattedDate);
-
-    const basicAnalysisRequestBody = {
-      username: username ? username : "test-user-local",
-      input_file: inputFile,
-      log_normalized: logNorm,
-      stat_test: parametricTest,
-      p_raw: pValueType,
-      foldChangeThreshold,
-      pValueThreshold,
-      heat_map_number: numberOfDifferentiallyAbundantProteinsInHeatmap,
-    };
-
-    console.log("> Input file location", inputFile);
-    console.log("> Request Body", basicAnalysisRequestBody);
-
-    // Run basic differential expression analysis
-    const basicResponse = await axios
-      .post(process.env.BASIC_ANALYSIS_API, basicAnalysisRequestBody)
-      .then((res) => res.data);
-
-    console.log("> Basic Analysis Response", basicResponse);
-
-    const advanceAnalysisRequestBody = {
-      input_file: inputFile,
-      pValueCutoff: 0.65,
-      qValueCutoff: 0.25,
-      submission_id: basicResponse.submission_id,
-    };
-
-    // Start advance differential expression analysis
-    const advanceResponse = await axios
-      .post(process.env.ADVANCE_ANALYSIS_API, advanceAnalysisRequestBody, {
-        timeout: 60000,
-      })
-      .then((res) => res.data);
-
-    console.log("> Advance Analysis Response", advanceResponse.message);
-
-    res.status(200).send("Docker run complete");
-  } catch (error) {
     console.error(`Error during file operations: ${error.message}`);
     res.status(500).send(`Server Error: ${error.message}`);
   }

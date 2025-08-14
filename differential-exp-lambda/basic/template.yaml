@@ -21,6 +21,8 @@ Parameters:
     Type: String
   SubmissionTable:
     Type: String
+  AdvanceAnalysisApi:
+    Type: String
 
 Resources:
   ApiGateway:
@@ -51,6 +53,7 @@ Resources:
           SUPPORT_EMAIL: !Ref SupportEmail
           REGION: !Ref AwsRegion
           SUBMISSIONS_TABLE: !Ref SubmissionTable
+          ADVANCE_ANALYSIS_API: !Ref AdvanceAnalysisApi
       Events:
         ProxyApiRoot:
           Type: Api

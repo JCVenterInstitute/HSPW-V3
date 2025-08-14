@@ -9,6 +9,7 @@ import base64
 import json
 import uuid
 from datetime import datetime
+import requests
 
 
 # Copy all files from src_dir to dest_dir.
@@ -337,6 +338,29 @@ def main(event):
         subdirectory = f"{input_file}"
         upload_files_to_s3(s3_bucket_name, directory_name, subdirectory)
         print("> Successfully uploaded results to S3")
+
+        print("> Triggering Advance Analysis Lambda")
+
+        advanceAnalysisRequestBody = {
+            "input_file": input_file,
+            "pValueCutoff": 0.85,
+            "qValueCutoff": 0.8,
+            "submission_id": submission_id,
+        }
+
+        advance_analysis_api = os.getenv("ADVANCE_ANALYSIS_API")
+
+        print("> Advance Analysis API Endpoint:", advance_analysis_api)
+
+        print(
+            "> Advance Analysis Req:", json.dumps(advanceAnalysisRequestBody, indent=2)
+        )
+
+        requests.post(
+            advance_analysis_api,
+            json=advanceAnalysisRequestBody,  # sends as JSON body
+            timeout=60,  # timeout in seconds
+        )
 
         return {
             "statusCode": 200,

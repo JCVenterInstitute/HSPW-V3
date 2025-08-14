@@ -746,14 +746,14 @@ const DifferentialExpression = () => {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "GroupA and/or GroupB cannot be empty. Please try again.",
+          text: "Group A and/or Group B cannot be empty. Please try again.",
         });
         return;
       } else if (groupARowData.length < 3 || groupBRowData.length < 3) {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "GroupA and/or GroupB need to have at least 3 samples. Please try again.",
+          text: "Group A and/or Group B need to have at least 3 samples. Please try again.",
         });
         return;
       }
@@ -805,77 +805,55 @@ const DifferentialExpression = () => {
     const currUser = userpool.getCurrentUser();
     const username = currUser.getUsername();
 
+    const requestBody = {
+      logNorm,
+      numberOfDifferentiallyAbundantProteinsInHeatmap,
+      foldChangeThreshold,
+      pValueThreshold,
+      pValueType,
+      parametricTest,
+      timestamp: {
+        year,
+        month,
+        day,
+        hours,
+        minutes,
+        seconds,
+      },
+      formattedDate,
+      groupNames,
+      username,
+    };
+
     try {
       if (fileName) {
-        await axios
-          .post(
-            `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze-file`,
-            {
-              inputData,
-              logNorm,
-              numberOfDifferentiallyAbundantProteinsInHeatmap,
-              foldChangeThreshold,
-              pValueThreshold,
-              pValueType,
-              parametricTest,
-              timestamp: {
-                year,
-                month,
-                day,
-                hours,
-                minutes,
-                seconds,
-              },
-              formattedDate,
-              groupNames,
-              username,
-            }
-          )
-          .then(() => {
-            // Wait for 3 seconds before redirecting
-            setTimeout(() => {
-              window.location.href = `/differential-expression/results/${jobId}?logNorm=${logNorm}&heatmap=${numberOfDifferentiallyAbundantProteinsInHeatmap}&foldChange=${foldChangeThreshold}&pValue=${pValueThreshold}&pType=${pValueType}&parametricTest=${parametricTest}`;
-              Swal.close();
-            }, 3000);
-          });
+        requestBody.inputData = inputData;
       } else {
-        await axios
-          .post(
-            `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze`,
-            {
-              groupAData: groupARowData,
-              groupBData: groupBRowData,
-              logNorm,
-              numberOfDifferentiallyAbundantProteinsInHeatmap,
-              foldChangeThreshold,
-              pValueThreshold,
-              pValueType,
-              parametricTest,
-              timestamp: {
-                year,
-                month,
-                day,
-                hours,
-                minutes,
-                seconds,
-              },
-              formattedDate,
-              groupNames,
-              username,
-            }
-          )
-          .then(() => {
-            // Wait for 3 seconds before redirecting
-            setTimeout(() => {
-              window.location.href = `/differential-expression/results/${jobId}?logNorm=${logNorm}&heatmap=${numberOfDifferentiallyAbundantProteinsInHeatmap}&foldChange=${foldChangeThreshold}&pValue=${pValueThreshold}&pType=${pValueType}&parametricTest=${parametricTest}`;
-              Swal.close();
-            }, 3000);
-          });
+        requestBody.groupAData = groupARowData;
+        requestBody.groupBData = groupBRowData;
       }
+
+      await axios
+        .post(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze`,
+          requestBody
+        )
+        .then(() => {
+          Swal.fire({
+            icon: "success",
+            title: "Job Submitted Successfully",
+            html: `
+                When the submission has started, you can view it on the 
+                <a href='/submissions'>submissions</a> page along with your previous submissions.
+                It may take a few minutes to complete the analysis.
+              `,
+          });
+        });
     } catch (error) {
       const payload = {
         message: error.response.data,
       };
+
       try {
         await axios
           .post(
