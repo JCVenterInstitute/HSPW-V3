@@ -822,14 +822,24 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
     console.log("> Basic Analysis Request Body: %o", basicAnalysisRequestBody);
 
     // Submit basic differential expression analysis
+    // Ignore timeout since the analysis takes a while to run
+    // API will time out, but analysis still runs
     axios
       .post(process.env.BASIC_ANALYSIS_API, basicAnalysisRequestBody)
-      .then((res) => res.data);
+      .catch((err) =>
+        console.error(
+          "Basic analysis API call timed out:",
+          err?.response?.status ?? err.code,
+          err?.message
+        )
+      );
 
-    res.status(200).send("Basic analysis complete");
+    console.log("> Done");
+
+    return res.status(200).send("Basic analysis complete");
   } catch (error) {
     console.log("> Error", error);
-    console.error(`Error during file operations: ${error.message}`);
+    console.error(`Error message: ${error.message}`);
     res.status(500).send(`Server Error: ${error.message}`);
   }
 });

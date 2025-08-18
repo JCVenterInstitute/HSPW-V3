@@ -792,8 +792,6 @@ const DifferentialExpression = () => {
 
     const formattedDate = `${year}${month}${day}-${hours}${minutes}${seconds}`;
 
-    const jobId = `differential-expression-${formattedDate}`;
-
     Swal.fire({
       title: "Submitting the job, please wait...",
       showConfirmButton: false,
@@ -833,22 +831,27 @@ const DifferentialExpression = () => {
         requestBody.groupBData = groupBRowData;
       }
 
-      await axios
-        .post(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze`,
-          requestBody
-        )
-        .then(() => {
-          Swal.fire({
-            icon: "success",
-            title: "Job Submitted Successfully",
-            html: `
+      const resp = await axios.post(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze`,
+        requestBody
+      );
+
+      console.log("Response: ", resp.data);
+
+      // Clear the input data and file name
+      setInputData("");
+      setGroupARowData([]);
+      setGroupBRowData([]);
+
+      Swal.fire({
+        icon: "success",
+        title: "Job Submitted Successfully",
+        html: `
                 When the submission has started, you can view it on the 
                 <a href='/submissions'>submissions</a> page along with your previous submissions.
                 It may take a few minutes to complete the analysis.
               `,
-          });
-        });
+      });
     } catch (error) {
       const payload = {
         message: error.response.data,
