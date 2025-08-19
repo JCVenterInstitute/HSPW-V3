@@ -159,7 +159,8 @@ const Signup = () => {
         return;
       }
       try {
-        fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/create-folder`, {
+        // Initializes user's root folder for S3 Explorer with .permissions
+        await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/create-folder`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -170,6 +171,7 @@ const Signup = () => {
             user: { username },
           }),
         });
+        // Initializes user's Shared Folders folder
         fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/create-folder`, {
           method: "POST",
           headers: {
