@@ -16,13 +16,14 @@ const client = new S3Client({
   region: "us-east-2",
 });
 
-// Helper function to read and update permissions
+// Helper function to fetch permissions
 exports.getPermissions = async (
   folderName,
   userName,
   mode = "read",
   raw = false
 ) => {
+  // Initializes parmeters for get request
   const params = {
     Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
     Key: `${folderName}/.permissions`,
@@ -45,13 +46,17 @@ exports.getPermissions = async (
     const content = await streamToString(response.Body);
     const permissions = JSON.parse(content);
 
+    // Returns full permissions data if raw = true
     if (raw) {
       return permissions;
     }
+
+    // Bypass for when a new user is created
     if (folderName === "" && mode === "write") {
       return true;
     }
 
+    // Bypass for when the user is the owner of the folder, else check permissions normally
     if (permissions?.["_meta"]?.["owner"] == userName) {
       return true;
     } else {
@@ -63,7 +68,7 @@ exports.getPermissions = async (
   }
 };
 
-// Helper function to update permissions
+// Helper function to update permissions or create a new one
 exports.updatePermissions = async (folderName, newPermissions) => {
   const params = {
     Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
@@ -85,11 +90,12 @@ exports.updatePermissions = async (folderName, newPermissions) => {
   }
 };
 
+// Helper function to fetch list of files and folders within a folder
 exports.listS3Objects = async (prefix = "") => {
   const input = {
     Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
     Prefix: prefix,
-    Delimiter: "/", // This ensures we can get folder-like results
+    Delimiter: "/",
   };
 
   const command = new ListObjectsCommand(input);
@@ -100,7 +106,7 @@ exports.listS3Objects = async (prefix = "") => {
     const contents = response.Contents || [];
     const prefixes = response.CommonPrefixes || [];
 
-    // Combine files and folders for the response
+    // Returns combined files and folders as a JSON
     return {
       files: contents,
       folders: prefixes,
@@ -111,6 +117,7 @@ exports.listS3Objects = async (prefix = "") => {
   }
 };
 
+// Helper function to fetch Shortcuts from .shortcuts as a JSON
 exports.getShortcuts = async (folderName) => {
   const key = `${folderName}/.shortcuts`;
   console.log("Getshortcuts: ", key);
@@ -147,9 +154,11 @@ exports.getShortcuts = async (folderName) => {
   }
 };
 
+// Helper function to upload a single file to s3
 exports.uploadS3Object = async (file, prefix = "", fileName, onProgress) => {
   const key = `${prefix}${fileName}`;
 
+  // Splits file into 20mb chunks for concurrent upload
   const upload = new Upload({
     client,
     params: {
@@ -158,10 +167,11 @@ exports.uploadS3Object = async (file, prefix = "", fileName, onProgress) => {
       Body: file?.buffer || file,
       ContentType: file?.mimetype || "application/octet-stream",
     },
-    queueSize: 4,
+    queueSize: 4, // concurrency (4 parts at a time)
     partSize: 20 * 1024 * 1024, // 20 MB per part
   });
 
+  // attempt at making a loading bar
   upload.on("httpUploadProgress", (progress) => {
     if (onProgress) onProgress(progress);
   });
@@ -170,6 +180,7 @@ exports.uploadS3Object = async (file, prefix = "", fileName, onProgress) => {
   return { message: `Upload successful: ${key}`, key };
 };
 
+// Helper function to create a folder by uploading a .permissions file to the new folder path
 exports.uploadS3Folder = async (
   userName = "ExampleUser",
   prefix = "",
@@ -177,6 +188,8 @@ exports.uploadS3Folder = async (
 ) => {
   const key = `${prefix}${folderName}/.permissions`;
 
+  // Creates the initial data within .permissions in the following format:
+  // {_meta = {owner: <owner>}, <user>: {read: <bool>, write: <bool>},...}
   const defaultPermissions = {};
   defaultPermissions["_meta"] = { owner: userName };
 
@@ -197,6 +210,7 @@ exports.uploadS3Folder = async (
   }
 };
 
+// Helper function to delete a single file from s3
 exports.deleteS3File = async (fileKey) => {
   const params = {
     Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
@@ -214,6 +228,7 @@ exports.deleteS3File = async (fileKey) => {
   }
 };
 
+// Helper function to delete a folder from s3
 exports.deleteS3Folder = async (folderKey) => {
   const listParams = {
     Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
@@ -230,6 +245,7 @@ exports.deleteS3Folder = async (folderKey) => {
       throw new Error("Folder is empty or does not exist.");
     }
 
+    // Creates a JSON containing all keys of all objects below the folder for batch deletion
     const objectsToDelete = listedObjects.Contents.map((obj) => ({
       Key: obj.Key,
     }));
@@ -253,6 +269,7 @@ exports.deleteS3Folder = async (folderKey) => {
   }
 };
 
+//Helper function to generate a signed download URL for a file
 exports.downloadS3Object = async (objectKey) => {
   const params = {
     Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
@@ -263,7 +280,8 @@ exports.downloadS3Object = async (objectKey) => {
   console.log(command);
 
   try {
-    const url = await getSignedUrl(client, command, { expiresIn: 60 }); // 60 seconds valid
+    // Creates URL with 60 second validity
+    const url = await getSignedUrl(client, command, { expiresIn: 60 });
     return url;
   } catch (error) {
     console.error("Error getting object url from S3: ", error);
