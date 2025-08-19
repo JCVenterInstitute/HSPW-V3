@@ -160,7 +160,7 @@ const Signup = () => {
       }
       try {
         // Initializes user's root folder for S3 Explorer with .permissions
-        await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/create-folder`, {
+        fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/create-folder`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -170,19 +170,24 @@ const Signup = () => {
             folderName: { username },
             user: { username },
           }),
-        });
-        // Initializes user's Shared Folders folder
-        fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/create-folder`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            prefix: { username },
-            folderName: "Shared Folders",
-            user: { username },
-          }),
-        });
+        })
+          // Initializes user's Shared Folders folder after the root folder is created
+          .then(() => {
+            return fetch(
+              `${process.env.REACT_APP_API_ENDPOINT}/api/create-folder`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  prefix: username,
+                  folderName: "Shared Folders",
+                  user: username,
+                }),
+              }
+            );
+          });
       } catch (error) {
         console.error("Error creating folder:", error);
       }
