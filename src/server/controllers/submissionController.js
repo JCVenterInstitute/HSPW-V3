@@ -20,7 +20,7 @@ const getSubmissionById = async (req, res) => {
     console.log("> Fetch submission with id", id);
 
     const command = new GetCommand({
-      TableName: "hsp-analysis-submissions-DEV",
+      TableName: `hsp-analysis-submissions-${process.env.DEPLOY_ENV.toUpperCase()}`,
       Key: { id },
     });
 
