@@ -4,45 +4,41 @@ import FileUpload from "./FileUpload.tsx";
 import FolderCreate from "./FolderCreate.tsx";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../services/AuthContext.js";
-import {
-  Box,
-  Button,
-  Typography,
-  Breadcrumbs,
-  Link,
-  Divider,
-} from "@mui/material";
+import { Box, Button, Breadcrumbs, Link, Divider } from "@mui/material";
 
 const S3Explorer: React.FC = () => {
+  // Access user info from authenticcation context
   const context_data = useContext(AuthContext);
   const user = context_data.user.username;
-  const [shortcutRoot, setShortcutRoot] = useState<string | null>(null);
-  const [files, setFiles] = useState<any>([]);
-  const [historyStack, setHistoryStack] = useState<string[]>([]);
-  const [currentFolder, setCurrentFolder] = useState<string>(`${user}/`); // Start at configs folder
-  const [breadcrumb, setBreadcrumb] = useState<string[]>([user]); // Initialize breadcrumb
-  const [isListView, setIsListView] = useState<boolean>(true); // Toggle for view type
 
+  const [shortcutRoot, setShortcutRoot] = useState<string | null>(null); // Root folder for when navigating shortcuts
+  const [files, setFiles] = useState<any>([]); // Files, folders and shortcuts from s3
+  const [historyStack, setHistoryStack] = useState<string[]>([]); // Folder navigation history for go back functionality
+  const [currentFolder, setCurrentFolder] = useState<string>(`${user}/`); // Current folder being displayed
+  const [breadcrumb, setBreadcrumb] = useState<string[]>([user]); // Breadcrumb path for current folder
+  // TODO: re-enable grid view after updating it
+  // Grid view needs to filter .files, and display shortcuts from the .shortcut file
+  const [isListView, setIsListView] = useState<boolean>(true); // Toggle between list and grid view
+
+  // Function to fetch and files and folders within the current folder
   const fetchFiles = async () => {
-    console.log(currentFolder);
     try {
       const response = await fetch(
         `${process.env.REACT_APP_API_ENDPOINT}/api/list-s3-objects?prefix=${currentFolder}&user=${user}`
       );
 
       if (!response.ok) {
-        const errorText = await response.text(); // Parse error message safely
+        const errorText = await response.text();
         throw new Error(`Failed to fetch: ${errorText}`);
       }
 
       const data = await response.json();
-      setFiles(data);
-      console.log(data);
+      setFiles(data); // Update state with fetched data
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error("Error fetching S3 objects:", error.message);
         Swal.fire("Error", error.message, "error");
-        handleGoBack();
+        handleGoBack(); // Go back to previous folder on error
       } else {
         console.error("Unknown error:", error);
         Swal.fire("Error", "An unknown error occurred.", "error");
@@ -51,24 +47,29 @@ const S3Explorer: React.FC = () => {
     }
   };
 
+  // Fetch files and folders whenever currentFolder changes
   useEffect(() => {
     fetchFiles();
   }, [currentFolder]);
 
+  // Handle changing directories/folders
   const handleFolderChange = (folder: string, isShortcut = false) => {
-    if (historyStack.length < 5) {
+    // Update users history by adding prefixes to a stack (set to Max 10 folders)
+    if (historyStack.length < 10) {
       setHistoryStack((prev) => [...prev, currentFolder]);
     } else {
       setHistoryStack((prev) => [...prev.slice(1), currentFolder]);
     }
 
+    // For jumping directly to a specified path
     if (isShortcut) {
+      // If entering a shared folder, set shortcut root
       setShortcutRoot(folder);
       const displayName = folder.split("/").filter(Boolean).pop()!;
       setBreadcrumb([displayName]); // Only show the shared folder name
     } else {
       if (shortcutRoot && folder.startsWith(shortcutRoot)) {
-        // navigating deeper into shortcut
+        // navigating deeper into shared folder
         const relPath = folder
           .replace(shortcutRoot, "")
           .split("/")
@@ -82,10 +83,9 @@ const S3Explorer: React.FC = () => {
       }
     }
     setCurrentFolder(folder); // Change current folder
-
-    setBreadcrumb(folder.split("/").filter(Boolean));
   };
 
+  // Handle "Go Back" navigation
   const handleGoBack = () => {
     setHistoryStack((prev) => {
       if (prev.length === 0) return prev;
@@ -112,12 +112,15 @@ const S3Explorer: React.FC = () => {
     });
   };
 
-  const toggleView = () => {
-    setIsListView(!isListView); // Toggle view type
-  };
+  // TODO: re-enable grid view after updating it
+  // Toggle between list and grid view for file display
+  //   const toggleView = () => {
+  //     setIsListView(!isListView); // Toggle view type
+  //   };
 
   return (
     <Box p={4}>
+      {/* Top controls: Go Back, Refresh, and View Toggle */}
       <Box
         mb={4}
         display="flex"
@@ -143,14 +146,16 @@ const S3Explorer: React.FC = () => {
             Refresh{" "}
           </Button>
         </Box>
+        {/* TODO: re-enable grid view after updating it
         <Button
           variant="outlined"
           onClick={toggleView}
         >
           {isListView ? "Switch to Grid View" : "Switch to List View"}
-        </Button>
+        </Button> */}
       </Box>
 
+      {/* Breadcrumb navigation */}
       <Breadcrumbs separator="›">
         {breadcrumb.map((folder, index) => {
           const pathUpTo = breadcrumb.slice(0, index + 1).join("/") + "/";
@@ -165,6 +170,8 @@ const S3Explorer: React.FC = () => {
           );
         })}
       </Breadcrumbs>
+
+      {/* File upload and folder creation components */}
       <Box
         display="flex"
         justifyContent="space-between"
@@ -182,6 +189,7 @@ const S3Explorer: React.FC = () => {
         />
       </Box>
 
+      {/* File and folder list */}
       {files.length === 0 ? null : (
         <S3FileList
           files={files.files.filter((file: any) => !file.Key.endsWith("/"))} // Render files only

@@ -4,37 +4,44 @@ import { Button, TextField, Stack } from "@mui/material";
 import axios from "axios";
 
 interface FileUploadProps {
-  currentPrefix: string;
-  onUploadSuccess: () => void;
-  user: string;
+  currentPrefix: string; // Current folder path where file should be uploaded
+  onUploadSuccess: () => void; // Callback to refresh parent S3Explorer after upload
+  user: string; // Username of the current user
 }
 
+// Functional component to handle file upload into S3
 const FileUpload: React.FC<FileUploadProps> = ({
   currentPrefix,
   onUploadSuccess,
   user,
 }) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null); // Currently selected file
+  const fileInputRef = useRef<HTMLInputElement>(null); // Ref needed to reset the file input after upload
 
+  // Handler for when a file is selected from the input
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedFile(e.target.files ? e.target.files[0] : null);
   };
 
+  // Handler for uploading the selected file to the backend
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedFile) return;
 
+    // Prevents uploading of dotfiles (.permissions, .shortcuts, etc.)
     if (selectedFile.name.startsWith(".")) {
       Swal.fire("Error", "Uploading dotfiles is not allowed.", "error");
       return;
     }
 
+    // Prepare form data for API call
     const formData = new FormData();
     formData.append("file", selectedFile);
-    formData.append("prefix", currentPrefix);
-    formData.append("user", user);
+    formData.append("prefix", currentPrefix); // Current S3 folder path
+    formData.append("user", user); // User name of current user
 
+    // Show SweetAlert with custom progress bar
+    // TODO: either update progress bar to accurately show progress or replace with loading animation
     Swal.fire({
       title: "Uploading...",
       html: `<div style="width:100%;background:#eee;border-radius:5px;">
@@ -44,19 +51,23 @@ const FileUpload: React.FC<FileUploadProps> = ({
       allowOutsideClick: false,
       allowEscapeKey: false,
       didOpen: () => {
-        Swal.showLoading();
+        Swal.showLoading(); // Keeps modal active while uploading
       },
     });
 
     try {
+      // POST request to backend for uploading a file to S3
       await axios.post(
         `${process.env.REACT_APP_API_ENDPOINT}/api/upload-s3-object`,
         formData,
         {
+          // Track progress during upload
           onUploadProgress: (progressEvent) => {
             const percent = Math.round(
               (progressEvent.loaded * 100) / (progressEvent.total ?? 1)
             );
+
+            // Update progress bar in SweetAlert popup
             const progressBar = document.getElementById("progress-bar");
             const progressText = document.getElementById("progress-text");
             if (progressBar) progressBar.style.width = `${percent}%`;
@@ -65,11 +76,16 @@ const FileUpload: React.FC<FileUploadProps> = ({
         }
       );
 
+      // Success message after upload completes
       Swal.fire("Success", "File uploaded successfully!", "success");
+
+      // Resets state and file input
       setSelectedFile(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
+
+      // Trigger parent callback to refresh file list
       onUploadSuccess();
     } catch (error) {
       Swal.fire(
@@ -81,6 +97,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   };
 
   return (
+    // JSX form with file picker and upload button
     <form onSubmit={handleUpload}>
       <Stack
         direction="row"

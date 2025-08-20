@@ -3,17 +3,20 @@ import Swal from "sweetalert2";
 import { Button } from "@mui/material";
 
 interface FolderCreateProps {
-  currentPrefix: string;
-  onCreateSuccess: () => void;
-  user: string;
+  currentPrefix: string; // Current folder path where new folder should be created
+  onCreateSuccess: () => void; // Callback to refresh parent S3 explorer after folder creation
+  user: string; // Username of current user
 }
 
+// Functional component to create a new folder in S3
 const FolderCreate: React.FC<FolderCreateProps> = ({
   currentPrefix,
   onCreateSuccess,
   user,
 }) => {
+  // Function to handle folder creation
   const handleCreateFolder = async () => {
+    // Show SweetAlert2 input modal to enter folder name
     const { value: folderName } = await Swal.fire({
       title: "Create New Folder",
       input: "text",
@@ -21,15 +24,19 @@ const FolderCreate: React.FC<FolderCreateProps> = ({
       inputPlaceholder: "Enter folder name",
       showCancelButton: true,
       inputValidator: (value) => {
-        if (!value) return "Folder name cannot be empty";
-        if (value.startsWith(".")) return "Dotfolders are not allowed";
-        if (value.includes("/")) return "Folder name cannot contain slashes";
+        // Folder name validation
+        if (!value) return "Folder name cannot be empty"; // Cannot be empty
+        if (value.startsWith(".")) return "Dotfolders are not allowed"; // Cannot begin with .
+        if (value.includes("/")) return "Folder name cannot contain slashes"; // Cannot contain slashes
         return null;
       },
     });
+
+    // Exit if user cancelled
     if (!folderName) return;
 
     try {
+      // POST request to backend to create folder
       const response = await fetch(
         `${process.env.REACT_APP_API_ENDPOINT}/api/create-folder`,
         {
@@ -38,27 +45,28 @@ const FolderCreate: React.FC<FolderCreateProps> = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            prefix: currentPrefix,
-            folderName,
-            user,
+            prefix: currentPrefix, // Parent folder path
+            folderName, // New folder name
+            user, // Current user
           }),
         }
       );
 
       if (!response.ok) {
         const error = await response.json();
-        Swal.fire("Error", error.error, "error");
+        Swal.fire("Error", error.error, "error"); // Show error modal
       } else {
-        Swal.fire("success", "Folder created successfully", "success");
-        onCreateSuccess(); // Refresh file list
+        Swal.fire("success", "Folder created successfully", "success"); // Show success modal
+        onCreateSuccess(); // Trigger parent component to refresh S3 file/folder List
       }
     } catch (error) {
       console.error("Error creating folder:", error);
-      Swal.fire("Error", "Failed to create folder", "error");
+      Swal.fire("Error", "Failed to create folder", "error"); // Show generic error modal
     }
   };
 
   return (
+    // Button that triggers folder creation modal
     <Button
       variant="contained"
       onClick={handleCreateFolder}
