@@ -1,10 +1,19 @@
 import React, { useState, useContext, useEffect } from "react";
+import Swal from "sweetalert2";
+import {
+  Box,
+  Button,
+  Breadcrumbs,
+  Link,
+  Divider,
+  Container,
+} from "@mui/material";
+
 import S3FileList from "./S3FileList.tsx";
 import FileUpload from "./FileUpload.tsx";
 import FolderCreate from "./FolderCreate.tsx";
-import Swal from "sweetalert2";
 import { AuthContext } from "../../services/AuthContext.js";
-import { Box, Button, Breadcrumbs, Link, Divider } from "@mui/material";
+import PageHeader from "../../components/Layout/PageHeader.js";
 
 const S3Explorer: React.FC = () => {
   // Access user info from authenticcation context
@@ -118,94 +127,106 @@ const S3Explorer: React.FC = () => {
   //     setIsListView(!isListView); // Toggle view type
   //   };
 
+  const breadcrumbPath = [
+    { path: "Home", link: "/" },
+    { path: "Account" },
+    { path: "File Explorer" },
+  ];
+
   return (
-    <Box p={4}>
-      {/* Top controls: Go Back, Refresh, and View Toggle */}
-      <Box
-        mb={4}
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <Box
-          display="flex"
-          gap={2}
-        >
-          <Button
-            variant="contained"
-            onClick={handleGoBack}
+    <>
+      <PageHeader
+        tabTitle={`HSP | File Explorer`}
+        title={`File Explorer`}
+        breadcrumb={breadcrumbPath}
+        description={`View and manage your submissions or data files.`}
+      />
+      <Container maxWidth="xl">
+        <Box p={4}>
+          {/* Top controls: Go Back, Refresh, and View Toggle */}
+          <Box
+            mb={4}
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
           >
-            Go Back
-          </Button>
-
-          <Button
-            variant="contained"
-            onClick={fetchFiles}
-          >
-            {" "}
-            Refresh{" "}
-          </Button>
-        </Box>
-        {/* TODO: re-enable grid view after updating it
-        <Button
-          variant="outlined"
-          onClick={toggleView}
-        >
-          {isListView ? "Switch to Grid View" : "Switch to List View"}
-        </Button> */}
-      </Box>
-
-      {/* Breadcrumb navigation */}
-      <Breadcrumbs separator="›">
-        {breadcrumb.map((folder, index) => {
-          const pathUpTo = breadcrumb.slice(0, index + 1).join("/") + "/";
-          return (
-            <Link
-              key={index}
-              onClick={() => handleFolderChange(pathUpTo)}
-              sx={{ cursor: "pointer", color: "primary.main" }}
+            <Box
+              display="flex"
+              gap={2}
             >
-              {folder}
-            </Link>
-          );
-        })}
-      </Breadcrumbs>
+              <Button
+                variant="contained"
+                onClick={handleGoBack}
+              >
+                Go Back
+              </Button>
 
-      {/* File upload and folder creation components */}
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <FileUpload
-          currentPrefix={currentFolder}
-          onUploadSuccess={fetchFiles}
-          user={user}
-        />
-        <FolderCreate
-          currentPrefix={currentFolder}
-          onCreateSuccess={fetchFiles}
-          user={user}
-        />
-      </Box>
-
-      {/* File and folder list */}
-      {files.length === 0 ? null : (
-        <S3FileList
-          files={files.files.filter((file: any) => !file.Key.endsWith("/"))} // Render files only
-          folders={files.folders.filter((file: any) =>
-            file.Prefix.endsWith("/")
-          )} // Render folders only
-          shortcuts={Object.values(files.shortcuts)}
-          onFolderChange={handleFolderChange}
-          isListView={isListView}
-          user={user}
-          onDeleteSuccess={fetchFiles}
-        />
-      )}
-
-      <Divider sx={{ mt: 2 }} />
-    </Box>
+              <Button
+                variant="contained"
+                onClick={fetchFiles}
+              >
+                {" "}
+                Refresh{" "}
+              </Button>
+            </Box>
+            {/* TODO: re-enable grid view after updating it */}
+            {/* <Button
+              variant="outlined"
+              onClick={toggleView}
+            >
+              {isListView ? "Switch to Grid View" : "Switch to List View"}
+            </Button> */}
+          </Box>
+          {/* Breadcrumb navigation */}
+          <Breadcrumbs separator="›">
+            {breadcrumb.map((folder, index) => {
+              const pathUpTo = breadcrumb.slice(0, index + 1).join("/") + "/";
+              return (
+                <Link
+                  key={index}
+                  onClick={() => handleFolderChange(pathUpTo)}
+                  sx={{ cursor: "pointer", color: "primary.main" }}
+                >
+                  {folder}
+                </Link>
+              );
+            })}
+          </Breadcrumbs>
+          {/* File upload and folder creation components */}
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <FileUpload
+              currentPrefix={currentFolder}
+              onUploadSuccess={fetchFiles}
+              user={user}
+            />
+            <FolderCreate
+              currentPrefix={currentFolder}
+              onCreateSuccess={fetchFiles}
+              user={user}
+            />
+          </Box>
+          {/* File and folder list */}
+          {files.length === 0 ? null : (
+            <S3FileList
+              files={files.files.filter((file: any) => !file.Key.endsWith("/"))} // Render files only
+              folders={files.folders.filter((file: any) =>
+                file.Prefix.endsWith("/")
+              )} // Render folders only
+              shortcuts={Object.values(files.shortcuts)}
+              onFolderChange={handleFolderChange}
+              isListView={isListView}
+              user={user}
+              onDeleteSuccess={fetchFiles}
+            />
+          )}
+          <Divider sx={{ mt: 2 }} />
+        </Box>
+      </Container>
+    </>
   );
 };
 

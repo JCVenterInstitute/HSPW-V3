@@ -70,7 +70,7 @@ const FolderCreate: React.FC<FolderCreateProps> = ({
     <Button
       variant="contained"
       onClick={handleCreateFolder}
-      color="secondary"
+      color="primary"
       className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
     >
       + New Folder
