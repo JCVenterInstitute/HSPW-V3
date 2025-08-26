@@ -58,6 +58,9 @@ const NavBarMenuItem = ({ mainMenu, subMenu }) => {
                       key={`${m.label}-${i}`}
                       component={Link}
                       to={m.link}
+                      target={
+                        m.label === "Documentation" ? "_blank" : undefined
+                      }
                       onClick={m.onClick}
                     >
                       {m.label}

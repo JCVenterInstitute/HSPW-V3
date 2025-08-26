@@ -82,11 +82,11 @@ export const menuData = [
       },
       {
         link: "/download",
-        label: "Download",
+        label: "Data Download",
       },
       {
         link: "/upload-experiment",
-        label: "Upload",
+        label: "Upload Experiment",
       },
       {
         link: "/team",
