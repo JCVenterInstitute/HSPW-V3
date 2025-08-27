@@ -19,6 +19,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Swal from "sweetalert2";
 import XMLParser from "react-xml-parser";
 
+import userpool from "../../userpool";
+
 const InterProScanSequenceParameters = ({ url }) => {
   const [loading, setLoading] = useState(false);
   const [parameterDetails, setParameterDetails] = useState([]);
@@ -31,41 +33,49 @@ const InterProScanSequenceParameters = ({ url }) => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0]; // Get the selected file
+
     if (file) {
       const reader = new FileReader();
+
       reader.onload = (event) => {
         const content = event.target.result;
         setSequence(content); // Set the file content to state
       };
+
       reader.readAsText(file); // Read the file as text
     }
   };
 
   const fetchOptions = async () => {
-    const parameterDetailArray = [];
-    const defaultValue = {};
-
     setLoading(true);
+
     try {
       const parameters = await axios
         .get(`https://www.ebi.ac.uk/Tools/services/rest/${url}/parameters`)
         .then((res) => res.data.parameters);
 
-      for (const parameter of parameters) {
-        const parameterDetail = await axios
+      const requests = parameters.map((parameter) =>
+        axios
           .get(
             `https://www.ebi.ac.uk/Tools/services/rest/${url}/parameterdetails/${parameter}`
           )
-          .then((res) => res.data);
-        parameterDetailArray.push(parameterDetail);
-        defaultValue[parameterDetail.name] = {
+          .then((res) => ({ parameter, detail: res.data }))
+      );
+
+      const results = await Promise.all(requests);
+
+      const parameterDetailArray = [];
+      const defaultValue = {};
+
+      for (const { parameter, detail } of results) {
+        parameterDetailArray.push(detail);
+
+        defaultValue[detail.name] = {
           name: parameter,
-          value:
-            parameterDetail.values !== null
-              ? parameterDetail.values.values[0].value
-              : null,
+          value: detail.values !== null ? detail.values.values[0].value : null,
         };
       }
+
       setParameterValue(defaultValue);
       setResetValue(defaultValue);
       setParameterDetails([...parameterDetailArray]);
@@ -86,7 +96,11 @@ const InterProScanSequenceParameters = ({ url }) => {
       title: "Submitting the job, please wait...",
     });
     Swal.showLoading();
+
     try {
+      const currUser = userpool.getCurrentUser();
+      const username = currUser.getUsername();
+
       const data = new URLSearchParams();
       data.append("email", email);
       data.append("title", title);
@@ -98,6 +112,7 @@ const InterProScanSequenceParameters = ({ url }) => {
           data.append(option.name, option.value);
         }
       }
+
       checked.map((bool, index) => {
         if (bool) {
           data.append("appl", parameterDetails[3].values.values[index].value);
@@ -110,11 +125,29 @@ const InterProScanSequenceParameters = ({ url }) => {
         data: data.toString(),
         url: `https://www.ebi.ac.uk/Tools/services/rest/${url}/run`,
       };
+
       const jobId = await axios(payload)
         .then((res) => res.data)
         .finally(() => {
           Swal.close();
         });
+
+      // Create submission in HSP to track
+      const submissionPayload = {
+        user: username,
+        type: "Protein Signature Search",
+        link: `/${url}/results/${jobId}`,
+        status: "Running",
+        id: jobId,
+        name: title,
+      };
+
+      // Create HSP submission in running status
+      await axios.post(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions`,
+        submissionPayload
+      );
+
       window.location.href = `/${url}/results/${jobId}`;
     } catch (err) {
       const errorMessage = new XMLParser().parseFromString(err.response.data);

@@ -2,12 +2,10 @@ import { Chart } from "react-google-charts";
 import { useState, useEffect } from "react";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
-import { Helmet } from "react-helmet";
 import { Container } from "@mui/material";
 
-import MainFeature from "../../../assets/hero.jpeg";
-import ProteinSignatureTable from "../../../components/Tables/ProteinSignatureTable";
-import BreadCrumb from "../../../components/Layout/Breadcrumbs";
+import ProteinSignatureTable from "@Components/Tables/ProteinSignatureTable";
+import PageHeader from "@Components/Layout/PageHeader";
 import "../../style.css";
 
 export const data = [
@@ -80,38 +78,24 @@ const ProteinSignature = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Protein Signature</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{
-          backgroundImage: `url(${MainFeature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1
-            className="head_title"
-            align="left"
-          >
-            Protein Signature
-          </h1>
-          <p className="head_text">
-            InterPro is a searchable database providing information on sequence
-            function and annotation. Sequences InterPro is a searchable database
-            providing information on sequence function and annotation. Sequences
-            are grouped based on protein signatures or 'methods'. These groups
-            represent superfamilies, families or sub-families of sequences. The
-            groups may be defined as families, domains, regions, repeats or
-            sites. The function of sequences within any group may be confined to
-            a single biological process or it may be diverse range of functions
-            (as in a superfamily) or the group may be functionally
-            uncharacterized but without exception every entry has an abstract
-            and references are provided where possible.
-          </p>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={"HSP | Protein Signature"}
+        title={"Protein Signature"}
+        breadcrumb={breadcrumbPath}
+        description={
+          "InterPro is a searchable database providing information on sequence\
+            function and annotation. Sequences InterPro is a searchable database\
+            providing information on sequence function and annotation. Sequences\
+            are grouped based on protein signatures or 'methods'. These groups\
+            represent superfamilies, families or sub-families of sequences. The\
+            groups may be defined as families, domains, regions, repeats or\
+            sites. The function of sequences within any group may be confined to\
+            a single biological process or it may be diverse range of functions\
+            (as in a superfamily) or the group may be functionally\
+            uncharacterized but without exception every entry has an abstract\
+            and references are provided where possible."
+        }
+      />
       <Container maxWidth="xl">
         <h2 style={{ textAlign: "center", marginTop: "20px" }}>
           Types of Protein Signatures Detected in Salivary Proteins

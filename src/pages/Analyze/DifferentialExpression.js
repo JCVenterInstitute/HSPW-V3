@@ -36,8 +36,9 @@ import Papa from "papaparse";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 
-import CustomLoadingOverlay from "./CustomLoadingOverlay";
-import PageHeader from "../../components/Layout/PageHeader";
+import LoadingOverlay from "@Components/Shared/LoadingOverlay";
+import PageHeader from "@Components/Layout/PageHeader";
+import userpool from "../../userpool";
 
 const toExcelColumn = (colIndex) => {
   let column = "";
@@ -64,8 +65,7 @@ const validateFile = (fileContent) => {
       // Check headers
       if (data[0][0] !== "Identifiers" || data[0][1] !== "Group") {
         isValid = false;
-        errorMessage =
-          'The first row must have "Identifiers" in column 1 and "Group" in column 2';
+        errorMessage = `The first row must have "Identifiers" in column 1 and "Group" in column 2: ${data[0][0]}, ${data[0][1]}`;
         return;
       }
 
@@ -201,7 +201,7 @@ const DifferentialExpression = () => {
   const [lowerLimit, setLowerLimit] = useState(0);
   const [upperLimit, setUpperLimit] = useState(20000);
   const [inputData, setInputData] = useState("");
-  const [fileIsValid, setFileIsValid] = useState(true);
+  const [fileIsValid, setFileIsValid] = useState(false);
   const [groupNames, setGroupNames] = useState({ groupA: "A", groupB: "B" });
 
   useEffect(() => {
@@ -230,7 +230,7 @@ const DifferentialExpression = () => {
   };
 
   const loadingOverlayComponent = useMemo(() => {
-    return CustomLoadingOverlay;
+    return LoadingOverlay;
   }, []);
 
   const onGridReady = useCallback((params) => {
@@ -660,7 +660,6 @@ const DifferentialExpression = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0]; // Get the selected file
     if (file) {
-      setFileName(file.name);
       const reader = new FileReader();
       reader.onload = (event) => {
         const content = event.target.result;
@@ -676,6 +675,7 @@ const DifferentialExpression = () => {
           return;
         }
         setFileIsValid(true);
+        setFileName(file.name);
         setInputData(content);
       };
       reader.readAsText(file); // Read the file as text
@@ -746,14 +746,14 @@ const DifferentialExpression = () => {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "GroupA and/or GroupB cannot be empty. Please try again.",
+          text: "Group A and/or Group B cannot be empty. Please try again.",
         });
         return;
       } else if (groupARowData.length < 3 || groupBRowData.length < 3) {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "GroupA and/or GroupB need to have at least 3 samples. Please try again.",
+          text: "Group A and/or Group B need to have at least 3 samples. Please try again.",
         });
         return;
       }
@@ -773,7 +773,7 @@ const DifferentialExpression = () => {
       }
     }
 
-    if (!fileIsValid) {
+    if (!fileIsValid && inputData !== "") {
       Swal.fire({
         icon: "error",
         title: "Invalid File",
@@ -792,8 +792,6 @@ const DifferentialExpression = () => {
 
     const formattedDate = `${year}${month}${day}-${hours}${minutes}${seconds}`;
 
-    const jobId = `differential-expression-${formattedDate}`;
-
     Swal.fire({
       title: "Submitting the job, please wait...",
       showConfirmButton: false,
@@ -802,75 +800,63 @@ const DifferentialExpression = () => {
     });
     Swal.showLoading();
 
+    const currUser = userpool.getCurrentUser();
+    const username = currUser.getUsername();
+
+    const requestBody = {
+      logNorm,
+      numberOfDifferentiallyAbundantProteinsInHeatmap,
+      foldChangeThreshold,
+      pValueThreshold,
+      pValueType,
+      parametricTest,
+      timestamp: {
+        year,
+        month,
+        day,
+        hours,
+        minutes,
+        seconds,
+      },
+      formattedDate,
+      groupNames,
+      username,
+    };
+
     try {
       if (fileName) {
-        await axios
-          .post(
-            `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze-file`,
-            {
-              inputData,
-              logNorm,
-              numberOfDifferentiallyAbundantProteinsInHeatmap,
-              foldChangeThreshold,
-              pValueThreshold,
-              pValueType,
-              parametricTest,
-              timestamp: {
-                year,
-                month,
-                day,
-                hours,
-                minutes,
-                seconds,
-              },
-              formattedDate,
-              groupNames,
-            }
-          )
-          .then(() => {
-            // Wait for 3 seconds before redirecting
-            setTimeout(() => {
-              window.location.href = `/differential-expression/results/${jobId}?logNorm=${logNorm}&heatmap=${numberOfDifferentiallyAbundantProteinsInHeatmap}&foldChange=${foldChangeThreshold}&pValue=${pValueThreshold}&pType=${pValueType}&parametricTest=${parametricTest}`;
-              Swal.close();
-            }, 3000);
-          });
+        requestBody.inputData = inputData;
       } else {
-        await axios
-          .post(
-            `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze`,
-            {
-              groupAData: groupARowData,
-              groupBData: groupBRowData,
-              logNorm,
-              numberOfDifferentiallyAbundantProteinsInHeatmap,
-              foldChangeThreshold,
-              pValueThreshold,
-              pValueType,
-              parametricTest,
-              timestamp: {
-                year,
-                month,
-                day,
-                hours,
-                minutes,
-                seconds,
-              },
-              formattedDate,
-              groupNames,
-            }
-          )
-          .then(() => {
-            // Wait for 3 seconds before redirecting
-            setTimeout(() => {
-              window.location.href = `/differential-expression/results/${jobId}?logNorm=${logNorm}&heatmap=${numberOfDifferentiallyAbundantProteinsInHeatmap}&foldChange=${foldChangeThreshold}&pValue=${pValueThreshold}&pType=${pValueType}&parametricTest=${parametricTest}`;
-              Swal.close();
-            }, 3000);
-          });
+        requestBody.groupAData = groupARowData;
+        requestBody.groupBData = groupBRowData;
       }
+
+      const resp = await axios.post(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/differential-expression/analyze`,
+        requestBody
+      );
+
+      console.log("Response: ", resp.data);
+
+      // Clear the input data and file name
+      setInputData("");
+      setGroupARowData([]);
+      setGroupBRowData([]);
+
+      Swal.fire({
+        icon: "success",
+        title: "Job Submitted Successfully",
+        html: `
+                When the submission has started, you can view it on the 
+                <a href='/submissions'>submissions</a> page along with your previous submissions.
+                It may take a few minutes to complete the analysis.
+              `,
+      });
     } catch (error) {
       const payload = {
         message: error.response.data,
       };
+
       try {
         await axios
           .post(
@@ -1598,46 +1584,51 @@ const DifferentialExpression = () => {
               ANALYSIS OPTIONS
             </Typography>
             <Box>
-              <Typography
-                variant="subtitle1"
-                sx={{
-                  color: "#1463B9",
-                  fontFamily: "Montserrat",
-                  fontWeight: 600,
-                  mt: 3,
-                  display: "inline-flex",
-                  alignItems: "center",
-                }}
-              >
-                Group Names
-                <Tooltip
-                  describeChild
-                  placement="right"
-                  title="Group names only apply when not using your own submitted files"
-                >
-                  <InfoIcon sx={{ fontSize: "1rem", ml: 0.5 }} />
-                </Tooltip>
-                :
-              </Typography>
-              <br />
-              <TextField
-                id="outlined-required"
-                label="Group A"
-                defaultValue="A"
-                sx={{ mr: 3, mt: 1 }}
-                onChange={(e) => {
-                  handleGroupNameChange(e, "groupA");
-                }}
-              />
-              <TextField
-                id="outlined-required"
-                label="Group B"
-                defaultValue="B"
-                sx={{ mr: 3, mt: 1 }}
-                onChange={(e) => {
-                  handleGroupNameChange(e, "groupB");
-                }}
-              />
+              {/* Hide group name form section when submitting via file */}
+              {fileIsValid ? null : (
+                <>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      color: "#1463B9",
+                      fontFamily: "Montserrat",
+                      fontWeight: 600,
+                      mt: 3,
+                      display: "inline-flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    Group Names
+                    <Tooltip
+                      describeChild
+                      placement="right"
+                      title="Group names only apply when not using your own submitted files"
+                    >
+                      <InfoIcon sx={{ fontSize: "1rem", ml: 0.5 }} />
+                    </Tooltip>
+                    :
+                  </Typography>
+                  <br />
+                  <TextField
+                    id="outlined-required"
+                    label="Group A"
+                    defaultValue="A"
+                    sx={{ mr: 3, mt: 1 }}
+                    onChange={(e) => {
+                      handleGroupNameChange(e, "groupA");
+                    }}
+                  />
+                  <TextField
+                    id="outlined-required"
+                    label="Group B"
+                    defaultValue="B"
+                    sx={{ mr: 3, mt: 1 }}
+                    onChange={(e) => {
+                      handleGroupNameChange(e, "groupB");
+                    }}
+                  />
+                </>
+              )}
               <Typography
                 variant="subtitle1"
                 sx={{
@@ -1722,45 +1713,6 @@ const DifferentialExpression = () => {
                 }}
                 sx={{ width: "80px" }}
               />
-              {/* <Typography
-                variant="subtitle1"
-                sx={{
-                  color: "#1463B9",
-                  fontFamily: "Montserrat",
-                  fontWeight: 600,
-                  mt: 3,
-                }}
-              >
-                Cluster Samples:
-              </Typography>
-              <Checkbox
-                icon={<CircleUnchecked />}
-                checkedIcon={<CircleCheckedFilled />}
-                checked={clusterSamples === "T"}
-                onChange={() => setClusterSamples("T")}
-                sx={{ paddingLeft: 0 }}
-              />
-              <Typography
-                display="inline"
-                variant="body2"
-                sx={{ fontFamily: "Lato", color: "#464646", mr: 2 }}
-              >
-                Yes
-              </Typography>
-              <Checkbox
-                icon={<CircleUnchecked />}
-                checkedIcon={<CircleCheckedFilled />}
-                checked={clusterSamples === "F"}
-                onChange={() => setClusterSamples("F")}
-                sx={{ paddingLeft: 0 }}
-              />
-              <Typography
-                display="inline"
-                variant="body2"
-                sx={{ fontFamily: "Lato", color: "#464646", mr: 2 }}
-              >
-                No
-              </Typography> */}
               <Typography
                 variant="subtitle1"
                 sx={{

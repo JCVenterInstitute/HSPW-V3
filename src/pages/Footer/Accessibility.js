@@ -1,8 +1,6 @@
 import { Container, Typography } from "@mui/material";
-import { Helmet } from "react-helmet";
 
-import BreadCrumb from "../../components/Layout/Breadcrumbs";
-import MainFeature from "../../assets/hero.jpeg";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const AccessibilityPage = () => {
   const breadcrumbPath = [
@@ -12,20 +10,11 @@ const AccessibilityPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Accessibility</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{
-          backgroundImage: `url(${MainFeature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Accessibility</h1>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={"HSP | Accessibility"}
+        breadcrumb={breadcrumbPath}
+        title={"Accessibility"}
+      />
       <Container
         maxWidth="xl"
         sx={{ my: 6 }}

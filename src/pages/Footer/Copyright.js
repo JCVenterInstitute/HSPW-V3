@@ -6,32 +6,27 @@ import {
   Typography,
 } from "@mui/material";
 import FontAwesome from "react-fontawesome";
-import { Helmet } from "react-helmet";
 
-import BreadCrumb from "../../components/Layout/Breadcrumbs";
-import MainFeature from "../../assets/hero.jpeg";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const sections = ["Citation Guidelines", "Contacting Us"];
 
 const CopyrightPage = () => {
-  const breadcrumbPath = [{ path: "Home", link: "/" }, { path: "Copyright" }];
+  const breadcrumbPath = [
+    {
+      path: "Home",
+      link: "/",
+    },
+    { path: "Copyright" },
+  ];
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Copyright</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{
-          backgroundImage: `url(${MainFeature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Copyright</h1>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={"HSP | Copyright"}
+        breadcrumb={breadcrumbPath}
+        title={"Copyright"}
+      />
       <Container
         maxWidth="xl"
         sx={{ my: 4 }}

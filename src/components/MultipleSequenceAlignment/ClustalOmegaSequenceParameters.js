@@ -18,6 +18,8 @@ import QueryString from "qs";
 import Swal from "sweetalert2";
 import XMLParser from "react-xml-parser";
 
+import userpool from "../../userpool";
+
 const ClustalOmegaSequenceParameters = ({ url }) => {
   const [loading, setLoading] = useState(false);
   const [parameterDetails, setParameterDetails] = useState([]);
@@ -29,6 +31,7 @@ const ClustalOmegaSequenceParameters = ({ url }) => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0]; // Get the selected file
+
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -44,6 +47,7 @@ const ClustalOmegaSequenceParameters = ({ url }) => {
     const defaultValue = {};
 
     setLoading(true);
+
     try {
       const parameters = await axios
         .get(`https://www.ebi.ac.uk/Tools/services/rest/${url}/parameters`)
@@ -55,7 +59,9 @@ const ClustalOmegaSequenceParameters = ({ url }) => {
             `https://www.ebi.ac.uk/Tools/services/rest/${url}/parameterdetails/${parameter}`
           )
           .then((res) => res.data);
+
         parameterDetailArray.push(parameterDetail);
+
         defaultValue[parameterDetail.name] = {
           name: parameter,
           value:
@@ -64,11 +70,14 @@ const ClustalOmegaSequenceParameters = ({ url }) => {
               : null,
         };
       }
+
       if (defaultValue["Output alignment format"]) {
         defaultValue["Output alignment format"].value = "clustal";
+
         const index = parameterDetailArray.findIndex(
           (object) => object.name === "Output alignment format"
         );
+
         // Swap the options so that the default value becomes clustalW
         [
           parameterDetailArray[index].values.values[0],
@@ -78,6 +87,7 @@ const ClustalOmegaSequenceParameters = ({ url }) => {
           parameterDetailArray[index].values.values[0],
         ];
       }
+
       setParameterValue(defaultValue);
       setResetValue(defaultValue);
       setParameterDetails([...parameterDetailArray]);
@@ -97,32 +107,58 @@ const ClustalOmegaSequenceParameters = ({ url }) => {
       title: "Submitting the job, please wait...",
     });
     Swal.showLoading();
+
     try {
+      const currUser = userpool.getCurrentUser();
+      const username = currUser.getUsername();
+
       const data = {
         email: email,
         title: title,
         sequence: sequence,
       };
+
       for (const key of Object.keys(parameterValue)) {
         const option = parameterValue[key];
+
         if (option.name !== "sequence") {
           data[option.name] = option.value;
         }
       }
+
       const payload = {
         method: "POST",
         headers: { "content-type": "application/x-www-form-urlencoded" },
         data: QueryString.stringify(data),
         url: `https://www.ebi.ac.uk/Tools/services/rest/${url}/run`,
       };
+
       const jobId = await axios(payload)
         .then((res) => res.data)
         .finally(() => {
           Swal.close();
         });
+
+      // Create submission in HSP to track
+      const submissionPayload = {
+        user: username,
+        type: "Multiple Sequence Alignment",
+        link: `/${url}/results/${jobId}`,
+        status: "Running",
+        id: jobId,
+        name: title,
+      };
+
+      // Create HSP submission in running status
+      await axios.post(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions`,
+        submissionPayload
+      );
+
       window.location.href = `/${url}/results/${jobId}`;
     } catch (err) {
       const errorMessage = new XMLParser().parseFromString(err.response.data);
+
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -281,6 +317,8 @@ const ClustalOmegaSequenceParameters = ({ url }) => {
                           </Grid>
                         </Grid>
                       );
+                    } else {
+                      return null;
                     }
                   })}
                 </Grid>

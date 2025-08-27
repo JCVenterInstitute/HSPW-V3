@@ -21,6 +21,8 @@ Parameters:
     Type: String
   SubmissionTable:
     Type: String
+  AdvanceAnalysisApi:
+    Type: String
 
 Resources:
   ApiGateway:
@@ -46,10 +48,12 @@ Resources:
       Timeout: 900
       Environment:
         Variables:
+          DEPLOY_ENV: !Ref DeployEnv
           S3_BUCKET_NAME: !Ref S3BucketName
           SUPPORT_EMAIL: !Ref SupportEmail
           REGION: !Ref AwsRegion
           SUBMISSIONS_TABLE: !Ref SubmissionTable
+          ADVANCE_ANALYSIS_API: !Ref AdvanceAnalysisApi
       Events:
         ProxyApiRoot:
           Type: Api

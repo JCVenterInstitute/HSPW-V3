@@ -9,11 +9,21 @@ const path = require("path");
 const { processGroupData } = require("./utils/processGroupData");
 const { processFile } = require("./utils/processFile");
 const { s3Download, checkFileExists } = require("./utils/s3Download");
+const { s3Upload } = require("./utils/s3Upload");
 const { formQuery } = require("./utils/formQuery");
 const { generatePresignedUrls } = require("./utils/generatePresignedUrls");
 const { createContact } = require("./utils/createContact");
 const { getSSMParameter } = require("./utils/utils");
 const { sendSupportEmail } = require("./utils/sendSupportEmail");
+
+const salivaryProteinRouter = require("./routes/salivaryProteinRouter");
+const proteinClusterRouter = require("./routes/proteinClusterRouter");
+const citationRouter = require("./routes/citationRouter");
+const studyProteinRouter = require("./routes/studyProteinRouter");
+const geneRouter = require("./routes/geneRouter");
+const proteinSignatureRouter = require("./routes/proteinSignatureRouter");
+const studyRouter = require("./routes/studyRouter");
+const submissionRouter = require("./routes/submissionRouter");
 
 const app = express();
 
@@ -23,6 +33,15 @@ app.use(express.urlencoded({ limit: "200mb", extended: true }));
 app.use(express.static("build"));
 app.use("/static", express.static(path.join(__dirname, "./build/static")));
 app.use("/doc", express.static(path.join(__dirname, "./documentation/")));
+
+app.use("/api/salivary-proteins", salivaryProteinRouter);
+app.use("/api/protein-cluster", proteinClusterRouter);
+app.use("/api/citations", citationRouter);
+app.use("/api/study-protein", studyProteinRouter);
+app.use("/api/genes", geneRouter);
+app.use("/api/protein-signature", proteinSignatureRouter);
+app.use("/api/study", studyRouter);
+app.use("/api/submissions", submissionRouter);
 
 const host = process.env.OS_HOSTNAME;
 
@@ -41,307 +60,9 @@ const getClient = async () => {
   });
 };
 
-/***************************
- * Protein Cluster Endpoints
- ***************************/
-
-async function getClusterMemberCount() {
-  var client = await getClient();
-
-  var response = await client.search({
-    index: process.env.INDEX_PROTEIN_CLUSTER,
-    body: {
-      size: 0,
-      aggs: {
-        number_of_members_2: {
-          filter: {
-            term: {
-              number_of_members: 2,
-            },
-          },
-        },
-        number_of_members_3: {
-          filter: {
-            term: {
-              number_of_members: 3,
-            },
-          },
-        },
-        number_of_members_4: {
-          filter: {
-            term: {
-              number_of_members: 4,
-            },
-          },
-        },
-        number_of_members_5: {
-          filter: {
-            term: {
-              number_of_members: 5,
-            },
-          },
-        },
-        number_of_members_6: {
-          filter: {
-            term: {
-              number_of_members: 6,
-            },
-          },
-        },
-        number_of_members_7: {
-          filter: {
-            term: {
-              number_of_members: 7,
-            },
-          },
-        },
-        number_of_members_8: {
-          filter: {
-            term: {
-              number_of_members: 8,
-            },
-          },
-        },
-        number_of_members_9: {
-          filter: {
-            term: {
-              number_of_members: 9,
-            },
-          },
-        },
-        number_of_members_10_or_more: {
-          filter: {
-            script: {
-              script: {
-                source: "doc['number_of_members'].value >= params.param1",
-                params: {
-                  param1: 10,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
-  return response.body.aggregations;
-}
-
-app.get("/api/protein-cluster-member-count", (req, res) => {
-  let a = getClusterMemberCount();
-
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function getAllProteinSearchClusterData() {
-  // Initialize the client.
-  var client = await getClient();
-
-  var query = {
-    size: 10000,
-    query: {
-      match_all: {},
-    },
-  };
-
-  var response = await client.search({
-    index: process.env.INDEX_PROTEIN_CLUSTER,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-}
-
-app.get("/api/protein-cluster", (req, res) => {
-  let a = getAllProteinSearchClusterData();
-
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function getProteinClusterById(id) {
-  var client = await getClient();
-
-  var query = {
-    query: {
-      bool: {
-        filter: [
-          {
-            term: {
-              "uniprot_id.keyword": id,
-            },
-          },
-        ],
-      },
-    },
-  };
-
-  var response = await client.search({
-    index: process.env.INDEX_PROTEIN_CLUSTER,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-}
-
-app.get("/api/protein-cluster/:id", (req, res) => {
-  let a = getProteinClusterById(req.params.id);
-
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function queryProteinCluster(
-  size,
-  from,
-  filter,
-  sort = null,
-  keyword = null
-) {
-  const client = await getClient();
-
-  const payload = {
-    index: process.env.INDEX_PROTEIN_CLUSTER,
-    body: {
-      track_total_hits: true,
-      size: size,
-      from: from,
-      query: {
-        bool: {
-          ...(filter && { filter }),
-          ...(keyword && { must: [keyword] }), // Apply global search if present
-        },
-      },
-      ...(sort && { sort }), // Apply sort if present
-    },
-  };
-
-  const response = await client.search(payload);
-
-  return response.body;
-}
-
-app.post("/api/protein-cluster/:size/:from/", (req, res) => {
-  const { filters, sort, keyword } = req.body;
-  const { size, from } = req.params;
-
-  const results = queryProteinCluster(size, from, filters, sort, keyword);
-
-  results.then((result) => {
-    res.json(result);
-  });
-});
-
 /*****************************
  * Salivary Proteins Endpoints
  *****************************/
-
-async function getSalivaryProteinById(id) {
-  var client = await getClient();
-
-  const query = {
-    query: {
-      bool: {
-        filter: [
-          {
-            term: {
-              "salivary_proteins.uniprot_accession.keyword": id,
-            },
-          },
-        ],
-      },
-    },
-  };
-
-  var response = await client.search({
-    index: process.env.INDEX_SALIVARY_PROTEIN,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-}
-
-app.get("/api/salivary-protein/:id", (req, res) => {
-  let a = getSalivaryProteinById(req.params.id);
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-/**
- * Query data used for Salivary Protein page table
- * @param {Number} size Number of records to return
- * @param {Number} from Starting point for the data page to return
- * @param {Object[]} filter All applied filters applied by user in facet menu
- * @param {Object[]} sort Sort query for column selected to sort by from table
- * @param {Object} keyword String entered by user into search bar
- * @param {Boolean} filterByOr True if using or filters, false otherwise
- */
-async function querySalivaryProtein(
-  size,
-  from,
-  filter,
-  sort = null,
-  keyword = null,
-  filterByOr = false
-) {
-  const client = await getClient();
-
-  const payload = {
-    index: process.env.INDEX_SALIVARY_SUMMARY,
-    body: {
-      track_total_hits: true,
-      size: size,
-      from: from,
-      aggs: {
-        IHC: {
-          terms: {
-            field: "IHC.keyword",
-          },
-        },
-        expert_opinion: {
-          terms: {
-            field: "expert_opinion.keyword",
-          },
-        },
-      },
-      query: {
-        bool: {
-          ...(filterByOr === true ? { should: filter } : { filter }),
-          ...(keyword && { must: [keyword] }), // Apply global search if present
-        },
-      },
-      ...(sort && { sort }), // Apply sort if present
-    },
-  };
-
-  const response = await client.search(payload);
-
-  return response.body;
-}
-
-// Used by Salivary Proteins table
-app.post("/api/salivary-proteins/:size/:from/", (req, res) => {
-  const { filters, sort, keyword, filterByOr } = req.body;
-  const { size, from } = req.params;
-
-  const results = querySalivaryProtein(
-    size,
-    from,
-    filters,
-    sort,
-    keyword,
-    filterByOr
-  );
-
-  results.then((result) => {
-    res.json(result);
-  });
-});
 
 async function queryProteins(size, from, filter, sort = null, keyword = null) {
   const client = await getClient();
@@ -372,242 +93,6 @@ app.post("/api/proteins/:size/:from/", (req, res) => {
   const { size, from } = req.params;
 
   const results = queryProteins(size, from, filters, sort, keyword);
-
-  results.then((result) => {
-    res.json(result);
-  });
-});
-
-/****************
- * Gene Endpoints
- ****************/
-
-async function getGeneById(id) {
-  var client = await getClient();
-
-  var query = {
-    query: {
-      bool: {
-        filter: [
-          {
-            term: {
-              "GeneID.keyword": id,
-            },
-          },
-        ],
-      },
-    },
-  };
-
-  var response = await client.search({
-    index: process.env.INDEX_GENE,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-}
-
-app.get("/genes/:id", (req, res) => {
-  let a = getGeneById(req.params.id);
-
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function queryGenes(size, from, filter, sort = null, keyword = null) {
-  const client = await getClient();
-
-  const payload = {
-    index: process.env.INDEX_GENE,
-    body: {
-      track_total_hits: true,
-      size: size,
-      from: from,
-      query: {
-        bool: {
-          ...(filter && { filter }),
-          ...(keyword && { must: [keyword] }), // Apply global search if present
-        },
-      },
-      ...(sort && { sort }), // Apply sort if present
-    },
-  };
-
-  const response = await client.search(payload);
-
-  return response.body;
-}
-
-// Used by Gene Browse Page table
-app.post("/api/genes/:size/:from/", (req, res) => {
-  const { filters, sort, keyword } = req.body;
-  const { size, from } = req.params;
-
-  const results = queryGenes(size, from, filters, sort, keyword);
-
-  results.then((result) => {
-    res.json(result);
-  });
-});
-
-/*****************************
- * Protein Signature Endpoints
- *****************************/
-
-async function getProteinSignatureById(id) {
-  var client = await getClient();
-
-  var query = {
-    query: {
-      bool: {
-        filter: [
-          {
-            term: {
-              "InterPro ID.keyword": id,
-            },
-          },
-        ],
-      },
-    },
-  };
-
-  var response = await client.search({
-    index: process.env.INDEX_PROTEIN_SIGNATURE,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-}
-
-app.get("/api/protein-signature/:id", (req, res) => {
-  let a = getProteinSignatureById(req.params.id);
-
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function queryProteinSignature(
-  size,
-  from,
-  filter,
-  sort = null,
-  keyword = null
-) {
-  const client = await getClient();
-
-  const payload = {
-    index: process.env.INDEX_PROTEIN_SIGNATURE,
-    body: {
-      track_total_hits: true,
-      size: size,
-      from: from,
-      query: {
-        bool: {
-          ...(filter && { filter }),
-          ...(keyword && { must: [keyword] }), // Apply global search if present
-        },
-      },
-      ...(sort && { sort }), // Apply sort if present
-      aggs: {
-        Type: {
-          terms: {
-            field: "Type.keyword",
-          },
-        },
-      },
-    },
-  };
-
-  const response = await client.search(payload);
-
-  return response.body;
-}
-
-// Used by Protein Signature Browse page table
-app.post("/api/protein-signature/:size/:from/", (req, res) => {
-  const { filters, sort, keyword } = req.body;
-  const { size, from } = req.params;
-
-  const results = queryProteinSignature(size, from, filters, sort, keyword);
-
-  results.then((result) => {
-    res.json(result);
-  });
-});
-
-/********************
- * Citation Endpoints
- ********************/
-
-async function getCitationById(index, id) {
-  var client = await getClient();
-
-  var query = {
-    query: {
-      match: {
-        "PubMed_ID.keyword": id,
-      },
-    },
-  };
-
-  var response = await client.search({
-    index: index,
-    body: query,
-  });
-  return response.body.hits.hits;
-}
-
-app.get("/api/citation/:id", (req, res) => {
-  let a = getCitationById(process.env.INDEX_CITATION, req.params.id);
-
-  a.then(function (result) {
-    res.json(result);
-  });
-});
-
-async function queryCitationData(
-  size,
-  from,
-  filter,
-  sort = null,
-  keyword = null
-) {
-  const client = await getClient();
-
-  const returnFields = ["PubMed_ID", "PubDate", "Title", "journal_title"];
-
-  const payload = {
-    index: process.env.INDEX_CITATION,
-    body: {
-      track_total_hits: true,
-      size: size,
-      from: from,
-      query: {
-        bool: {
-          ...(filter && { filter }),
-          ...(keyword && { must: [keyword] }), // Apply global search if present
-        },
-      },
-      ...(sort && { sort }), // Apply sort if present
-      _source: returnFields,
-    },
-  };
-
-  console.log("> payload", JSON.stringify(payload.body));
-
-  const response = await client.search(payload);
-
-  return response.body;
-}
-
-// Used by Citation Browse page table
-app.post("/api/citations/:size/:from/", (req, res) => {
-  const { filters, sort, keyword } = req.body;
-  const { size, from } = req.params;
-
-  const results = queryCitationData(size, from, filters, sort, keyword);
 
   results.then((result) => {
     res.json(result);
@@ -887,213 +372,6 @@ app.get("/api/go-nodes-usage/:id", (req, res) => {
   let a = searchGoNodesUsage(req.params.id);
   a.then(function (result) {
     res.json(result);
-  });
-});
-
-/******************
- * Study Endpoints
- *****************/
-
-const searchAllStudy = async () => {
-  // Initialize the client.
-  const client = await getClient();
-
-  const query = {
-    size: 10000,
-    query: {
-      match_all: {},
-    },
-    aggs: {
-      sample_type: {
-        terms: {
-          field: "sample_type.keyword",
-        },
-      },
-      institution: {
-        terms: {
-          field: "institution.keyword",
-        },
-      },
-      condition_type: {
-        terms: {
-          field: "condition_type.keyword",
-        },
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: process.env.INDEX_STUDY,
-    body: query,
-  });
-
-  return response.body;
-};
-
-app.get("/api/study/", async (req, res) => {
-  searchAllStudy().then((response) => {
-    res.json(response);
-  });
-});
-
-const searchStudy = async (id) => {
-  // Initialize the client.
-  const client = await getClient();
-
-  const query = {
-    size: 10000,
-    query: {
-      query_string: {
-        default_field: "experiment_id_key",
-        query: id,
-      },
-    },
-    aggs: {
-      sample_type: {
-        terms: {
-          field: "sample_type.keyword",
-        },
-      },
-      institution: {
-        terms: {
-          field: "institution.keyword",
-        },
-      },
-      condition_type: {
-        terms: {
-          field: "condition_type.keyword",
-        },
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: process.env.INDEX_STUDY,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-};
-
-app.get("/api/study/:id", async (req, res) => {
-  searchStudy(req.params.id).then((response) => {
-    res.json(response);
-  });
-});
-
-// Used for Cluster Details page
-const bulkStudySearch = async (ids) => {
-  // Initialize the client.
-  const client = await getClient();
-
-  const query = {
-    size: 10000,
-    query: {
-      terms: {
-        experiment_id_key: ids,
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: process.env.INDEX_STUDY,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-};
-
-app.post("/api/study/", async (req, res) => {
-  bulkStudySearch(req.body.ids).then((response) => {
-    res.json(response);
-  });
-});
-
-/*************************
- * Study Protein Endpoints
- ************************/
-
-const searchStudyProtein = async (experiment_id_key) => {
-  // Initialize the client.
-  const client = await getClient();
-
-  const query = {
-    size: 10000,
-    query: {
-      query_string: {
-        default_field: "experiment_id_key",
-        query: experiment_id_key,
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: process.env.INDEX_STUDY_PROTEIN,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-};
-
-app.get("/api/study-protein/:id", async (req, res) => {
-  searchStudyProtein(req.params.id).then((response) => {
-    res.json(response);
-  });
-});
-
-const searchStudyProteinUniprot = async (uniprot_id) => {
-  // Initialize the client.
-  const client = await getClient();
-
-  const query = {
-    size: 10000,
-    query: {
-      query_string: {
-        default_field: "Uniprot_id",
-        query: uniprot_id,
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: process.env.INDEX_STUDY_PROTEIN,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-};
-
-app.get("/api/study-protein-uniprot/:id", async (req, res) => {
-  searchStudyProteinUniprot(req.params.id).then((response) => {
-    res.json(response);
-  });
-});
-
-// Used for Cluster Details page
-const bulkStudyProteins = async (ids) => {
-  // Initialize the client.
-  const client = await getClient();
-
-  const query = {
-    size: 10000,
-    query: {
-      terms: {
-        ["Uniprot_id.keyword"]: ids,
-      },
-    },
-  };
-
-  const response = await client.search({
-    index: process.env.INDEX_STUDY_PROTEIN,
-    body: query,
-  });
-
-  return response.body.hits.hits;
-};
-
-app.post("/api/study-protein/", async (req, res) => {
-  bulkStudyProteins(req.body.ids).then((response) => {
-    res.json(response);
   });
 });
 
@@ -1493,6 +771,8 @@ app.get("/api/gene-location-counts/", (req, res) => {
 app.post("/api/differential-expression/analyze", async (req, res) => {
   try {
     const {
+      inputData = null,
+      groupNames = null,
       logNorm,
       numberOfDifferentiallyAbundantProteinsInHeatmap,
       foldChangeThreshold,
@@ -1501,23 +781,34 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
       parametricTest,
       timestamp,
       formattedDate,
-      groupNames,
-      // username,
+      username,
     } = req.body;
 
-    console.log(
-      `> Log Norm: ${logNorm}, Heatmap #: ${numberOfDifferentiallyAbundantProteinsInHeatmap}, Fold Threshold: ${foldChangeThreshold}, P Val Threshold: ${pValueThreshold}, P Value Type: ${pValueType}, Parametric Test: ${parametricTest}`
-    );
+    let inputFile;
 
-    const inputFile = await processGroupData(
-      req.body,
-      timestamp,
-      formattedDate,
-      groupNames
-    );
+    console.log("> Request Body: %o", req.body);
+
+    // Ping Lambdas to prevent cold start when trying to run analysis
+    await Promise.all([
+      axios.get(process.env.BASIC_ANALYSIS_API).then((res) => res.data),
+      axios.get(process.env.ADVANCE_ANALYSIS_API).then((res) => res.data),
+    ]);
+
+    if (inputData) {
+      // Processing user provided file
+      inputFile = await processFile(inputData, timestamp, formattedDate);
+    } else {
+      // Processing data from HSP
+      inputFile = await processGroupData(
+        req.body,
+        timestamp,
+        formattedDate,
+        groupNames
+      );
+    }
 
     const basicAnalysisRequestBody = {
-      // username: username ? username : "test-user-local",
+      username: username ? username : "test-user-local",
       input_file: inputFile,
       log_normalized: logNorm,
       stat_test: parametricTest,
@@ -1527,108 +818,28 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
       heat_map_number: numberOfDifferentiallyAbundantProteinsInHeatmap,
     };
 
-    console.log("> Input file location", inputFile);
-    console.log("> Request Body", basicAnalysisRequestBody);
+    console.log("> Input file location:", inputFile);
+    console.log("> Basic Analysis Request Body: %o", basicAnalysisRequestBody);
 
-    // Run basic differential expression analysis
-    const basicResponse = await axios.post(
-      process.env.BASIC_ANALYSIS_API,
-      basicAnalysisRequestBody
-    );
+    // Submit basic differential expression analysis
+    // Ignore timeout since the analysis takes a while to run
+    // API will time out, but analysis still runs
+    axios
+      .post(process.env.BASIC_ANALYSIS_API, basicAnalysisRequestBody)
+      .catch((err) =>
+        console.error(
+          "Basic analysis API call timed out:",
+          err?.response?.status ?? err.code,
+          err?.message
+        )
+      );
 
-    console.log("> Basic Analysis Response", basicResponse.message);
+    console.log("> Done");
 
-    const advanceAnalysisRequestBody = {
-      input_file: inputFile,
-      pValueCutoff: 0.85,
-      qValueCutoff: 0.8,
-      // submission_id: basicResponse.submission_id,
-    };
-
-    // Start advance differential expression analysis
-    const advanceResponse = await axios.post(
-      process.env.ADVANCE_ANALYSIS_API,
-      advanceAnalysisRequestBody,
-      {
-        timeout: 60000,
-      }
-    );
-
-    console.log("> Advance Analysis Response", advanceResponse.message);
-
-    res.status(200).send("Docker run complete");
+    return res.status(200).send("Basic analysis complete");
   } catch (error) {
     console.log("> Error", error);
-    console.error(`Error during file operations: ${error.message}`);
-    res.status(500).send(`Server Error: ${error.message}`);
-  }
-});
-
-app.post("/api/differential-expression/analyze-file", async (req, res) => {
-  try {
-    const {
-      inputData,
-      logNorm,
-      numberOfDifferentiallyAbundantProteinsInHeatmap,
-      foldChangeThreshold,
-      pValueThreshold,
-      pValueType,
-      parametricTest,
-      timestamp,
-      formattedDate,
-      groupNames,
-      // username,
-    } = req.body;
-
-    console.log(
-      `> Log Norm: ${logNorm}, Heatmap #: ${numberOfDifferentiallyAbundantProteinsInHeatmap}, Fold Threshold: ${foldChangeThreshold}, P Val Threshold: ${pValueThreshold}, P Value Type: ${pValueType}, Parametric Test: ${parametricTest}`
-    );
-
-    const inputFile = await processFile(inputData, timestamp, formattedDate);
-
-    const basicAnalysisRequestBody = {
-      // username: username ? username : "test-user-local",
-      input_file: inputFile,
-      log_normalized: logNorm,
-      stat_test: parametricTest,
-      p_raw: pValueType,
-      foldChangeThreshold,
-      pValueThreshold,
-      heat_map_number: numberOfDifferentiallyAbundantProteinsInHeatmap,
-    };
-
-    console.log("> Input file location", inputFile);
-    console.log("> Request Body", basicAnalysisRequestBody);
-
-    // Run basic differential expression analysis
-    const basicResponse = await axios.post(
-      process.env.BASIC_ANALYSIS_API,
-      basicAnalysisRequestBody
-    );
-
-    console.log("> Basic Analysis Response", basicResponse.message);
-
-    const advanceAnalysisRequestBody = {
-      input_file: inputFile,
-      pValueCutoff: 0.65,
-      qValueCutoff: 0.25,
-      submission_id: basicResponse.submission_id,
-    };
-
-    // Start advance differential expression analysis
-    const advanceResponse = await axios.post(
-      process.env.ADVANCE_ANALYSIS_API,
-      advanceAnalysisRequestBody,
-      {
-        timeout: 60000,
-      }
-    );
-
-    console.log("> Advance Analysis Response", advanceResponse.message);
-
-    res.status(200).send("Docker run complete");
-  } catch (error) {
-    console.error(`Error during file operations: ${error.message}`);
+    console.error(`Error message: ${error.message}`);
     res.status(500).send(`Server Error: ${error.message}`);
   }
 });
@@ -1712,6 +923,45 @@ app.get("/api/go-kegg-check/:jobId/:fileName", async (req, res) => {
 
   console.log("> File Exists", fileExists);
   return res.send({ exists: fileExists });
+});
+
+app.get("/api/getJSONFile", async (req, res) => {
+  const { s3Key } = req.query;
+  const bucketName = process.env.DIFFERENTIAL_S3_BUCKET;
+
+  if (!s3Key) {
+    return res.status(400).json({ error: "Missing s3Key parameter." });
+  }
+
+  try {
+    const presignedUrl = await s3Download({ bucketName, s3Key });
+    res.json({ url: presignedUrl });
+  } catch (error) {
+    res.status(500).json({
+      error: "Error generating S3 presigned URL.",
+      details: error.message,
+    });
+  }
+});
+
+app.post("/api/s3JSONUpload", async (req, res) => {
+  const { s3Key, jsonData } = req.body;
+  if (!jsonData || !s3Key) return res.status(400).send("No data received.");
+
+  try {
+    const result = await s3Upload({
+      bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
+      s3Key: s3Key,
+      data: Buffer.from(JSON.stringify(jsonData)),
+      contentType: "application/json",
+    });
+    res.json({ message: "JSON uploaded to S3!", s3Result: result });
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ error: "Upload to S3 failed.", details: err.message });
+  }
 });
 
 app.get("/api/s3Download/:jobId/:fileName", async (req, res) => {

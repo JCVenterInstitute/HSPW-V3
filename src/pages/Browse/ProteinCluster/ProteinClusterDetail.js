@@ -8,9 +8,7 @@ import { useParams } from "react-router";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 
-import MainFeature from "../../../assets/hero.jpeg";
-import BreadCrumb from "../../../components/Layout/Breadcrumbs";
-import { Helmet } from "react-helmet";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const Cluster_Detail = (props) => {
   const [isLoading, setLoading] = useState(true);
@@ -27,7 +25,7 @@ const Cluster_Detail = (props) => {
   const fetchProteinData = async (memberId) => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/study-protein-uniprot/${memberId}`
+        `${process.env.REACT_APP_API_ENDPOINT}/api/study-protein/protein-uniprot/${memberId}`
       );
 
       if (!response.ok) {
@@ -196,26 +194,13 @@ const Cluster_Detail = (props) => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Protein Cluster Detail</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{
-          backgroundImage: `url(${MainFeature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">
-            Protein Cluster Representative Protein:
-            {data[0]["_source"]["uniprot_id"]}
-          </h1>
-          <p className="head_text">
-            Number of Members: {data[0]["_source"]["number_of_members"]}
-          </p>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={"HSP | Protein Cluster Detail"}
+        title={`Protein Cluster Representative Protein:
+            ${data[0]["_source"]["uniprot_id"]}`}
+        breadcrumb={breadcrumbPath}
+        description={`Number of Members: ${data[0]["_source"]["number_of_members"]}`}
+      />
       <Container maxWidth="xl">
         <TableContainer style={{ overflowY: "auto" }}>
           <Table style={{ marginTop: "40px" }}>

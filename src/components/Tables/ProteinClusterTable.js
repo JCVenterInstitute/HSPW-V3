@@ -29,8 +29,8 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { Link } from "react-router-dom";
 
-import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
-import CustomLoadingOverlay from "../CustomLoadingOverlay";
+import { ReactComponent as DownloadLogo } from "@Assets/table-icon/download.svg";
+import LoadingOverlay from "../Shared/LoadingOverlay";
 import "../Filter.css";
 import "../Table.css";
 
@@ -373,7 +373,7 @@ const ProteinClusterTable = () => {
   };
 
   const loadingOverlayComponent = useMemo(() => {
-    return CustomLoadingOverlay;
+    return LoadingOverlay;
   }, []);
 
   /**

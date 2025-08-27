@@ -17,7 +17,8 @@ parameter_overrides=[
   "S3BucketName=hspw-data-dev-v2",
   "SupportEmail=mzheng@jvi.org",
   "AwsRegion=us-east-1",
-  "SubmissionTable=hsp-analysis-submissions-DEV"
+  "SubmissionTable=hsp-analysis-submissions-DEV",
+  "AdvanceAnalysisApi=https://hlrvtk7j1f.execute-api.us-east-2.amazonaws.com/Stage/"
 ]
 
 [app-core-prod.deploy.parameters]
@@ -33,5 +34,6 @@ parameter_overrides=[
   "S3BucketName=hspw-data-prod-v2",
   "SupportEmail=mzheng@jvi.org",
   "AwsRegion=us-east-1",
-  "SubmissionTable=hsp-analysis-submissions-PROD"
+  "SubmissionTable=hsp-analysis-submissions-PROD",
+  "AdvanceAnalysisApi=https://o32vc26ibc.execute-api.us-east-2.amazonaws.com/Stage/"
 ]

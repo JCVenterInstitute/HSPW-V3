@@ -2,11 +2,11 @@ import React from "react";
 import { Container, Grid } from "@mui/material";
 import { Link } from "react-router-dom";
 
-import jcvi from "../../assets/logo/logo-jcvi.svg";
-import forsyth from "../../assets/logo/logo-forsyth.png";
-import uthsc from "../../assets/logo/logo-uthsc.svg";
-import ub from "../../assets/logo/logo-ub.png";
-import nih from "../../assets/logo/logo-nih-nidcr.png";
+import JCVI from "@Assets/logo/logo-jcvi.svg";
+import Forsyth from "@Assets/logo/logo-forsyth.png";
+import UTHSC from "@Assets/logo/logo-uthsc.svg";
+import UB from "@Assets/logo/logo-ub.png";
+import NIH from "@Assets/logo/logo-nih-nidcr.png";
 import "../index.css";
 
 const Footer = () => {
@@ -24,31 +24,31 @@ const Footer = () => {
       href: "http://www.jcvi.org",
       title: "JCVI Homepage",
       altText: "JCVI Homepage",
-      image: jcvi,
+      image: JCVI,
     },
     {
       href: "http://www.forsyth.org",
       title: "The Forsyth Institute Homepage",
       altText: "The Forsyth Institute Homepage",
-      image: forsyth,
+      image: Forsyth,
     },
     {
       href: "http://www.uthsc.edu",
       title: "The University of Tennessee Health Science Center Homepage",
       altText: "The University of Tennessee Health Science Center Homepage",
-      image: uthsc,
+      image: UTHSC,
     },
     {
       href: "http://www.buffalo.edu",
       title: "University of Buffalo Homepage",
       altText: "University of Buffalo Homepage",
-      image: ub,
+      image: UB,
     },
     {
       href: "http://www.nih.gov",
       title: "NIH Homepage",
       altText: "NIH Homepage",
-      image: nih,
+      image: NIH,
     },
   ];
 

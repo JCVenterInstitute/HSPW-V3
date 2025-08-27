@@ -4,7 +4,7 @@ version = 0.1
 template_file = "template.yaml"
 manifest = "package.json"
 
-[dev.deploy.parameters] # Used by pipeline for DEV deployment
+[dev.deploy.parameters] 
 profile = "default"
 region = "us-east-2"
 stack_name = "HSP-Submissions-Dev"
@@ -15,3 +15,13 @@ parameter_overrides = [
     "DeployEnv=DEV",
 ]
 
+[prod.deploy.parameters] 
+profile = "default"
+region = "us-east-2"
+stack_name = "HSP-Submissions-Prod"
+capabilities = "CAPABILITY_NAMED_IAM"
+s3_bucket = "hsp-prod-deployments"
+s3_prefix = "hsp-submissions-prod"
+parameter_overrides = [
+    "DeployEnv=PROD",
+]

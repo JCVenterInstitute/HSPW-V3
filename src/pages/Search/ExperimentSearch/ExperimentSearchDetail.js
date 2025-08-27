@@ -13,11 +13,9 @@ import Box from "@mui/material/Box";
 import LaunchIcon from "@mui/icons-material/Launch";
 import { Container } from "@mui/material";
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet";
 
-import ExperimentProteinTable from "../../../components/Search/ExperimentSearch/ExperimentProteinTable";
-import BreadCrumb from "../../../components/Layout/Breadcrumbs";
-import MainFeature from "../../../assets/hero.jpeg";
+import ExperimentProteinTable from "@Components/Search/ExperimentSearch/ExperimentProteinTable";
+import PageHeader from "@Components/Layout/PageHeader";
 import "../../style.css";
 
 const th = {
@@ -75,20 +73,11 @@ const ExperimentSearchDetail = (props) => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Experiment Detail</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{
-          backgroundImage: `url(${MainFeature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">{data.experiment_title}</h1>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={`HSP | Experiment Detail`}
+        title={`${data.experiment_title}`}
+        breadcrumb={breadcrumbPath}
+      />
       <Container maxWidth="xl">
         <div style={{ marginTop: "20px", marginBottom: "20px" }}>
           <TableContainer

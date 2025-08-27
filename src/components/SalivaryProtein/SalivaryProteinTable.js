@@ -3,8 +3,6 @@ import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-material.css";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import MuiAccordion from "@mui/material/Accordion";
@@ -13,6 +11,7 @@ import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import Switch from "@mui/material/Switch";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import { Link } from "react-router-dom";
 import {
   Container,
   TextField,
@@ -23,23 +22,29 @@ import {
   InputAdornment,
   IconButton,
   Button,
-  Modal,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import CustomLoadingOverlay from "../CustomLoadingOverlay";
+
+import LoadingOverLay from "../Shared/LoadingOverlay.js";
 import CustomGroupHeader from "../AgGrid/CustomGroupHeader.jsx";
 import CustomHeader from "../AgGrid/CustomHeader.jsx";
-import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
+import { ReactComponent as DownloadLogo } from "@Assets/table-icon/download.svg";
 import "../Filter.css";
 import "../Table.css";
-import { Link } from "react-router-dom";
 import NormalizationSwitch from "./NormalizationSwitch.js";
 import { expertOpinionHTML, MSHTML } from "./HeaderTooltips.js";
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-material.css";
 
 const Accordion = styled((props) => (
-  <MuiAccordion disableGutters elevation={0} square {...props} />
+  <MuiAccordion
+    disableGutters
+    elevation={0}
+    square
+    {...props}
+  />
 ))(({ theme }) => ({
   marginBottom: "15px",
   "&:not(:last-child)": {
@@ -141,8 +146,8 @@ function specificityScoreComponent(props) {
         {value === "Tissue enriched"
           ? "TE"
           : value === "Low tissue specificity"
-          ? "LTS"
-          : ""}
+            ? "LTS"
+            : ""}
       </span>
     </div>
   );
@@ -223,7 +228,10 @@ function IHCComponent(props) {
 function proteinLinkComponent(props) {
   return (
     <div>
-      <Link to={`/protein/${props.value}`} rel="noopener noreferrer">
+      <Link
+        to={`/protein/${props.value}`}
+        rel="noopener noreferrer"
+      >
         {props.value}
       </Link>
     </div>
@@ -566,7 +574,7 @@ const SalivaryProteinTable = () => {
   };
 
   const loadingOverlayComponent = useMemo(() => {
-    return CustomLoadingOverlay;
+    return LoadingOverLay;
   }, []);
 
   // Export the current page data as CSV file
@@ -1195,7 +1203,11 @@ const SalivaryProteinTable = () => {
             Reset Filters
           </Button>
           <FormGroup style={{ marginLeft: "18%" }}>
-            <Stack direction="row" spacing={1} alignItems="center">
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+            >
               <Typography color="common.black">And</Typography>
               <Switch
                 checked={orFilterOn}
@@ -1325,7 +1337,10 @@ const SalivaryProteinTable = () => {
                   sx={{ border: "1px groove" }}
                 >
                   {opCount.map((child, key) => (
-                    <FormGroup key={key} sx={{ ml: "10px" }}>
+                    <FormGroup
+                      key={key}
+                      sx={{ ml: "10px" }}
+                    >
                       {child.key === "Unsubstantiated" ? (
                         <FormControlLabel
                           control={
@@ -1408,7 +1423,10 @@ const SalivaryProteinTable = () => {
                 >
                   {IHCCount.map((child, i) =>
                     child.key !== "?" ? (
-                      <FormGroup key={i} sx={{ ml: "10px" }}>
+                      <FormGroup
+                        key={i}
+                        sx={{ ml: "10px" }}
+                      >
                         <FormControlLabel
                           control={
                             <Checkbox
@@ -1656,7 +1674,11 @@ const SalivaryProteinTable = () => {
               </AccordionSummary>
               <AccordionDetails>
                 <FormGroup style={{ marginLeft: "2%" }}>
-                  <Stack direction="row" spacing={1} alignItems="center">
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                  >
                     <Typography color="common.black">Include</Typography>
                     <Switch
                       checked={msBExcludeOn}
@@ -1878,7 +1900,10 @@ const SalivaryProteinTable = () => {
                 sx={{ marginLeft: "10px", marginRight: "30px" }}
               >
                 {recordsPerPageList.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
+                  <MenuItem
+                    key={option.value}
+                    value={option.value}
+                  >
                     {option.label}
                   </MenuItem>
                 ))}
@@ -1911,7 +1936,10 @@ const SalivaryProteinTable = () => {
                   {Array.from(
                     { length: Math.ceil(docCount / pageSize) },
                     (_, index) => (
-                      <MenuItem key={index + 1} value={index + 1}>
+                      <MenuItem
+                        key={index + 1}
+                        value={index + 1}
+                      >
                         {index + 1}
                       </MenuItem>
                     )

@@ -4,16 +4,16 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { Container } from "@mui/material";
 
-import { DATA } from "../../data/data";
-import MetaDataIcon from "../../assets/download-table-icons/MetaDataIcon.png";
-import MzTabIcon from "../../assets/download-table-icons/MzTabIcon.png";
-import RawIcon from "../../assets/download-table-icons/RawIcon.png";
-import RawIconHover from "../../assets/download-table-icons/RawIconHover.png";
-import MzTabIconHover from "../../assets/download-table-icons/MzTabIconHover.png";
-import MetaDataIconHover from "../../assets/download-table-icons/MetaDataIconHover.png";
-import MzTab from "../../assets/download-table-icons/MzTab.png";
-import METADATA from "../../assets/download-table-icons/METADATA.png";
-import RAW from "../../assets/download-table-icons/RAW.png";
+import { DATA } from "../../data/downloadTableData.js";
+import MetaDataIcon from "@Assets/download-table-icons/MetaDataIcon.png";
+import MzTabIcon from "@Assets/download-table-icons/MzTabIcon.png";
+import RawIcon from "@Assets/download-table-icons/RawIcon.png";
+import RawIconHover from "@Assets/download-table-icons/RawIconHover.png";
+import MzTabIconHover from "@Assets/download-table-icons/MzTabIconHover.png";
+import MetaDataIconHover from "@Assets/download-table-icons/MetaDataIconHover.png";
+import MzTab from "@Assets/download-table-icons/MzTab.png";
+import METADATA from "@Assets/download-table-icons/METADATA.png";
+import RAW from "@Assets/download-table-icons/RAW.png";
 import "../Filter.css";
 import "../Table.css";
 

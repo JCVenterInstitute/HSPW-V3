@@ -9,10 +9,8 @@ import { useParams } from "react-router";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 import { Container } from "@mui/material";
-import { Helmet } from "react-helmet";
 
-import MainFeature from "../../../assets/hero.jpeg";
-import BreadCrumb from "../../../components/Layout/Breadcrumbs";
+import PageHeader from "@Components/Layout/PageHeader";
 import "../../style.css";
 
 const ProteinDetailSequence = (props) => {
@@ -79,23 +77,12 @@ const ProteinDetailSequence = (props) => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Protein Sequence Detail</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{
-          backgroundImage: `url(${MainFeature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">
-            {"Protein Sequence: "}
-            {data[0]["_source"]["salivary_proteins"]["protein_name"]}
-          </h1>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={"HSP | Protein Sequence Detail"}
+        title={`Protein Sequence:
+            ${data[0]["_source"]["salivary_proteins"]["protein_name"]}`}
+        breadcrumb={breadcrumbPath}
+      />
       <Container maxWidth="xl">
         <div style={{ marginTop: "20px" }}>
           <TableHead

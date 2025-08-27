@@ -12,9 +12,9 @@ import {
 } from "@mui/material";
 import PropTypes from "prop-types";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-
-import main_feature from "../assets/hero.jpeg";
 import FontAwesome from "react-fontawesome";
+
+import MainFeature from "@Assets/backgrounds/hero.jpeg";
 
 import {
   salivaryProtein,
@@ -41,7 +41,7 @@ import {
   studyAbundance,
   studyAbundanceMapping,
 } from "../utils/ApiDocData";
-import BreadCrumb from "../components/Layout/Breadcrumbs";
+import BreadCrumb from "@Components/Layout/Breadcrumbs";
 import { Helmet } from "react-helmet";
 
 const sharedStyles = {
@@ -200,7 +200,7 @@ const ApiPage = () => {
       <BreadCrumb path={breadcrumbPath} />
       <div
         className="head_background"
-        style={{ backgroundImage: `url(${main_feature})` }}
+        style={{ backgroundImage: `url(${MainFeature})` }}
       >
         <Container maxWidth="xl">
           <h1 className="head_title">API</h1>
@@ -273,7 +273,7 @@ const ApiPage = () => {
               name={"Salivary Proteins"}
               schema={salivaryProtein}
               mapping={salivaryProteinMapping}
-              endpoint={"/api/salivary-protein/:uniprot-id"}
+              endpoint={"/api/salivary-proteins/:uniprot-id"}
               queryParamDescription={
                 "Query params `:uniprot-id`. Uniprot id of salivary protein to fetch."
               }

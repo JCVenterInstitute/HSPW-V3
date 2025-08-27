@@ -11,15 +11,39 @@ import {
   Typography,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import React from "react";
+import React, { useContext, useState, useEffect } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+
+import { AuthContext } from "../../services/AuthContext";
 
 const MobileNavBar = () => {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { logout, session } = useContext(AuthContext);
 
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
+  };
+
+  useEffect(() => {
+    if (session && session.isValid()) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [location, session]);
+
+  const handleLogout = async () => {
+    try {
+      await logout(); // Call the Cognito sign out method
+      setIsLoggedIn(false);
+      navigate("/");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
 
   return (
@@ -205,6 +229,44 @@ const MobileNavBar = () => {
               </List>
             </AccordionDetails>
           </Accordion>
+          {isLoggedIn ? (
+            <Accordion elevation={0}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography>Account</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <List
+                  component="div"
+                  disablePadding
+                >
+                  <ListItemButton
+                    component={Link}
+                    to="/profile"
+                  >
+                    <ListItemText primary="Profile" />
+                  </ListItemButton>
+                  <ListItemButton
+                    component={Link}
+                    to="/submissions"
+                  >
+                    <ListItemText primary="Submissions" />
+                  </ListItemButton>
+                  <ListItemButton onClick={handleLogout}>
+                    <ListItemText primary="Log Out" />
+                  </ListItemButton>
+                </List>
+              </AccordionDetails>
+            </Accordion>
+          ) : (
+            <ListItem disablePadding>
+              <ListItemButton
+                component={Link}
+                to="/login"
+              >
+                <ListItemText primary="Log In" />
+              </ListItemButton>
+            </ListItem>
+          )}
         </List>
       </Drawer>
     </>

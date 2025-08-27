@@ -21,13 +21,14 @@ import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { AgGridReact } from "ag-grid-react";
+import axios from "axios";
+import ClearIcon from "@mui/icons-material/Clear";
+import { Link } from "react-router-dom";
+
+import LoadingOverlay from "@Components/Shared/LoadingOverlay";
+import { ReactComponent as DownloadLogo } from "@Assets/table-icon/download.svg";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import axios from "axios";
-import CustomLoadingOverlay from "../../CustomLoadingOverlay";
-import ClearIcon from "@mui/icons-material/Clear";
-import { ReactComponent as DownloadLogo } from "../../../assets/table-icon/download.svg";
-import { Link } from "react-router-dom";
 
 const Accordion = styled((props) => (
   <MuiAccordion
@@ -141,7 +142,7 @@ const ExperimentSearchTable = () => {
   };
 
   const loadingOverlayComponent = useMemo(() => {
-    return CustomLoadingOverlay;
+    return LoadingOverlay;
   }, []);
 
   // Export the current page data as CSV file

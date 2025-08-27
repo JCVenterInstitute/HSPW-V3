@@ -26,13 +26,11 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet";
 
-import SearchResultsTable from "../../components/Search/SearchResultsTable";
-import SelectAllTransferList from "../../components/Search/SelectAllTransferList";
-import CustomLoadingOverlay from "../../components/Search/CustomLoadingOverlay";
-import BreadCrumb from "../../components/Layout/Breadcrumbs";
-import main_feature from "../../assets/hero.jpeg";
+import SearchResultsTable from "@Components/Search/SearchResultsTable";
+import SelectAllTransferList from "@Components/Search/SelectAllTransferList";
+import LoadingOverlay from "@Components/Shared/LoadingOverlay";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const generateColumnDefs = (entity, data) => {
   if (!data || data.length === 0) return [];
@@ -160,7 +158,7 @@ const AdvancedSearch = () => {
   };
 
   const loadingOverlayComponent = useMemo(() => {
-    return CustomLoadingOverlay;
+    return LoadingOverlay;
   }, []);
 
   const flattenData = (hits) => {
@@ -510,22 +508,13 @@ const AdvancedSearch = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Advanced Search</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        className="head_background"
-        style={{ backgroundImage: `url(${main_feature})` }}
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Advanced Search</h1>
-          <p className="head_text">
-            This search interface allows you to build complex queries exploiting
-            the semantic annotations stored in this database.
-          </p>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={`HSP | Advanced Search`}
+        title={`Advanced Search`}
+        breadcrumb={breadcrumbPath}
+        description={`This search interface allows you to build complex queries exploiting
+            the semantic annotations stored in this database.`}
+      />
       <Container maxWidth="xl">
         <Box
           component="fieldset"

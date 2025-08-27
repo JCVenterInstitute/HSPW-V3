@@ -19,6 +19,7 @@ RUN python3 get-pip.py
 RUN pip install \
     --target ${FUNCTION_DIR} \
         awslambdaric \
+        requests \
         boto3
 
 FROM jsychong/metaboanalyst:version3

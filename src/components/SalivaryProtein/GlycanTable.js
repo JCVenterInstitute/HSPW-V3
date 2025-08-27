@@ -17,7 +17,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ClearIcon from "@mui/icons-material/Clear";
 import FontAwesome from "react-fontawesome";
 import { Link } from "react-router-dom";
-import { ReactComponent as DownloadLogo } from "../../assets/table-icon/download.svg";
+import { ReactComponent as DownloadLogo } from "@Assets/table-icon/download.svg";
 import "../Filter.css";
 
 function Glycan_Table(props) {

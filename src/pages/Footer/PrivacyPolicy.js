@@ -5,10 +5,8 @@ import {
   ListItem,
   ListItemText,
 } from "@mui/material";
-import { Helmet } from "react-helmet";
 
-import BreadCrumb from "../../components/Layout/Breadcrumbs";
-import MainFeature from "../../assets/hero.jpeg";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const sections = [
   "User Accounts and Authorship",
@@ -22,20 +20,11 @@ const PrivacyNoticePage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Privacy</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{
-          backgroundImage: `url(${MainFeature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Privacy Policy</h1>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={"HSP | Privacy"}
+        title={"Privacy Policy"}
+        breadcrumb={breadcrumbPath}
+      />
       <Container
         maxWidth="xl"
         sx={{ my: 4 }}

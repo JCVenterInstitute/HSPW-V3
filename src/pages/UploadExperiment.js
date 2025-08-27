@@ -11,10 +11,9 @@ import {
   TableRow,
   Box,
 } from "@mui/material";
-import MainFeature from "../assets/hero.jpeg";
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet";
-import BreadCrumb from "../components/Layout/Breadcrumbs";
+
+import PageHeader from "@Components/Layout/PageHeader";
 
 const sections = ["Experiment Submission", "Data Format and Data Standards"];
 
@@ -52,20 +51,11 @@ const UploadExperiment = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Upload Experiment</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{
-          backgroundImage: `url(${MainFeature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Upload Experiment</h1>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={`HSP | Upload Experiment`}
+        title={`Upload Experiment`}
+        breadcrumb={breadcrumbPath}
+      />
       <Container
         maxWidth="xl"
         sx={{ my: 4 }}
@@ -85,7 +75,6 @@ const UploadExperiment = () => {
           {sections.map((section) => (
             <ListItem
               key={section}
-              button
               component="a"
               href={`#${section}`}
               sx={{ color: "#266CB4", padding: 0 }}

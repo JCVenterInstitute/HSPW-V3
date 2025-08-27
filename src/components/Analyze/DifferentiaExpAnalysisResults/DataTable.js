@@ -26,19 +26,33 @@ const DataTable = ({
 }) => {
   var columnDefs = [];
   var currentCellRenderer = 0;
+
+  const isNumeric = (value) => {
+    return value != null && value !== "" && !isNaN(Number(value));
+  };
+
   Object.keys(data[0]).forEach((header) => {
-    columnDefs.push({
+    const colDef = {
       field: header,
       headerTooltip: inputTooltips[header],
       cellStyle: {
         textAlign: "left",
-        width: "200%",
+        width: "200px",
         borderLeftWidth: columnDefs.length === 0 ? "0px" : "1px",
       },
       resizable: true,
       flex: Object.keys(data[0]).length <= 5 ? 1 : 0,
       lockPosition: columnDefs.length === 0 ? "left" : "",
-    });
+    };
+
+    // Check the first row's data for this header to see if it's numeric
+    if (data.length > 0 && isNumeric(data[0][header])) {
+      colDef.comparator = (valueA, valueB) => {
+        return Number(valueA) - Number(valueB);
+      };
+    }
+
+    columnDefs.push(colDef);
 
     if (
       hasCustomCells &&
@@ -51,7 +65,10 @@ const DataTable = ({
   });
 
   return (
-    <Container className="data-section-table" sx={{ margin: "0px" }}>
+    <Container
+      className="data-section-table"
+      sx={{ margin: "0px" }}
+    >
       <div
         className="ag-theme-material ag-theme-alpine"
         style={{

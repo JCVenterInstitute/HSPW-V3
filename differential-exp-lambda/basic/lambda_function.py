@@ -9,6 +9,7 @@ import base64
 import json
 import uuid
 from datetime import datetime
+import requests
 
 
 # Copy all files from src_dir to dest_dir.
@@ -108,7 +109,7 @@ def send_email(sender_email, recipient_email, body):
                 },
                 "Subject": {
                     "Charset": "UTF-8",
-                    "Data": "Differential Expression Analysis Failed",
+                    "Data": f'[{os.getenv("DEPLOY_ENV")}] Differential Expression Analysis Failed',
                 },
             },
             Source=sender_email,
@@ -149,8 +150,8 @@ def record_submission(event, submission_id):
         "link": f"/differential-expression/results/{submission_path}?logNorm={log_normalized}&heatmap={heat_map_number}&foldChange={fold_threshold}&pValue={p_val}&pType={p_raw}&parametricTest={stat_test}",
         "status": "Running",
         "submission_date": str(datetime.now()),
-        "type": "differential expression analysis",
-        # "username": event.get("username"),
+        "type": "Differential Expression Analysis",
+        "username": event.get("username"),
     }
 
     print(f"Submission", submission)
@@ -178,7 +179,7 @@ def main(event):
         heat_map_number = str(event.get("heat_map_number"))
         file_name = os.path.basename(input_file)
 
-        # record_submission(event, submission_id)
+        record_submission(event, submission_id)
 
         print(f"> Input File: {input_file}")
         print(f"> Log Norm: {log_normalized}")
@@ -338,6 +339,29 @@ def main(event):
         upload_files_to_s3(s3_bucket_name, directory_name, subdirectory)
         print("> Successfully uploaded results to S3")
 
+        print("> Triggering Advance Analysis Lambda")
+
+        advanceAnalysisRequestBody = {
+            "input_file": input_file,
+            "pValueCutoff": 0.85,
+            "qValueCutoff": 0.8,
+            "submission_id": submission_id,
+        }
+
+        advance_analysis_api = os.getenv("ADVANCE_ANALYSIS_API")
+
+        print("> Advance Analysis API Endpoint:", advance_analysis_api)
+
+        print(
+            "> Advance Analysis Req:", json.dumps(advanceAnalysisRequestBody, indent=2)
+        )
+
+        requests.post(
+            advance_analysis_api,
+            json=advanceAnalysisRequestBody,  # sends as JSON body
+            timeout=60,  # timeout in seconds
+        )
+
         return {
             "statusCode": 200,
             "body": json.dumps(
@@ -373,6 +397,12 @@ def main(event):
 
 def handler(event, context):
     print("> Received event:", json.dumps(event, indent=2))
+
+    if event.get("httpMethod") == "GET":
+        return {
+            "statusCode": 200,
+            "body": json.dumps({"message": "Basic Analysis API Pinged"}),
+        }
 
     if event.get("httpMethod") != "POST":
         return {

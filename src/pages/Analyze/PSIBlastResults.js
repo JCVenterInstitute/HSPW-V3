@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import main_feature from "../../assets/hero.jpeg";
 import {
   Typography,
   Container,
@@ -14,10 +13,12 @@ import {
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import "react-tabs/style/react-tabs.css";
 import XMLParser from "react-xml-parser";
-import { Helmet } from "react-helmet";
-import BreadCrumb from "../../components/Layout/Breadcrumbs";
+import Swal from "sweetalert2";
+import { awsJsonUpload } from "../../utils/AwsJsonUpload";
+
+import PageHeader from "@Components/Layout/PageHeader";
+import "react-tabs/style/react-tabs.css";
 
 const PsiBlastResults = () => {
   const { jobId } = useParams();
@@ -32,108 +33,160 @@ const PsiBlastResults = () => {
   const [submissionDetail, setSubmissionDetail] = useState(null);
   const [parameterDetail, setParameterDetail] = useState([]);
 
+  useEffect(() => {
+    const fetchParameters = async () => {
+      const parameterDetailArray = [];
+
+      const parameters = await axios
+        .get(`https://www.ebi.ac.uk/Tools/services/rest/psiblast/parameters`)
+        .then((res) => res.data.parameters);
+
+      for (const parameter of parameters) {
+        const parameterDetail = await axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/psiblast/parameterdetails/${parameter}`
+          )
+          .then((res) => res.data);
+
+        parameterDetailArray.push(parameterDetail);
+      }
+
+      setParameterDetail([...parameterDetailArray]);
+    };
+
+    fetchParameters();
+  }, []);
+
   const checkStatus = async () => {
-    const parameterDetailArray = [];
-    const status = await axios
-      .get(`https://www.ebi.ac.uk/Tools/services/rest/psiblast/status/${jobId}`)
-      .then((res) => res.data);
-
-    const parameters = await axios
-      .get(`https://www.ebi.ac.uk/Tools/services/rest/psiblast/parameters`)
-      .then((res) => res.data.parameters);
-
-    for (const parameter of parameters) {
-      const parameterDetail = await axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/parameterdetails/${parameter}`
-        )
-        .then((res) => res.data);
-      parameterDetailArray.push(parameterDetail);
-    }
-    setParameterDetail([...parameterDetailArray]);
-
-    if (status === "FINISHED") {
+    const submission = await axios.get(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
+    );
+    if (submission.data.status == "Complete") {
+      console.log("Submission already complete");
       setIsFinished(true);
     } else {
-      // Continue checking after 5 seconds
-      setTimeout(checkStatus, 5000);
+      const status = await axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/status/${jobId}`
+        )
+        .then((res) => res.data);
+
+      if (status === "NOT_FOUND") {
+        await axios.put(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
+          {
+            status: "Expired",
+          }
+        );
+
+        Swal.fire({
+          icon: "error",
+          title: "Submission Has Expired",
+          text: "Multiple Sequence Alignment submissions are only stored for 7 days. Redirecting back to submissions page.",
+        }).then(() => {
+          window.location.href = `/submissions`;
+        });
+      } else if (status === "FINISHED") {
+        // Update Submission status & completion date
+        await axios.put(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
+          {
+            status: "Complete",
+            completion_date: new Date().toISOString(),
+          }
+        );
+
+        setIsFinished(true);
+      } else {
+        // Continue checking after 5 seconds
+        setTimeout(checkStatus, 5000);
+      }
     }
   };
 
   const getResults = async () => {
-    const resultTypes = await axios
-      .get(
-        `https://www.ebi.ac.uk/Tools/services/rest/psiblast/resulttypes/${jobId}`
-      )
-      .then((res) => res.data.types);
-    console.log("> Result Types", resultTypes);
-    // for (const resultType of resultTypes) {
-    //   if (resultType.identifier === "visual-jpg") {
-    //     continue;
-    //   }
-    //   const result = await axios
-    //     .get(
-    //       `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/${resultType.identifier}`
-    //     )
-    //     .then((res) => res.data);
-    //   console.log(result);
-    // }
-    const [
-      inputSequence,
+    const submission = await axios.get(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
+    );
+    console.log(submission);
+    let username = submission.data.username;
+    let date = submission.data.submission_date.split("T")[0];
+
+    const presignedUrl = await axios
+      .get(`${process.env.REACT_APP_API_ENDPOINT}/api/getJSONFile`, {
+        params: {
+          s3Key: `users/${username}/proteinSimilaritySearch/${date}/${jobId}/ebi_data.json`,
+        },
+      })
+      .then((res) => res.data.url);
+    const fileResponse = await fetch(presignedUrl);
+    let inputSequence,
       toolOutput,
       output,
       xmlOutput,
       visualSvgOutput,
       visualPngOutput,
       outputDetail,
-      submissionDetail,
-    ] = await Promise.all([
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/sequence`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/out`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/wrapper_out`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/xml`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/visual-svg`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/visual-png`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/json`
-        )
-        .then((res) => res.data),
-      axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/submission`
-        )
-        .then((res) => res.data),
-    ]);
+      submissionDetail = null;
+
+    if (fileResponse.statusText == "OK") {
+      const fileData = await fileResponse.json();
+      inputSequence = fileData.inputSequence;
+      toolOutput = fileData.toolOutput;
+      output = fileData.output;
+      xmlOutput = fileData.xmlOutput;
+      visualSvgOutput = fileData.visualSvgOutput;
+      visualPngOutput = fileData.visualPngOutput;
+      outputDetail = fileData.outputDetail;
+      submissionDetail = fileData.submissionDetail;
+      console.log("AWS download complete");
+    } else {
+      const fetchResults = (jobId, type) => {
+        return axios.get(
+          `https://www.ebi.ac.uk/Tools/services/rest/psiblast/result/${jobId}/${type}`
+        );
+      };
+
+      [
+        inputSequence,
+        toolOutput,
+        output,
+        xmlOutput,
+        visualSvgOutput,
+        visualPngOutput,
+        outputDetail,
+        submissionDetail,
+      ] = await Promise.all([
+        fetchResults(jobId, "sequence").then((res) => res.data),
+        fetchResults(jobId, "out").then((res) => res.data),
+        fetchResults(jobId, "wrapper_out").then((res) => res.data),
+        fetchResults(jobId, "xml").then((res) => res.data),
+        fetchResults(jobId, "visual-svg").then((res) => res.data),
+        fetchResults(jobId, "visual-png").then((res) => res.data),
+        fetchResults(jobId, "json").then((res) => res.data),
+        fetchResults(jobId, "submission").then((res) => res.data),
+      ]);
+      const ebi_data = {
+        inputSequence: inputSequence,
+        toolOutput: toolOutput,
+        output: output,
+        xmlOutput: xmlOutput,
+        visualSvgOutput: visualSvgOutput,
+        visualPngOutput: visualPngOutput,
+        outputDetail: outputDetail,
+        submissionDetail: submissionDetail,
+      };
+
+      awsJsonUpload(
+        `users/${username}/proteinSimilaritySearch/${date}/${jobId}/ebi_data.json`,
+        ebi_data
+      );
+    }
 
     const submissionDetailJson = new XMLParser().parseFromString(
       submissionDetail
     );
-    // console.log(submissionDetailJson);
+
     setInputSequence(inputSequence);
     setToolOutput(toolOutput);
     setOutput(output);
@@ -184,18 +237,11 @@ const PsiBlastResults = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Protein Similarity Search Results</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{ backgroundImage: `url(${main_feature})` }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Protein Similarity Search</h1>
-          <p className="head_text">
-            BLAST stands for Basic Local Alignment Search Tool. The emphasis of
+      <PageHeader
+        tabTitle={`HSP | Protein Similarity Search Results`}
+        title={`Protein Similarity Search`}
+        breadcrumb={breadcrumbPath}
+        description={`BLAST stands for Basic Local Alignment Search Tool. The emphasis of
             this tool is to find regions of sequence similarity, which will
             yield functional and evolutionary clues about the structure and
             function of your novel sequence. Position specific iterative BLAST
@@ -205,10 +251,8 @@ const PsiBlastResults = () => {
             position-specific scoring matrices derived during the search, this
             tool is used to detect distant evolutionary relationships. PHI-BLAST
             functionality is available to use patterns to restrict search
-            results.
-          </p>
-        </Container>
-      </div>
+            results.`}
+      />
       <Container maxWidth="xl">
         <Typography
           variant="h5"
@@ -604,4 +648,5 @@ const PsiBlastResults = () => {
     </>
   );
 };
+
 export default PsiBlastResults;

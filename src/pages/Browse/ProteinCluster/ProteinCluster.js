@@ -3,11 +3,9 @@ import React, { useState, useEffect } from "react";
 import Chart from "react-google-charts";
 import Box from "@mui/material/Box";
 import { Container } from "@mui/material";
-import { Helmet } from "react-helmet";
 
-import main_feature from "../../../assets/hero.jpeg";
-import Cluster from "../../../components/Tables/ProteinClusterTable";
-import BreadCrumb from "../../../components/Layout/Breadcrumbs";
+import Cluster from "@Components/Tables/ProteinClusterTable";
+import PageHeader from "@Components/Layout/PageHeader";
 import "../../style.css";
 
 export const options = {
@@ -42,7 +40,7 @@ const ProteinCluster = () => {
 
   useEffect(() => {
     fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/protein-cluster-member-count`
+      `${process.env.REACT_APP_API_ENDPOINT}/api/protein-cluster/member-count`
     )
       .then((res) => res.json())
       .then((data) => {
@@ -88,35 +86,19 @@ const ProteinCluster = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Protein Clusters</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{
-          backgroundImage: `url(${main_feature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1
-            className="head_title"
-            align="left"
-          >
-            Protein Cluster
-          </h1>
-          <p className="head_text">
-            A protein cluster in the Human Salivary Proteome Project consists of
-            protein identifications. To cluster all proteins at a 95% identity
-            level, we used mmseq2 with the easy-cluster option. We ensured that
-            only those members' proteins with coverage above 50% sequence
-            identity. Only the representative protein was included in the table.
-            To access a comprehensive view of all the proteins in the cluster,
-            along with their respective abundance values, we must access the "#
-            of members" option.
-          </p>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={"HSP | Protein Clusters"}
+        title={"Protein Cluster"}
+        breadcrumb={breadcrumbPath}
+        description={`A protein cluster in the Human Salivary Proteome Project consists of\
+            protein identifications. To cluster all proteins at a 95% identity\
+            level, we used mmseq2 with the easy-cluster option. We ensured that\
+            only those members' proteins with coverage above 50% sequence\
+            identity. Only the representative protein was included in the table.\
+            To access a comprehensive view of all the proteins in the cluster,\
+            along with their respective abundance values, we must access the "#\
+            of members" option.`}
+      />
       <Container maxWidth="xl">
         <h2 style={{ textAlign: "center", marginTop: "20px" }}>Cluster Size</h2>
         <Chart

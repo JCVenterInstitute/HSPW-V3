@@ -1,28 +1,37 @@
-import {
-  AppBar,
-  Toolbar,
-  Button,
-  MenuItem,
-  Box,
-  useMediaQuery,
-  Container,
-} from "@mui/material";
-import logo from "../../assets/logo/hspw-logo.png";
-import React from "react";
-import PopupState from "material-ui-popup-state";
-import { bindHover, bindMenu } from "material-ui-popup-state/hooks";
-import HoverMenu from "material-ui-popup-state/HoverMenu";
-import { ArrowDropDownIcon } from "@mui/x-date-pickers";
-import MobileNavBar from "./MobileNavBar";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { AppBar, Toolbar, Box, useMediaQuery, Container } from "@mui/material";
 
-const navMenuStyles = {
-  marginRight: "20px",
-  fontSize: "20px",
-};
+import { AuthContext } from "../../services/AuthContext"; // Import the logout method
+import logo from "@Assets/logo/hspw-logo.png";
+import MobileNavBar from "./MobileNavBar";
+import NavBarMenuItem from "./NavBarButton";
+import { menuData } from "../../data/navbarData";
 
 export const NavBar = () => {
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down("lg"));
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation(); // Hook to track location changes
+  const { session, logout } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (session && session.isValid()) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [location, session]); // Run useEffect whenever the location changes
+
+  const handleLogout = async () => {
+    try {
+      await logout(); // Call the Cognito sign out method
+      setIsLoggedIn(false);
+      navigate("/");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
 
   return (
     <Container maxWidth="xl">
@@ -60,243 +69,39 @@ export const NavBar = () => {
               <MobileNavBar />
             ) : (
               <>
-                <Button
-                  color="primary"
-                  size="large"
-                  style={navMenuStyles}
-                  component={Link}
-                  to="/"
-                >
-                  Home
-                </Button>
-                <PopupState
-                  popupId="BrowseMenu"
-                  variant="popover"
-                >
-                  {(popupState) => (
-                    <React.Fragment>
-                      <Button
-                        size="large"
-                        style={navMenuStyles}
-                        {...bindHover(popupState)}
-                        endIcon={<ArrowDropDownIcon />}
-                      >
-                        Browse
-                      </Button>
-                      <HoverMenu
-                        {...bindMenu(popupState)}
-                        anchorOrigin={{
-                          vertical: "bottom",
-                          horizontal: "left",
-                        }}
-                        transformOrigin={{
-                          vertical: "top",
-                          horizontal: "left",
-                        }}
-                      >
-                        <MenuItem
-                          component={Link}
-                          to="/salivary-protein"
-                        >
-                          Salivary Proteins
-                        </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/protein-cluster"
-                        >
-                          Protein Clusters
-                        </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/protein-signature"
-                        >
-                          Protein Signatures
-                        </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/gene"
-                        >
-                          Genes
-                        </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/citation"
-                        >
-                          Publications
-                        </MenuItem>
-                      </HoverMenu>
-                    </React.Fragment>
-                  )}
-                </PopupState>
-                <PopupState
-                  popupId="SearchMenu"
-                  variant="popover"
-                >
-                  {(popupState) => (
-                    <React.Fragment>
-                      <Button
-                        variant="text"
-                        size="large"
-                        style={navMenuStyles}
-                        {...bindHover(popupState)}
-                        endIcon={<ArrowDropDownIcon />}
-                      >
-                        Search
-                      </Button>
-                      <HoverMenu
-                        {...bindMenu(popupState)}
-                        anchorOrigin={{
-                          vertical: "bottom",
-                          horizontal: "left",
-                        }}
-                        transformOrigin={{
-                          vertical: "top",
-                          horizontal: "left",
-                        }}
-                      >
-                        <MenuItem
-                          component={Link}
-                          to="/global-search"
-                        >
-                          Global Search
-                        </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/advanced-search"
-                        >
-                          Advanced Search
-                        </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/experiment-search"
-                        >
-                          Experiment Search
-                        </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/protein-set-search"
-                        >
-                          Protein Search By Identifiers
-                        </MenuItem>
-                      </HoverMenu>
-                    </React.Fragment>
-                  )}
-                </PopupState>
-                <PopupState
-                  popupId="AnalyzeMenu"
-                  variant="popover"
-                >
-                  {(popupState) => (
-                    <React.Fragment>
-                      <Button
-                        size="large"
-                        style={navMenuStyles}
-                        {...bindHover(popupState)}
-                        endIcon={<ArrowDropDownIcon />}
-                      >
-                        Analyze
-                      </Button>
-                      <HoverMenu
-                        {...bindMenu(popupState)}
-                        anchorOrigin={{
-                          vertical: "bottom",
-                          horizontal: "left",
-                        }}
-                        transformOrigin={{
-                          vertical: "top",
-                          horizontal: "left",
-                        }}
-                      >
-                        <MenuItem
-                          component={Link}
-                          to="/clustalo"
-                        >
-                          Multiple Sequence Alignment
-                        </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/differential-expression"
-                        >
-                          Differential Expression Analysis
-                        </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/iprscan5"
-                        >
-                          Protein Signature Search
-                        </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/psiblast"
-                        >
-                          Protein Similarity Search (BLAST)
-                        </MenuItem>
-                      </HoverMenu>
-                    </React.Fragment>
-                  )}
-                </PopupState>
-                <PopupState
-                  popupId="HelpMenu"
-                  variant="popover"
-                >
-                  {(popupState) => (
-                    <React.Fragment>
-                      <Button
-                        size="large"
-                        style={navMenuStyles}
-                        {...bindHover(popupState)}
-                        endIcon={<ArrowDropDownIcon />}
-                      >
-                        Help
-                      </Button>
-                      <HoverMenu
-                        {...bindMenu(popupState)}
-                        anchorOrigin={{
-                          vertical: "bottom",
-                          horizontal: "left",
-                        }}
-                        transformOrigin={{
-                          vertical: "top",
-                          horizontal: "left",
-                        }}
-                      >
-                        <MenuItem
-                          component={Link}
-                          to="/about"
-                        >
-                          About
-                        </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          onClick={() => {
-                            window.location.href =
-                              "http://hsp-documentation.s3-website.us-east-2.amazonaws.com";
-                          }}
-                        >
-                          Documentation
-                        </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/download"
-                        >
-                          Download
-                        </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/team"
-                        >
-                          Team
-                        </MenuItem>
-                        <MenuItem
-                          component={Link}
-                          to="/contact"
-                        >
-                          Contact Us
-                        </MenuItem>
-                      </HoverMenu>
-                    </React.Fragment>
-                  )}
-                </PopupState>
+                {menuData.map((m, i) => {
+                  return (
+                    <NavBarMenuItem
+                      key={`navbar-item-${i}`}
+                      mainMenu={m.mainMenu}
+                      subMenu={m.subMenu}
+                    />
+                  );
+                })}
+                {isLoggedIn ? (
+                  <NavBarMenuItem
+                    mainMenu={{ label: "Account" }}
+                    subMenu={[
+                      {
+                        link: "/profile",
+                        label: "Profile",
+                      },
+                      {
+                        link: "/submissions",
+                        label: "Submissions",
+                      },
+                      {
+                        link: "/",
+                        label: "Log Out",
+                        onClick: handleLogout,
+                      },
+                    ]}
+                  />
+                ) : (
+                  <NavBarMenuItem
+                    mainMenu={{ label: "Login", link: "/login" }}
+                  />
+                )}
               </>
             )}
           </div>

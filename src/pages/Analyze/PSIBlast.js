@@ -1,10 +1,8 @@
 import React from "react";
 import { Typography, Container } from "@mui/material";
-import { Helmet } from "react-helmet";
 
-import PsiBlastSequenceParameters from "../../components/MultipleSequenceAlignment/PsiBlastSequenceParameters";
-import BreadCrumb from "../../components/Layout/Breadcrumbs";
-import main_feature from "../../assets/hero.jpeg";
+import PsiBlastSequenceParameters from "@Components/MultipleSequenceAlignment/PsiBlastSequenceParameters";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const PSIBlast = () => {
   const breadcrumbPath = [
@@ -15,18 +13,11 @@ const PSIBlast = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Protein Similarity Search</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        className="head_background"
-        style={{ backgroundImage: `url(${main_feature})` }}
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Protein Similarity Search</h1>
-          <p className="head_text">
-            BLAST stands for Basic Local Alignment Search Tool. The emphasis of
+      <PageHeader
+        tabTitle={`HSP | Protein Similarity Search`}
+        title={`Protein Similarity Search`}
+        breadcrumb={breadcrumbPath}
+        description={`BLAST stands for Basic Local Alignment Search Tool. The emphasis of
             this tool is to find regions of sequence similarity, which will
             yield functional and evolutionary clues about the structure and
             function of your novel sequence. Position specific iterative BLAST
@@ -36,10 +27,8 @@ const PSIBlast = () => {
             position-specific scoring matrices derived during the search, this
             tool is used to detect distant evolutionary relationships. PHI-BLAST
             functionality is available to use patterns to restrict search
-            results.
-          </p>
-        </Container>
-      </div>
+            results.`}
+      />
       <Container maxWidth="xl">
         <Typography
           variant="h5"

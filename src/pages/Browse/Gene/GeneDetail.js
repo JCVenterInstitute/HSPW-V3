@@ -11,10 +11,8 @@ import FontAwesome from "react-fontawesome";
 import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 import { Container } from "@mui/material";
-import { Helmet } from "react-helmet";
 
-import BreadCrumb from "../../../components/Layout/Breadcrumbs";
-import MainFeature from "../../../assets/hero.jpeg";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const th = {
   background: "#f2f2f2",
@@ -50,7 +48,7 @@ const GeneDetail = (props) => {
 
   useEffect(() => {
     const fetchGenes = async () => {
-      const url = `${process.env.REACT_APP_API_ENDPOINT}/genes/${params["geneid"]}`;
+      const url = `${process.env.REACT_APP_API_ENDPOINT}/api/genes/${params["geneid"]}`;
 
       const response = await fetch(url);
 
@@ -112,26 +110,18 @@ const GeneDetail = (props) => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Gene Detail</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{
-          backgroundImage: `url(${MainFeature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">
-            Gene: EntrezGene: {data[0]["_source"]["GeneID"]}
-          </h1>
-          <p className="head_text">Name: {data[0]["_source"]["Gene Name"]}</p>
-          <p className="head_text">
+      <PageHeader
+        tabTitle={"HSP | Gene Detail"}
+        title={` Gene: EntrezGene: ${data[0]["_source"]["GeneID"]}`}
+        breadcrumb={breadcrumbPath}
+        description={
+          <React.Fragment>
+            Name: {data[0]["_source"]["Gene Name"]}
+            <br />
             Gene Symbol: {data[0]["_source"]["Gene Symbol"]}
-          </p>
-        </Container>
-      </div>
+          </React.Fragment>
+        }
+      />
       <Container maxWidth="xl">
         <div style={{ marginTop: "20px", marginBottom: "20px" }}>
           <TableContainer

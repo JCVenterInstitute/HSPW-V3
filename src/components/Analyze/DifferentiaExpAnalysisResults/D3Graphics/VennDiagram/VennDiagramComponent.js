@@ -1,8 +1,8 @@
-import "../D3GraphStyles.css";
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import * as d3 from "d3v7";
 import { VennDiagram } from "venn.js";
-import { AgGridReact } from "ag-grid-react";
+
+import "../D3GraphStyles.css";
 import DataTable from "../../DataTable";
 import { createLegend } from "../../utils";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -255,14 +255,37 @@ const VennDiagramComponent = ({ data }) => {
         }`
       );
 
-    const chart = VennDiagram().width(width).height(height);
-    svg.datum(sets).call(chart);
+    // Create a normalized version of the sets with equal circle sizes
+    const normalizedSets = [
+      {
+        ...sets[0],
+        size: 900,
+        displaySize: sets[0].size, // Keep original size for display
+      },
+      {
+        ...sets[1],
+        size: 900,
+        displaySize: sets[1].size, // Keep original size for display
+      },
+      {
+        ...sets[2],
+        size: 150, // Fixed intersection size to prevent overwhelming the diagram
+        displaySize: sets[2].size, // Keep original size for display
+        label: sets[2].label,
+      },
+    ];
+
+    const chart = VennDiagram().width(width).height(height).padding(0.3);
+
+    svg.datum(normalizedSets).call(chart);
 
     svg
       .selectAll(".venn-circle path")
       .style("stroke-width", 2)
-      .style("stroke", "black");
+      .style("stroke", "black")
+      .style("fill-opacity", 0.3);
 
+    // Update the labels to show original sizes
     svg
       .selectAll(".venn-circle text")
       .html((d, i) => `${sets[i].label}`)

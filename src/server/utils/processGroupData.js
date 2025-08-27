@@ -19,17 +19,32 @@ const processSamples = async (samples, groupLabel) => {
 
   for (const sample of samples) {
     const proteinData = await fetchProteinData(sample.experiment_id_key);
-    proteinData.forEach((protein) => proteinIds.add(protein.Uniprot_id)); // Collect protein IDs
 
+    // Create a mapping from Uniprot_id to protein_name
+    const proteinNamesMap = {};
+
+    proteinData.forEach((protein) => {
+      proteinIds.add(protein.Uniprot_id);
+      proteinNamesMap[protein.Uniprot_id] = protein.protein_name;
+    }); // Collect protein IDs & names
+
+    // First, collect abundances with Uniprot_id as key
     const proteinAbundances = proteinData.reduce((acc, protein) => {
-      acc[protein.Uniprot_id] = protein.abundance; // Replace 'abundance' with the correct property name
+      acc[`${protein.Uniprot_id}`] = protein.abundance;
       return acc;
     }, {});
+
+    // After reducer, update keys to "Uniprot_id - protein_name"
+    const proteinAbundancesWithNames = {};
+    Object.entries(proteinAbundances).forEach(([uniprotId, abundance]) => {
+      const name = proteinNamesMap[uniprotId] || "";
+      proteinAbundancesWithNames[`${uniprotId} - ${name}`] = abundance;
+    });
 
     processedSamples.push({
       Identifier: sample.experiment_short_title, // Replace 'sample_name' with the correct property name
       Group: groupLabel,
-      ...proteinAbundances,
+      ...proteinAbundancesWithNames,
     });
   }
 
@@ -71,13 +86,11 @@ exports.processGroupData = async (
 ) => {
   console.log("> Processing Group Data");
 
-  // console.log("> Group A", groupAData);
-  // console.log("> Group B", groupBData);
-
   const { processedSamples: processedGroupA } = await processSamples(
     groupAData,
     groupNames && groupNames.groupA ? groupNames.groupA : "A"
   );
+
   const { processedSamples: processedGroupB } = await processSamples(
     groupBData,
     groupNames && groupNames.groupB ? groupNames.groupB : "B"
@@ -87,8 +100,6 @@ exports.processGroupData = async (
 
   // Create CSV string
   const csvString = createCsvString(combinedData);
-
-  // console.log("> CSV String", csvString);
 
   const contentType = "text/csv";
 
@@ -102,9 +113,7 @@ exports.processGroupData = async (
     contentType,
   });
 
-  // console.log("> Presigned URL", presignedUrl);
-
-  const response = await axios.put(presignedUrl, csvString, {
+  await axios.put(presignedUrl, csvString, {
     headers: {
       "Content-Type": contentType,
     },

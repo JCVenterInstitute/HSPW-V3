@@ -15,11 +15,11 @@ import axios from "axios";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import XMLParser from "react-xml-parser";
 import { MSAView, MSAModel } from "react-msaview";
-import { Helmet } from "react-helmet";
-import "react-tabs/style/react-tabs.css";
+import Swal from "sweetalert2";
+import { awsJsonUpload } from "../../utils/AwsJsonUpload";
 
-import BreadCrumb from "../../components/Layout/Breadcrumbs";
-import main_feature from "../../assets/hero.jpeg";
+import PageHeader from "@Components/Layout/PageHeader";
+import "react-tabs/style/react-tabs.css";
 import "./alignmentTool.css";
 
 const ClustalOmegaResults = () => {
@@ -33,42 +33,93 @@ const ClustalOmegaResults = () => {
   const [parameterDetail, setParameterDetail] = useState([]);
   const [model, setModel] = useState(null);
 
+  useEffect(() => {
+    const fetchParameters = async () => {
+      const parameterDetailArray = [];
+
+      const parameters = await axios
+        .get(`https://www.ebi.ac.uk/Tools/services/rest/clustalo/parameters`)
+        .then((res) => res.data.parameters);
+
+      for (const parameter of parameters) {
+        const parameterDetail = await axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/parameterdetails/${parameter}`
+          )
+          .then((res) => res.data);
+        parameterDetailArray.push(parameterDetail);
+      }
+
+      setParameterDetail([...parameterDetailArray]);
+    };
+
+    fetchParameters();
+  }, []);
+
   const checkStatus = async () => {
-    const parameterDetailArray = [];
-    const status = await axios
-      .get(`https://www.ebi.ac.uk/Tools/services/rest/clustalo/status/${jobId}`)
-      .then((res) => res.data);
-
-    const parameters = await axios
-      .get(`https://www.ebi.ac.uk/Tools/services/rest/clustalo/parameters`)
-      .then((res) => res.data.parameters);
-
-    for (const parameter of parameters) {
-      const parameterDetail = await axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/clustalo/parameterdetails/${parameter}`
-        )
-        .then((res) => res.data);
-      parameterDetailArray.push(parameterDetail);
-    }
-    setParameterDetail([...parameterDetailArray]);
-
-    if (status === "FINISHED") {
+    const submission = await axios.get(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
+    );
+    if (submission.data.status == "Complete") {
+      console.log("Submission already completed");
       setIsFinished(true);
     } else {
-      // Continue checking after 5 seconds
-      setTimeout(checkStatus, 5000);
+      const status = await axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/clustalo/status/${jobId}`
+        )
+        .then((res) => res.data);
+
+      console.log("> Status", status);
+
+      if (status === "NOT_FOUND") {
+        await axios.put(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
+          {
+            status: "Expired",
+          }
+        );
+
+        Swal.fire({
+          icon: "error",
+          title: "Submission Has Expired",
+          text: "Multiple Sequence Alignment submissions are only stored for 7 days. Redirecting back to submissions page.",
+        }).then(() => {
+          window.location.href = `/submissions`;
+        });
+      } else if (status === "FINISHED") {
+        // Update Submission status & completion date
+        await axios.put(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
+          {
+            status: "Complete",
+            completion_date: new Date().toISOString(),
+          }
+        );
+
+        setIsFinished(true);
+      } else {
+        // Continue checking after 5 seconds
+        setTimeout(checkStatus, 5000);
+      }
     }
   };
 
   const getResults = async () => {
     let type = "aln-clustal";
+    const submission = await axios.get(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
+    );
+    console.log(submission);
+    let username = submission.data.username;
+    let date = submission.data.submission_date.split("T")[0];
+
     const resultTypes = await axios
       .get(
         `https://www.ebi.ac.uk/Tools/services/rest/clustalo/resulttypes/${jobId}`
       )
       .then((res) => res.data.types);
-    console.log("> Result Types", resultTypes);
+
     for (const resultType of resultTypes) {
       if (resultType === "aln-clustal_num") {
         type = "aln-clustal_num";
@@ -80,29 +131,64 @@ const ClustalOmegaResults = () => {
       //   .then((res) => res.data);
       // console.log(result);
     }
-    const [inputSequence, output, alignmentResult, submissionDetail] =
-      await Promise.all([
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/sequence`
-          )
-          .then((res) => res.data),
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/out`
-          )
-          .then((res) => res.data),
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/${type}`
-          )
-          .then((res) => res.data),
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/submission`
-          )
-          .then((res) => res.data),
-      ]);
+
+    const presignedUrl = await axios
+      .get(`${process.env.REACT_APP_API_ENDPOINT}/api/getJSONFile`, {
+        params: {
+          s3Key: `users/${username}/clustalOmega/${date}/${jobId}/ebi_data.json`,
+        },
+      })
+      .then((res) => res.data.url);
+    const fileResponse = await fetch(presignedUrl);
+    let inputSequence,
+      output,
+      alignmentResult,
+      submissionDetail = null;
+
+    if (fileResponse.statusText == "OK") {
+      const fileData = await fileResponse.json();
+      inputSequence = fileData.inputSequence;
+      output = fileData.output;
+      alignmentResult = fileData.alignmentResult;
+      submissionDetail = fileData.submissionDetail;
+      console.log("AWS download complete");
+    } else {
+      [inputSequence, output, alignmentResult, submissionDetail] =
+        await Promise.all([
+          axios
+            .get(
+              `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/sequence`
+            )
+            .then((res) => res.data),
+          axios
+            .get(
+              `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/out`
+            )
+            .then((res) => res.data),
+          axios
+            .get(
+              `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/${type}`
+            )
+            .then((res) => res.data),
+          axios
+            .get(
+              `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/submission`
+            )
+            .then((res) => res.data),
+        ]);
+
+      const ebi_data = {
+        inputSequence: inputSequence,
+        output: output,
+        alignmentResult: alignmentResult,
+        submissionDetail: submissionDetail,
+      };
+
+      awsJsonUpload(
+        `users/${username}/clustalOmega/${date}/${jobId}/ebi_data.json`,
+        ebi_data
+      );
+    }
 
     const sequenceMatch = output.match(/Read (\d+) sequences/);
     const numberOfSequences = parseInt(sequenceMatch[1], 10);
@@ -158,26 +244,17 @@ const ClustalOmegaResults = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Multiple Sequence Alignment Results</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{ backgroundImage: `url(${main_feature})` }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Multiple Sequence Alignment</h1>
-          <p className="head_text">
-            ClustalW is a general purpose multiple sequence alignment program
+      <PageHeader
+        tabTitle={`HSP | Multiple Sequence Alignment Results`}
+        title={`Multiple Sequence Alignment`}
+        breadcrumb={breadcrumbPath}
+        description={`ClustalW is a general purpose multiple sequence alignment program
             for DNA or proteins. It produces biologically meaningful multiple
             sequence alignments of divergent sequences. It calculates the best
             match for the selected sequences, and lines them up so that the
             identities, similarities and differences can be seen. This service
-            is provided by the European Bioinformatics Institute (EBI).
-          </p>
-        </Container>
-      </div>
+            is provided by the European Bioinformatics Institute (EBI).`}
+      />
       <Container maxWidth="xl">
         <Typography
           variant="h5"

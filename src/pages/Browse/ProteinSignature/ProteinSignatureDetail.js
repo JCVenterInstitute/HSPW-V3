@@ -14,10 +14,8 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
 import { Container } from "@mui/material";
-import { Helmet } from "react-helmet";
 
-import BreadCrumb from "../../../components/Layout/Breadcrumbs";
-import MainFeature from "../../../assets/hero.jpeg";
+import PageHeader from "@Components/Layout/PageHeader";
 import "../../style.css";
 
 const th = {
@@ -116,7 +114,7 @@ const SignatureDetail = (props) => {
   }, []);
 
   const fetchPubMed = async (id) => {
-    const pubmedLink = `${process.env.REACT_APP_API_ENDPOINT}/api/citation/${id}`;
+    const pubmedLink = `${process.env.REACT_APP_API_ENDPOINT}/api/citations/${id}`;
     const response = await fetch(pubmedLink);
     if (!response.ok) {
       const message = `An error has occurred: ${response.status}`;
@@ -155,22 +153,11 @@ const SignatureDetail = (props) => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Protein Signature Detail</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{
-          backgroundImage: `url(${MainFeature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">
-            {data[0]["_source"]["Type"] + ": " + data[0]["_source"]["Name"]}
-          </h1>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={"HSP | Protein Signature Detail"}
+        title={`${data[0]["_source"]["Type"] + ": " + data[0]["_source"]["Name"]}`}
+        breadcrumb={breadcrumbPath}
+      />
       <Container maxWidth="xl">
         <div style={{ marginTop: "20px", marginBottom: "20px" }}>
           <TableContainer

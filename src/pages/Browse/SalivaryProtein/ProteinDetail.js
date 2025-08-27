@@ -14,15 +14,13 @@ import { useParams } from "react-router";
 import ProtvistaUniprot from "protvista-uniprot";
 import "font-awesome/css/font-awesome.min.css";
 import "resize-observer-polyfill";
-import { Helmet } from "react-helmet";
 import { Link as ReactLink } from "react-router-dom";
 
-import BChart from "../../../components/SalivaryProtein/TwoSidedBarChart";
-import CommentTable from "../../../components/SalivaryProtein/CommentTable";
-import GlycanTable from "../../../components/SalivaryProtein/GlycanTable";
-import main_feature from "../../../assets/hero.jpeg";
+import BChart from "@Components/SalivaryProtein/TwoSidedBarChart";
+import CommentTable from "@Components/SalivaryProtein/CommentTable";
+import GlycanTable from "@Components/SalivaryProtein/GlycanTable";
+import PageHeader from "@Components/Layout/PageHeader";
 import "../../style.css";
-import BreadCrumb from "../../../components/Layout/Breadcrumbs";
 
 window.customElements.define("protvista-uniprot", ProtvistaUniprot);
 
@@ -54,7 +52,7 @@ const ProteinDetail = (props) => {
   ];
 
   const fetchPubMed = async (id) => {
-    const pubmedLink = `${process.env.REACT_APP_API_ENDPOINT}/api/citation/${id}`;
+    const pubmedLink = `${process.env.REACT_APP_API_ENDPOINT}/api/citations/${id}`;
     const response = await fetch(pubmedLink);
     if (!response.ok) {
       const message = `An error has occurred: ${response.status}`;
@@ -93,7 +91,7 @@ const ProteinDetail = (props) => {
     };
 
     const fetchProtein = async () => {
-      const url = `${process.env.REACT_APP_API_ENDPOINT}/api/salivary-protein/${params["proteinid"]}`;
+      const url = `${process.env.REACT_APP_API_ENDPOINT}/api/salivary-proteins/${params["proteinid"]}`;
       const response = await axios.get(url);
       const json = response.data;
       return json;
@@ -140,35 +138,22 @@ const ProteinDetail = (props) => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Salivary Protein Detail</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
+      <PageHeader
+        tabTitle={"HSP | Salivary Protein Detail"}
+        title={`Protein: ${data[0]["_source"]["salivary_proteins"]["protein_name"]}`}
+        breadcrumb={breadcrumbPath}
+        description={`${
+          data[0]["_source"]["salivary_proteins"]["protein_alternate_names"][0]
+            ? `Alternate Names: ${data[0]["_source"]["salivary_proteins"]["protein_alternate_names"]}`
+            : ""
+        }`}
+      />
       <script
         src="https://d3js.org/d3.v4.min.js"
         charSet="utf-8"
         defer
-      ></script>
-      <script src="https://cdn.jsdelivr.net/npm/protvista-uniprot@latest/dist/protvista-uniprot.js"></script>
-      <div
-        style={{
-          backgroundImage: `url(${main_feature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">
-            Protein: {data[0]["_source"]["salivary_proteins"]["protein_name"]}
-          </h1>
-          <p className="head_text">
-            {data[0]["_source"]["salivary_proteins"][
-              "protein_alternate_names"
-            ][0]
-              ? `Alternate Names: ${data[0]["_source"]["salivary_proteins"]["protein_alternate_names"]}`
-              : ""}
-          </p>
-        </Container>
-      </div>
+      />
+      <script src="https://cdn.jsdelivr.net/npm/protvista-uniprot@latest/dist/protvista-uniprot.js" />
       <div
         id="hero-section"
         style={{ paddingTop: "10px" }}

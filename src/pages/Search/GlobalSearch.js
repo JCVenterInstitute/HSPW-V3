@@ -1,16 +1,14 @@
 import { useState } from "react";
 import { Container, TextField, Button, Box, Typography } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { Helmet } from "react-helmet";
 
-import Genes from "../../components/Search/GlobalSearch/Genes";
-import ProteinClusters from "../../components/Search/GlobalSearch/ProteinClusters";
-import ProteinSignatures from "../../components/Search/GlobalSearch/ProteinSignatures";
-import Proteins from "../../components/Search/GlobalSearch/Proteins";
-import PubMedCitations from "../../components/Search/GlobalSearch/PubMedCitations";
-import SalivaryProteins from "../../components/Search/GlobalSearch/SalivaryProteins";
-import BreadCrumb from "../../components/Layout/Breadcrumbs";
-import main_feature from "../../assets/hero.jpeg";
+import Genes from "@Components/Search/GlobalSearch/Genes";
+import ProteinClusters from "@Components/Search/GlobalSearch/ProteinClusters";
+import ProteinSignatures from "@Components/Search/GlobalSearch/ProteinSignatures";
+import Proteins from "@Components/Search/GlobalSearch/Proteins";
+import PubMedCitations from "@Components/Search/GlobalSearch/PubMedCitations";
+import SalivaryProteins from "@Components/Search/GlobalSearch/SalivaryProteins";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const GlobalSearch = () => {
   const [searchText, setSearchText] = useState("");
@@ -57,22 +55,13 @@ const GlobalSearch = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Global Search</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        className="head_background"
-        style={{ backgroundImage: `url(${main_feature})` }}
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Global Search</h1>
-          <p className="head_text">
-            This search interface allows you to search through all database and
-            find the desired results.
-          </p>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={`HSP | Global Search`}
+        title={`Global Search`}
+        breadcrumb={breadcrumbPath}
+        description={` This search interface allows you to search through all database and
+            find the desired results.`}
+      />
       <Container maxWidth="xl">
         <Box sx={{ display: "flex", alignItems: "center", mt: 4, mb: 4 }}>
           <form

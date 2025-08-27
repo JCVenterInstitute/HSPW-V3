@@ -4,10 +4,11 @@ import axios from "axios";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { AgGridReact } from "ag-grid-react";
+import { Link } from "react-router-dom";
+
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import CustomLoadingOverlay from "../CustomLoadingOverlay";
-import { Link } from "react-router-dom";
+import LoadingOverlay from "@Components/Shared/LoadingOverlay";
 
 const generateColumnDefs = (entity, data) => {
   if (!data || data.length === 0) return [];
@@ -124,7 +125,7 @@ const Proteins = ({ searchText }) => {
   };
 
   const loadingOverlayComponent = useMemo(() => {
-    return CustomLoadingOverlay;
+    return LoadingOverlay;
   }, []);
 
   const fetchData = async (page = currentPage, pageSize = recordsPerPage) => {

@@ -18,6 +18,8 @@ import QueryString from "qs";
 import Swal from "sweetalert2";
 import XMLParser from "react-xml-parser";
 
+import userpool from "../../userpool";
+
 const PsiBlastSequenceParameters = ({ url }) => {
   const [loading, setLoading] = useState(false);
   const [parameterDetails, setParameterDetails] = useState([]);
@@ -35,12 +37,15 @@ const PsiBlastSequenceParameters = ({ url }) => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0]; // Get the selected file
+
     if (file) {
       const reader = new FileReader();
+
       reader.onload = (event) => {
         const content = event.target.result;
         setSequence(content); // Set the file content to state
       };
+
       reader.readAsText(file); // Read the file as text
     }
   };
@@ -66,6 +71,7 @@ const PsiBlastSequenceParameters = ({ url }) => {
     const defaultValue = {};
 
     setLoading(true);
+
     try {
       const parameters = await axios
         .get(`https://www.ebi.ac.uk/Tools/services/rest/${url}/parameters`)
@@ -77,7 +83,9 @@ const PsiBlastSequenceParameters = ({ url }) => {
             `https://www.ebi.ac.uk/Tools/services/rest/${url}/parameterdetails/${parameter}`
           )
           .then((res) => res.data);
+
         parameterDetailArray.push(parameterDetail);
+
         defaultValue[parameterDetail.name] = {
           name: parameter,
           value:
@@ -87,11 +95,13 @@ const PsiBlastSequenceParameters = ({ url }) => {
                 )?.value
               : null,
         };
+
         if (parameterDetail.name === "Database") {
           defaultValue[parameterDetail.name].value =
             parameterDetail.values.values[13].value;
         }
       }
+
       setParameterValue(defaultValue);
       setResetValue(defaultValue);
       setParameterDetails([...parameterDetailArray]);
@@ -111,7 +121,11 @@ const PsiBlastSequenceParameters = ({ url }) => {
       title: "Submitting the job, please wait...",
     });
     Swal.showLoading();
+
     try {
+      const currUser = userpool.getCurrentUser();
+      const username = currUser.getUsername();
+
       const data = {
         email: email,
         title: title,
@@ -129,8 +143,10 @@ const PsiBlastSequenceParameters = ({ url }) => {
           selectedHits: fieldValues["Selected Hits"],
         }),
       };
+
       for (const key of Object.keys(parameterValue)) {
         const option = parameterValue[key];
+
         if (
           option.name !== "sequence" &&
           option.name !== "cpfile" &&
@@ -141,20 +157,39 @@ const PsiBlastSequenceParameters = ({ url }) => {
           data[option.name] = option.value;
         }
       }
+
       const payload = {
         method: "POST",
         headers: { "content-type": "application/x-www-form-urlencoded" },
         data: QueryString.stringify(data),
         url: `https://www.ebi.ac.uk/Tools/services/rest/${url}/run`,
       };
+
       const jobId = await axios(payload)
         .then((res) => res.data)
         .finally(() => {
           Swal.close();
         });
+
+      const submissionPayload = {
+        user: username,
+        type: "Protein Similarity Search",
+        link: `/${url}/results/${jobId}`,
+        status: "Running",
+        id: jobId,
+        name: title,
+      };
+
+      await axios.post(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions`,
+        submissionPayload
+      );
+
       window.location.href = `/${url}/results/${jobId}`;
     } catch (err) {
+      console.log("> Err", err);
       const errorMessage = new XMLParser().parseFromString(err.response.data);
+
       Swal.fire({
         icon: "error",
         title: "Error",

@@ -4,6 +4,10 @@ library(UniProt.ws)
 library(tidyr)
 
 all_data <- read.table("all_data.tsv",sep="\t",header=T)
+
+# Strip rn column to only the part before the first space or dash
+all_data$rn <- sub("^([^ -]+).*", "\\1", all_data$rn)
+
 colnames(all_data)[1] <- "UNIPROT"
 id_chngs<-mapUniProt("UniProtKB_AC-ID", "UniProtKB", query = all_data$UNIPROT, columns = c("gene_primary"))
 colnames(id_chngs)[1] <- "UNIPROT"

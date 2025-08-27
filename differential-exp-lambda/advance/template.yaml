@@ -119,13 +119,14 @@ Resources:
           SUPPORT_EMAIL: !Ref SupportEmail
           SUBMISSIONS_TABLE: !Ref SubmissionTable
           REGION: !Ref AwsRegion
+          DEPLOY_ENV: !Ref DeployEnv
       Timeout: 900
 
   AdvanceAnalysisTrigger:
     Type: AWS::Serverless::Function
     Properties:
       Handler: advance_trigger.handler
-      Runtime: nodejs16.x
+      Runtime: nodejs20.x
       FunctionName: !Sub "Differential-Analysis-Advance-Trigger-${DeployEnv}"
       Description: Trigger Start of Advance Differential Analysis
       Role: !GetAtt HSPDiffExpRole.Arn

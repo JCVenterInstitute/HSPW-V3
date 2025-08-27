@@ -1,9 +1,5 @@
-import { Container } from "@mui/material";
-import { Helmet } from "react-helmet";
-
-import BreadCrumb from "../../../components/Layout/Breadcrumbs";
-import MainFeature from "../../../assets/hero.jpeg";
-import ExperimentSearchTable from "../../../components/Search/ExperimentSearch/ExperimentSearchTable";
+import ExperimentSearchTable from "@Components/Search/ExperimentSearch/ExperimentSearchTable";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const ExperimentSearch = () => {
   const breadcrumbPath = [
@@ -14,24 +10,13 @@ const ExperimentSearch = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Experiment Search</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{
-          backgroundImage: `url(${MainFeature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Experiment Search</h1>
-          <p className="head_text">
-            This search interface allows you to use filters to search for
-            experiments to find your desired results.
-          </p>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={`HSP | Experiment Search`}
+        title={`Experiment Search`}
+        breadcrumb={breadcrumbPath}
+        description={`This search interface allows you to use filters to search for
+            experiments to find your desired results.`}
+      />
       <ExperimentSearchTable />
     </>
   );

@@ -10,6 +10,9 @@ qvalue=as.numeric(args[2])
 
 all_data <- read.table("all_data.tsv",sep="\t",header=T)
 
+# Strip rn column to only the part before the first space or dash
+all_data$rn <- sub("^([^ -]+).*", "\\1", all_data$rn)
+
 #Converting ids to ENTREZID for analysis
 id_chng = bitr(all_data$rn, fromType="UNIPROT", toType="ENTREZID", OrgDb="org.Hs.eg.db")
 colnames(id_chng) <- c("rn", "ENTREZID")

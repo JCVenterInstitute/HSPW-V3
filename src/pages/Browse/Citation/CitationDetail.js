@@ -6,9 +6,7 @@ import { useParams } from "react-router";
 import FontAwesome from "react-fontawesome";
 import { Box, Container, LinearProgress } from "@mui/material";
 
-import BreadCrumb from "../../../components/Layout/Breadcrumbs";
-import MainFeature from "../../../assets/hero.jpeg";
-import { Helmet } from "react-helmet";
+import PageHeader from "@Components/Layout/PageHeader";
 
 const th = {
   background: "#f2f2f2",
@@ -41,7 +39,7 @@ const Citation_detail = (props) => {
   const [data, setData] = useState("");
   const params = useParams();
 
-  const url = `${process.env.REACT_APP_API_ENDPOINT}/api/citation/${params["citationid"]}`;
+  const url = `${process.env.REACT_APP_API_ENDPOINT}/api/citations/${params["citationid"]}`;
 
   const breadcrumbPath = [
     { path: "Home", link: "/" },
@@ -247,22 +245,11 @@ const Citation_detail = (props) => {
   };
   return (
     <>
-      <Helmet>
-        <title>HSP | Publication Detail</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{
-          backgroundImage: `url(${MainFeature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">
-            Publication: PubMed: {params["citationid"]}
-          </h1>
-        </Container>
-      </div>
+      <PageHeader
+        tabTitle={"HSP | Publication Detail"}
+        breadcrumb={breadcrumbPath}
+        title={`Publication: PubMed: ${params["citationid"]}`}
+      />
       <Container maxWidth="xl">
         <div style={{ marginTop: "20px", marginBottom: "20px" }}>
           <TableHead style={{ borderRadius: "1em 0 0 1em" }}>

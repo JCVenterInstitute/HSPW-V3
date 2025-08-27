@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "sam:build:core": "rm -rf .aws-sam && sam build --config-env core",
-    "deploy:app:core:dev": "sam deploy --config-env dev",
-    "complete:app:core:dev": "npm run sam:build:core && npm run deploy:app:core:dev"
+    "deploy:app:core:dev": "sam deploy --no-fail-on-empty-changeset --config-env dev",
+    "complete:app:core:dev": "npm run sam:build:core && npm run deploy:app:core:dev",
+    "deploy:app:core:prod": "sam deploy --no-fail-on-empty-changeset --config-env prod",
+    "complete:app:core:prod": "npm run sam:build:core && npm run deploy:app:core:prod"
   },
   "keywords": [],
   "author": "",

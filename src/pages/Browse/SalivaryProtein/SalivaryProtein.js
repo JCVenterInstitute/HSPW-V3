@@ -1,10 +1,8 @@
+import React from "react";
 import FontAwesome from "react-fontawesome";
-import { Container } from "@mui/material";
-import { Helmet } from "react-helmet";
 
-import Protein from "../../../components/SalivaryProtein/SalivaryProteinTable.js";
-import MainFeature from "../../../assets/hero.jpeg";
-import BreadCrumb from "../../../components/Layout/Breadcrumbs";
+import Protein from "@Components/SalivaryProtein/SalivaryProteinTable.js";
+import PageHeader from "@Components/Layout/PageHeader.js";
 import "../../style.css";
 
 const SalivaryProtein = () => {
@@ -16,19 +14,12 @@ const SalivaryProtein = () => {
 
   return (
     <>
-      <Helmet>
-        <title>HSP | Salivary Proteins</title>
-      </Helmet>
-      <BreadCrumb path={breadcrumbPath} />
-      <div
-        style={{
-          backgroundImage: `url(${MainFeature})`,
-        }}
-        className="head_background"
-      >
-        <Container maxWidth="xl">
-          <h1 className="head_title">Salivary Protein</h1>
-          <p className="head_text">
+      <PageHeader
+        tabTitle={"HSP | Salivary Proteins"}
+        title={"Salivary Protein"}
+        breadcrumb={breadcrumbPath}
+        description={
+          <React.Fragment>
             Proteins listed below have been manually reviewed and annotated by{" "}
             <a
               target="_blank"
@@ -75,9 +66,9 @@ const SalivaryProtein = () => {
               style={{ textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)" }}
             />
             .
-          </p>
-        </Container>
-      </div>
+          </React.Fragment>
+        }
+      />
       <Protein />
     </>
   );

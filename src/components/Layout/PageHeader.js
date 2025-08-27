@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet";
 import { Container } from "@mui/material";
 
 import BreadCrumb from "./Breadcrumbs";
-import backgroundImage from "../../assets/hero.jpeg";
+import backgroundImage from "@Assets/backgrounds/hero.jpeg";
 
 /** Component for setting the tab title, breadcrumb &  header for all pages */
 const PageHeader = ({ tabTitle, breadcrumb, title, description }) => {
@@ -18,7 +18,7 @@ const PageHeader = ({ tabTitle, breadcrumb, title, description }) => {
       >
         <Container maxWidth="xl">
           <h1 className="head_title">{title}</h1>
-          <p className="head_text">{description}</p>
+          {description && <p className="head_text">{description}</p>}
         </Container>
       </div>
     </>

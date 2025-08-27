@@ -281,11 +281,10 @@ const FoldChangePlot = ({ data, fc }) => {
       })
       .on(
         "click",
-        (_, d) =>
-          window.open(
-            "https://salivaryproteome.org/protein/" +
-              d["Protein"].replace(/^"(.*)"$/, "$1")
-          ),
+        (_, d) => {
+          const proteinId = d["Protein"].split("-")[0].trim();
+          window.open("/protein/" + proteinId);
+        },
         "_blank"
       );
 

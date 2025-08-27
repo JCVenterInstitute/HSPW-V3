@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Select from "react-select";
 
-import MainFeature from "../../assets/hero.jpeg";
+import MainFeature from "@Assets/hero.jpeg";
 
 class BasicSearch extends Component {
   constructor() {
