@@ -35,5 +35,5 @@ parameter_overrides=[
   "SupportEmail=mzheng@jvi.org",
   "AwsRegion=us-east-1",
   "SubmissionTable=hsp-analysis-submissions-PROD",
-  "AdvanceAnalysisApi=https://vjllt843hb.execute-api.us-east-2.amazonaws.com/Stage/"
+  "AdvanceAnalysisApi=https://o32vc26ibc.execute-api.us-east-2.amazonaws.com/Stage/"
 ]
