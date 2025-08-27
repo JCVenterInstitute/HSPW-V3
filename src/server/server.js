@@ -5,6 +5,19 @@ const { Client } = require("@opensearch-project/opensearch");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const createAwsOpensearchConnector = require("aws-opensearch-connector");
 const path = require("path");
+const multer = require("multer");
+
+const {
+  listS3Objects,
+  getShortcuts,
+  uploadS3Object,
+  uploadS3Folder,
+  deleteS3File,
+  deleteS3Folder,
+  getPermissions,
+  downloadS3Object,
+  updatePermissions,
+} = require("./utils/s3Utils.js");
 
 const { processGroupData } = require("./utils/processGroupData");
 const { processFile } = require("./utils/processFile");
@@ -24,6 +37,7 @@ const geneRouter = require("./routes/geneRouter");
 const proteinSignatureRouter = require("./routes/proteinSignatureRouter");
 const studyRouter = require("./routes/studyRouter");
 const submissionRouter = require("./routes/submissionRouter");
+const upload = multer();
 
 const app = express();
 
@@ -880,6 +894,290 @@ app.post(
   }
 );
 
+/*****************************
+ * S3 Explorer Endpoints
+ *****************************/
+
+// Lists files, folders, and shortcuts in a given s3 prefix for a user
+// expects a folder prefix ending in '/'
+app.get("/api/list-s3-objects", async (req, res) => {
+  // Get the folder prefix and the user's name from query
+  const { prefix, user } = req.query;
+
+  try {
+    // Trim the given prefix of trailing '/'
+    const trimmedPrefix = prefix.replace(/\/$/, "");
+
+    // Checks if the user has read permissions for this folder
+    const isAuthorized = await getPermissions(trimmedPrefix, user, "read");
+    if (!isAuthorized) {
+      return res
+        .status(403)
+        .json({ error: "Access denied: Read permission required." });
+    }
+
+    // Stores all the prefixs under the given prefix in JSON format
+    const data = await listS3Objects(prefix);
+    let shortcuts = {};
+
+    // If the user is currently navigated to the 'Shared Folders' folder
+    // Use helper function to create a JSON of shortcuts from the .shortcuts file
+    if (trimmedPrefix.endsWith("Shared Folders")) {
+      shortcuts = await getShortcuts(trimmedPrefix);
+    }
+
+    // Returns combined data and shortcuts
+    res.json({
+      ...data,
+      shortcuts,
+    });
+  } catch (err) {
+    console.error("Error fetching bucket objects:", err);
+    res.status(500).send("Error fetching bucket objects: " + err);
+  }
+});
+
+// Retrieves permissions for a folder (reads '.permissions' file within given folder)
+app.get("/api/get-permissions", async (req, res) => {
+  // Get the folder prefix and the user's name from query
+  const { folderKey, user } = req.query;
+
+  try {
+    // Uses the getPermissions helper function with raw=true to return all data when possible
+    const permissions = await getPermissions(
+      folderKey.replace(/\/$/, ""),
+      user,
+      null,
+      true
+    );
+
+    // Returns all permissions for provided folder key
+    res.json(permissions);
+  } catch (err) {
+    console.error("Error fetching permissions: ", err);
+    res.status(500).send("Error fetching permissions: " + err);
+  }
+});
+
+// Uploads a file to s3
+app.post("/api/upload-s3-object", upload.single("file"), async (req, res) => {
+  try {
+    const prefix = req.body.prefix || "";
+    const fileName = req.file?.originalname || req.body.folderName;
+    const user = req.body.user || "";
+
+    // Checks if the user has write permissions for this folder
+    const isAuthorized = await getPermissions(
+      prefix.replace(/\/$/, ""),
+      user,
+      "write"
+    );
+    if (!isAuthorized) {
+      return res
+        .status(403)
+        .json({ error: "Access denied: write permission required." });
+    }
+
+    // checks to see if user input a name or not
+    if (!fileName) {
+      return res.status(400).send("Missing file name.");
+    }
+
+    // Calls helper function to upload the provided file in the current folder
+    const data = await uploadS3Object(req.file, prefix, fileName);
+    // Returns success response
+    res.json(data);
+  } catch (err) {
+    console.error("Error uploading file:", err.stack || err);
+    res.status(500).send("Error uploading file: " + err);
+  }
+});
+
+// Creates a new folder in s3
+app.post("/api/create-folder", express.json(), async (req, res) => {
+  try {
+    const { prefix, folderName, user } = req.body;
+
+    // Prevents users from creating a folder without a name
+    if (!folderName) {
+      return res.status(400).json({ error: "Missing folder name." });
+    }
+
+    // Checks if the user has write permissions for this folder
+    const isAuthorized = await getPermissions(
+      prefix.replace(/\/$/, ""),
+      user,
+      "write"
+    );
+    if (!isAuthorized) {
+      return res
+        .status(403)
+        .json({ error: "Access denied: write permission required." });
+    }
+
+    await uploadS3Folder(user, prefix, folderName);
+    res.status(200).json({ message: `Folder '${folderName}' created.` });
+  } catch (error) {
+    console.error("Error creating folder:", error);
+    res.status(500).json({ error: "Error creating folder" });
+  }
+});
+
+// Shares a folder with other users
+app.post("/api/share-folder", async (req, res) => {
+  const { folderKey, user, lastModified, targets } = req.body;
+
+  try {
+    // Gets and stores data within the .permissions within the current folder
+    const currentPermissions = await getPermissions(
+      folderKey.replace(/\/$/, ""),
+      user,
+      null,
+      true
+    );
+
+    // Checks if user is the owner of the folder
+    if (currentPermissions._meta?.owner !== user) {
+      return res
+        .status(403)
+        .json({ error: "Only the owner may share this folder" });
+    }
+
+    // Saves .permissions in a new variable for editing
+    let newPermissions = { ...currentPermissions };
+
+    // Loops through list of new permissions provided by the user
+    for (const { username, permissions } of targets) {
+      // Prefix for other user's Shared Folders folder
+      const sharedFolderKey = `${username}/Shared Folders/`;
+
+      // Gets .shortcut from the Shared Folders folder
+      let userShortcuts = await getShortcuts(
+        sharedFolderKey.replace(/\/$/, "")
+      );
+
+      // Checks if .shortcut exists,
+      // if not the user likely doesnt exist and skips to th next user
+      if (userShortcuts === undefined) {
+        console.warn(`User ${username} does not exist, skipping.`);
+        continue;
+      }
+
+      // If the user is given no permissions,
+      // they are removed from .permissions and the folder is removed from their .shortcuts
+      if (!permissions.read && !permissions.write) {
+        if (userShortcuts[folderKey]) {
+          delete userShortcuts[folderKey];
+          await uploadS3Object(
+            JSON.stringify(userShortcuts),
+            sharedFolderKey,
+            ".shortcuts"
+          );
+        }
+        // Also remove from newPermissions
+        if (newPermissions[username]) delete newPermissions[username];
+        continue;
+      }
+
+      // Add/update the users .shortcuts
+      userShortcuts[folderKey] = {
+        path: folderKey,
+        owner: user,
+        lastModified,
+      };
+      await uploadS3Object(
+        JSON.stringify(userShortcuts),
+        sharedFolderKey,
+        ".shortcuts"
+      );
+
+      // Update permissions (!! forces the values to be boolean)
+      newPermissions[username] = {
+        read: !!permissions.read,
+        write: !!permissions.write,
+      };
+    }
+
+    // Update owner's shortcuts to include the shared folder
+    const ownerSharedKey = `${user}/Shared Folders/`;
+    let ownerShortcuts = await getShortcuts(ownerSharedKey.replace(/\/$/, ""));
+    ownerShortcuts[folderKey] = {
+      path: folderKey,
+      owner: user,
+      lastModified,
+    };
+    await uploadS3Object(
+      JSON.stringify(ownerShortcuts),
+      ownerSharedKey,
+      ".shortcuts"
+    );
+
+    // Update .permissions
+    await updatePermissions(folderKey, newPermissions);
+
+    res.json({ message: "Folder shared successfully" });
+  } catch (err) {
+    console.error("Share error:", err);
+    return res.status(500).json({ error: "Failed to share folder" });
+  }
+});
+
+// Endpoint to delete a file from S3
+app.delete("/api/delete-s3-file", async (req, res) => {
+  const { key, user } = req.body;
+  //grabs prefix of last folder in given key
+  const prefix = key.substring(0, key.lastIndexOf("/"));
+
+  try {
+    // Checks if the user has write permissions for this folder or the folder containing the file
+    const isAuthorized = await getPermissions(
+      prefix.replace(/\/$/, ""),
+      user,
+      "write"
+    );
+    if (!isAuthorized) {
+      return res
+        .status(403)
+        .json({ error: "Access denied: write permission required." });
+    }
+
+    // Checks whether the target to be deleted is a folder or a file and calls the corresponding helper function
+    if (key.endsWith("/")) {
+      await deleteS3Folder(key);
+      return res.json({ message: "Folder and its contents deleted." });
+    } else {
+      await deleteS3File(key);
+      return res.json({ message: "File deleted." });
+    }
+  } catch (error) {
+    console.error("Error deleting S3 object:", error);
+    res.status(500).json({
+      error: "Error deleting S3 object",
+      details: error.message,
+    });
+  }
+});
+
+// Generates a temporary signed download URL for a file
+app.get("/api/generate-download-url", async (req, res) => {
+  const key = req.query.key;
+
+  // Checks if the request is valid
+  if (!key) {
+    return res.status(400).json({ error: "Missing 'key' parameter" });
+  }
+
+  try {
+    // Calls the download helper function and returns a JSON containing the result
+    const url = await downloadS3Object(key);
+
+    return res.json({ url });
+  } catch (err) {
+    console.error("Failed to generate download URL:", err);
+    return res.status(500).json({ error: "Failed to generate URL" });
+  }
+});
+
 /*********************
  * Misc Util Endpoints
  *********************/
@@ -887,7 +1185,7 @@ app.post(
 app.get("/api/download-template-data", async (req, res) => {
   // S3 download parameters
   const params = {
-    bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
+    bucketName: `${process.env.PRIVATE_BUCKET}`,
     s3Key: "inputdata.csv",
   };
 
@@ -898,7 +1196,7 @@ app.get("/api/download-template-data", async (req, res) => {
 app.get("/api/download-data-standard", async (req, res) => {
   // S3 download parameters
   const params = {
-    bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
+    bucketName: `${process.env.PRIVATE_BUCKET}`,
     s3Key: "example_inputdata_template.xlsx",
   };
 
@@ -916,10 +1214,7 @@ app.get("/api/go-kegg-check/:jobId/:fileName", async (req, res) => {
   const day = datePart.substring(6, 8);
   const s3Key = `jobs/${year}-${month}-${day}/${jobId}/${fileName}`;
 
-  const fileExists = await checkFileExists(
-    process.env.DIFFERENTIAL_S3_BUCKET,
-    s3Key
-  );
+  const fileExists = await checkFileExists(process.env.PRIVATE_BUCKET, s3Key);
 
   console.log("> File Exists", fileExists);
   return res.send({ exists: fileExists });
@@ -927,7 +1222,7 @@ app.get("/api/go-kegg-check/:jobId/:fileName", async (req, res) => {
 
 app.get("/api/getJSONFile", async (req, res) => {
   const { s3Key } = req.query;
-  const bucketName = process.env.DIFFERENTIAL_S3_BUCKET;
+  const bucketName = process.env.PRIVATE_BUCKET;
 
   if (!s3Key) {
     return res.status(400).json({ error: "Missing s3Key parameter." });
@@ -950,7 +1245,7 @@ app.post("/api/s3JSONUpload", async (req, res) => {
 
   try {
     const result = await s3Upload({
-      bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
+      bucketName: `${process.env.PRIVATE_BUCKET}`,
       s3Key: s3Key,
       data: Buffer.from(JSON.stringify(jsonData)),
       contentType: "application/json",
@@ -979,7 +1274,7 @@ app.get("/api/s3Download/:jobId/:fileName", async (req, res) => {
 
   // S3 download parameters
   const params = {
-    bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
+    bucketName: `${process.env.PRIVATE_BUCKET}`,
     s3Key: `jobs/${year}-${month}-${day}/${jobId}/${fileName}`,
   };
 

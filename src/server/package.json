@@ -17,6 +17,7 @@
     "@aws-sdk/client-ssm": "^3.481.0",
     "@aws-sdk/credential-provider-node": "^3.298.0",
     "@aws-sdk/lib-dynamodb": "^3.477.0",
+    "@aws-sdk/lib-storage": "^3.451.0",
     "@aws-sdk/s3-request-presigner": "^3.451.0",
     "@opensearch-project/opensearch": "^2.2.0",
     "aws-opensearch-connector": "^1.1.0",
