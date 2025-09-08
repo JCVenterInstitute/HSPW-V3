@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import {
   Button,
   TextField,
@@ -37,8 +37,8 @@ const Login = () => {
               Please verify your email and try again. Email may be in spam or
               junk folder.
               <br />
-              <a
-                href="#"
+              <Button
+                component="a"
                 onClick={(e) => {
                   const cognitoUser = new CognitoUser({
                     Username: username,
@@ -67,7 +67,7 @@ const Login = () => {
                 }}
               >
                 Resend verification email
-              </a>
+              </Button>
               ?
             </span>
           );

@@ -60,7 +60,7 @@ const ClustalOmegaResults = () => {
     const submission = await axios.get(
       `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
     );
-    if (submission.data.status == "Complete") {
+    if (submission.data.status === "Complete") {
       console.log("Submission already completed");
       setIsFinished(true);
     } else {
@@ -145,7 +145,7 @@ const ClustalOmegaResults = () => {
       alignmentResult,
       submissionDetail = null;
 
-    if (fileResponse.statusText == "OK") {
+    if (fileResponse.statusText === "OK") {
       const fileData = await fileResponse.json();
       inputSequence = fileData.inputSequence;
       output = fileData.output;

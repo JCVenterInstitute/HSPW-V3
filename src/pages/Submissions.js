@@ -26,7 +26,7 @@ export const isExpired = (dateString, expirationDays = 7) => {
 };
 
 const Submissions = () => {
-  const { user, _ } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [rowData, setRowData] = useState([]);
   const [pinnedTopRowData, setPinnedTopRowData] = useState([]);
   const username = user ? user.getUsername() : "test-user-local";

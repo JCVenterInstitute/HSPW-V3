@@ -83,7 +83,8 @@ const FoldChangePlot = ({ data, fc }) => {
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
     svgRef.current = svg;
-    const clipPath = svg
+
+    svg
       .append("clipPath")
       .attr("id", "clipRect")
       .append("rect")
@@ -95,7 +96,7 @@ const FoldChangePlot = ({ data, fc }) => {
     svg.node().addEventListener("wheel", (event) => event.preventDefault());
 
     // Append slider in the container for better layout control
-    const slider = parentContainer
+    parentContainer
       .append("div")
       .attr("id", "zoom-slider-container")
       .append("input")
@@ -208,7 +209,7 @@ const FoldChangePlot = ({ data, fc }) => {
       .attr("class", "axis")
       .attr("fill", "black");
 
-    var zoomBox = svg
+    svg
       .append("rect")
       .attr("class", "zoom")
       .attr("height", height)
@@ -253,7 +254,7 @@ const FoldChangePlot = ({ data, fc }) => {
       .attr("height", height)
       .attr("width", width);
 
-    const pltPoints = pltPointsGroup
+    pltPointsGroup
       .selectAll(".dot")
       .data(data)
       .enter()

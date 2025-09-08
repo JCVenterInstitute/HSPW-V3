@@ -16,12 +16,11 @@ const About = () => {
     { path: "About" },
   ];
 
-  const description =
-    "For many decades, researchers have known that saliva is important\
-            for chewing, tasting, swallowing, and as the first step in\
-            digestion. A multitude of proteins and other molecules present in\
-            saliva also play vital roles in control of viral and bacterial\
-            functions in the context of health and disease.";
+  const description = `For many decades, researchers have known that saliva is important
+            for chewing, tasting, swallowing, and as the first step in
+            digestion. A multitude of proteins and other molecules present in
+            saliva also play vital roles in control of viral and bacterial
+            functions in the context of health and disease.`;
 
   return (
     <>
