@@ -406,7 +406,12 @@ const S3FileList: React.FC<S3FileListProps> = ({
                     />
                   </TableCell>
                   <TableCell
-                    sx={{ cursor: "pointer" }}
+                    sx={{
+                      cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: "action.hover",
+                      },
+                    }}
                     onClick={() => onFolderChange(folder.Prefix)}
                   >
                     {folder.Prefix.split("/").slice(-2, -1)[0]}

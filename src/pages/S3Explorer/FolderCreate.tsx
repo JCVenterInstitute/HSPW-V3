@@ -9,15 +9,12 @@ interface FolderCreateProps {
   user: string; // Username of current user
 }
 
-// Functional component to create a new folder in S3
 const FolderCreate: React.FC<FolderCreateProps> = ({
   currentPrefix,
   onCreateSuccess,
   user,
 }) => {
-  // Function to handle folder creation
   const handleCreateFolder = async () => {
-    // Show SweetAlert2 input modal to enter folder name
     const { value: folderName } = await Swal.fire({
       title: "Create New Folder",
       input: "text",
@@ -25,15 +22,13 @@ const FolderCreate: React.FC<FolderCreateProps> = ({
       inputPlaceholder: "Enter folder name",
       showCancelButton: true,
       inputValidator: (value) => {
-        // Folder name validation
         if (!value) return "Folder name cannot be empty"; // Cannot be empty
-        if (value.startsWith(".")) return "Dotfolders are not allowed"; // Cannot begin with .
+        if (value.startsWith(".")) return "Dot folders are not allowed"; // Cannot begin with .
         if (value.includes("/")) return "Folder name cannot contain slashes"; // Cannot contain slashes
         return null;
       },
     });
 
-    // Exit if user cancelled
     if (!folderName) return;
 
     try {

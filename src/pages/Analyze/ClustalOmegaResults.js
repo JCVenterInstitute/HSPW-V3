@@ -56,163 +56,163 @@ const ClustalOmegaResults = () => {
     fetchParameters();
   }, []);
 
-  const checkStatus = async () => {
-    const submission = await axios.get(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
-    );
-    if (submission.data.status === "Complete") {
-      console.log("Submission already completed");
-      setIsFinished(true);
-    } else {
-      const status = await axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/clustalo/status/${jobId}`
-        )
-        .then((res) => res.data);
-
-      console.log("> Status", status);
-
-      if (status === "NOT_FOUND") {
-        await axios.put(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
-          {
-            status: "Expired",
-          }
-        );
-
-        Swal.fire({
-          icon: "error",
-          title: "Submission Has Expired",
-          text: "Multiple Sequence Alignment submissions are only stored for 7 days. Redirecting back to submissions page.",
-        }).then(() => {
-          window.location.href = `/submissions`;
-        });
-      } else if (status === "FINISHED") {
-        // Update Submission status & completion date
-        await axios.put(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
-          {
-            status: "Complete",
-            completion_date: new Date().toISOString(),
-          }
-        );
-
+  useEffect(() => {
+    const checkStatus = async () => {
+      const submission = await axios.get(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
+      );
+      if (submission.data.status === "Complete") {
+        console.log("Submission already completed");
         setIsFinished(true);
       } else {
-        // Continue checking after 5 seconds
-        setTimeout(checkStatus, 5000);
+        const status = await axios
+          .get(
+            `https://www.ebi.ac.uk/Tools/services/rest/clustalo/status/${jobId}`
+          )
+          .then((res) => res.data);
+
+        if (status === "NOT_FOUND") {
+          await axios.put(
+            `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
+            {
+              status: "Expired",
+            }
+          );
+
+          Swal.fire({
+            icon: "error",
+            title: "Submission Has Expired",
+            text: "Multiple Sequence Alignment submissions are only stored for 7 days. Redirecting back to submissions page.",
+          }).then(() => {
+            window.location.href = `/submissions`;
+          });
+        } else if (status === "FINISHED") {
+          // Update Submission status & completion date
+          await axios.put(
+            `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
+            {
+              status: "Complete",
+              completion_date: new Date().toISOString(),
+            }
+          );
+
+          setIsFinished(true);
+        } else {
+          // Continue checking after 5 seconds
+          setTimeout(checkStatus, 5000);
+        }
       }
-    }
-  };
+    };
 
-  const getResults = async () => {
-    let type = "aln-clustal";
-    const submission = await axios.get(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
-    );
-    console.log(submission);
-    let username = submission.data.username;
-    let date = submission.data.submission_date.split("T")[0];
-
-    const resultTypes = await axios
-      .get(
-        `https://www.ebi.ac.uk/Tools/services/rest/clustalo/resulttypes/${jobId}`
-      )
-      .then((res) => res.data.types);
-
-    for (const resultType of resultTypes) {
-      if (resultType === "aln-clustal_num") {
-        type = "aln-clustal_num";
-      }
-      // const result = await axios
-      //   .get(
-      //     `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/${resultType.identifier}`
-      //   )
-      //   .then((res) => res.data);
-      // console.log(result);
-    }
-
-    const presignedUrl = await axios
-      .get(`${process.env.REACT_APP_API_ENDPOINT}/api/getJSONFile`, {
-        params: {
-          s3Key: `users/${username}/clustalOmega/${date}/${jobId}/ebi_data.json`,
-        },
-      })
-      .then((res) => res.data.url);
-    const fileResponse = await fetch(presignedUrl);
-    let inputSequence,
-      output,
-      alignmentResult,
-      submissionDetail = null;
-
-    if (fileResponse.statusText === "OK") {
-      const fileData = await fileResponse.json();
-      inputSequence = fileData.inputSequence;
-      output = fileData.output;
-      alignmentResult = fileData.alignmentResult;
-      submissionDetail = fileData.submissionDetail;
-      console.log("AWS download complete");
-    } else {
-      [inputSequence, output, alignmentResult, submissionDetail] =
-        await Promise.all([
-          axios
-            .get(
-              `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/sequence`
-            )
-            .then((res) => res.data),
-          axios
-            .get(
-              `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/out`
-            )
-            .then((res) => res.data),
-          axios
-            .get(
-              `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/${type}`
-            )
-            .then((res) => res.data),
-          axios
-            .get(
-              `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/submission`
-            )
-            .then((res) => res.data),
-        ]);
-
-      const ebi_data = {
-        inputSequence: inputSequence,
-        output: output,
-        alignmentResult: alignmentResult,
-        submissionDetail: submissionDetail,
-      };
-
-      awsJsonUpload(
-        `users/${username}/clustalOmega/${date}/${jobId}/ebi_data.json`,
-        ebi_data
+    const getResults = async () => {
+      let type = "aln-clustal";
+      const submission = await axios.get(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
       );
-    }
+      console.log(submission);
+      let username = submission.data.username;
+      let date = submission.data.submission_date.split("T")[0];
 
-    const sequenceMatch = output.match(/Read (\d+) sequences/);
-    const numberOfSequences = parseInt(sequenceMatch[1], 10);
+      const resultTypes = await axios
+        .get(
+          `https://www.ebi.ac.uk/Tools/services/rest/clustalo/resulttypes/${jobId}`
+        )
+        .then((res) => res.data.types);
 
-    const submissionDetailJson = new XMLParser().parseFromString(
-      submissionDetail
-    );
+      for (const resultType of resultTypes) {
+        if (resultType === "aln-clustal_num") {
+          type = "aln-clustal_num";
+        }
+        // const result = await axios
+        //   .get(
+        //     `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/${resultType.identifier}`
+        //   )
+        //   .then((res) => res.data);
+        // console.log(result);
+      }
 
-    const model = MSAModel.create({
-      id: `${Math.random()}`,
-      type: "MsaView",
-      data: { msa: inputSequence },
-    });
-    model.setWidth("1500");
+      const presignedUrl = await axios
+        .get(`${process.env.REACT_APP_API_ENDPOINT}/api/getJSONFile`, {
+          params: {
+            s3Key: `users/${username}/clustalOmega/${date}/${jobId}/ebi_data.json`,
+          },
+        })
+        .then((res) => res.data.url);
 
-    setModel(model);
-    setInputSequence(inputSequence);
-    setOutput(output);
-    setSequenceCount(numberOfSequences);
-    setAlignment(alignmentResult);
-    setSubmissionDetail(submissionDetailJson);
-  };
+      const fileResponse = await fetch(presignedUrl);
 
-  useEffect(() => {
+      let inputSequence,
+        output,
+        alignmentResult,
+        submissionDetail = null;
+
+      if (fileResponse.statusText === "OK") {
+        const fileData = await fileResponse.json();
+        inputSequence = fileData.inputSequence;
+        output = fileData.output;
+        alignmentResult = fileData.alignmentResult;
+        submissionDetail = fileData.submissionDetail;
+        console.log("AWS download complete");
+      } else {
+        [inputSequence, output, alignmentResult, submissionDetail] =
+          await Promise.all([
+            axios
+              .get(
+                `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/sequence`
+              )
+              .then((res) => res.data),
+            axios
+              .get(
+                `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/out`
+              )
+              .then((res) => res.data),
+            axios
+              .get(
+                `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/${type}`
+              )
+              .then((res) => res.data),
+            axios
+              .get(
+                `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/submission`
+              )
+              .then((res) => res.data),
+          ]);
+
+        const ebi_data = {
+          inputSequence: inputSequence,
+          output: output,
+          alignmentResult: alignmentResult,
+          submissionDetail: submissionDetail,
+        };
+
+        awsJsonUpload(
+          `users/${username}/clustalOmega/${date}/${jobId}/ebi_data.json`,
+          ebi_data
+        );
+      }
+
+      const sequenceMatch = output.match(/Read (\d+) sequences/);
+      const numberOfSequences = parseInt(sequenceMatch[1], 10);
+
+      const submissionDetailJson = new XMLParser().parseFromString(
+        submissionDetail
+      );
+
+      const model = MSAModel.create({
+        id: `${Math.random()}`,
+        type: "MsaView",
+        data: { msa: inputSequence },
+      });
+      model.setWidth("1500");
+
+      setModel(model);
+      setInputSequence(inputSequence);
+      setOutput(output);
+      setSequenceCount(numberOfSequences);
+      setAlignment(alignmentResult);
+      setSubmissionDetail(submissionDetailJson);
+    };
+
     if (!isFinished) {
       checkStatus();
     } else {
