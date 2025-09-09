@@ -30,6 +30,7 @@ exports.getPermissions = async (
   };
 
   const command = new GetObjectCommand(params);
+
   try {
     const response = await client.send(command);
 
@@ -271,13 +272,15 @@ exports.deleteS3Folder = async (folderKey) => {
 
 //Helper function to generate a signed download URL for a file
 exports.downloadS3Object = async (objectKey) => {
+  const fileName = objectKey.split("/").pop() || "download";
+
   const params = {
     Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
     Key: objectKey,
+    ResponseContentDisposition: `attachment; filename="${fileName}"`,
   };
 
   const command = new GetObjectCommand(params);
-  console.log(command);
 
   try {
     // Creates URL with 60 second validity
