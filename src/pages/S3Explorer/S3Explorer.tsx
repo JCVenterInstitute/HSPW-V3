@@ -17,20 +17,22 @@ import PageHeader from "../../components/Layout/PageHeader.js";
 import axios from "axios";
 
 const S3Explorer: React.FC = () => {
-  // Access user info from authentication context
-  const context_data = useContext(AuthContext);
-  const user = context_data.user.username;
+  const {
+    user: { username: user },
+  } = useContext(AuthContext);
 
+  const MAX_HISTORY = 10; // Maximum number of folders to keep in history for "Go Back" functionality
   const [shortcutRoot, setShortcutRoot] = useState<string | null>(null); // Root folder for when navigating shortcuts
   const [files, setFiles] = useState<any>([]); // Files, folders and shortcuts from s3
   const [historyStack, setHistoryStack] = useState<string[]>([]); // Folder navigation history for go back functionality
   const [currentFolder, setCurrentFolder] = useState<string>(`users/${user}/`); // Current folder being displayed
-  const [breadcrumb, setBreadcrumb] = useState<string[]>([user]); // Breadcrumb path for current folder
+  const [folderPath, setFolderPath] = useState<string[]>(["users", user]); // Path to current folder
+
   // TODO: re-enable grid view after updating it
   // Grid view needs to filter .files, and display shortcuts from the .shortcut file
   const [isListView, setIsListView] = useState<boolean>(true); // Toggle between list and grid view
 
-  // Function to fetch and files and folders within the current folder
+  // Fetch files and folders within the current folder
   const fetchFiles = async () => {
     try {
       const response = await axios
@@ -40,28 +42,22 @@ const S3Explorer: React.FC = () => {
         .then((res) => res.data);
 
       setFiles(response); // Update state with fetched data
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Error fetching S3 objects:", error.message);
-        Swal.fire("Error", error.message, "error");
-        handleGoBack(); // Go back to previous folder on error
-      } else {
-        console.error("Unknown error:", error);
-        Swal.fire("Error", "An unknown error occurred.", "error");
-        handleGoBack();
-      }
+    } catch (error) {
+      console.error("Error fetching files:", error.message);
+      Swal.fire("Error", error.message, "error");
+      handleGoBack(); // Go back to previous folder on error
     }
   };
 
-  // Fetch files and folders whenever currentFolder changes
+  // Fetch new files and folders when currentFolder changes
   useEffect(() => {
     fetchFiles();
   }, [currentFolder]);
 
   // Handle changing directories/folders
   const handleFolderChange = (folder: string, isShortcut = false) => {
-    // Update users history by adding prefixes to a stack (set to Max 10 folders)
-    if (historyStack.length < 10) {
+    // Update users history by adding prefixes to a stack
+    if (historyStack.length < MAX_HISTORY) {
       setHistoryStack((prev) => [...prev, currentFolder]);
     } else {
       setHistoryStack((prev) => [...prev.slice(1), currentFolder]);
@@ -71,8 +67,10 @@ const S3Explorer: React.FC = () => {
     if (isShortcut) {
       // If entering a shared folder, set shortcut root
       setShortcutRoot(folder);
+
       const displayName = folder.split("/").filter(Boolean).pop()!;
-      setBreadcrumb([displayName]); // Only show the shared folder name
+
+      setFolderPath([displayName]); // Only show the shared folder name
     } else {
       if (shortcutRoot && folder.startsWith(shortcutRoot)) {
         // navigating deeper into shared folder
@@ -81,13 +79,15 @@ const S3Explorer: React.FC = () => {
           .split("/")
           .filter(Boolean);
         const sharedRootName = shortcutRoot.split("/").filter(Boolean).pop()!;
-        setBreadcrumb([sharedRootName, ...relPath]);
+        setFolderPath([sharedRootName, ...relPath]);
       } else {
         // normal folder navigation
         setShortcutRoot(null);
-        setBreadcrumb(folder.split("/").filter(Boolean));
+
+        setFolderPath(folder.split("/").filter(Boolean));
       }
     }
+
     setCurrentFolder(folder); // Change current folder
   };
 
@@ -107,11 +107,11 @@ const S3Explorer: React.FC = () => {
             .split("/")
             .filter(Boolean);
           const rootName = shortcutRoot.split("/").filter(Boolean).pop()!;
-          setBreadcrumb([rootName, ...rel]);
+          setFolderPath([rootName, ...rel]);
         } else {
           // Exited the shortcut
           setShortcutRoot(null);
-          setBreadcrumb(lastFolder.split("/").filter(Boolean));
+          setFolderPath(lastFolder.split("/").filter(Boolean));
         }
       }
       return newHistory;
@@ -154,16 +154,15 @@ const S3Explorer: React.FC = () => {
               <Button
                 variant="contained"
                 onClick={handleGoBack}
+                disabled={historyStack.length === 0}
               >
                 Go Back
               </Button>
-
               <Button
                 variant="contained"
                 onClick={fetchFiles}
               >
-                {" "}
-                Refresh{" "}
+                Refresh
               </Button>
             </Box>
             {/* TODO: re-enable grid view after updating it */}
@@ -176,15 +175,19 @@ const S3Explorer: React.FC = () => {
           </Box>
           {/* Breadcrumb navigation */}
           <Breadcrumbs separator="›">
-            {breadcrumb.map((folder, index) => {
-              const pathUpTo = breadcrumb.slice(0, index + 1).join("/") + "/";
+            {folderPath.map((folder, index) => {
+              const pathUpTo = folderPath.slice(0, index + 1).join("/") + "/";
+
+              // Don't show the user's folder
+              if (index === 0) return;
+
               return (
                 <Link
                   key={index}
                   onClick={() => handleFolderChange(pathUpTo)}
                   sx={{ cursor: "pointer", color: "primary.main" }}
                 >
-                  {folder}
+                  {index === 1 ? "Home" : folder}
                 </Link>
               );
             })}

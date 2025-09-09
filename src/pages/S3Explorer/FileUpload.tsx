@@ -23,9 +23,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
     setSelectedFile(e.target.files ? e.target.files[0] : null);
   };
 
-  // Handler for uploading the selected file to the backend
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!selectedFile) return;
 
     // Prevents uploading of dotfiles (.permissions, .shortcuts, etc.)
@@ -76,11 +76,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
         }
       );
 
-      // Success message after upload completes
       Swal.fire("Success", "File uploaded successfully!", "success");
 
-      // Resets state and file input
       setSelectedFile(null);
+
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -116,6 +115,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
           type="submit"
           variant="contained"
           color="primary"
+          disabled={!selectedFile}
           sx={{ fontWeight: "bold", borderRadius: 1 }}
         >
           Upload File
