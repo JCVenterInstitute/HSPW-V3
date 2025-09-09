@@ -14,16 +14,17 @@ import FileUpload from "./FileUpload.tsx";
 import FolderCreate from "./FolderCreate.tsx";
 import { AuthContext } from "../../services/AuthContext.js";
 import PageHeader from "../../components/Layout/PageHeader.js";
+import axios from "axios";
 
 const S3Explorer: React.FC = () => {
-  // Access user info from authenticcation context
+  // Access user info from authentication context
   const context_data = useContext(AuthContext);
   const user = context_data.user.username;
 
   const [shortcutRoot, setShortcutRoot] = useState<string | null>(null); // Root folder for when navigating shortcuts
   const [files, setFiles] = useState<any>([]); // Files, folders and shortcuts from s3
   const [historyStack, setHistoryStack] = useState<string[]>([]); // Folder navigation history for go back functionality
-  const [currentFolder, setCurrentFolder] = useState<string>(`${user}/`); // Current folder being displayed
+  const [currentFolder, setCurrentFolder] = useState<string>(`users/${user}/`); // Current folder being displayed
   const [breadcrumb, setBreadcrumb] = useState<string[]>([user]); // Breadcrumb path for current folder
   // TODO: re-enable grid view after updating it
   // Grid view needs to filter .files, and display shortcuts from the .shortcut file
@@ -32,17 +33,13 @@ const S3Explorer: React.FC = () => {
   // Function to fetch and files and folders within the current folder
   const fetchFiles = async () => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/list-s3-objects?prefix=${currentFolder}&user=${user}`
-      );
+      const response = await axios
+        .get(`${process.env.REACT_APP_API_ENDPOINT}/api/list-s3-objects`, {
+          params: { prefix: currentFolder, user },
+        })
+        .then((res) => res.data);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to fetch: ${errorText}`);
-      }
-
-      const data = await response.json();
-      setFiles(data); // Update state with fetched data
+      setFiles(response); // Update state with fetched data
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error("Error fetching S3 objects:", error.message);

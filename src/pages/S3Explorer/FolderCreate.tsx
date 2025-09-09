@@ -1,6 +1,7 @@
 import React from "react";
 import Swal from "sweetalert2";
 import { Button } from "@mui/material";
+import axios from "axios";
 
 interface FolderCreateProps {
   currentPrefix: string; // Current folder path where new folder should be created
@@ -36,29 +37,23 @@ const FolderCreate: React.FC<FolderCreateProps> = ({
     if (!folderName) return;
 
     try {
-      // POST request to backend to create folder
-      const response = await fetch(
+      await axios.post(
         `${process.env.REACT_APP_API_ENDPOINT}/api/create-folder`,
         {
-          method: "POST",
+          prefix: currentPrefix, // Parent folder path
+          folderName, // New folder name
+          user, // Current user
+        },
+        {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            prefix: currentPrefix, // Parent folder path
-            folderName, // New folder name
-            user, // Current user
-          }),
         }
       );
 
-      if (!response.ok) {
-        const error = await response.json();
-        Swal.fire("Error", error.error, "error"); // Show error modal
-      } else {
-        Swal.fire("success", "Folder created successfully", "success"); // Show success modal
-        onCreateSuccess(); // Trigger parent component to refresh S3 file/folder List
-      }
+      Swal.fire("success", "Folder created successfully", "success"); // Show success modal
+
+      onCreateSuccess(); // Trigger parent component to refresh S3 file/folder List
     } catch (error) {
       console.error("Error creating folder:", error);
       Swal.fire("Error", "Failed to create folder", "error"); // Show generic error modal

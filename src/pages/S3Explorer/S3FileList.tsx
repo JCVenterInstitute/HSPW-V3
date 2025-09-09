@@ -7,12 +7,10 @@ import {
   FaShareAlt,
   FaDownload,
 } from "react-icons/fa";
-import FileDelete from "./FileDelete.tsx"; // Import the FileDelete component
 import Swal from "sweetalert2";
 import {
   Box,
   FormControl,
-  Grid,
   IconButton,
   InputLabel,
   MenuItem,
@@ -26,8 +24,10 @@ import {
   TableRow,
   TextField,
   Tooltip,
-  Typography,
 } from "@mui/material";
+
+import FileDelete from "./FileDelete.tsx"; // Import the FileDelete component
+import axios from "axios";
 
 // Enum for sorting options
 enum SortOption {
@@ -53,8 +53,6 @@ interface Shortcut {
   name: string | null; // Display name of the shortcut
   lastModified: string; // Last modification date
 }
-
-//
 interface S3FileListProps {
   files: File[]; // Files to display
   folders: Folder[]; //Folders to display
@@ -78,6 +76,7 @@ const S3FileList: React.FC<S3FileListProps> = ({
   const [sortOption, setSortOption] = useState<SortOption>(
     SortOption.ALPHABETICAL
   );
+
   // Search query string
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -92,15 +91,15 @@ const S3FileList: React.FC<S3FileListProps> = ({
   // Handle file download by generating a presigned S3 URL
   const handleDownload = async (fileKey: string) => {
     try {
-      const response = await fetch(
-        `${
-          process.env.REACT_APP_API_ENDPOINT
-        }/api/generate-download-url?key=${encodeURIComponent(fileKey)}`
-      );
+      const { url }: { url: string } = await axios
+        .get(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/generate-download-url`,
+          {
+            params: { key: fileKey }, // axios handles encoding automatically
+          }
+        )
+        .then((res) => res.data);
 
-      if (!response.ok) throw new Error("Failed to get download URL");
-
-      const { url } = await response.json();
       window.open(url, "_blank"); // or use a programmatic download
     } catch (err) {
       console.error("Download error:", err);
@@ -286,6 +285,7 @@ const S3FileList: React.FC<S3FileListProps> = ({
     let sortedFolders = [...folders];
     let sortedFiles = [...files];
     let sortedShortcuts = [...shortcuts];
+
     switch (sortOption) {
       case SortOption.ALPHABETICAL:
         sortedFolders.sort((a, b) => a.Prefix.localeCompare(b.Prefix));
@@ -330,6 +330,7 @@ const S3FileList: React.FC<S3FileListProps> = ({
   };
 
   const { sortedFolders, sortedFiles, sortedShortcuts } = sortFilesAndFolders();
+
   return (
     <>
       {/* Top toolbar with search + sort controls */}
@@ -427,7 +428,6 @@ const S3FileList: React.FC<S3FileListProps> = ({
                           <FaShareAlt />
                         </IconButton>
                       </Tooltip>
-
                       <FileDelete
                         fileKey={folder.Prefix}
                         onDeleteSuccess={onDeleteSuccess}
@@ -446,7 +446,6 @@ const S3FileList: React.FC<S3FileListProps> = ({
                   </TableCell>
                 </TableRow>
               ))}
-
             {sortedFiles
               .filter(
                 (file) =>
@@ -503,7 +502,6 @@ const S3FileList: React.FC<S3FileListProps> = ({
                   </TableCell>
                 </TableRow>
               ))}
-
             {sortedShortcuts.length > 0 &&
               sortedShortcuts.map((shortcut) => (
                 <TableRow

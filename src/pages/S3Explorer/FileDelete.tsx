@@ -1,3 +1,4 @@
+import axios from "axios";
 import React from "react";
 import Swal from "sweetalert2";
 
@@ -16,7 +17,9 @@ const FileDelete: React.FC<FileDeleteProps> = ({
 }) => {
   // Handles the delete request when the wrapped element is clicked
   const handleDelete = async (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevents parent click events (like folder navigation) from fireing
+    // Prevents parent click events (like folder navigation) from firing
+    e.stopPropagation();
+
     const objectName = fileKey.split("/").at(-1) || fileKey.split("/").at(-2);
 
     // Confirmation dialog show to the user before deletion
@@ -30,29 +33,26 @@ const FileDelete: React.FC<FileDeleteProps> = ({
       confirmButtonText: "Yes, delete it!",
     });
 
-    // exits early if the user cancels
     if (!result.isConfirmed) return;
 
     try {
-      // send DELETE request to backend
-      const response = await fetch(
+      await axios.delete(
         `${process.env.REACT_APP_API_ENDPOINT}/api/delete-s3-file`,
         {
-          method: "DELETE",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ key: fileKey, user }),
+          data: {
+            key: fileKey,
+            user,
+          },
         }
       );
 
-      if (!response.ok) {
-        const error = await response.json();
-        Swal.fire("Delete Failed", `${error.error}`, "error"); // Show error modal
-      } else {
-        await Swal.fire("Deleted!", "Your file has been deleted.", "success"); // Show success modal
-        onDeleteSuccess(); // Trigger parent component to refresh S3 file/folder List
-      }
+      await Swal.fire("Deleted!", "Your file has been deleted.", "success");
+
+      // Trigger parent component to refresh S3 file/folder List
+      onDeleteSuccess();
     } catch (err) {
       Swal.fire("Error", `Failed to delete file: ${err}`, "error");
     }
