@@ -93,15 +93,14 @@ exports.updatePermissions = async (folderName, newPermissions) => {
 
 // Helper function to fetch list of files and folders within a folder
 exports.listS3Objects = async (prefix = "") => {
-  const input = {
-    Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
-    Prefix: prefix,
-    Delimiter: "/",
-  };
-
-  const command = new ListObjectsCommand(input);
-
   try {
+    const input = {
+      Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
+      Prefix: prefix,
+      Delimiter: "/",
+    };
+
+    const command = new ListObjectsCommand(input);
     const response = await client.send(command);
 
     const contents = response.Contents || [];
@@ -109,7 +108,12 @@ exports.listS3Objects = async (prefix = "") => {
 
     // Returns combined files and folders as a JSON
     return {
-      files: contents,
+      files: contents.filter((file) => {
+        const fileName = file.Key.split("/").pop();
+
+        // don't return metadata files
+        return fileName && !fileName.startsWith(".");
+      }),
       folders: prefixes,
     };
   } catch (error) {

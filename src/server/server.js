@@ -909,7 +909,10 @@ app.get("/api/list-s3-objects", async (req, res) => {
     const trimmedPrefix = prefix.replace(/\/$/, "");
 
     // Checks if the user has read permissions for this folder
-    const isAuthorized = await getPermissions(trimmedPrefix, user, "read");
+    const isAuthorized = prefix.startsWith(`users/${user}/`)
+      ? true // user should have access to all of their own files
+      : await getPermissions(trimmedPrefix, user, "read");
+
     if (!isAuthorized) {
       return res
         .status(403)
@@ -918,6 +921,7 @@ app.get("/api/list-s3-objects", async (req, res) => {
 
     // Stores all the prefixs under the given prefix in JSON format
     const data = await listS3Objects(prefix);
+
     let shortcuts = {};
 
     // If the user is currently navigated to the 'Shared Folders' folder
@@ -999,23 +1003,20 @@ app.post("/api/create-folder", express.json(), async (req, res) => {
     const { prefix, folderName, user } = req.body;
 
     // Prevents users from creating a folder without a name
-    if (!folderName) {
+    if (!folderName)
       return res.status(400).json({ error: "Missing folder name." });
-    }
 
-    // Checks if the user has write permissions for this folder
-    const isAuthorized = await getPermissions(
-      prefix.replace(/\/$/, ""),
-      user,
-      "write"
-    );
-    if (!isAuthorized) {
+    const isAuthorized = prefix.startsWith(`users/${user}/`)
+      ? true // user should be able to create folders anywhere in their folder
+      : await getPermissions(prefix.replace(/\/$/, ""), user, "write");
+
+    if (!isAuthorized)
       return res
         .status(403)
         .json({ error: "Access denied: write permission required." });
-    }
 
     await uploadS3Folder(user, prefix, folderName);
+
     res.status(200).json({ message: `Folder '${folderName}' created.` });
   } catch (error) {
     console.error("Error creating folder:", error);
