@@ -92,7 +92,7 @@ export const NavBar = () => {
                       },
                       {
                         link: "/file-explorer",
-                        label: "File Explorer",
+                        label: "Workspace",
                       },
                       {
                         link: "/",

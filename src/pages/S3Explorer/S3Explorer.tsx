@@ -42,7 +42,7 @@ const S3Explorer: React.FC = () => {
         .then((res) => res.data);
 
       setFiles(response); // Update state with fetched data
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching files:", error.message);
       Swal.fire("Error", error.message, "error");
       handleGoBack(); // Go back to previous folder on error
@@ -127,14 +127,14 @@ const S3Explorer: React.FC = () => {
   const breadcrumbPath = [
     { path: "Home", link: "/" },
     { path: "Account" },
-    { path: "File Explorer" },
+    { path: "Workspace" },
   ];
 
   return (
     <>
       <PageHeader
-        tabTitle={`HSP | File Explorer`}
-        title={`File Explorer`}
+        tabTitle={`HSP | Workspace`}
+        title={`Workspace`}
         breadcrumb={breadcrumbPath}
         description={`View and manage your submissions or data files.`}
       />

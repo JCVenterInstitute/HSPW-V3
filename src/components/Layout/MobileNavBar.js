@@ -255,7 +255,7 @@ const MobileNavBar = () => {
                     component={Link}
                     to="/file-explorer"
                   >
-                    <ListItemText primary="File Explorer" />
+                    <ListItemText primary="Workspace" />
                   </ListItemButton>
                   <ListItemButton onClick={handleLogout}>
                     <ListItemText primary="Log Out" />

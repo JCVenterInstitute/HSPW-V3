@@ -349,7 +349,6 @@ const S3FileList: React.FC<S3FileListProps> = ({
           onChange={(e) => setSearchQuery(e.target.value)}
           sx={{ flexGrow: 1 }}
         />
-
         {/* Sort dropdown */}
         <FormControl
           variant="outlined"
@@ -369,7 +368,6 @@ const S3FileList: React.FC<S3FileListProps> = ({
           </Select>
         </FormControl>
       </Box>
-
       {/* TODO: Add back grid view after updating it */}
       {/* {isListView ? ( */}
       <TableContainer
@@ -377,7 +375,7 @@ const S3FileList: React.FC<S3FileListProps> = ({
       >
         <Table
           stickyHeader
-          aria-label="file explorer table"
+          aria-label="Workspace table"
           size="small"
         >
           <TableHead>
@@ -488,7 +486,6 @@ const S3FileList: React.FC<S3FileListProps> = ({
                           <FaDownload />
                         </IconButton>
                       </Tooltip>
-
                       <FileDelete
                         fileKey={file.Key}
                         onDeleteSuccess={onDeleteSuccess}

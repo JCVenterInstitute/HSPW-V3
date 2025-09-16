@@ -86,7 +86,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
       // Trigger parent callback to refresh file list
       onUploadSuccess();
-    } catch (error) {
+    } catch (error: any) {
       Swal.fire(
         "Upload Failed",
         error?.response?.data?.error || error.message,
