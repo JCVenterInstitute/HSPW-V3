@@ -82,7 +82,8 @@ exports.processGroupData = async (
   { groupAData, groupBData },
   timestamp,
   formattedDate,
-  groupNames
+  groupNames,
+  username
 ) => {
   console.log("> Processing Group Data");
 
@@ -105,7 +106,7 @@ exports.processGroupData = async (
 
   const { year, month, day } = timestamp;
 
-  const s3FileLocation = `jobs/${year}-${month}-${day}/differential-expression-${formattedDate}`;
+  const s3FileLocation = `users/${username}/differentialExpressionAnalysis/${year}-${month}-${day}/differential-expression-${formattedDate}/input.csv`;
 
   const presignedUrl = await getPresignUrl({
     bucketName: process.env.DIFFERENTIAL_S3_BUCKET,

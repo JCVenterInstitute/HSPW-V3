@@ -810,14 +810,20 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
 
     if (inputData) {
       // Processing user provided file
-      inputFile = await processFile(inputData, timestamp, formattedDate);
+      inputFile = await processFile(
+        inputData,
+        timestamp,
+        formattedDate,
+        username
+      );
     } else {
       // Processing data from HSP
       inputFile = await processGroupData(
         req.body,
         timestamp,
         formattedDate,
-        groupNames
+        groupNames,
+        username
       );
     }
 
