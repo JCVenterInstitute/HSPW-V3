@@ -1,14 +1,14 @@
 const { LambdaClient, InvokeCommand } = require("@aws-sdk/client-lambda");
 
-const lambdaClient = new LambdaClient({ region: "us-east-2" }); // Replace with your desired region
+const lambdaClient = new LambdaClient({ region: "us-east-2" });
 
 exports.handler = async (event) => {
   console.log("> Event", event);
 
   const command = new InvokeCommand({
-    FunctionName: `Differential-Analysis-Advance-${process.env.DEPLOY_ENV}`, // Replace with the name of the Lambda function you want to invoke
-    InvocationType: "Event", // Asynchronous invocation
-    Payload: JSON.stringify(event), // Pass the input event as the payload
+    FunctionName: `Differential-Analysis-Advance-${process.env.DEPLOY_ENV}`,
+    InvocationType: "Event",
+    Payload: JSON.stringify(event),
   });
 
   try {
