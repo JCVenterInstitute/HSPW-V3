@@ -1192,7 +1192,7 @@ app.get("/api/generate-download-url", async (req, res) => {
 app.get("/api/download-template-data", async (req, res) => {
   // S3 download parameters
   const params = {
-    bucketName: `${process.env.PRIVATE_BUCKET}`,
+    bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
     s3Key: "inputdata.csv",
   };
 
@@ -1203,7 +1203,7 @@ app.get("/api/download-template-data", async (req, res) => {
 app.get("/api/download-data-standard", async (req, res) => {
   // S3 download parameters
   const params = {
-    bucketName: `${process.env.PRIVATE_BUCKET}`,
+    bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
     s3Key: "example_inputdata_template.xlsx",
   };
 
@@ -1221,7 +1221,10 @@ app.get("/api/go-kegg-check/:jobId/:fileName", async (req, res) => {
   const day = datePart.substring(6, 8);
   const s3Key = `jobs/${year}-${month}-${day}/${jobId}/${fileName}`;
 
-  const fileExists = await checkFileExists(process.env.PRIVATE_BUCKET, s3Key);
+  const fileExists = await checkFileExists(
+    process.env.DIFFERENTIAL_S3_BUCKET,
+    s3Key
+  );
 
   console.log("> File Exists", fileExists);
   return res.send({ exists: fileExists });
@@ -1229,7 +1232,7 @@ app.get("/api/go-kegg-check/:jobId/:fileName", async (req, res) => {
 
 app.get("/api/getJSONFile", async (req, res) => {
   const { s3Key } = req.query;
-  const bucketName = process.env.PRIVATE_BUCKET;
+  const bucketName = process.env.DIFFERENTIAL_S3_BUCKET;
 
   if (!s3Key) {
     return res.status(400).json({ error: "Missing s3Key parameter." });
@@ -1252,7 +1255,7 @@ app.post("/api/s3JSONUpload", async (req, res) => {
 
   try {
     const result = await s3Upload({
-      bucketName: `${process.env.PRIVATE_BUCKET}`,
+      bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
       s3Key: s3Key,
       data: Buffer.from(JSON.stringify(jsonData)),
       contentType: "application/json",
@@ -1269,6 +1272,7 @@ app.post("/api/s3JSONUpload", async (req, res) => {
 app.get("/api/s3Download/:jobId/:fileName", async (req, res) => {
   const jobId = req.params.jobId;
   const fileName = req.params.fileName;
+
   console.log("> Processing jobId: ", jobId);
   console.log("> Getting file: ", fileName);
 
@@ -1281,12 +1285,15 @@ app.get("/api/s3Download/:jobId/:fileName", async (req, res) => {
 
   // S3 download parameters
   const params = {
-    bucketName: `${process.env.PRIVATE_BUCKET}`,
+    bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
     s3Key: `jobs/${year}-${month}-${day}/${jobId}/${fileName}`,
   };
 
+  console.log("> S3 Download Params: ", params);
+
   try {
     const presignedUrl = await s3Download(params);
+    console.log("> Presigned URL: ", presignedUrl);
     res.send({ url: presignedUrl }); // Send the presigned URL to the client
   } catch (error) {
     console.log(error);
