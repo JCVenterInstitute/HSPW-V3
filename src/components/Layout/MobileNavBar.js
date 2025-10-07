@@ -253,7 +253,7 @@ const MobileNavBar = () => {
                   </ListItemButton>
                   <ListItemButton
                     component={Link}
-                    to="/file-explorer"
+                    to="/workspace"
                   >
                     <ListItemText primary="Workspace" />
                   </ListItemButton>

@@ -91,7 +91,7 @@ export const NavBar = () => {
                         label: "Submissions",
                       },
                       {
-                        link: "/file-explorer",
+                        link: "/workspace",
                         label: "Workspace",
                       },
                       {
