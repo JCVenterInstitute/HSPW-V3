@@ -10,6 +10,8 @@ import json
 import uuid
 from datetime import datetime
 import requests
+from cryptography.fernet import Fernet
+import urllib.parse
 
 
 # Copy all files from src_dir to dest_dir.
@@ -136,25 +138,46 @@ def record_submission(event, submission_id):
     table_name = os.getenv("SUBMISSIONS_TABLE")
     table = dynamodb.Table(table_name)
 
-    submission_path = os.path.basename(event.get("input_file"))
-    log_normalized = event.get("log_normalized")
-    stat_test = event.get("stat_test")
-    p_val = event.get("pValueThreshold")
-    fold_threshold = event.get("foldChangeThreshold")
-    p_raw = event.get("p_raw")
-    heat_map_number = str(event.get("heat_map_number"))
+    # Fetch the secret key from SSM Parameter Store
+    ssm = boto3.client("ssm")
+    secret_key_param = os.getenv("SECRET_PARAM")
+    param = ssm.get_parameter(Name=secret_key_param, WithDecryption=True)
+    secret_key = param["Parameter"]["Value"]
+    secret_key_bytes = secret_key.encode("utf-8")
+    cipher = Fernet(secret_key_bytes)
+
+    data = {
+        "input_file": event.get("input_file"),
+        "log_normalized": event.get("log_normalized"),
+        "stat_test": event.get("stat_test"),
+        "pValueThreshold": event.get("pValueThreshold"),
+        "foldChangeThreshold": event.get("foldChangeThreshold"),
+        "p_raw": event.get("p_raw"),
+        "heat_map_number": str(event.get("heat_map_number")),
+        "username": event.get("username"),
+        "s3_file_location": os.path.dirname(event.get("input_file")),
+    }
+
+    print(f"> Raw Data", data)
+
+    plaintext = json.dumps(data).encode("utf-8")
+    token_bytes = cipher.encrypt(plaintext)
+    token_str = token_bytes.decode("utf-8")
+    token_for_link = urllib.parse.quote_plus(token_str)
+
+    print(f"> Encrypted (url-encoded): {token_for_link}")
 
     submission = {
         "id": submission_id,
         "important": False,
-        "link": f"/differential-expression/results/{submission_path}?logNorm={log_normalized}&heatmap={heat_map_number}&foldChange={fold_threshold}&pValue={p_val}&pType={p_raw}&parametricTest={stat_test}",
+        "link": f"/differential-expression/results?data={token_for_link}",
         "status": "Running",
         "submission_date": str(datetime.now()),
         "type": "Differential Expression Analysis",
         "username": event.get("username"),
     }
 
-    print(f"Submission", submission)
+    print(f"> Submission", submission)
 
     # Write the record to the DynamoDB table
     try:

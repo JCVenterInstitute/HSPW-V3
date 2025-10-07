@@ -23,6 +23,8 @@ Parameters:
     Type: String
   AdvanceAnalysisApi:
     Type: String
+  SecretKeyParam:
+    Type: String
 
 Resources:
   ApiGateway:
@@ -54,6 +56,7 @@ Resources:
           REGION: !Ref AwsRegion
           SUBMISSIONS_TABLE: !Ref SubmissionTable
           ADVANCE_ANALYSIS_API: !Ref AdvanceAnalysisApi
+          SECRET_PARAM: !Ref SecretKeyParam
       Events:
         ProxyApiRoot:
           Type: Api

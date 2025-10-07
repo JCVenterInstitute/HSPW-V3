@@ -18,7 +18,8 @@ parameter_overrides=[
   "SupportEmail=mzheng@jvi.org",
   "AwsRegion=us-east-1",
   "SubmissionTable=hsp-analysis-submissions-DEV",
-  "AdvanceAnalysisApi=https://hlrvtk7j1f.execute-api.us-east-2.amazonaws.com/Stage/"
+  "AdvanceAnalysisApi=https://hlrvtk7j1f.execute-api.us-east-2.amazonaws.com/Stage/",
+  "SecretKeyParam=/ENCRYPT/SECRET_KEY"
 ]
 
 [app-core-prod.deploy.parameters]
@@ -35,5 +36,6 @@ parameter_overrides=[
   "SupportEmail=mzheng@jvi.org",
   "AwsRegion=us-east-1",
   "SubmissionTable=hsp-analysis-submissions-PROD",
-  "AdvanceAnalysisApi=https://o32vc26ibc.execute-api.us-east-2.amazonaws.com/Stage/"
+  "AdvanceAnalysisApi=https://o32vc26ibc.execute-api.us-east-2.amazonaws.com/Stage/",
+  "SecretKeyParam=/ENCRYPT/SECRET_KEY"
 ]
