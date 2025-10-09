@@ -6,6 +6,7 @@ const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const createAwsOpensearchConnector = require("aws-opensearch-connector");
 const path = require("path");
 const multer = require("multer");
+const fernet = require("fernet");
 
 const {
   listS3Objects,
@@ -900,6 +901,51 @@ app.post(
   }
 );
 
+app.post("/api/decrypt", async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) return res.status(400).json({ error: "Missing token" });
+
+    console.log("> Received token:", token);
+
+    // Token was URL-encoded when created in lambda
+    const tokenStr = decodeURIComponent(token);
+    const secretKey = await getSSMParameter(process.env.SECRET_PARAM);
+
+    if (!secretKey) {
+      console.error("> No secret key found in SSM");
+      return res.status(500).json({ error: "Encryption key not configured" });
+    }
+
+    const secret = new fernet.Secret(secretKey);
+
+    const ftoken = new fernet.Token({
+      secret: secret,
+      token: tokenStr,
+      ttl: 0,
+    });
+
+    let plaintext;
+
+    try {
+      plaintext = ftoken.decode(); // plaintext JSON string
+    } catch (err) {
+      console.error("> Failed to decode token:", err);
+      return res.status(400).json({ error: "Invalid or expired token" });
+    }
+
+    const data = JSON.parse(plaintext);
+
+    console.log("> Decrypted data:", data);
+
+    return res.json({ data });
+  } catch (err) {
+    console.error("Error in /api/decrypt:", err);
+    return res.status(500).json({ error: "Server error decrypting token" });
+  }
+});
+
 /*****************************
  * S3 Explorer Endpoints
  *****************************/
@@ -1211,22 +1257,16 @@ app.get("/api/download-data-standard", async (req, res) => {
   res.send({ url: presignedUrl });
 });
 
-app.get("/api/go-kegg-check/:jobId/:fileName", async (req, res) => {
-  const jobId = req.params.jobId;
-  const fileName = req.params.fileName;
+app.get("/api/go-kegg-check", async (req, res) => {
+  const { jobId } = req.query;
 
-  const datePart = jobId.split("-")[2];
-  const year = datePart.substring(0, 4);
-  const month = datePart.substring(4, 6);
-  const day = datePart.substring(6, 8);
-  const s3Key = `jobs/${year}-${month}-${day}/${jobId}/${fileName}`;
+  const s3Key = `${jobId}/gsemf.tsv`;
 
   const fileExists = await checkFileExists(
     process.env.DIFFERENTIAL_S3_BUCKET,
     s3Key
   );
 
-  console.log("> File Exists", fileExists);
   return res.send({ exists: fileExists });
 });
 
@@ -1269,31 +1309,23 @@ app.post("/api/s3JSONUpload", async (req, res) => {
   }
 });
 
-app.get("/api/s3Download/:jobId/:fileName", async (req, res) => {
-  const jobId = req.params.jobId;
-  const fileName = req.params.fileName;
-
-  console.log("> Processing jobId: ", jobId);
-  console.log("> Getting file: ", fileName);
-
-  const datePart = jobId.split("-")[2];
-
-  // Split the date part into year, month, and day
-  const year = datePart.substring(0, 4);
-  const month = datePart.substring(4, 6);
-  const day = datePart.substring(6, 8);
-
-  // S3 download parameters
-  const params = {
-    bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
-    s3Key: `jobs/${year}-${month}-${day}/${jobId}/${fileName}`,
-  };
-
-  console.log("> S3 Download Params: ", params);
-
+app.get("/api/s3Download", async (req, res) => {
   try {
+    const { s3Path, fileName } = req.query;
+
+    if (!s3Path || !fileName) {
+      return res
+        .status(400)
+        .json({ error: "Missing s3Path or fileName parameter." });
+    }
+
+    const params = {
+      bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
+      s3Key: `${s3Path}/${fileName}`,
+    };
+
     const presignedUrl = await s3Download(params);
-    console.log("> Presigned URL: ", presignedUrl);
+
     res.send({ url: presignedUrl }); // Send the presigned URL to the client
   } catch (error) {
     console.log(error);

@@ -6,7 +6,7 @@ import DataSection from "./DataSection";
 
 const ResultSection = ({ selectedSection, jobId, searchParams }) => {
   const [tab, setTab] = useState("Visualization");
-  const numbVolcanoSamples = searchParams.get("heatmap");
+  const numbVolcanoSamples = searchParams["heat_map_number"];
 
   return (
     <>

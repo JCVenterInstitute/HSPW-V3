@@ -234,7 +234,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/differential-expression/results/:jobId"
+                  path="/differential-expression/results"
                   element={
                     <AuthGuard>
                       <DifferentialExpressionResults />
@@ -306,7 +306,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/file-explorer"
+                  path="/workspace"
                   element={
                     <AuthGuard>
                       <S3Explorer />
