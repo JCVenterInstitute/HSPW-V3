@@ -337,7 +337,8 @@ const Submissions = () => {
       resizable: false,
       cellStyle: { borderRight: "none" },
       cellRenderer: (params) => {
-        const disableLink = params.data.status === "Expired";
+        const disableLink =
+          params.data.status === "Expired" || params.data.status === "Failed";
 
         return (
           <div
@@ -377,9 +378,7 @@ const Submissions = () => {
       <PageHeader
         title={"Submissions"}
         tabTitle={"HSP | Submissions"}
-        description={
-          "View past submissions. All submissions expire after seven (7) days."
-        }
+        description={"View past submissions."}
         breadcrumb={[
           { path: "Home", link: "/" },
           { path: "Account" },

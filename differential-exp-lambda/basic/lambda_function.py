@@ -147,7 +147,6 @@ def record_submission(event, submission_id):
     cipher = Fernet(secret_key_bytes)
 
     data = {
-        "input_file": event.get("input_file"),
         "log_normalized": event.get("log_normalized"),
         "stat_test": event.get("stat_test"),
         "pValueThreshold": event.get("pValueThreshold"),
@@ -185,6 +184,28 @@ def record_submission(event, submission_id):
         print("Record inserted successfully!")
     except Exception as e:
         print(f"Error inserting record: {e}")
+
+
+# Update the submission status & completion date after analysis finishes
+def update_submission_status(id, new_status):
+    dynamodb = boto3.resource("dynamodb")
+    table_name = os.environ.get("SUBMISSIONS_TABLE")
+    table = dynamodb.Table(table_name)
+
+    try:
+        response = table.update_item(
+            Key={"id": id},
+            UpdateExpression="SET #s = :new_status, completion_date = :completion_date",
+            ExpressionAttributeNames={"#s": "status"},
+            ExpressionAttributeValues={
+                ":new_status": new_status,
+                ":completion_date": str(datetime.now()),
+            },
+            ReturnValues="UPDATED_NEW",
+        )
+        print("Update succeeded:", response)
+    except Exception as e:
+        print(f"Error updating record: {e}")
 
 
 def main(event):
@@ -296,6 +317,7 @@ def main(event):
         else:
             print(f"> Error running R Script for: {input_file}")
             print(f"> Failed command: {r_command}")
+            update_submission_status(submission_id, "Failed")
             body = f"Input File: {input_file}\nFailed Command: {r_command}"
             support_email = os.environ.get("SUPPORT_EMAIL")
             send_email(support_email, support_email, body)
