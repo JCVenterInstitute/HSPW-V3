@@ -81,7 +81,7 @@ const S3FileList: React.FC<S3FileListProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Byte formatter helper function
-  const formatBytes = (a, b = 2) => {
+  const formatBytes = (a: number, b = 2) => {
     if (!+a) return "0 Bytes";
     const c = 0 > b ? 0 : b,
       d = Math.floor(Math.log(a) / Math.log(1024));
@@ -112,17 +112,16 @@ const S3FileList: React.FC<S3FileListProps> = ({
   const handleShareFolder = async (folderKey: string) => {
     let currentPermissions: Record<string, any> = {};
 
-    // Fetch existing permissions for this file
-    const response = await fetch(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/get-permissions?folderKey=${encodeURIComponent(folderKey)}&user=${encodeURIComponent(user)}`
-    );
+    console.log("Sharing folder:", folderKey, user);
 
-    if (!response.ok) {
-      const error = await response.text();
-      console.error("Failed to get permissions:", error);
-    } else {
-      currentPermissions = await response.json();
-    }
+    // Fetch existing permissions for this file
+    currentPermissions = await axios
+      .get(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/get-permissions?folderKey=${encodeURIComponent(folderKey)}&user=${encodeURIComponent(user)}`
+      )
+      .then((res) => res.data);
+
+    console.log("Current permissions:", currentPermissions);
 
     // Show modal to manage permissions
     await Swal.fire({

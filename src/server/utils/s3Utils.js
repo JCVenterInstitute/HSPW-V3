@@ -125,7 +125,7 @@ exports.listS3Objects = async (prefix = "") => {
 // Helper function to fetch Shortcuts from .shortcuts as a JSON
 exports.getShortcuts = async (folderName) => {
   const key = `${folderName}/.shortcuts`;
-  console.log("Getshortcuts: ", key);
+  console.log("Get Shortcuts: ", key);
 
   const params = {
     Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
@@ -148,6 +148,7 @@ exports.getShortcuts = async (folderName) => {
       });
 
     const content = await streamToString(response.Body);
+
     return JSON.parse(content);
   } catch (error) {
     if (error.name === "NoSuchKey" || error.Code === "NoSuchKey") {

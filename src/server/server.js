@@ -1080,6 +1080,15 @@ app.post("/api/create-folder", express.json(), async (req, res) => {
 app.post("/api/share-folder", async (req, res) => {
   const { folderKey, user, lastModified, targets } = req.body;
 
+  console.log("> Attempting to share folder", folderKey);
+  console.log("> By user:", user);
+  console.log("> With targets:", targets);
+
+  // Basic validation of input
+  if (!folderKey || !user || !lastModified || !Array.isArray(targets)) {
+    return res.status(400).json({ error: "Invalid request body" });
+  }
+
   try {
     // Gets and stores data within the .permissions within the current folder
     const currentPermissions = await getPermissions(
@@ -1089,12 +1098,17 @@ app.post("/api/share-folder", async (req, res) => {
       true
     );
 
-    // Checks if user is the owner of the folder
-    if (currentPermissions._meta?.owner !== user) {
+    console.log("> Current permissions:", currentPermissions);
+
+    const userIsFolderOwner = currentPermissions._meta?.owner !== user;
+
+    if (userIsFolderOwner) {
       return res
         .status(403)
         .json({ error: "Only the owner may share this folder" });
     }
+
+    console.log("> User is folder owner, proceeding...");
 
     // Saves .permissions in a new variable for editing
     let newPermissions = { ...currentPermissions };
@@ -1102,7 +1116,7 @@ app.post("/api/share-folder", async (req, res) => {
     // Loops through list of new permissions provided by the user
     for (const { username, permissions } of targets) {
       // Prefix for other user's Shared Folders folder
-      const sharedFolderKey = `${username}/Shared Folders/`;
+      const sharedFolderKey = `users/${username}/Shared Folders/`;
 
       // Gets .shortcut from the Shared Folders folder
       let userShortcuts = await getShortcuts(
