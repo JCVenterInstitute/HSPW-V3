@@ -423,352 +423,34 @@ app.get("/api/signature-type-counts/", (req, res) => {
  *************************/
 
 async function getGeneLocationCounts() {
-  var client = await getClient();
+  const client = await getClient();
+
+  // Build chromosome list: numeric 1..22 and X,Y
+  const chromosomes = Array.from({ length: 22 }, (_, i) =>
+    String(i + 1)
+  ).concat(["X", "Y"]);
+
+  // Create aggregations programmatically to avoid repetition
+  const aggs = chromosomes.reduce((acc, chr) => {
+    const pattern = /^[0-9]+$/.test(chr)
+      ? `${chr}[qp].*`
+      : `${chr.toLowerCase()}[pq].*`;
+    acc[chr] = {
+      filter: { regexp: { Location: pattern } },
+      aggs: {
+        doc_count: {
+          value_count: { field: "_id" },
+        },
+      },
+    };
+    return acc;
+  }, {});
 
   const response = await client.search({
     index: process.env.INDEX_GENE,
-    body: {
-      size: 0,
-      aggs: {
-        1: {
-          filter: {
-            regexp: {
-              Location: "1[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        2: {
-          filter: {
-            regexp: {
-              Location: "2[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        3: {
-          filter: {
-            regexp: {
-              Location: "3[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        4: {
-          filter: {
-            regexp: {
-              Location: "4[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        5: {
-          filter: {
-            regexp: {
-              Location: "5[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        6: {
-          filter: {
-            regexp: {
-              Location: "6[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        7: {
-          filter: {
-            regexp: {
-              Location: "7[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        8: {
-          filter: {
-            regexp: {
-              Location: "8[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        9: {
-          filter: {
-            regexp: {
-              Location: "9[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        10: {
-          filter: {
-            regexp: {
-              Location: "10[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        11: {
-          filter: {
-            regexp: {
-              Location: "11[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        12: {
-          filter: {
-            regexp: {
-              Location: "12[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        13: {
-          filter: {
-            regexp: {
-              Location: "13[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        14: {
-          filter: {
-            regexp: {
-              Location: "14[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        15: {
-          filter: {
-            regexp: {
-              Location: "15[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        16: {
-          filter: {
-            regexp: {
-              Location: "16[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        17: {
-          filter: {
-            regexp: {
-              Location: "17[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        18: {
-          filter: {
-            regexp: {
-              Location: "18[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        19: {
-          filter: {
-            regexp: {
-              Location: "19[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        20: {
-          filter: {
-            regexp: {
-              Location: "20[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        21: {
-          filter: {
-            regexp: {
-              Location: "21[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        22: {
-          filter: {
-            regexp: {
-              Location: "22[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        X: {
-          filter: {
-            regexp: {
-              Location: "x[pq].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        Y: {
-          filter: {
-            regexp: {
-              Location: "y[pq].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-      },
-    },
+    body: { size: 0, aggs },
   });
+
   return response.body.aggregations;
 }
 
@@ -1079,10 +761,6 @@ app.post("/api/create-folder", express.json(), async (req, res) => {
 // Shares a folder with other users
 app.post("/api/share-folder", async (req, res) => {
   const { folderKey, user, lastModified, targets } = req.body;
-
-  console.log("> Attempting to share folder", folderKey);
-  console.log("> By user:", user);
-  console.log("> With targets:", targets);
 
   // Basic validation of input
   if (!folderKey || !user || !lastModified || !Array.isArray(targets)) {
@@ -1863,101 +1541,43 @@ app.get("/api/abundance-score/:id", (req, res) => {
  * Get Max of Whole Saliva, Parotid Glands, SM/SL Glands, Blood, and mRNA
  *********************************/
 
+/**
+ * Retrieve max and sum aggregations for a set of salivary-related fields.
+ * The aggregation object is built programmatically from a short list of fields
+ * to avoid repetitive boilerplate and make the function easier to extend.
+ */
 const getSalivaryMaxAndSum = async () => {
-  var client = await getClient();
+  const client = await getClient();
+
+  // Fields to aggregate on. Keys may contain characters (like '/') so we
+  // generate safe aggregation names by replacing non-word characters with '_'.
+  const fields = [
+    "sm/sl_abundance",
+    "plasma_abundance",
+    "mRNA",
+    "saliva_abundance",
+    "parotid_gland_abundance",
+    "SM",
+    "SL",
+    "PAR",
+  ];
+
+  const aggs = fields.reduce((acc, field) => {
+    const safeName = field.replace(/[^A-Za-z0-9_]/g, "_");
+    acc[`${safeName}_max`] = { max: { field } };
+    acc[`${safeName}_sum`] = { sum: { field } };
+    return acc;
+  }, {});
 
   const response = await client.search({
     index: process.env.INDEX_SALIVARY_SUMMARY,
     body: {
       size: 0,
-      aggs: {
-        sm_sl_abundance_max: {
-          max: {
-            field: "sm/sl_abundance",
-          },
-        },
-        sm_sl_abundance_sum: {
-          sum: {
-            field: "sm/sl_abundance",
-          },
-        },
-        plasma_abundance_max: {
-          max: {
-            field: "plasma_abundance",
-          },
-        },
-        plasma_abundance_sum: {
-          sum: {
-            field: "plasma_abundance",
-          },
-        },
-        mRNA_max: {
-          max: {
-            field: "mRNA",
-          },
-        },
-        mRNA_sum: {
-          sum: {
-            field: "mRNA",
-          },
-        },
-        saliva_abundance_max: {
-          max: {
-            field: "saliva_abundance",
-          },
-        },
-        saliva_abundance_sum: {
-          sum: {
-            field: "saliva_abundance",
-          },
-        },
-        parotid_gland_abundance_max: {
-          max: {
-            field: "parotid_gland_abundance",
-          },
-        },
-        parotid_gland_abundance_sum: {
-          sum: {
-            field: "parotid_gland_abundance",
-          },
-        },
-        SM_max: {
-          max: {
-            field: "SM",
-          },
-        },
-        SM_sum: {
-          sum: {
-            field: "SM",
-          },
-        },
-        SL_max: {
-          max: {
-            field: "SL",
-          },
-        },
-        SL_sum: {
-          sum: {
-            field: "SL",
-          },
-        },
-        PAR_max: {
-          max: {
-            field: "PAR",
-          },
-        },
-        PAR_sum: {
-          sum: {
-            field: "PAR",
-          },
-        },
-      },
+      aggs,
     },
   });
 
-  const aggsResults = response.body.aggregations;
-
-  return aggsResults;
+  return response.body.aggregations;
 };
 
 app.get("/api/get-salivary-max-and-sum", (req, res) => {
