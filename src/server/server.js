@@ -119,7 +119,7 @@ app.post("/api/proteins/:size/:from/", (req, res) => {
  ******************************/
 
 async function getCount() {
-  var client = await getClient();
+  const client = await getClient();
 
   const response = await client.search({
     index: process.env.INDEX_SALIVARY_SUMMARY, // Replace with your index name
@@ -279,9 +279,9 @@ app.get("/api/getChordPlotCount", (req, res) => {
 
 const searchGoNodesType = async (type) => {
   // Initialize the client.
-  var client = await getClient();
+  const client = await getClient();
 
-  var query = {
+  const query = {
     size: 10000,
     query: {
       query_string: {
@@ -307,9 +307,9 @@ app.get("/api/go-nodes-type/:type", (req, res) => {
 
 const searchGoNodes = async (id) => {
   // Initialize the client.
-  var client = await getClient();
+  const client = await getClient();
 
-  var query = {
+  const query = {
     size: 10000,
     query: {
       query_string: {
@@ -334,9 +334,9 @@ app.get("/api/go-nodes/:id", (req, res) => {
 });
 
 const searchGoEdges = async (id) => {
-  var client = await getClient();
+  const client = await getClient();
 
-  var query = {
+  const query = {
     size: 10000,
     query: {
       query_string: {
@@ -363,9 +363,9 @@ app.get("/api/go-edges/:id", (req, res) => {
 
 const searchGoNodesUsage = async (id) => {
   // Initialize the client.
-  var client = await getClient();
+  const client = await getClient();
 
-  var query = {
+  const query = {
     size: 10000,
     _source: ["id"],
     query: {
@@ -395,7 +395,7 @@ app.get("/api/go-nodes-usage/:id", (req, res) => {
  *********************************/
 
 async function getProteinSignatureTypeCounts() {
-  var client = await getClient();
+  const client = await getClient();
 
   const response = await client.search({
     index: process.env.INDEX_PROTEIN_SIGNATURE,
@@ -736,13 +736,18 @@ app.post("/api/create-folder", express.json(), async (req, res) => {
   try {
     const { prefix, folderName, user } = req.body;
 
+    console.log("> Create Folder: %o", req.body);
+
     // Prevents users from creating a folder without a name
     if (!folderName)
       return res.status(400).json({ error: "Missing folder name." });
 
-    const isAuthorized = prefix.startsWith(`users/${user}/`)
-      ? true // user should be able to create folders anywhere in their folder
-      : await getPermissions(prefix.replace(/\/$/, ""), user, "write");
+    const isAuthorized =
+      prefix.startsWith(`users/${user}`) ||
+      prefix === "users/" ||
+      prefix === `users/${user}/Share Folders`
+        ? true // user should be able to create folders anywhere in their folder, allow creation of root user folder
+        : await getPermissions(prefix.replace(/\/$/, ""), user, "write");
 
     if (!isAuthorized)
       return res
@@ -761,6 +766,8 @@ app.post("/api/create-folder", express.json(), async (req, res) => {
 // Shares a folder with other users
 app.post("/api/share-folder", async (req, res) => {
   const { folderKey, user, lastModified, targets } = req.body;
+
+  console.log("> Share Folder: %o", req.body);
 
   // Basic validation of input
   if (!folderKey || !user || !lastModified || !Array.isArray(targets)) {
@@ -801,11 +808,19 @@ app.post("/api/share-folder", async (req, res) => {
         sharedFolderKey.replace(/\/$/, "")
       );
 
+      console.log("> userShortcuts", userShortcuts);
+
       // Checks if .shortcut exists,
       // if not the user likely doesnt exist and skips to th next user
       if (userShortcuts === undefined) {
+        //TODO: What if user doesn't exist, don't create folder
         console.warn(`User ${username} does not exist, skipping.`);
-        continue;
+
+        await uploadS3Object(
+          "{}",
+          `${sharedFolderKey.replace(/\/$/, "")}/`,
+          ".shortcuts"
+        );
       }
 
       // If the user is given no permissions,
@@ -813,14 +828,17 @@ app.post("/api/share-folder", async (req, res) => {
       if (!permissions.read && !permissions.write) {
         if (userShortcuts[folderKey]) {
           delete userShortcuts[folderKey];
+
           await uploadS3Object(
             JSON.stringify(userShortcuts),
             sharedFolderKey,
             ".shortcuts"
           );
         }
+
         // Also remove from newPermissions
         if (newPermissions[username]) delete newPermissions[username];
+
         continue;
       }
 
@@ -830,6 +848,7 @@ app.post("/api/share-folder", async (req, res) => {
         owner: user,
         lastModified,
       };
+
       await uploadS3Object(
         JSON.stringify(userShortcuts),
         sharedFolderKey,
@@ -844,7 +863,7 @@ app.post("/api/share-folder", async (req, res) => {
     }
 
     // Update owner's shortcuts to include the shared folder
-    const ownerSharedKey = `${user}/Shared Folders/`;
+    const ownerSharedKey = `users/${user}/Shared Folders/`;
     let ownerShortcuts = await getShortcuts(ownerSharedKey.replace(/\/$/, ""));
     ownerShortcuts[folderKey] = {
       path: folderKey,
@@ -1506,7 +1525,7 @@ app.post("/api/experiment-protein/:uniprotid", async (req, res) => {
  *********************************/
 
 const getAbundanceData = async (proteinId) => {
-  var client = await getClient();
+  const client = await getClient();
 
   const response = await client.search({
     index: process.env.INDEX_STUDY_PEPTIDE_ABUNDANCE,

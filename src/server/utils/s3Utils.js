@@ -23,11 +23,17 @@ exports.getPermissions = async (
   mode = "read",
   raw = false
 ) => {
+  console.log(
+    `> Get Permissions: folder="${folderName}", user="${userName}", mode="${mode}", raw=${raw}`
+  );
+
   // Initializes parmeters for get request
   const params = {
     Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
     Key: `${folderName}/.permissions`,
   };
+
+  console.log("> Params: %o", params);
 
   const command = new GetObjectCommand(params);
 
@@ -64,7 +70,7 @@ exports.getPermissions = async (
       return permissions?.[userName]?.[mode] === true;
     }
   } catch (error) {
-    console.error("Error fetching permissions from S3:", error);
+    console.error("> Error fetching permissions from S3:", error);
     throw error;
   }
 };
@@ -125,7 +131,7 @@ exports.listS3Objects = async (prefix = "") => {
 // Helper function to fetch Shortcuts from .shortcuts as a JSON
 exports.getShortcuts = async (folderName) => {
   const key = `${folderName}/.shortcuts`;
-  console.log("Get Shortcuts: ", key);
+  console.log("> Get Shortcuts: ", key);
 
   const params = {
     Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
@@ -149,9 +155,12 @@ exports.getShortcuts = async (folderName) => {
 
     const content = await streamToString(response.Body);
 
+    console.log("> .shortcuts content:", content);
+
     return JSON.parse(content);
   } catch (error) {
     if (error.name === "NoSuchKey" || error.Code === "NoSuchKey") {
+      console.error(`> .shortcuts file does not exist at: ${key}`);
       return undefined; // Return empty object if file doesn't exist
     }
 

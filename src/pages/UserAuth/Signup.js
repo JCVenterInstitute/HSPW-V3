@@ -19,6 +19,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { formRegex, initialPasswordRequirements } from "./AuthConsts";
 import PasswordField from "@Components/PasswordField";
 import userpool from "../../userpool";
+import axios from "axios";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -26,30 +27,22 @@ const Signup = () => {
   const [formData, setFormData] = useState({
     username: "",
     usernameErr: "",
-
     email: "",
     emailErr: "",
-
     password: "",
     passwordErr: "",
     confirmPassword: "",
     confirmPasswordErr: "",
-
     title: "",
-
     givenName: "",
     givenNameErr: "",
-
     middleInitial: "",
     middleInitialErr: "",
-
     familyName: "",
     familyNameErr: "",
-
     institution: "",
     institutionErr: "",
   });
-
   const [recaptchaToken, setRecaptchaToken] = useState(null);
   const [recaptchaError, setRecaptchaError] = useState("");
 
@@ -59,12 +52,14 @@ const Signup = () => {
 
   const fieldValidation = (field, fieldErr) => {
     let isValid = true;
+
     formRegex[field].forEach((element) => {
       if (!element.regex.test(formData[field])) {
         formDataUpdate(fieldErr, element.errMsg);
         isValid = false;
       }
     });
+
     if (isValid) formDataUpdate(fieldErr, "");
   };
 
@@ -102,6 +97,7 @@ const Signup = () => {
     Object.values(errors).forEach((error) => {
       if (error !== "") isValid = false;
     });
+
     setFormData((prevData) => ({ ...prevData, ...errors }));
 
     return isValid;
@@ -145,60 +141,47 @@ const Signup = () => {
       }),
     ];
 
-    const username = formData.username;
-    const password = formData.password;
+    const { username, password } = formData;
 
-    userpool.signUp(username, password, attributeList, null, (err, result) => {
-      if (err) {
-        Swal.fire({
-          title: "Failed to register",
-          text: err.message,
-          icon: "error",
-          confirmButtonColor: "#1464b4",
-        });
-        return;
-      }
-      try {
-        // Initializes user's root folder for S3 Explorer with .permissions
-        fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/create-folder`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            prefix: "",
-            folderName: { username },
-            user: { username },
-          }),
-        })
-          // Initializes user's Shared Folders folder after the root folder is created
-          .then(() => {
-            return fetch(
-              `${process.env.REACT_APP_API_ENDPOINT}/api/create-folder`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  prefix: username,
-                  folderName: "Shared Folders",
-                  user: username,
-                }),
-              }
-            );
+    userpool.signUp(
+      username,
+      password,
+      attributeList,
+      null,
+      async (err, result) => {
+        if (err) {
+          Swal.fire({
+            title: "Failed to register",
+            text: err.message,
+            icon: "error",
+            confirmButtonColor: "#1464b4",
           });
-      } catch (error) {
-        console.error("Error creating folder:", error);
+          return;
+        }
+
+        try {
+          // Initializes user's Shared Folders folder after the root folder is created
+          await axios.post(
+            `${process.env.REACT_APP_API_ENDPOINT}/api/create-folder`,
+            {
+              prefix: `users/${username}/`,
+              folderName: "Shared Folders",
+              user: username,
+            }
+          );
+        } catch (error) {
+          console.error("Error creating folder:", error);
+        }
+
+        Swal.fire({
+          title: "User registered successfully",
+          text: "Please check email for verification before logging in.",
+          icon: "success",
+          confirmButtonText: "Go to Login",
+          confirmButtonColor: "#1464b4",
+        }).then(() => navigate("/login"));
       }
-      Swal.fire({
-        title: "User registered successfully",
-        text: "Please check email for verification before logging in.",
-        icon: "success",
-        confirmButtonText: "Go to Login",
-        confirmButtonColor: "#1464b4",
-      }).then(() => navigate("/login"));
-    });
+    );
   };
 
   return (
