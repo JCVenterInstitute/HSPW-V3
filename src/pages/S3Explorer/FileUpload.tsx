@@ -58,7 +58,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
     try {
       // POST request to backend for uploading a file to S3
       await axios.post(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/upload-s3-object`,
+        `${process.env.REACT_APP_API_ENDPOINT}/api/workspace/upload-s3-object`,
         formData,
         {
           // Track progress during upload

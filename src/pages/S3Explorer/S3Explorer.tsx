@@ -36,9 +36,12 @@ const S3Explorer: React.FC = () => {
   const fetchFiles = async () => {
     try {
       const response = await axios
-        .get(`${process.env.REACT_APP_API_ENDPOINT}/api/list-s3-objects`, {
-          params: { prefix: currentFolder, user },
-        })
+        .get(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/workspace/list-s3-objects`,
+          {
+            params: { prefix: currentFolder, user },
+          }
+        )
         .then((res) => res.data);
 
       setFiles(response); // Update state with fetched data

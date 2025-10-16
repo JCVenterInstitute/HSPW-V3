@@ -10,16 +10,16 @@ import {
   FormControl,
   InputLabel,
 } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
 import Swal from "sweetalert2";
 import ReCAPTCHA from "react-google-recaptcha";
+import axios from "axios";
 
 import { formRegex, initialPasswordRequirements } from "./AuthConsts";
 import PasswordField from "@Components/PasswordField";
 import userpool from "../../userpool";
-import axios from "axios";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -108,7 +108,7 @@ const Signup = () => {
     setRecaptchaError(""); // Clear any previous reCAPTCHA errors
   };
 
-  const handleClick = (e) => {
+  const handleSignup = (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
 
     if (!submitValidation()) {
@@ -160,26 +160,26 @@ const Signup = () => {
         }
 
         try {
-          // Initializes user's Shared Folders folder after the root folder is created
+          // Initializes user's Shared Folders folder
           await axios.post(
-            `${process.env.REACT_APP_API_ENDPOINT}/api/create-folder`,
+            `${process.env.REACT_APP_API_ENDPOINT}/api/workspace/create-folder`,
             {
               prefix: `users/${username}/`,
               folderName: "Shared Folders",
               user: username,
             }
           );
+
+          Swal.fire({
+            title: "User registered successfully",
+            text: "Please check email for verification before logging in.",
+            icon: "success",
+            confirmButtonText: "Go to Login",
+            confirmButtonColor: "#1464b4",
+          }).then(() => navigate("/login"));
         } catch (error) {
           console.error("Error creating folder:", error);
         }
-
-        Swal.fire({
-          title: "User registered successfully",
-          text: "Please check email for verification before logging in.",
-          icon: "success",
-          confirmButtonText: "Go to Login",
-          confirmButtonColor: "#1464b4",
-        }).then(() => navigate("/login"));
       }
     );
   };
@@ -343,7 +343,7 @@ const Signup = () => {
                 color="primary"
                 size="large"
                 fullWidth
-                onClick={handleClick}
+                onClick={handleSignup}
               >
                 Signup
               </Button>

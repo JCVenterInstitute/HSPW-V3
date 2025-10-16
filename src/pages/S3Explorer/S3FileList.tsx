@@ -93,7 +93,7 @@ const S3FileList: React.FC<S3FileListProps> = ({
     try {
       const { url }: { url: string } = await axios
         .get(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/generate-download-url`,
+          `${process.env.REACT_APP_API_ENDPOINT}/api/workspace/generate-download-url`,
           {
             params: { key: fileKey }, // axios handles encoding automatically
           }
@@ -117,7 +117,7 @@ const S3FileList: React.FC<S3FileListProps> = ({
     // Fetch existing permissions for this file
     currentPermissions = await axios
       .get(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/get-permissions?folderKey=${encodeURIComponent(folderKey)}&user=${encodeURIComponent(user)}`
+        `${process.env.REACT_APP_API_ENDPOINT}/api/workspace/get-permissions?folderKey=${encodeURIComponent(folderKey)}&user=${encodeURIComponent(user)}`
       )
       .then((res) => res.data);
 
@@ -251,7 +251,7 @@ const S3FileList: React.FC<S3FileListProps> = ({
 
         // Submit updated permissions to backend
         const res = await fetch(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/share-folder`,
+          `${process.env.REACT_APP_API_ENDPOINT}/api/workspace/share-folder`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

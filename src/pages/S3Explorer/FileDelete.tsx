@@ -37,7 +37,7 @@ const FileDelete: React.FC<FileDeleteProps> = ({
 
     try {
       await axios.delete(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/delete-s3-file`,
+        `${process.env.REACT_APP_API_ENDPOINT}/api/workspace/delete-s3-file`,
         {
           headers: {
             "Content-Type": "application/json",

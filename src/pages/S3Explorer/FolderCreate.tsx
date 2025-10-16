@@ -33,7 +33,7 @@ const FolderCreate: React.FC<FolderCreateProps> = ({
 
     try {
       await axios.post(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/create-folder`,
+        `${process.env.REACT_APP_API_ENDPOINT}/api/workspace/create-folder`,
         {
           prefix: currentPrefix, // Parent folder path
           folderName, // New folder name
