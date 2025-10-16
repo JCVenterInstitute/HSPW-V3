@@ -8,15 +8,15 @@ import {
   Divider,
   Container,
 } from "@mui/material";
+import axios from "axios";
 
 import S3FileList from "./S3FileList.tsx";
 import FileUpload from "./FileUpload.tsx";
 import FolderCreate from "./FolderCreate.tsx";
 import { AuthContext } from "../../services/AuthContext.js";
 import PageHeader from "../../components/Layout/PageHeader.js";
-import axios from "axios";
 
-const S3Explorer: React.FC = () => {
+const WorkSpace: React.FC = () => {
   const {
     user: { username: user },
   } = useContext(AuthContext);
@@ -233,4 +233,4 @@ const S3Explorer: React.FC = () => {
   );
 };
 
-export default S3Explorer;
+export default WorkSpace;

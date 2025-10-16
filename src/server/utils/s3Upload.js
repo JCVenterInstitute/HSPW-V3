@@ -1,8 +1,5 @@
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-const axios = require("axios");
-const fs = require("fs");
-const path = require("path");
 
 /**
  * Utility functions to mediate presigned PUT to S3 bucket.

@@ -28,7 +28,7 @@ const listFiles = async (req, res) => {
         .json({ error: "Access denied: Read permission required." });
     }
 
-    // Stores all the prefixs under the given prefix in JSON format
+    // Stores all the prefixes under the given prefix in JSON format
     const data = await listS3Objects(prefix);
 
     let shortcuts = {};
