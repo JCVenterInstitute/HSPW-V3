@@ -33,7 +33,6 @@ import axios from "axios";
 enum SortOption {
   ALPHABETICAL = "Alphabetical",
   DATE_MODIFIED = "Date Modified",
-  DATE_CREATED = "Date Created",
 }
 
 // Types of S3 objects and shortcuts
@@ -115,11 +114,15 @@ const S3FileList: React.FC<S3FileListProps> = ({
     console.log("Sharing folder:", folderKey, user);
 
     // Fetch existing permissions for this file
-    currentPermissions = await axios
-      .get(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/workspace/get-permissions?folderKey=${encodeURIComponent(folderKey)}&user=${encodeURIComponent(user)}`
-      )
-      .then((res) => res.data);
+    try {
+      currentPermissions = await axios
+        .get(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/workspace/get-permissions?folderKey=${encodeURIComponent(folderKey)}&user=${encodeURIComponent(user)}`
+        )
+        .then((res) => res.data);
+    } catch (err) {
+      console.error("Error fetching permissions:", err);
+    }
 
     console.log("Current permissions:", currentPermissions);
 
@@ -127,16 +130,16 @@ const S3FileList: React.FC<S3FileListProps> = ({
     await Swal.fire({
       title: "Share Folder",
       html: `
-    <div style="text-align: left;">
-      <div style="display: flex; gap: 8px; margin-bottom: 12px; align-items: center;">
-        <input id="username-input" class="swal2-input" placeholder="Enter username" style="flex: 1; height: 36px; margin: 0; box-sizing: border-box;">
-        <button type="button" id="add-user-btn" class="swal2-confirm swal2-styled" style="padding: 0 12px; height: 36px; line-height: 36px;">
-            Add
-        </button>
-      </div>
-      <div id="user-list" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 8px; border-radius: 6px;"/>
-    </div>
-  `,
+        <div style="text-align: left;">
+          <div style="display: flex; gap: 8px; margin-bottom: 12px; align-items: center;">
+            <input id="username-input" class="swal2-input" placeholder="Enter username" style="flex: 1; height: 36px; margin: 0; box-sizing: border-box;">
+            <button type="button" id="add-user-btn" class="swal2-confirm swal2-styled" style="padding: 0 12px; height: 36px; line-height: 36px;">
+                Add
+            </button>
+          </div>
+          <div id="user-list" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 8px; border-radius: 6px;"/>
+        </div>
+      `,
       showCancelButton: true,
       confirmButtonText: "Update",
       didOpen: () => {
@@ -163,13 +166,13 @@ const S3FileList: React.FC<S3FileListProps> = ({
           userRow.style.padding = "4px 6px";
           userRow.style.borderBottom = "1px solid #eee";
           userRow.innerHTML = `
-        <div style="flex:1;">
-          <strong>${username}</strong>
-          <label style="margin-left: 10px;"><input type="checkbox" class="read" ${perms.read ? "checked" : ""}> Read</label>
-          <label style="margin-left: 10px;"><input type="checkbox" class="write" ${perms.write ? "checked" : ""}> Write</label>
-        </div>
-        <button class="remove-user" style="margin-left: 10px; color: red; background:none; border:none; cursor:pointer;">✖</button>
-      `;
+            <div style="flex:1;">
+              <strong>${username}</strong>
+              <label style="margin-left: 10px;"><input type="checkbox" class="read" ${perms.read ? "checked" : ""}> Read</label>
+              <label style="margin-left: 10px;"><input type="checkbox" class="write" ${perms.write ? "checked" : ""}> Write</label>
+            </div>
+            <button class="remove-user" style="margin-left: 10px; color: red; background:none; border:none; cursor:pointer;">✖</button>
+          `;
           userRow.setAttribute("data-username", username);
           list.appendChild(userRow);
 
@@ -200,13 +203,13 @@ const S3FileList: React.FC<S3FileListProps> = ({
           userRow.style.padding = "4px 6px";
           userRow.style.borderBottom = "1px solid #eee";
           userRow.innerHTML = `
-        <div style="flex:1;">
-          <strong>${username}</strong>
-          <label style="margin-left: 10px;"><input type="checkbox" class="read" checked> Read</label>
-          <label style="margin-left: 10px;"><input type="checkbox" class="write"> Write</label>
-        </div>
-        <button class="remove-user" style="margin-left: 10px; color: red; background:none; border:none; cursor:pointer;">✖</button>
-      `;
+            <div style="flex:1;">
+              <strong>${username}</strong>
+              <label style="margin-left: 10px;"><input type="checkbox" class="read" checked> Read</label>
+              <label style="margin-left: 10px;"><input type="checkbox" class="write"> Write</label>
+            </div>
+            <button class="remove-user" style="margin-left: 10px; color: red; background:none; border:none; cursor:pointer;">✖</button>
+          `;
           userRow.setAttribute("data-username", username);
           list.appendChild(userRow);
 
@@ -303,14 +306,6 @@ const S3FileList: React.FC<S3FileListProps> = ({
             new Date(a.lastModified).getTime()
         );
         break;
-      case SortOption.DATE_CREATED:
-        // TODO: Assuming there's a 'DateCreated' field, adjust accordingly if you're using a different field.
-        sortedFiles.sort(
-          (a, b) =>
-            new Date(b.LastModified).getTime() -
-            new Date(a.LastModified).getTime()
-        );
-        break;
       default:
         break;
     }
@@ -363,7 +358,6 @@ const S3FileList: React.FC<S3FileListProps> = ({
           >
             <MenuItem value={SortOption.ALPHABETICAL}>Alphabetical</MenuItem>
             <MenuItem value={SortOption.DATE_MODIFIED}>Date Modified</MenuItem>
-            <MenuItem value={SortOption.DATE_CREATED}>Date Created</MenuItem>
           </Select>
         </FormControl>
       </Box>

@@ -151,14 +151,12 @@ const shareFolder = async (req, res) => {
 
   try {
     // Gets and stores data within the .permissions within the current folder
-    const currentPermissions = await getPermissions(
+    let currentPermissions = await getPermissions(
       folderKey.replace(/\/$/, ""),
       user,
       null,
       true
     );
-
-    console.log("> Current permissions:", currentPermissions);
 
     const userIsFolderOwner = currentPermissions._meta?.owner !== user;
 
@@ -178,24 +176,28 @@ const shareFolder = async (req, res) => {
       // Prefix for other user's Shared Folders folder
       const sharedFolderKey = `users/${username}/Shared Folders/`;
 
+      let userShortcuts;
+
       // Gets .shortcut from the Shared Folders folder
-      let userShortcuts = await getShortcuts(
-        sharedFolderKey.replace(/\/$/, "")
-      );
+      try {
+        userShortcuts = await getShortcuts(sharedFolderKey.replace(/\/$/, ""));
+      } catch (err) {
+        console.error(`Error fetching shortcuts for user ${username}:`, err);
+        userShortcuts = undefined;
+      }
 
       console.log("> userShortcuts", userShortcuts);
 
       // Checks if .shortcut exists,
-      // if not the user likely doesnt exist and skips to th next user
       if (userShortcuts === undefined) {
-        //TODO: What if user doesn't exist, don't create folder
-        console.warn(`User ${username} does not exist, skipping.`);
-
+        // Shortcut doesn't exist for user, create a new one
         await uploadS3Object(
           "{}",
           `${sharedFolderKey.replace(/\/$/, "")}/`,
           ".shortcuts"
         );
+
+        userShortcuts = {};
       }
 
       // If the user is given no permissions,
@@ -239,12 +241,15 @@ const shareFolder = async (req, res) => {
 
     // Update owner's shortcuts to include the shared folder
     const ownerSharedKey = `users/${user}/Shared Folders/`;
+
     let ownerShortcuts = await getShortcuts(ownerSharedKey.replace(/\/$/, ""));
+
     ownerShortcuts[folderKey] = {
       path: folderKey,
       owner: user,
       lastModified,
     };
+
     await uploadS3Object(
       JSON.stringify(ownerShortcuts),
       ownerSharedKey,

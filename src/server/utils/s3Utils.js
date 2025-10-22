@@ -218,6 +218,7 @@ exports.uploadS3Object = async (file, prefix = "", fileName, onProgress) => {
 
 /**
  * Create a new folder in S3 by uploading a .permissions file with default permissions
+ * If the folder is "Shared Folders", creates a .shortcuts file instead
  * @param {string} userName Name of the user creating the folder (set as owner)
  * @param {string} prefix The S3 prefix (parent folder path) to create the new folder in
  * @param {string} folderName The name of the new folder to create
@@ -229,13 +230,16 @@ exports.uploadS3Folder = async (
   folderName
 ) => {
   try {
-    const key = `${prefix}${folderName}/.permissions`;
+    const key = `${prefix}${folderName}/${folderName === "Shared Folders" ? ".shortcuts" : ".permissions"}`;
 
-    // Creates the initial data within .permissions in the following format:
+    // If folder name isn't Shared Folders, Creates the initial data within .permissions in the following format:
     // {_meta = {owner: <owner>}, <user>: {read: <bool>, write: <bool>},...}
-    const defaultPermissions = {
-      _meta: { owner: userName },
-    };
+    const defaultPermissions =
+      folderName === "Shared Folders"
+        ? {}
+        : {
+            _meta: { owner: userName },
+          };
 
     const params = {
       Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
