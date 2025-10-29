@@ -420,6 +420,12 @@ const S3FileList: React.FC<S3FileListProps> = ({
                           size="small"
                           onClick={() => handleShareFolder(folder.Prefix)}
                           color="success"
+                          disabled={
+                            folder.Prefix.split("/").slice(-2, -1)[0] ===
+                            "Shared Folders"
+                              ? true
+                              : false
+                          }
                         >
                           <FaShareAlt />
                         </IconButton>
