@@ -166,10 +166,12 @@ def record_submission(event, submission_id):
 
     print(f"> Encrypted (url-encoded): {token_for_link}")
 
+    results_path = f"/differential-expression/results?data={token_for_link}"
+
     submission = {
         "id": submission_id,
         "important": False,
-        "link": f"/differential-expression/results?data={token_for_link}",
+        "link": results_path,
         "status": "Running",
         "submission_date": str(datetime.now()),
         "type": "Differential Expression Analysis",
@@ -184,6 +186,8 @@ def record_submission(event, submission_id):
         print("Record inserted successfully!")
     except Exception as e:
         print(f"Error inserting record: {e}")
+
+    return results_path
 
 
 # Update the submission status & completion date after analysis finishes
@@ -223,7 +227,7 @@ def main(event):
         heat_map_number = str(event.get("heat_map_number"))
         file_name = os.path.basename(input_file)
 
-        record_submission(event, submission_id)
+        results_path = record_submission(event, submission_id)
 
         print(f"> Input File: {input_file}")
         print(f"> Log Norm: {log_normalized}")
@@ -377,15 +381,26 @@ def main(event):
         # Create Zip file with the output files
         zip_files("./", files_to_zip, "data_set.zip")
 
+        owner = event.get("username")
+
         # Create a .permissions file in the results directory so it is uploaded to S3
         # This is needed for folder permissions management in the workspace
         try:
-            owner = event.get("username")
             permissions_obj = {"_meta": {"owner": owner}}
             permissions_path = os.path.join(target_directory, ".permissions")
             with open(permissions_path, "w") as pf:
                 pf.write(json.dumps(permissions_obj))
             print(f"> Created .permissions at {permissions_path} with owner {owner}")
+        except Exception as e:
+            print(f"> Failed to create .permissions file: {e}")
+
+        # Create file that has link to the actual submissions results page
+        try:
+            link_path = os.path.join(target_directory, "Submission.html")
+            submission_link = f"{os.getenv('SITE_BASE_URL')}{results_path}"
+            with open(link_path, "w") as pf:
+                pf.write(json.dumps({"link": submission_link}))
+            print(f"> Created results link file")
         except Exception as e:
             print(f"> Failed to create .permissions file: {e}")
 
