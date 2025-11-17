@@ -109,7 +109,7 @@ const ClustalOmegaResults = () => {
       const submission = await axios.get(
         `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
       );
-      console.log(submission);
+
       let username = submission.data.username;
       let date = submission.data.submission_date.split("T")[0];
 
@@ -123,18 +123,12 @@ const ClustalOmegaResults = () => {
         if (resultType === "aln-clustal_num") {
           type = "aln-clustal_num";
         }
-        // const result = await axios
-        //   .get(
-        //     `https://www.ebi.ac.uk/Tools/services/rest/clustalo/result/${jobId}/${resultType.identifier}`
-        //   )
-        //   .then((res) => res.data);
-        // console.log(result);
       }
 
       const presignedUrl = await axios
         .get(`${process.env.REACT_APP_API_ENDPOINT}/api/getJSONFile`, {
           params: {
-            s3Key: `users/${username}/clustalOmega/${date}/${jobId}/ebi_data.json`,
+            s3Key: `users/${username}/Multiple Sequence Alignment/${date}/${jobId}/ebi_data.json`,
           },
         })
         .then((res) => res.data.url);
@@ -152,7 +146,6 @@ const ClustalOmegaResults = () => {
         output = fileData.output;
         alignmentResult = fileData.alignmentResult;
         submissionDetail = fileData.submissionDetail;
-        console.log("AWS download complete");
       } else {
         [inputSequence, output, alignmentResult, submissionDetail] =
           await Promise.all([
@@ -185,10 +178,22 @@ const ClustalOmegaResults = () => {
           submissionDetail: submissionDetail,
         };
 
-        awsJsonUpload(
-          `users/${username}/clustalOmega/${date}/${jobId}/ebi_data.json`,
-          ebi_data
-        );
+        const baseKey = `users/${username}/Multiple Sequence Alignment/${date}/${jobId}`;
+        const uploads = [
+          { key: `${baseKey}/ebi_data.json`, data: ebi_data },
+          {
+            key: `${baseKey}/Submission.html`,
+            data: { link: window.location.href },
+          },
+          {
+            key: `${baseKey}/.permissions`,
+            data: { _meta: { owner: username } },
+          },
+        ];
+
+        for (const { key, data } of uploads) {
+          awsJsonUpload(key, data);
+        }
       }
 
       const sequenceMatch = output.match(/Read (\d+) sequences/);
