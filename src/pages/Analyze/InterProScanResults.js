@@ -16,8 +16,8 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import XMLParser from "react-xml-parser";
 import Swal from "sweetalert2";
-import { awsJsonUpload } from "../../utils/AwsJsonUpload";
 
+import { awsJsonUpload } from "../../utils/AwsJsonUpload";
 import PageHeader from "@Components/Layout/PageHeader";
 
 const InterProScanResults = () => {
@@ -48,6 +48,7 @@ const InterProScanResults = () => {
           .then((res) => res.data);
         parameterDetailArray.push(parameterDetail);
       }
+
       setParameterDetail([...parameterDetailArray]);
     };
 
@@ -58,48 +59,45 @@ const InterProScanResults = () => {
     const submission = await axios.get(
       `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
     );
+
     if (submission.data.status === "Complete") {
-      console.log("Submission already complete");
+      setIsFinished(true);
+      return;
+    }
+
+    const status = await axios
+      .get(`https://www.ebi.ac.uk/Tools/services/rest/iprscan5/status/${jobId}`)
+      .then((res) => res.data);
+
+    if (status === "NOT_FOUND") {
+      await axios.put(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
+        {
+          status: "Expired",
+        }
+      );
+
+      Swal.fire({
+        icon: "error",
+        title: "Submission Has Expired",
+        text: "Multiple Sequence Alignment submissions are only stored for 7 days. Redirecting back to submissions page.",
+      }).then(() => {
+        window.location.href = `/submissions`;
+      });
+    } else if (status === "FINISHED") {
+      // Update Submission status & completion date
+      await axios.put(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
+        {
+          status: "Complete",
+          completion_date: new Date().toISOString(),
+        }
+      );
+
       setIsFinished(true);
     } else {
-      const status = await axios
-        .get(
-          `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/status/${jobId}`
-        )
-        .then((res) => res.data);
-
-      console.log("> Status", status);
-
-      if (status === "NOT_FOUND") {
-        await axios.put(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
-          {
-            status: "Expired",
-          }
-        );
-
-        Swal.fire({
-          icon: "error",
-          title: "Submission Has Expired",
-          text: "Multiple Sequence Alignment submissions are only stored for 7 days. Redirecting back to submissions page.",
-        }).then(() => {
-          window.location.href = `/submissions`;
-        });
-      } else if (status === "FINISHED") {
-        // Update Submission status & completion date
-        await axios.put(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`,
-          {
-            status: "Complete",
-            completion_date: new Date().toISOString(),
-          }
-        );
-
-        setIsFinished(true);
-      } else {
-        // Continue checking after 5 seconds
-        setTimeout(checkStatus, 5000);
-      }
+      // Rechecking after 5 seconds
+      setTimeout(checkStatus, 5000);
     }
   };
 
@@ -107,15 +105,9 @@ const InterProScanResults = () => {
     const submission = await axios.get(
       `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
     );
-    console.log(submission);
-    let username = submission.data.username;
-    let date = submission.data.submission_date.split("T")[0];
 
-    const resultTypes = await axios
-      .get(
-        `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/resulttypes/${jobId}`
-      )
-      .then((res) => res.data.types);
+    const { username } = submission.data;
+    const date = submission.data.submission_date.split("T")[0];
 
     const presignedUrl = await axios
       .get(`${process.env.REACT_APP_API_ENDPOINT}/api/getJSONFile`, {
@@ -124,7 +116,9 @@ const InterProScanResults = () => {
         },
       })
       .then((res) => res.data.url);
+
     const fileResponse = await fetch(presignedUrl);
+
     let inputSequence,
       log,
       xmlOutput,
@@ -144,6 +138,8 @@ const InterProScanResults = () => {
       submissionDetail = fileData.submissionDetail;
       console.log("AWS download complete");
     } else {
+      const ebiBase = `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}`;
+
       [
         inputSequence,
         log,
@@ -153,42 +149,15 @@ const InterProScanResults = () => {
         jsonOutput,
         submissionDetail,
       ] = await Promise.all([
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/sequence`
-          )
-          .then((res) => res.data),
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/log`
-          )
-          .then((res) => res.data),
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/xml`
-          )
-          .then((res) => res.data),
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/tsv`
-          )
-          .then((res) => res.data),
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/gff`
-          )
-          .then((res) => res.data),
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/json`
-          )
-          .then((res) => res.data),
-        axios
-          .get(
-            `https://www.ebi.ac.uk/Tools/services/rest/iprscan5/result/${jobId}/submission`
-          )
-          .then((res) => res.data),
+        axios.get(`${ebiBase}/sequence`).then((res) => res.data),
+        axios.get(`${ebiBase}/log`).then((res) => res.data),
+        axios.get(`${ebiBase}/xml`).then((res) => res.data),
+        axios.get(`${ebiBase}/tsv`).then((res) => res.data),
+        axios.get(`${ebiBase}/gff`).then((res) => res.data),
+        axios.get(`${ebiBase}/json`).then((res) => res.data),
+        axios.get(`${ebiBase}/submission`).then((res) => res.data),
       ]);
+
       const ebi_data = {
         inputSequence: inputSequence,
         xmlOutput: xmlOutput,
@@ -198,10 +167,22 @@ const InterProScanResults = () => {
         submissionDetail: submissionDetail,
       };
 
-      awsJsonUpload(
-        `users/${username}/proteinSignatureSearch/${date}/${jobId}/ebi_data.json`,
-        ebi_data
-      );
+      const baseKey = `users/${username}/Protein Signature Search/${date}/${jobId}`;
+      const uploads = [
+        { key: `${baseKey}/ebi_data.json`, data: ebi_data },
+        {
+          key: `${baseKey}/Submission.html`,
+          data: { link: window.location.href },
+        },
+        {
+          key: `${baseKey}/.permissions`,
+          data: { _meta: { owner: username } },
+        },
+      ];
+
+      for (const { key, data } of uploads) {
+        awsJsonUpload(key, data);
+      }
     }
 
     const submissionDetailJson = new XMLParser().parseFromString(
@@ -226,18 +207,16 @@ const InterProScanResults = () => {
   }, [jobId, isFinished]);
 
   const handleDownload = (fileSuffix) => {
+    const outputs = {
+      xml: xmlOutput,
+      tsx: tsvOutput,
+      gff3: gffOutput,
+      json: JSON.stringify(jsonOutput),
+    };
+
     const fileInfo = {
       fileSuffix: fileSuffix, // Replace with your desired file extension
-      content:
-        fileSuffix === "xml"
-          ? xmlOutput
-          : fileSuffix === "tsv"
-            ? tsvOutput
-            : fileSuffix === "gff3"
-              ? gffOutput
-              : fileSuffix === "json"
-                ? JSON.stringify(jsonOutput)
-                : "",
+      content: outputs[fileSuffix] || "",
     };
 
     const blob = new Blob([fileInfo.content], {

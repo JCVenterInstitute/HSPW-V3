@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import {
   Grid,
@@ -20,8 +20,10 @@ import Swal from "sweetalert2";
 import XMLParser from "react-xml-parser";
 
 import userpool from "../../userpool";
+import { AuthContext } from "../../services/AuthContext";
 
 const InterProScanSequenceParameters = ({ url }) => {
+  const { user, session } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [parameterDetails, setParameterDetails] = useState([]);
   const [parameterValue, setParameterValue] = useState({});
@@ -30,6 +32,29 @@ const InterProScanSequenceParameters = ({ url }) => {
   const [title, setTitle] = useState("");
   const [sequence, setSequence] = useState("");
   const [checked, setChecked] = useState([]);
+
+  useEffect(() => {
+    const fetchEmail = async () => {
+      if (user && session) {
+        user.getUserAttributes((err, attributes) => {
+          if (err) {
+            console.error("Error fetching user data:", err);
+            return;
+          }
+
+          const attributeMap = {};
+
+          attributes.forEach((attribute) => {
+            attributeMap[attribute.Name] = attribute.Value;
+          });
+
+          setEmail(attributeMap["email"] || "");
+        });
+      }
+    };
+
+    fetchEmail();
+  }, [user, session]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0]; // Get the selected file
@@ -396,18 +421,6 @@ const InterProScanSequenceParameters = ({ url }) => {
               available, enter the email and title below:
             </Typography>
             <Typography sx={{ fontWeight: "bold", ml: 1, color: "black" }}>
-              Email:
-            </Typography>
-            <TextField
-              id="email"
-              size="small"
-              sx={{ width: "300px", mb: 2 }}
-              value={email}
-              onChange={(event) => {
-                setEmail(event.target.value);
-              }}
-            />
-            <Typography sx={{ fontWeight: "bold", ml: 1, color: "black" }}>
               Title:
             </Typography>
             <TextField
@@ -424,9 +437,8 @@ const InterProScanSequenceParameters = ({ url }) => {
               display="block"
               sx={{ ml: 1, mb: 2, color: "black", fontStyle: "italic" }}
             >
-              If available, the title will be included in the subject of the
-              notification email and can be used as a way to identify your
-              analysis
+              If available, the title will be included in the name of the
+              submission and can be used as a way to identify your analysis.
             </Typography>
             <Stack
               direction="row"
