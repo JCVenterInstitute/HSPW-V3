@@ -28,10 +28,6 @@ const WorkSpace: React.FC = () => {
   const [currentFolder, setCurrentFolder] = useState<string>(`users/${user}/`); // Current folder being displayed
   const [folderPath, setFolderPath] = useState<string[]>(["users", user]); // Path to current folder
 
-  // TODO: re-enable grid view after updating it
-  // Grid view needs to filter .files, and display shortcuts from the .shortcut file
-  const [isListView, setIsListView] = useState<boolean>(true); // Toggle between list and grid view
-
   // Fetch files and folders within the current folder
   const fetchFiles = async () => {
     try {
@@ -121,12 +117,6 @@ const WorkSpace: React.FC = () => {
     });
   };
 
-  // TODO: re-enable grid view after updating it
-  // Toggle between list and grid view for file display
-  //   const toggleView = () => {
-  //     setIsListView(!isListView); // Toggle view type
-  //   };
-
   const breadcrumbPath = [
     { path: "Home", link: "/" },
     { path: "Account" },
@@ -143,7 +133,6 @@ const WorkSpace: React.FC = () => {
       />
       <Container maxWidth="xl">
         <Box p={4}>
-          {/* Top controls: Go Back, Refresh, and View Toggle */}
           <Box
             mb={4}
             display="flex"
@@ -168,15 +157,7 @@ const WorkSpace: React.FC = () => {
                 Refresh
               </Button>
             </Box>
-            {/* TODO: re-enable grid view after updating it */}
-            {/* <Button
-              variant="outlined"
-              onClick={toggleView}
-            >
-              {isListView ? "Switch to Grid View" : "Switch to List View"}
-            </Button> */}
           </Box>
-          {/* Breadcrumb navigation */}
           <Breadcrumbs separator="›">
             {folderPath.map((folder, index) => {
               const pathUpTo = folderPath.slice(0, index + 1).join("/") + "/";
@@ -221,7 +202,6 @@ const WorkSpace: React.FC = () => {
               )} // Render folders only
               shortcuts={Object.values(files.shortcuts)}
               onFolderChange={handleFolderChange}
-              isListView={isListView}
               user={user}
               onDeleteSuccess={fetchFiles}
             />

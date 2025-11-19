@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   FaFolder,
   FaFile,
-  FaTrash,
   FaShareAlt,
   FaDownload,
   FaLink,
@@ -31,12 +30,13 @@ import {
 
 import FileDelete from "./FileDelete.tsx"; // Import the FileDelete component
 import axios from "axios";
-
-// Enum for sorting options
-enum SortOption {
-  ALPHABETICAL = "Alphabetical",
-  DATE_MODIFIED = "Date Modified",
-}
+import {
+  formatBytes,
+  handleDownload,
+  handleSubmissionLink,
+  sortFilesAndFolders,
+  SortOption,
+} from "../../utils/Workspace.ts";
 
 // Types of S3 objects and shortcuts
 interface File {
@@ -60,7 +60,6 @@ interface S3FileListProps {
   folders: Folder[]; //Folders to display
   shortcuts: Shortcut[]; // Shortcuts to display
   onFolderChange: (folderKey: string, isShortcut?: boolean) => void; // Callback when a folder is clicked
-  isListView: boolean; // Whether to show in list view or grid view
   user: string; // Current logged-in user
   onDeleteSuccess: () => void; // Callback after file/folder is deleted
 }
@@ -70,44 +69,20 @@ const S3FileList: React.FC<S3FileListProps> = ({
   folders,
   shortcuts,
   onFolderChange,
-  isListView,
   user,
   onDeleteSuccess,
 }) => {
-  // Currently selected sorting option (defaults to alphabetical)
   const [sortOption, setSortOption] = useState<SortOption>(
     SortOption.ALPHABETICAL
   );
-
-  // Search query string
   const [searchQuery, setSearchQuery] = useState<string>("");
-
-  // Byte formatter helper function
-  const formatBytes = (a: number, b = 2) => {
-    if (!+a) return "0 Bytes";
-    const c = 0 > b ? 0 : b,
-      d = Math.floor(Math.log(a) / Math.log(1024));
-    return `${parseFloat((a / Math.pow(1024, d)).toFixed(c))} ${["Bytes", "KiB", "MiB", "GiB"][d]}`;
-  };
-
-  // Handle file download by generating a presigned S3 URL
-  const handleDownload = async (fileKey: string) => {
-    try {
-      const { url }: { url: string } = await axios
-        .get(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/workspace/generate-download-url`,
-          {
-            params: { key: fileKey }, // axios handles encoding automatically
-          }
-        )
-        .then((res) => res.data);
-
-      window.open(url, "_blank"); // or use a programmatic download
-    } catch (err) {
-      console.error("Download error:", err);
-      Swal.fire("Error", "Download failed.", "error");
-    }
-  };
+  const { sortedFolders, sortedFiles, sortedShortcuts } = sortFilesAndFolders(
+    searchQuery,
+    sortOption,
+    folders,
+    files,
+    shortcuts
+  );
 
   // Handle folder sharing by showing a SweetAlert modal
   // Allows adding/removing users and setting read/write permissions
@@ -281,81 +256,8 @@ const S3FileList: React.FC<S3FileListProps> = ({
     setSortOption(event.target.value as SortOption);
   };
 
-  // Sorting logic based on the selected option
-  const sortFilesAndFolders = () => {
-    let sortedFolders = [...folders];
-    let sortedFiles = [...files];
-    let sortedShortcuts = [...shortcuts];
-
-    switch (sortOption) {
-      case SortOption.ALPHABETICAL:
-        sortedFolders.sort((a, b) => a.Prefix.localeCompare(b.Prefix));
-        sortedFiles.sort((a, b) => a.Key.localeCompare(b.Key));
-        sortedShortcuts.sort((a, b) => a.path.localeCompare(b.path));
-        break;
-      case SortOption.DATE_MODIFIED:
-        sortedFiles.sort(
-          (a, b) =>
-            new Date(b.LastModified).getTime() -
-            new Date(a.LastModified).getTime()
-        );
-        sortedShortcuts.sort(
-          (a, b) =>
-            new Date(b.lastModified).getTime() -
-            new Date(a.lastModified).getTime()
-        );
-        break;
-      default:
-        break;
-    }
-
-    // Apply search filtering
-    if (searchQuery.trim()) {
-      sortedFolders = sortedFolders.filter((folder) =>
-        folder.Prefix.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      sortedFiles = sortedFiles.filter((file) =>
-        file.Key.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    return { sortedFolders, sortedFiles, sortedShortcuts };
-  };
-
-  const { sortedFolders, sortedFiles, sortedShortcuts } = sortFilesAndFolders();
-
-  const handleSubmissionLink = async (fileKey: string) => {
-    try {
-      const presignedUrl = await axios
-        .get(`${process.env.REACT_APP_API_ENDPOINT}/api/getJSONFile`, {
-          params: {
-            s3Key: fileKey,
-          },
-        })
-        .then((res) => res.data.url);
-
-      const fileResponse = await fetch(presignedUrl);
-      const { link } = await fileResponse.json();
-
-      Swal.fire({
-        icon: "question",
-        title: "Navigate to results page?",
-        text: "Are you sure you want to leave the page?",
-        showCancelButton: true,
-      }).then((res) => {
-        if (res.isConfirmed) {
-          window.open(link, "_self");
-        }
-      });
-    } catch (err) {
-      console.error("Download error:", err);
-      Swal.fire("Error", "Download failed.", "error");
-    }
-  };
-
   return (
     <>
-      {/* Top toolbar with search + sort controls */}
       <Box
         display="flex"
         alignItems="center"
@@ -363,7 +265,6 @@ const S3FileList: React.FC<S3FileListProps> = ({
         gap={2}
         mb={4}
       >
-        {/* Search input */}
         <TextField
           variant="outlined"
           placeholder="Search files and folders..."
@@ -371,7 +272,6 @@ const S3FileList: React.FC<S3FileListProps> = ({
           onChange={(e) => setSearchQuery(e.target.value)}
           sx={{ flexGrow: 1 }}
         />
-        {/* Sort dropdown */}
         <FormControl
           variant="outlined"
           size="small"
@@ -389,8 +289,6 @@ const S3FileList: React.FC<S3FileListProps> = ({
           </Select>
         </FormControl>
       </Box>
-      {/* TODO: Add back grid view after updating it */}
-      {/* {isListView ? ( */}
       <TableContainer
         sx={{ maxHeight: 400, mb: 4, bgcolor: "background.paper" }}
       >
@@ -467,16 +365,7 @@ const S3FileList: React.FC<S3FileListProps> = ({
                           fileKey={file.Key}
                           onDeleteSuccess={onDeleteSuccess}
                           user={user}
-                        >
-                          <Tooltip title="Delete File">
-                            <IconButton
-                              size="small"
-                              color="error"
-                            >
-                              <FaTrash />
-                            </IconButton>
-                          </Tooltip>
-                        </FileDelete>
+                        />
                       </Box>
                     </TableCell>
                   </TableRow>
@@ -535,16 +424,7 @@ const S3FileList: React.FC<S3FileListProps> = ({
                         fileKey={folder.Prefix}
                         onDeleteSuccess={onDeleteSuccess}
                         user={user}
-                      >
-                        <Tooltip title="Delete Folder">
-                          <IconButton
-                            size="small"
-                            color="error"
-                          >
-                            <FaTrash />
-                          </IconButton>
-                        </Tooltip>
-                      </FileDelete>
+                      />
                     </Box>
                   </TableCell>
                 </TableRow>
@@ -556,6 +436,8 @@ const S3FileList: React.FC<S3FileListProps> = ({
                   file.Key.toLowerCase().includes(searchQuery.toLowerCase())
               )
               .map((file) => {
+                const fileName = file.Key.split("/").slice(-1)[0];
+
                 return (
                   <TableRow
                     key={file.Key}
@@ -567,7 +449,7 @@ const S3FileList: React.FC<S3FileListProps> = ({
                         color="#6b7280"
                       />
                     </TableCell>
-                    <TableCell>fileName</TableCell>
+                    <TableCell>{fileName}</TableCell>
                     <TableCell>
                       {new Date(file.LastModified).toLocaleString()}
                     </TableCell>
@@ -591,16 +473,7 @@ const S3FileList: React.FC<S3FileListProps> = ({
                           fileKey={file.Key}
                           onDeleteSuccess={onDeleteSuccess}
                           user={user}
-                        >
-                          <Tooltip title="Delete File">
-                            <IconButton
-                              size="small"
-                              color="error"
-                            >
-                              <FaTrash />
-                            </IconButton>
-                          </Tooltip>
-                        </FileDelete>
+                        />
                       </Box>
                     </TableCell>
                   </TableRow>
@@ -634,180 +507,6 @@ const S3FileList: React.FC<S3FileListProps> = ({
           </TableBody>
         </Table>
       </TableContainer>
-      {/*) 
-       : (
-         <Grid
-           container
-           spacing={2}
-         >
-           {sortedFolders
-             .filter(
-               (folder) =>
-                 !folder.Prefix.split("/")
-                   .filter(Boolean)
-                   .pop()
-                   ?.startsWith(".") &&
-                 folder.Prefix.toLowerCase().includes(searchQuery.toLowerCase())
-             )
-             .map((folder) => (
-               <Grid
-                 item
-                 xs={12}
-                 sm={6}
-                 md={4}
-                 key={folder.Prefix}
-               >
-                 <Box
-                   border={1}
-                   borderColor="grey.300"
-                   borderRadius={1}
-                   p={2}
-                   position="relative"
-                   height="150px"
-                   display="flex"
-                   flexDirection="column"
-                   justifyContent="space-between"
-                 >
-                   <Box>
-                     <FaFolder
-                       size={40}
-                       color="#3b82f6"
-                     />
-                   </Box>
-
-                   <Typography
-                     variant="subtitle1"
-                     noWrap
-                   >
-                     {folder.Prefix.split("/").slice(-2, -1)[0]}
-                   </Typography>
-
-                   <Typography variant="body2">-</Typography>
-
-                   <Box
-                     position="absolute"
-                     top={8}
-                     right={8}
-                     display="flex"
-                     gap={1}
-                     alignItems="center"
-                   >
-                     <Tooltip title="Share Folder">
-                       <IconButton
-                         size="small"
-                         color="success"
-                         onClick={() => handleShareFolder(folder.Prefix)}
-                       >
-                         <FaShareAlt />
-                       </IconButton>
-                     </Tooltip>
-
-                     <FileDelete
-                       fileKey={folder.Prefix}
-                       onDeleteSuccess={onDeleteSuccess}
-                       user={user}
-                     >
-                       <Tooltip title="Delete Folder">
-                         <IconButton
-                           size="small"
-                           color="error"
-                         >
-                           <FaTrash />
-                         </IconButton>
-                       </Tooltip>
-                     </FileDelete>
-                   </Box>
-                 </Box>
-               </Grid>
-             ))}
-
-           {sortedFiles
-             .filter((file) =>
-               file.Key.toLowerCase().includes(searchQuery.toLowerCase())
-             )
-             .map((file) => (
-               <Grid
-                 item
-                 xs={12}
-                 sm={6}
-                 md={4}
-                 key={file.Key}
-               >
-                 <Box
-                   border={1}
-                   borderColor="grey.300"
-                   borderRadius={1}
-                   p={2}
-                   position="relative"
-                   height="150px"
-                   display="flex"
-                   flexDirection="column"
-                   justifyContent="space-between"
-                 >
-                   <Box>
-                     <FaFile
-                       size={40}
-                       color="#6b7280"
-                     />
-                   </Box>
-
-                   <Typography
-                     variant="subtitle1"
-                     noWrap
-                   >
-                     {file.Key.split("/").slice(-1)[0]}
-                   </Typography>
-
-                   <Typography
-                     variant="body2"
-                     noWrap
-                   >
-                     {new Date(file.LastModified).toLocaleString()}
-                   </Typography>
-
-                   <Typography
-                     variant="body2"
-                     noWrap
-                   >{`${file.Size} bytes`}</Typography>
-
-                   <Box
-                     position="absolute"
-                     top={8}
-                     right={8}
-                     display="flex"
-                     gap={1}
-                     alignItems="center"
-                   >
-                     <Tooltip title="Download File">
-                       <IconButton
-                         size="small"
-                         color="primary"
-                         onClick={() => handleDownload(file.Key)}
-                       >
-                         <FaDownload />
-                       </IconButton>
-                     </Tooltip>
-
-                     <FileDelete
-                       fileKey={file.Key}
-                       onDeleteSuccess={onDeleteSuccess}
-                       user={user}
-                     >
-                       <Tooltip title="Delete File">
-                         <IconButton
-                           size="small"
-                           color="error"
-                         >
-                           <FaTrash />
-                         </IconButton>
-                       </Tooltip>
-                     </FileDelete>
-                   </Box>
-                 </Box>
-               </Grid>
-             ))}
-         </Grid>
-       )*/}
     </>
   );
 };

@@ -1,19 +1,20 @@
 import axios from "axios";
 import React from "react";
 import Swal from "sweetalert2";
+import { FaTrash } from "react-icons/fa";
+
+import { IconButton, Tooltip } from "@mui/material";
 
 interface FileDeleteProps {
   fileKey: string; // Full S3 object key for the file/folder to delete
   onDeleteSuccess: () => void; // Callback to refresh parent S3Explorer after delete
   user: string; // Username performing the delete action
-  children: React.ReactNode; // UI element (e.g., delete button/icon) wrapped by this component
 }
 
 const FileDelete: React.FC<FileDeleteProps> = ({
   fileKey,
   onDeleteSuccess,
   user,
-  children,
 }) => {
   // Handles the delete request when the wrapped element is clicked
   const handleDelete = async (e: React.MouseEvent) => {
@@ -59,7 +60,18 @@ const FileDelete: React.FC<FileDeleteProps> = ({
   };
 
   // Wraps any child component making them trigger handle delete on click
-  return <span onClick={handleDelete}>{children}</span>;
+  return (
+    <span onClick={handleDelete}>
+      <Tooltip title="Delete File">
+        <IconButton
+          size="small"
+          color="error"
+        >
+          <FaTrash />
+        </IconButton>
+      </Tooltip>
+    </span>
+  );
 };
 
 export default FileDelete;
