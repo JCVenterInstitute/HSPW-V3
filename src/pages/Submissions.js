@@ -38,31 +38,6 @@ const Submissions = () => {
       )
         .then((response) => response.json())
         .then((data) => {
-          data = data.map((submission) => {
-            // We only store differential expression analysis submission
-            // All other analysis results are stored on ebi for max of 7 days
-            if (
-              submission.type !== "Differential Expression Analysis" &&
-              submission.status === "Complete" &&
-              isExpired(submission.completion_date)
-            ) {
-              // Update submission status to expired
-              axios.put(
-                `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${submission.id}`,
-                {
-                  status: "Expired",
-                }
-              );
-
-              return {
-                ...submission,
-                status: "Expired",
-              };
-            }
-
-            return submission;
-          });
-
           const pinnedRows = data.filter((row) => row.important);
           const unpinnedRows = data.filter((row) => !row.important);
 
