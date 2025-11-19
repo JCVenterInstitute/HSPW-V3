@@ -2,17 +2,20 @@ import React, { useState } from "react";
 import {
   FaFolder,
   FaFile,
-  FaExternalLinkAlt,
   FaTrash,
   FaShareAlt,
   FaDownload,
+  FaLink,
 } from "react-icons/fa";
+import { RiFolderSharedFill } from "react-icons/ri";
 import Swal from "sweetalert2";
 import {
   Box,
+  Button,
   FormControl,
   IconButton,
   InputLabel,
+  Link,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -325,6 +328,35 @@ const S3FileList: React.FC<S3FileListProps> = ({
 
   const { sortedFolders, sortedFiles, sortedShortcuts } = sortFilesAndFolders();
 
+  const handleSubmissionLink = async (fileKey: string) => {
+    try {
+      const presignedUrl = await axios
+        .get(`${process.env.REACT_APP_API_ENDPOINT}/api/getJSONFile`, {
+          params: {
+            s3Key: fileKey,
+          },
+        })
+        .then((res) => res.data.url);
+
+      const fileResponse = await fetch(presignedUrl);
+      const { link } = await fileResponse.json();
+
+      Swal.fire({
+        icon: "question",
+        title: "Navigate to results page?",
+        text: "Are you sure you want to leave the page?",
+        showCancelButton: true,
+      }).then((res) => {
+        if (res.isConfirmed) {
+          window.open(link, "_self");
+        }
+      });
+    } catch (err) {
+      console.error("Download error:", err);
+      Swal.fire("Error", "Download failed.", "error");
+    }
+  };
+
   return (
     <>
       {/* Top toolbar with search + sort controls */}
@@ -454,55 +486,81 @@ const S3FileList: React.FC<S3FileListProps> = ({
                   !file.Key.split("/").pop()?.startsWith(".") &&
                   file.Key.toLowerCase().includes(searchQuery.toLowerCase())
               )
-              .map((file) => (
-                <TableRow
-                  key={file.Key}
-                  hover
-                >
-                  <TableCell align="center">
-                    <FaFile
-                      size={20}
-                      color="#6b7280"
-                    />
-                  </TableCell>
-                  <TableCell>{file.Key.split("/").slice(-1)[0]}</TableCell>
-                  <TableCell>
-                    {new Date(file.LastModified).toLocaleString()}
-                  </TableCell>
-                  <TableCell>{formatBytes(file.Size)}</TableCell>
-                  <TableCell>
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      gap={1}
-                    >
-                      <Tooltip title="Download File">
-                        <IconButton
-                          size="small"
-                          color="primary"
-                          onClick={() => handleDownload(file.Key)}
+              .map((file) => {
+                const fileName = file.Key.split("/").slice(-1)[0];
+
+                return (
+                  <TableRow
+                    key={file.Key}
+                    hover
+                  >
+                    <TableCell align="center">
+                      {fileName === "Submission.html" ? (
+                        <FaLink
+                          size={20}
+                          color="#6b7280"
+                        />
+                      ) : (
+                        <FaFile
+                          size={20}
+                          color="#6b7280"
+                        />
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {fileName === "Submission.html" ? (
+                        <Link
+                          sx={{
+                            "&:hover": {
+                              cursor: "pointer",
+                            },
+                          }}
+                          onClick={(e) => handleSubmissionLink(file.Key)}
                         >
-                          <FaDownload />
-                        </IconButton>
-                      </Tooltip>
-                      <FileDelete
-                        fileKey={file.Key}
-                        onDeleteSuccess={onDeleteSuccess}
-                        user={user}
+                          {fileName}
+                        </Link>
+                      ) : (
+                        fileName
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(file.LastModified).toLocaleString()}
+                    </TableCell>
+                    <TableCell>{formatBytes(file.Size)}</TableCell>
+                    <TableCell>
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        gap={1}
                       >
-                        <Tooltip title="Delete File">
+                        <Tooltip title="Download File">
                           <IconButton
                             size="small"
-                            color="error"
+                            color="primary"
+                            onClick={() => handleDownload(file.Key)}
                           >
-                            <FaTrash />
+                            <FaDownload />
                           </IconButton>
                         </Tooltip>
-                      </FileDelete>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              ))}
+                        <FileDelete
+                          fileKey={file.Key}
+                          onDeleteSuccess={onDeleteSuccess}
+                          user={user}
+                        >
+                          <Tooltip title="Delete File">
+                            <IconButton
+                              size="small"
+                              color="error"
+                            >
+                              <FaTrash />
+                            </IconButton>
+                          </Tooltip>
+                        </FileDelete>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             {sortedShortcuts.length > 0 &&
               sortedShortcuts.map((shortcut) => (
                 <TableRow
@@ -510,9 +568,9 @@ const S3FileList: React.FC<S3FileListProps> = ({
                   hover
                 >
                   <TableCell align="center">
-                    <FaExternalLinkAlt
+                    <RiFolderSharedFill
                       size={20}
-                      color="#8b5cf6"
+                      color="#2b6fb5"
                     />
                   </TableCell>
                   <TableCell
