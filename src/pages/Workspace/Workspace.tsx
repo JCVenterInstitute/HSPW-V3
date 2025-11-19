@@ -10,9 +10,9 @@ import {
 } from "@mui/material";
 import axios from "axios";
 
-import S3FileList from "./S3FileList.tsx";
-import FileUpload from "./FileUpload.tsx";
-import FolderCreate from "./FolderCreate.tsx";
+import S3FileList from "../../components/Workspace/S3FileList.tsx";
+import FileUpload from "../../components/Workspace/FileUpload.tsx";
+import FolderCreate from "../../components/Workspace/FolderCreate.tsx";
 import { AuthContext } from "../../services/AuthContext.js";
 import PageHeader from "../../components/Layout/PageHeader.js";
 

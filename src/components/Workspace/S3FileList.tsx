@@ -114,8 +114,6 @@ const S3FileList: React.FC<S3FileListProps> = ({
   const handleShareFolder = async (folderKey: string) => {
     let currentPermissions: Record<string, any> = {};
 
-    console.log("Sharing folder:", folderKey, user);
-
     // Fetch existing permissions for this file
     try {
       currentPermissions = await axios
@@ -126,8 +124,6 @@ const S3FileList: React.FC<S3FileListProps> = ({
     } catch (err) {
       console.error("Error fetching permissions:", err);
     }
-
-    console.log("Current permissions:", currentPermissions);
 
     // Show modal to manage permissions
     await Swal.fire({
@@ -413,6 +409,79 @@ const S3FileList: React.FC<S3FileListProps> = ({
             </TableRow>
           </TableHead>
           <TableBody>
+            {sortedFiles
+              .filter(
+                (file) =>
+                  !file.Key.split("/").pop()?.startsWith(".") &&
+                  file.Key.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+              .map((file) => {
+                const fileName = file.Key.split("/").slice(-1)[0];
+
+                if (fileName !== "Submission.html") {
+                  return null;
+                }
+                return (
+                  <TableRow
+                    key={file.Key}
+                    hover
+                  >
+                    <TableCell align="center">
+                      <FaLink
+                        size={20}
+                        color="#6b7280"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Link
+                        sx={{
+                          "&:hover": {
+                            cursor: "pointer",
+                          },
+                        }}
+                        onClick={(e) => handleSubmissionLink(file.Key)}
+                      >
+                        {fileName}
+                      </Link>
+                    </TableCell>
+                    <TableCell>
+                      {new Date(file.LastModified).toLocaleString()}
+                    </TableCell>
+                    <TableCell>{formatBytes(file.Size)}</TableCell>
+                    <TableCell>
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        gap={1}
+                      >
+                        <Tooltip title="Download File">
+                          <IconButton
+                            size="small"
+                            color="primary"
+                            onClick={() => handleDownload(file.Key)}
+                          >
+                            <FaDownload />
+                          </IconButton>
+                        </Tooltip>
+                        <FileDelete
+                          fileKey={file.Key}
+                          onDeleteSuccess={onDeleteSuccess}
+                          user={user}
+                        >
+                          <Tooltip title="Delete File">
+                            <IconButton
+                              size="small"
+                              color="error"
+                            >
+                              <FaTrash />
+                            </IconButton>
+                          </Tooltip>
+                        </FileDelete>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             {sortedFolders
               .filter((folder) =>
                 folder.Prefix.toLowerCase().includes(searchQuery.toLowerCase())
@@ -487,42 +556,18 @@ const S3FileList: React.FC<S3FileListProps> = ({
                   file.Key.toLowerCase().includes(searchQuery.toLowerCase())
               )
               .map((file) => {
-                const fileName = file.Key.split("/").slice(-1)[0];
-
                 return (
                   <TableRow
                     key={file.Key}
                     hover
                   >
                     <TableCell align="center">
-                      {fileName === "Submission.html" ? (
-                        <FaLink
-                          size={20}
-                          color="#6b7280"
-                        />
-                      ) : (
-                        <FaFile
-                          size={20}
-                          color="#6b7280"
-                        />
-                      )}
+                      <FaFile
+                        size={20}
+                        color="#6b7280"
+                      />
                     </TableCell>
-                    <TableCell>
-                      {fileName === "Submission.html" ? (
-                        <Link
-                          sx={{
-                            "&:hover": {
-                              cursor: "pointer",
-                            },
-                          }}
-                          onClick={(e) => handleSubmissionLink(file.Key)}
-                        >
-                          {fileName}
-                        </Link>
-                      ) : (
-                        fileName
-                      )}
-                    </TableCell>
+                    <TableCell>fileName</TableCell>
                     <TableCell>
                       {new Date(file.LastModified).toLocaleString()}
                     </TableCell>
