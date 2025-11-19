@@ -17,8 +17,8 @@ const handleSubmissionLink = async (fileKey: string) => {
       })
       .then((res) => res.data.url);
 
-    const fileResponse = await fetch(presignedUrl);
-    const { link } = await fileResponse.json();
+    const fileResponse = await axios.get(presignedUrl);
+    const { link } = await fileResponse.data;
 
     Swal.fire({
       icon: "question",

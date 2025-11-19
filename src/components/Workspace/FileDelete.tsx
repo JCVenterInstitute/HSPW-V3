@@ -59,18 +59,16 @@ const FileDelete: React.FC<FileDeleteProps> = ({
     }
   };
 
-  // Wraps any child component making them trigger handle delete on click
   return (
-    <span onClick={handleDelete}>
-      <Tooltip title="Delete File">
-        <IconButton
-          size="small"
-          color="error"
-        >
-          <FaTrash />
-        </IconButton>
-      </Tooltip>
-    </span>
+    <Tooltip title="Delete File">
+      <IconButton
+        size="small"
+        color="error"
+        onClick={handleDelete}
+      >
+        <FaTrash />
+      </IconButton>
+    </Tooltip>
   );
 };
 

@@ -27,9 +27,9 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
+import axios from "axios";
 
 import FileDelete from "./FileDelete.tsx"; // Import the FileDelete component
-import axios from "axios";
 import {
   formatBytes,
   handleDownload,
@@ -55,6 +55,7 @@ interface Shortcut {
   name: string | null; // Display name of the shortcut
   lastModified: string; // Last modification date
 }
+
 interface S3FileListProps {
   files: File[]; // Files to display
   folders: Folder[]; //Folders to display
@@ -227,22 +228,20 @@ const S3FileList: React.FC<S3FileListProps> = ({
         const currentDate = new Date();
 
         // Submit updated permissions to backend
-        const res = await fetch(
+        await axios.post(
           `${process.env.REACT_APP_API_ENDPOINT}/api/workspace/share-folder`,
           {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              folderKey,
-              user: user,
-              lastModified: currentDate.toLocaleString(),
-              targets: users,
-            }),
+            folderKey,
+            user,
+            lastModified: currentDate.toLocaleString(),
+            targets: users,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
         );
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Sharing failed");
 
         Swal.fire("Success", "Folder shared successfully!", "success");
       } catch (err: any) {
@@ -319,6 +318,7 @@ const S3FileList: React.FC<S3FileListProps> = ({
                 if (fileName !== "Submission.html") {
                   return null;
                 }
+
                 return (
                   <TableRow
                     key={file.Key}
@@ -375,60 +375,61 @@ const S3FileList: React.FC<S3FileListProps> = ({
               .filter((folder) =>
                 folder.Prefix.toLowerCase().includes(searchQuery.toLowerCase())
               )
-              .map((folder) => (
-                <TableRow
-                  key={folder.Prefix}
-                  hover
-                >
-                  <TableCell align="center">
-                    <FaFolder
-                      size={20}
-                      color="#3b82f6"
-                    />
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      cursor: "pointer",
-                      "&:hover": {
-                        backgroundColor: "action.hover",
-                      },
-                    }}
-                    onClick={() => onFolderChange(folder.Prefix)}
+              .map((folder) => {
+                const folderName = folder.Prefix.split("/").slice(-2, -1)[0];
+
+                return (
+                  <TableRow
+                    key={folder.Prefix}
+                    hover
                   >
-                    {folder.Prefix.split("/").slice(-2, -1)[0]}
-                  </TableCell>
-                  <TableCell>-</TableCell>
-                  <TableCell>-</TableCell>
-                  <TableCell>
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      gap={1}
-                    >
-                      <Tooltip title="Share Folder">
-                        <IconButton
-                          size="small"
-                          onClick={() => handleShareFolder(folder.Prefix)}
-                          color="success"
-                          disabled={
-                            folder.Prefix.split("/").slice(-2, -1)[0] ===
-                            "Shared Folders"
-                              ? true
-                              : false
-                          }
-                        >
-                          <FaShareAlt />
-                        </IconButton>
-                      </Tooltip>
-                      <FileDelete
-                        fileKey={folder.Prefix}
-                        onDeleteSuccess={onDeleteSuccess}
-                        user={user}
+                    <TableCell align="center">
+                      <FaFolder
+                        size={20}
+                        color="#3b82f6"
                       />
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        cursor: "pointer",
+                        "&:hover": {
+                          backgroundColor: "action.hover",
+                        },
+                      }}
+                      onClick={() => onFolderChange(folder.Prefix)}
+                    >
+                      {folderName}
+                    </TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        gap={1}
+                      >
+                        <Tooltip title="Share Folder">
+                          <IconButton
+                            size="small"
+                            onClick={() => handleShareFolder(folder.Prefix)}
+                            color="success"
+                            disabled={
+                              folderName === "Shared Folders" ? true : false
+                            }
+                          >
+                            <FaShareAlt />
+                          </IconButton>
+                        </Tooltip>
+                        <FileDelete
+                          fileKey={folder.Prefix}
+                          onDeleteSuccess={onDeleteSuccess}
+                          user={user}
+                        />
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             {sortedFiles
               .filter(
                 (file) =>
