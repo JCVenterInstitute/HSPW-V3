@@ -439,6 +439,10 @@ const S3FileList: React.FC<S3FileListProps> = ({
               .map((file) => {
                 const fileName = file.Key.split("/").slice(-1)[0];
 
+                if (fileName === "Submission.html") {
+                  return null;
+                }
+
                 return (
                   <TableRow
                     key={file.Key}

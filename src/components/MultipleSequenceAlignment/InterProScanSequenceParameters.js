@@ -416,10 +416,6 @@ const InterProScanSequenceParameters = ({ url }) => {
             >
               STEP 3 - Submit your job
             </legend>
-            <Typography sx={{ mt: 1, mb: 2, color: "black" }}>
-              If you want to be notified by email when the results are
-              available, enter the email and title below:
-            </Typography>
             <Typography sx={{ fontWeight: "bold", ml: 1, color: "black" }}>
               Title:
             </Typography>
