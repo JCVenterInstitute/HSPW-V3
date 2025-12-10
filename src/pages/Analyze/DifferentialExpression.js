@@ -347,6 +347,14 @@ const DifferentialExpression = () => {
       cellClass: ["differential-expression-cell"],
     },
     {
+      headerName: "Sample Number",
+      field: "experiment_sample_number",
+      wrapText: true,
+      minWidth: 150,
+      headerClass: ["header-border", "differential-expression-header"],
+      cellClass: ["differential-expression-cell"],
+    },
+    {
       headerName: "Tissue Type",
       field: "sample_type",
       wrapText: true,
