@@ -42,10 +42,6 @@ exports.getPermissions = async (
   mode = "read",
   raw = false
 ) => {
-  console.log(
-    `> Fetching Permissions for user ${userName} on folder ${folderName} in ${mode} mode...`
-  );
-
   try {
     const params = {
       Bucket: process.env.DIFFERENTIAL_S3_BUCKET,
@@ -76,7 +72,7 @@ exports.getPermissions = async (
     return permissions?.[userName]?.[mode] === true;
   } catch (error) {
     console.error("> Error fetching permissions from S3:", error);
-    throw error;
+    throw new Error("Unauthorized access to folder");
   }
 };
 

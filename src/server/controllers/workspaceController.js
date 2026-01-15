@@ -14,6 +14,8 @@ const listFiles = async (req, res) => {
   try {
     const { prefix, user } = req.query;
 
+    console.log("> List Files: %o", req.query);
+
     // Trim the given prefix of trailing '/'
     const trimmedPrefix = prefix.replace(/\/$/, "");
 
@@ -54,6 +56,8 @@ const listFiles = async (req, res) => {
 const fetchPermissions = async (req, res) => {
   // Get the folder prefix and the user's name from query
   const { folderKey, user } = req.query;
+
+  console.log("> Fetch Permissions: %o", req.query);
 
   try {
     // Uses the getPermissions helper function with raw=true to return all data when possible
@@ -151,16 +155,24 @@ const shareFolder = async (req, res) => {
 
   try {
     // Gets and stores data within the .permissions within the current folder
-    let currentPermissions = await getPermissions(
-      folderKey.replace(/\/$/, ""),
-      user,
-      null,
-      true
-    );
+    let currentPermissions;
 
-    const userIsFolderOwner = currentPermissions._meta?.owner !== user;
+    try {
+      currentPermissions = await getPermissions(
+        folderKey.replace(/\/$/, ""),
+        user,
+        null,
+        true
+      );
+    } catch (err) {
+      currentPermissions = {
+        _meta: { owner: user }, // folder has no permissions file, so user must be owner
+      };
+    }
 
-    if (userIsFolderOwner) {
+    const userIsNotFolderOwner = currentPermissions._meta?.owner !== user;
+
+    if (userIsNotFolderOwner) {
       return res
         .status(403)
         .json({ error: "Only the owner may share this folder" });

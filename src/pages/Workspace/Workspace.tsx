@@ -42,8 +42,15 @@ const WorkSpace: React.FC = () => {
 
       setFiles(response); // Update state with fetched data
     } catch (error: any) {
-      console.error("Error fetching files:", error.message);
-      Swal.fire("Error", error.message, "error");
+      console.error("> Error fetching files:", error.message);
+
+      Swal.fire(
+        "Error",
+        error.status === 403
+          ? "Access denied. Please ask folder owner for permissions"
+          : error.message,
+        "error"
+      );
       handleGoBack(); // Go back to previous folder on error
     }
   };
@@ -129,7 +136,7 @@ const WorkSpace: React.FC = () => {
         tabTitle={`HSP | Workspace`}
         title={`Workspace`}
         breadcrumb={breadcrumbPath}
-        description={`View and manage your submissions or data files.`}
+        description={`View and manage your submissions or share folders with other users. Note: Files are shared at a single folder level. Individual file sharing is not supported and nested folders have be shared separately.`}
       />
       <Container maxWidth="xl">
         <Box p={4}>

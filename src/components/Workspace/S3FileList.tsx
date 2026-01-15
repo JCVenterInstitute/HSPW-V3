@@ -245,8 +245,15 @@ const S3FileList: React.FC<S3FileListProps> = ({
 
         Swal.fire("Success", "Folder shared successfully!", "success");
       } catch (err: any) {
-        console.error(err);
-        Swal.fire("Error", err?.message || "Failed to share folder", "error");
+        console.error("> Share folder error: ", err);
+
+        Swal.fire(
+          "Error",
+          err.status === 403
+            ? "Access denied. Only folder owner can update permissions"
+            : err?.message || "Failed to share folder",
+          "error"
+        );
       }
     });
   };
