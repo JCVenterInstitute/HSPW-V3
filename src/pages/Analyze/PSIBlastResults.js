@@ -61,7 +61,7 @@ const PsiBlastResults = () => {
     const submission = await axios.get(
       `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
     );
-    if (submission.data.status == "Complete") {
+    if (submission.data.status === "Complete") {
       console.log("Submission already complete");
       setIsFinished(true);
     } else {
@@ -108,7 +108,6 @@ const PsiBlastResults = () => {
     const submission = await axios.get(
       `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${jobId}`
     );
-    console.log(submission);
     let username = submission.data.username;
     let date = submission.data.submission_date.split("T")[0];
 
@@ -129,7 +128,7 @@ const PsiBlastResults = () => {
       outputDetail,
       submissionDetail = null;
 
-    if (fileResponse.statusText == "OK") {
+    if (fileResponse.statusText === "OK") {
       const fileData = await fileResponse.json();
       inputSequence = fileData.inputSequence;
       toolOutput = fileData.toolOutput;
@@ -139,7 +138,6 @@ const PsiBlastResults = () => {
       visualPngOutput = fileData.visualPngOutput;
       outputDetail = fileData.outputDetail;
       submissionDetail = fileData.submissionDetail;
-      console.log("AWS download complete");
     } else {
       const fetchResults = (jobId, type) => {
         return axios.get(
@@ -177,10 +175,22 @@ const PsiBlastResults = () => {
         submissionDetail: submissionDetail,
       };
 
-      awsJsonUpload(
-        `users/${username}/proteinSimilaritySearch/${date}/${jobId}/ebi_data.json`,
-        ebi_data
-      );
+      const baseKey = `users/${username}/Protein Similarity Search/${date}/${jobId}`;
+      const uploads = [
+        { key: `${baseKey}/ebi_data.json`, data: ebi_data },
+        {
+          key: `${baseKey}/Submission.html`,
+          data: { link: window.location.href },
+        },
+        {
+          key: `${baseKey}/.permissions`,
+          data: { _meta: { owner: username } },
+        },
+      ];
+
+      for (const { key, data } of uploads) {
+        awsJsonUpload(key, data);
+      }
     }
 
     const submissionDetailJson = new XMLParser().parseFromString(

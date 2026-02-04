@@ -91,6 +91,10 @@ export const NavBar = () => {
                         label: "Submissions",
                       },
                       {
+                        link: "/workspace",
+                        label: "Workspace",
+                      },
+                      {
                         link: "/",
                         label: "Log Out",
                         onClick: handleLogout,

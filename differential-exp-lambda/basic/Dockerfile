@@ -20,7 +20,8 @@ RUN pip install \
     --target ${FUNCTION_DIR} \
         awslambdaric \
         requests \
-        boto3
+        boto3 \
+        cryptography
 
 FROM jsychong/metaboanalyst:version3
 

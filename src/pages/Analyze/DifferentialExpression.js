@@ -326,7 +326,7 @@ const DifferentialExpression = () => {
 
   const columns = [
     {
-      headerName: "Sample ID",
+      headerName: "HSP Id",
       field: "experiment_id_key",
       wrapText: true,
       minWidth: 200,
@@ -343,6 +343,14 @@ const DifferentialExpression = () => {
       field: "experiment_title",
       wrapText: true,
       minWidth: 300,
+      headerClass: ["header-border", "differential-expression-header"],
+      cellClass: ["differential-expression-cell"],
+    },
+    {
+      headerName: "Sample Identifier",
+      field: "experiment_sample_number",
+      wrapText: true,
+      minWidth: 150,
       headerClass: ["header-border", "differential-expression-header"],
       cellClass: ["differential-expression-cell"],
     },

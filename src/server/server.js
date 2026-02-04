@@ -5,6 +5,7 @@ const { Client } = require("@opensearch-project/opensearch");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const createAwsOpensearchConnector = require("aws-opensearch-connector");
 const path = require("path");
+const fernet = require("fernet");
 
 const { processGroupData } = require("./utils/processGroupData");
 const { processFile } = require("./utils/processFile");
@@ -24,6 +25,7 @@ const geneRouter = require("./routes/geneRouter");
 const proteinSignatureRouter = require("./routes/proteinSignatureRouter");
 const studyRouter = require("./routes/studyRouter");
 const submissionRouter = require("./routes/submissionRouter");
+const workspaceRouter = require("./routes/workspaceRouter");
 
 const app = express();
 
@@ -42,6 +44,7 @@ app.use("/api/genes", geneRouter);
 app.use("/api/protein-signature", proteinSignatureRouter);
 app.use("/api/study", studyRouter);
 app.use("/api/submissions", submissionRouter);
+app.use("/api/workspace", workspaceRouter);
 
 const host = process.env.OS_HOSTNAME;
 
@@ -104,7 +107,7 @@ app.post("/api/proteins/:size/:from/", (req, res) => {
  ******************************/
 
 async function getCount() {
-  var client = await getClient();
+  const client = await getClient();
 
   const response = await client.search({
     index: process.env.INDEX_SALIVARY_SUMMARY, // Replace with your index name
@@ -264,9 +267,9 @@ app.get("/api/getChordPlotCount", (req, res) => {
 
 const searchGoNodesType = async (type) => {
   // Initialize the client.
-  var client = await getClient();
+  const client = await getClient();
 
-  var query = {
+  const query = {
     size: 10000,
     query: {
       query_string: {
@@ -292,9 +295,9 @@ app.get("/api/go-nodes-type/:type", (req, res) => {
 
 const searchGoNodes = async (id) => {
   // Initialize the client.
-  var client = await getClient();
+  const client = await getClient();
 
-  var query = {
+  const query = {
     size: 10000,
     query: {
       query_string: {
@@ -319,9 +322,9 @@ app.get("/api/go-nodes/:id", (req, res) => {
 });
 
 const searchGoEdges = async (id) => {
-  var client = await getClient();
+  const client = await getClient();
 
-  var query = {
+  const query = {
     size: 10000,
     query: {
       query_string: {
@@ -348,9 +351,9 @@ app.get("/api/go-edges/:id", (req, res) => {
 
 const searchGoNodesUsage = async (id) => {
   // Initialize the client.
-  var client = await getClient();
+  const client = await getClient();
 
-  var query = {
+  const query = {
     size: 10000,
     _source: ["id"],
     query: {
@@ -380,7 +383,7 @@ app.get("/api/go-nodes-usage/:id", (req, res) => {
  *********************************/
 
 async function getProteinSignatureTypeCounts() {
-  var client = await getClient();
+  const client = await getClient();
 
   const response = await client.search({
     index: process.env.INDEX_PROTEIN_SIGNATURE,
@@ -408,352 +411,34 @@ app.get("/api/signature-type-counts/", (req, res) => {
  *************************/
 
 async function getGeneLocationCounts() {
-  var client = await getClient();
+  const client = await getClient();
+
+  // Build chromosome list: numeric 1..22 and X,Y
+  const chromosomes = Array.from({ length: 22 }, (_, i) =>
+    String(i + 1)
+  ).concat(["X", "Y"]);
+
+  // Create aggregations programmatically to avoid repetition
+  const aggs = chromosomes.reduce((acc, chr) => {
+    const pattern = /^[0-9]+$/.test(chr)
+      ? `${chr}[qp].*`
+      : `${chr.toLowerCase()}[pq].*`;
+    acc[chr] = {
+      filter: { regexp: { Location: pattern } },
+      aggs: {
+        doc_count: {
+          value_count: { field: "_id" },
+        },
+      },
+    };
+    return acc;
+  }, {});
 
   const response = await client.search({
     index: process.env.INDEX_GENE,
-    body: {
-      size: 0,
-      aggs: {
-        1: {
-          filter: {
-            regexp: {
-              Location: "1[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        2: {
-          filter: {
-            regexp: {
-              Location: "2[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        3: {
-          filter: {
-            regexp: {
-              Location: "3[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        4: {
-          filter: {
-            regexp: {
-              Location: "4[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        5: {
-          filter: {
-            regexp: {
-              Location: "5[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        6: {
-          filter: {
-            regexp: {
-              Location: "6[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        7: {
-          filter: {
-            regexp: {
-              Location: "7[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        8: {
-          filter: {
-            regexp: {
-              Location: "8[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        9: {
-          filter: {
-            regexp: {
-              Location: "9[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        10: {
-          filter: {
-            regexp: {
-              Location: "10[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        11: {
-          filter: {
-            regexp: {
-              Location: "11[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        12: {
-          filter: {
-            regexp: {
-              Location: "12[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        13: {
-          filter: {
-            regexp: {
-              Location: "13[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        14: {
-          filter: {
-            regexp: {
-              Location: "14[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        15: {
-          filter: {
-            regexp: {
-              Location: "15[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        16: {
-          filter: {
-            regexp: {
-              Location: "16[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        17: {
-          filter: {
-            regexp: {
-              Location: "17[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        18: {
-          filter: {
-            regexp: {
-              Location: "18[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        19: {
-          filter: {
-            regexp: {
-              Location: "19[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        20: {
-          filter: {
-            regexp: {
-              Location: "20[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        21: {
-          filter: {
-            regexp: {
-              Location: "21[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        22: {
-          filter: {
-            regexp: {
-              Location: "22[qp].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        X: {
-          filter: {
-            regexp: {
-              Location: "x[pq].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-        Y: {
-          filter: {
-            regexp: {
-              Location: "y[pq].*",
-            },
-          },
-          aggs: {
-            doc_count: {
-              value_count: {
-                field: "_id",
-              },
-            },
-          },
-        },
-      },
-    },
+    body: { size: 0, aggs },
   });
+
   return response.body.aggregations;
 }
 
@@ -796,14 +481,20 @@ app.post("/api/differential-expression/analyze", async (req, res) => {
 
     if (inputData) {
       // Processing user provided file
-      inputFile = await processFile(inputData, timestamp, formattedDate);
+      inputFile = await processFile(
+        inputData,
+        timestamp,
+        formattedDate,
+        username
+      );
     } else {
       // Processing data from HSP
       inputFile = await processGroupData(
         req.body,
         timestamp,
         formattedDate,
-        groupNames
+        groupNames,
+        username
       );
     }
 
@@ -880,6 +571,51 @@ app.post(
   }
 );
 
+app.post("/api/decrypt", async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) return res.status(400).json({ error: "Missing token" });
+
+    console.log("> Received token:", token);
+
+    // Token was URL-encoded when created in lambda
+    const tokenStr = decodeURIComponent(token);
+    const secretKey = await getSSMParameter(process.env.SECRET_PARAM);
+
+    if (!secretKey) {
+      console.error("> No secret key found in SSM");
+      return res.status(500).json({ error: "Encryption key not configured" });
+    }
+
+    const secret = new fernet.Secret(secretKey);
+
+    const ftoken = new fernet.Token({
+      secret: secret,
+      token: tokenStr,
+      ttl: 0,
+    });
+
+    let plaintext;
+
+    try {
+      plaintext = ftoken.decode(); // plaintext JSON string
+    } catch (err) {
+      console.error("> Failed to decode token:", err);
+      return res.status(400).json({ error: "Invalid or expired token" });
+    }
+
+    const data = JSON.parse(plaintext);
+
+    console.log("> Decrypted data:", data);
+
+    return res.json({ data });
+  } catch (err) {
+    console.error("Error in /api/decrypt:", err);
+    return res.status(500).json({ error: "Server error decrypting token" });
+  }
+});
+
 /*********************
  * Misc Util Endpoints
  *********************/
@@ -906,22 +642,16 @@ app.get("/api/download-data-standard", async (req, res) => {
   res.send({ url: presignedUrl });
 });
 
-app.get("/api/go-kegg-check/:jobId/:fileName", async (req, res) => {
-  const jobId = req.params.jobId;
-  const fileName = req.params.fileName;
+app.get("/api/go-kegg-check", async (req, res) => {
+  const { jobId } = req.query;
 
-  const datePart = jobId.split("-")[2];
-  const year = datePart.substring(0, 4);
-  const month = datePart.substring(4, 6);
-  const day = datePart.substring(6, 8);
-  const s3Key = `jobs/${year}-${month}-${day}/${jobId}/${fileName}`;
+  const s3Key = `${jobId}/gsemf.tsv`;
 
   const fileExists = await checkFileExists(
     process.env.DIFFERENTIAL_S3_BUCKET,
     s3Key
   );
 
-  console.log("> File Exists", fileExists);
   return res.send({ exists: fileExists });
 });
 
@@ -964,27 +694,23 @@ app.post("/api/s3JSONUpload", async (req, res) => {
   }
 });
 
-app.get("/api/s3Download/:jobId/:fileName", async (req, res) => {
-  const jobId = req.params.jobId;
-  const fileName = req.params.fileName;
-  console.log("> Processing jobId: ", jobId);
-  console.log("> Getting file: ", fileName);
-
-  const datePart = jobId.split("-")[2];
-
-  // Split the date part into year, month, and day
-  const year = datePart.substring(0, 4);
-  const month = datePart.substring(4, 6);
-  const day = datePart.substring(6, 8);
-
-  // S3 download parameters
-  const params = {
-    bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
-    s3Key: `jobs/${year}-${month}-${day}/${jobId}/${fileName}`,
-  };
-
+app.get("/api/s3Download", async (req, res) => {
   try {
+    const { s3Path, fileName } = req.query;
+
+    if (!s3Path || !fileName) {
+      return res
+        .status(400)
+        .json({ error: "Missing s3Path or fileName parameter." });
+    }
+
+    const params = {
+      bucketName: `${process.env.DIFFERENTIAL_S3_BUCKET}`,
+      s3Key: `${s3Path}/${fileName}`,
+    };
+
     const presignedUrl = await s3Download(params);
+
     res.send({ url: presignedUrl }); // Send the presigned URL to the client
   } catch (error) {
     console.log(error);
@@ -1473,7 +1199,7 @@ app.post("/api/experiment-protein/:uniprotid", async (req, res) => {
  *********************************/
 
 const getAbundanceData = async (proteinId) => {
-  var client = await getClient();
+  const client = await getClient();
 
   const response = await client.search({
     index: process.env.INDEX_STUDY_PEPTIDE_ABUNDANCE,
@@ -1508,101 +1234,43 @@ app.get("/api/abundance-score/:id", (req, res) => {
  * Get Max of Whole Saliva, Parotid Glands, SM/SL Glands, Blood, and mRNA
  *********************************/
 
+/**
+ * Retrieve max and sum aggregations for a set of salivary-related fields.
+ * The aggregation object is built programmatically from a short list of fields
+ * to avoid repetitive boilerplate and make the function easier to extend.
+ */
 const getSalivaryMaxAndSum = async () => {
-  var client = await getClient();
+  const client = await getClient();
+
+  // Fields to aggregate on. Keys may contain characters (like '/') so we
+  // generate safe aggregation names by replacing non-word characters with '_'.
+  const fields = [
+    "sm/sl_abundance",
+    "plasma_abundance",
+    "mRNA",
+    "saliva_abundance",
+    "parotid_gland_abundance",
+    "SM",
+    "SL",
+    "PAR",
+  ];
+
+  const aggs = fields.reduce((acc, field) => {
+    const safeName = field.replace(/[^A-Za-z0-9_]/g, "_");
+    acc[`${safeName}_max`] = { max: { field } };
+    acc[`${safeName}_sum`] = { sum: { field } };
+    return acc;
+  }, {});
 
   const response = await client.search({
     index: process.env.INDEX_SALIVARY_SUMMARY,
     body: {
       size: 0,
-      aggs: {
-        sm_sl_abundance_max: {
-          max: {
-            field: "sm/sl_abundance",
-          },
-        },
-        sm_sl_abundance_sum: {
-          sum: {
-            field: "sm/sl_abundance",
-          },
-        },
-        plasma_abundance_max: {
-          max: {
-            field: "plasma_abundance",
-          },
-        },
-        plasma_abundance_sum: {
-          sum: {
-            field: "plasma_abundance",
-          },
-        },
-        mRNA_max: {
-          max: {
-            field: "mRNA",
-          },
-        },
-        mRNA_sum: {
-          sum: {
-            field: "mRNA",
-          },
-        },
-        saliva_abundance_max: {
-          max: {
-            field: "saliva_abundance",
-          },
-        },
-        saliva_abundance_sum: {
-          sum: {
-            field: "saliva_abundance",
-          },
-        },
-        parotid_gland_abundance_max: {
-          max: {
-            field: "parotid_gland_abundance",
-          },
-        },
-        parotid_gland_abundance_sum: {
-          sum: {
-            field: "parotid_gland_abundance",
-          },
-        },
-        SM_max: {
-          max: {
-            field: "SM",
-          },
-        },
-        SM_sum: {
-          sum: {
-            field: "SM",
-          },
-        },
-        SL_max: {
-          max: {
-            field: "SL",
-          },
-        },
-        SL_sum: {
-          sum: {
-            field: "SL",
-          },
-        },
-        PAR_max: {
-          max: {
-            field: "PAR",
-          },
-        },
-        PAR_sum: {
-          sum: {
-            field: "PAR",
-          },
-        },
-      },
+      aggs,
     },
   });
 
-  const aggsResults = response.body.aggregations;
-
-  return aggsResults;
+  return response.body.aggregations;
 };
 
 app.get("/api/get-salivary-max-and-sum", (req, res) => {

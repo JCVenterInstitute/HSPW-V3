@@ -7,9 +7,12 @@ const { SSMClient, GetParameterCommand } = require("@aws-sdk/client-ssm");
  */
 exports.getSSMParameter = async (paramName) => {
   console.log(`> Fetching SSM Parameter:`, paramName);
+
   let paramValue;
 
-  const client = new SSMClient();
+  const client = new SSMClient({
+    region: process.env.AWS_REGION ?? "us-east-2",
+  });
 
   const command = new GetParameterCommand({
     Name: paramName,

@@ -251,6 +251,12 @@ const MobileNavBar = () => {
                   >
                     <ListItemText primary="Submissions" />
                   </ListItemButton>
+                  <ListItemButton
+                    component={Link}
+                    to="/workspace"
+                  >
+                    <ListItemText primary="Workspace" />
+                  </ListItemButton>
                   <ListItemButton onClick={handleLogout}>
                     <ListItemText primary="Log Out" />
                   </ListItemButton>

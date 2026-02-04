@@ -37,7 +37,6 @@ const DataTable = ({
       headerTooltip: inputTooltips[header],
       cellStyle: {
         textAlign: "left",
-        width: "200px",
         borderLeftWidth: columnDefs.length === 0 ? "0px" : "1px",
       },
       resizable: true,

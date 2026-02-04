@@ -26,7 +26,7 @@ export const isExpired = (dateString, expirationDays = 7) => {
 };
 
 const Submissions = () => {
-  const { user, _ } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [rowData, setRowData] = useState([]);
   const [pinnedTopRowData, setPinnedTopRowData] = useState([]);
   const username = user ? user.getUsername() : "test-user-local";
@@ -38,31 +38,6 @@ const Submissions = () => {
       )
         .then((response) => response.json())
         .then((data) => {
-          data = data.map((submission) => {
-            // We only store differential expression analysis submission
-            // All other analysis results are stored on ebi for max of 7 days
-            if (
-              submission.type !== "Differential Expression Analysis" &&
-              submission.status === "Complete" &&
-              isExpired(submission.completion_date)
-            ) {
-              // Update submission status to expired
-              axios.put(
-                `${process.env.REACT_APP_API_ENDPOINT}/api/submissions/${submission.id}`,
-                {
-                  status: "Expired",
-                }
-              );
-
-              return {
-                ...submission,
-                status: "Expired",
-              };
-            }
-
-            return submission;
-          });
-
           const pinnedRows = data.filter((row) => row.important);
           const unpinnedRows = data.filter((row) => !row.important);
 
@@ -337,7 +312,8 @@ const Submissions = () => {
       resizable: false,
       cellStyle: { borderRight: "none" },
       cellRenderer: (params) => {
-        const disableLink = params.data.status === "Expired";
+        const disableLink =
+          params.data.status === "Expired" || params.data.status === "Failed";
 
         return (
           <div
@@ -377,9 +353,7 @@ const Submissions = () => {
       <PageHeader
         title={"Submissions"}
         tabTitle={"HSP | Submissions"}
-        description={
-          "View past submissions. All submissions expire after seven (7) days."
-        }
+        description={"View past submissions."}
         breadcrumb={[
           { path: "Home", link: "/" },
           { path: "Account" },

@@ -10,11 +10,12 @@ import {
   FormControl,
   InputLabel,
 } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
 import Swal from "sweetalert2";
 import ReCAPTCHA from "react-google-recaptcha";
+import axios from "axios";
 
 import { formRegex, initialPasswordRequirements } from "./AuthConsts";
 import PasswordField from "@Components/PasswordField";
@@ -26,30 +27,22 @@ const Signup = () => {
   const [formData, setFormData] = useState({
     username: "",
     usernameErr: "",
-
     email: "",
     emailErr: "",
-
     password: "",
     passwordErr: "",
     confirmPassword: "",
     confirmPasswordErr: "",
-
     title: "",
-
     givenName: "",
     givenNameErr: "",
-
     middleInitial: "",
     middleInitialErr: "",
-
     familyName: "",
     familyNameErr: "",
-
     institution: "",
     institutionErr: "",
   });
-
   const [recaptchaToken, setRecaptchaToken] = useState(null);
   const [recaptchaError, setRecaptchaError] = useState("");
 
@@ -59,12 +52,14 @@ const Signup = () => {
 
   const fieldValidation = (field, fieldErr) => {
     let isValid = true;
+
     formRegex[field].forEach((element) => {
       if (!element.regex.test(formData[field])) {
         formDataUpdate(fieldErr, element.errMsg);
         isValid = false;
       }
     });
+
     if (isValid) formDataUpdate(fieldErr, "");
   };
 
@@ -102,6 +97,7 @@ const Signup = () => {
     Object.values(errors).forEach((error) => {
       if (error !== "") isValid = false;
     });
+
     setFormData((prevData) => ({ ...prevData, ...errors }));
 
     return isValid;
@@ -112,7 +108,7 @@ const Signup = () => {
     setRecaptchaError(""); // Clear any previous reCAPTCHA errors
   };
 
-  const handleClick = (e) => {
+  const handleSignup = (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
 
     if (!submitValidation()) {
@@ -145,27 +141,47 @@ const Signup = () => {
       }),
     ];
 
-    const username = formData.username;
-    const password = formData.password;
+    const { username, password } = formData;
 
-    userpool.signUp(username, password, attributeList, null, (err, result) => {
-      if (err) {
-        Swal.fire({
-          title: "Failed to register",
-          text: err.message,
-          icon: "error",
-          confirmButtonColor: "#1464b4",
-        });
-        return;
+    userpool.signUp(
+      username,
+      password,
+      attributeList,
+      null,
+      async (err, result) => {
+        if (err) {
+          Swal.fire({
+            title: "Failed to register",
+            text: err.message,
+            icon: "error",
+            confirmButtonColor: "#1464b4",
+          });
+          return;
+        }
+
+        try {
+          // Initializes user's Shared Folders folder
+          await axios.post(
+            `${process.env.REACT_APP_API_ENDPOINT}/api/workspace/create-folder`,
+            {
+              prefix: `users/${username}/`,
+              folderName: "Shared Folders",
+              user: username,
+            }
+          );
+
+          Swal.fire({
+            title: "User registered successfully",
+            text: "Please check email for verification before logging in.",
+            icon: "success",
+            confirmButtonText: "Go to Login",
+            confirmButtonColor: "#1464b4",
+          }).then(() => navigate("/login"));
+        } catch (error) {
+          console.error("Error creating folder:", error);
+        }
       }
-      Swal.fire({
-        title: "User registered successfully",
-        text: "Please check email for verification before logging in.",
-        icon: "success",
-        confirmButtonText: "Go to Login",
-        confirmButtonColor: "#1464b4",
-      }).then(() => navigate("/login"));
-    });
+    );
   };
 
   return (
@@ -327,7 +343,7 @@ const Signup = () => {
                 color="primary"
                 size="large"
                 fullWidth
-                onClick={handleClick}
+                onClick={handleSignup}
               >
                 Signup
               </Button>

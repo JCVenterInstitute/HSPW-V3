@@ -101,6 +101,12 @@ Resources:
                 Action:
                   - "dynamodb:UpdateItem"
                 Resource: "*"
+              - Sid: SES
+                Effect: "Allow"
+                Action:
+                  - "ses:SendEmail"
+                  - "ses:SendRawEmail"
+                Resource: "*"
 
   AdvanceAnalysis:
     Type: AWS::Serverless::Function
@@ -126,7 +132,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: advance_trigger.handler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       FunctionName: !Sub "Differential-Analysis-Advance-Trigger-${DeployEnv}"
       Description: Trigger Start of Advance Differential Analysis
       Role: !GetAtt HSPDiffExpRole.Arn

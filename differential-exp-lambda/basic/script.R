@@ -61,7 +61,7 @@ mSet<-Ttests.Anal(mSet, T, pvalue, FALSE, TRUE, fdr)
 mSet<-Ttests.Anal(mSet, F, pvalue, FALSE, TRUE, fdr)
 }
 mSet<-PlotTT(mSet, "tt_0_", "png", 150, width=NA)
-mSet<-Volcano.Anal(mSet, FALSE, fc, 0, F, pvalue, TRUE, fdr)
+mSet<-Volcano.Anal(mSet, FALSE, fc, 0, 0.75, F, pvalue, TRUE, fdr)
 mSet<-PlotVolcano(mSet, "volcano_0_",0, "png", 150, width=NA)
 mSet<-PCA.Anal(mSet)
 mSet<-PlotPCA2DScore(mSet, "pca_score2d_0_", "png", 150, width=NA, 1,2,0.95,0,0)

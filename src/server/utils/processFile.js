@@ -1,7 +1,7 @@
 const { getPresignUrl } = require("./s3Upload");
 const axios = require("axios");
 
-exports.processFile = async (inputData, timestamp, formattedDate) => {
+exports.processFile = async (inputData, timestamp, formattedDate, username) => {
   console.log("> Processing File Data");
 
   // Convert csv to tsv
@@ -9,7 +9,7 @@ exports.processFile = async (inputData, timestamp, formattedDate) => {
 
   const { year, month, day } = timestamp;
   const contentType = "text/plain";
-  const s3FileLocation = `jobs/${year}-${month}-${day}/differential-expression-${formattedDate}`;
+  const s3FileLocation = `users/${username}/Differential Expression Analysis/${year}-${month}-${day}/differential-expression-${formattedDate}/input.csv`;
 
   const presignedUrl = await getPresignUrl({
     bucketName: process.env.DIFFERENTIAL_S3_BUCKET,

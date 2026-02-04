@@ -22,23 +22,6 @@ const Cluster_Detail = (props) => {
     { path: params.clusterid },
   ];
 
-  const fetchProteinData = async (memberId) => {
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/study-protein/protein-uniprot/${memberId}`
-      );
-
-      if (!response.ok) {
-        throw new Error(`An error has occurred: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Failed to fetch protein data:", error);
-      return null; // Return null or some error indicator
-    }
-  };
-
   // Fetch all cluster member data
   const fetchClusterMembersData = async (memberIds) => {
     try {

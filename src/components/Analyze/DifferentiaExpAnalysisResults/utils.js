@@ -48,8 +48,8 @@ export const getImageStyle = (selectedItem) => {
  */
 export const fetchDataFile = async (jobId, fileName) => {
   try {
-    let response = await axios.get(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download?s3Path=${jobId}&fileName=${fileName}`
     );
 
     const dataText = await axios.get(response.data.url).then((res) => res.data);
@@ -120,7 +120,7 @@ export const handleDownload = async (jobId, fileName) => {
     if (typeof file === "object") file = file[0];
 
     const res = await axios.get(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${file}`
+      `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download?s3Path=${jobId}&fileName=${fileName}`
     );
     const link = document.createElement("a");
     link.href = res.data.url;
@@ -141,7 +141,7 @@ export const handleDownload = async (jobId, fileName) => {
 export const getFileUrl = async (jobId, fileName) => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
+      `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download?s3Path=${jobId}&fileName=${fileName}`
     );
     return response.data.url;
   } catch (error) {
@@ -152,7 +152,7 @@ export const getFileUrl = async (jobId, fileName) => {
 export const fetchImage = async (jobId, fileName) => {
   try {
     let response = await axios.get(
-      `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download/${jobId}/${fileName}`
+      `${process.env.REACT_APP_API_ENDPOINT}/api/s3Download?s3Path=${jobId}&fileName=${fileName}`
     );
     return response.data.url;
   } catch (error) {

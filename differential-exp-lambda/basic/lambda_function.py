@@ -10,6 +10,8 @@ import json
 import uuid
 from datetime import datetime
 import requests
+from cryptography.fernet import Fernet
+import urllib.parse
 
 
 # Copy all files from src_dir to dest_dir.
@@ -136,25 +138,47 @@ def record_submission(event, submission_id):
     table_name = os.getenv("SUBMISSIONS_TABLE")
     table = dynamodb.Table(table_name)
 
-    submission_path = os.path.basename(event.get("input_file"))
-    log_normalized = event.get("log_normalized")
-    stat_test = event.get("stat_test")
-    p_val = event.get("pValueThreshold")
-    fold_threshold = event.get("foldChangeThreshold")
-    p_raw = event.get("p_raw")
-    heat_map_number = str(event.get("heat_map_number"))
+    # Fetch the secret key from SSM Parameter Store
+    ssm = boto3.client("ssm")
+    secret_key_param = os.getenv("SECRET_PARAM")
+    param = ssm.get_parameter(Name=secret_key_param, WithDecryption=True)
+    secret_key = param["Parameter"]["Value"]
+    secret_key_bytes = secret_key.encode("utf-8")
+    cipher = Fernet(secret_key_bytes)
+
+    data = {
+        "log_normalized": event.get("log_normalized"),
+        "stat_test": event.get("stat_test"),
+        "pValueThreshold": event.get("pValueThreshold"),
+        "foldChangeThreshold": event.get("foldChangeThreshold"),
+        "p_raw": event.get("p_raw"),
+        "heat_map_number": str(event.get("heat_map_number")),
+        "username": event.get("username"),
+        "s3_file_location": os.path.dirname(event.get("input_file")),
+    }
+
+    print(f"> Raw Data", data)
+
+    plaintext = json.dumps(data).encode("utf-8")
+    token_bytes = cipher.encrypt(plaintext)
+    token_str = token_bytes.decode("utf-8")
+    token_for_link = urllib.parse.quote_plus(token_str)
+
+    print(f"> Encrypted (url-encoded): {token_for_link}")
+
+    results_path = f"/differential-expression/results?data={token_for_link}"
 
     submission = {
         "id": submission_id,
         "important": False,
-        "link": f"/differential-expression/results/{submission_path}?logNorm={log_normalized}&heatmap={heat_map_number}&foldChange={fold_threshold}&pValue={p_val}&pType={p_raw}&parametricTest={stat_test}",
+        "link": results_path,
         "status": "Running",
         "submission_date": str(datetime.now()),
         "type": "Differential Expression Analysis",
         "username": event.get("username"),
     }
 
-    print(f"Submission", submission)
+    print(f"> Submission", submission)
 
     # Write the record to the DynamoDB table
     try:
@@ -162,6 +186,30 @@ def record_submission(event, submission_id):
         print("Record inserted successfully!")
     except Exception as e:
         print(f"Error inserting record: {e}")
+
+    return results_path
+
+
+# Update the submission status & completion date after analysis finishes
+def update_submission_status(id, new_status):
+    dynamodb = boto3.resource("dynamodb")
+    table_name = os.environ.get("SUBMISSIONS_TABLE")
+    table = dynamodb.Table(table_name)
+
+    try:
+        response = table.update_item(
+            Key={"id": id},
+            UpdateExpression="SET #s = :new_status, completion_date = :completion_date",
+            ExpressionAttributeNames={"#s": "status"},
+            ExpressionAttributeValues={
+                ":new_status": new_status,
+                ":completion_date": str(datetime.now()),
+            },
+            ReturnValues="UPDATED_NEW",
+        )
+        print("Update succeeded:", response)
+    except Exception as e:
+        print(f"Error updating record: {e}")
 
 
 def main(event):
@@ -179,7 +227,7 @@ def main(event):
         heat_map_number = str(event.get("heat_map_number"))
         file_name = os.path.basename(input_file)
 
-        record_submission(event, submission_id)
+        results_path = record_submission(event, submission_id)
 
         print(f"> Input File: {input_file}")
         print(f"> Log Norm: {log_normalized}")
@@ -273,6 +321,7 @@ def main(event):
         else:
             print(f"> Error running R Script for: {input_file}")
             print(f"> Failed command: {r_command}")
+            update_submission_status(submission_id, "Failed")
             body = f"Input File: {input_file}\nFailed Command: {r_command}"
             support_email = os.environ.get("SUPPORT_EMAIL")
             send_email(support_email, support_email, body)
@@ -332,10 +381,33 @@ def main(event):
         # Create Zip file with the output files
         zip_files("./", files_to_zip, "data_set.zip")
 
+        owner = event.get("username")
+
+        # Create a .permissions file in the results directory so it is uploaded to S3
+        # This is needed for folder permissions management in the workspace
+        try:
+            permissions_obj = {"_meta": {"owner": owner}}
+            permissions_path = os.path.join(target_directory, ".permissions")
+            with open(permissions_path, "w") as pf:
+                pf.write(json.dumps(permissions_obj))
+            print(f"> Created .permissions at {permissions_path} with owner {owner}")
+        except Exception as e:
+            print(f"> Failed to create .permissions file: {e}")
+
+        # Create file that has link to the actual submissions results page
+        try:
+            link_path = os.path.join(target_directory, "Submission.html")
+            submission_link = f"{os.getenv('SITE_BASE_URL')}{results_path}"
+            with open(link_path, "w") as pf:
+                pf.write(json.dumps({"link": submission_link}))
+            print(f"> Created results link file")
+        except Exception as e:
+            print(f"> Failed to create .permissions file: {e}")
+
         # Upload results generated by R Script
         print("> Attempting to upload results to S3")
         directory_name = target_directory
-        subdirectory = f"{input_file}"
+        subdirectory = f"{os.path.dirname(input_file)}"
         upload_files_to_s3(s3_bucket_name, directory_name, subdirectory)
         print("> Successfully uploaded results to S3")
 
@@ -399,6 +471,8 @@ def handler(event, context):
     print("> Received event:", json.dumps(event, indent=2))
 
     if event.get("httpMethod") == "GET":
+        print("> Pinged Basic Analysis API")
+
         return {
             "statusCode": 200,
             "body": json.dumps({"message": "Basic Analysis API Pinged"}),

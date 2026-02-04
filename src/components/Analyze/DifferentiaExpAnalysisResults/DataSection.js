@@ -78,7 +78,7 @@ const DataSection = ({
   const checkGoStatus = async () => {
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/go-kegg-check/${jobId}/gsemf.tsv`
+        `${process.env.REACT_APP_API_ENDPOINT}/api/go-kegg-check/?jobId=${jobId}`
       );
 
       const { exists } = await res.json();
@@ -90,25 +90,6 @@ const DataSection = ({
       console.log(e);
     }
   };
-
-  useEffect(() => {
-    const intervalCall = setInterval(() => {
-      checkGoStatus();
-    }, 30000);
-
-    setIntervalId(intervalCall);
-
-    return () => {
-      // clean up
-      clearInterval(intervalCall);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (goResultsReady) {
-      clearInterval(intervalId);
-    }
-  }, [goResultsReady, intervalId]);
 
   /**
    * Creates a html image from download link
@@ -129,6 +110,7 @@ const DataSection = ({
   const getAllFiles = async () => {
     try {
       const fileDict = {};
+
       const fetchPromises = fileNames.map(async (file) => {
         const data = await fetchDataFile(jobId, file);
         fileDict[file] = data;
@@ -138,9 +120,9 @@ const DataSection = ({
 
       fileDict["inputData"] = {};
 
-      searchParams.forEach((input, header) => {
+      Object.keys(searchParams).forEach((input, header) => {
         switch (header) {
-          case "pType":
+          case "p_raw":
             fileDict["inputData"][header] = input === "Raw" ? "RAW" : "FDR";
             break;
           case "parametricTest":
@@ -189,6 +171,25 @@ const DataSection = ({
     getAllFiles();
   }, []);
 
+  useEffect(() => {
+    const intervalCall = setInterval(() => {
+      checkGoStatus();
+    }, 30000);
+
+    setIntervalId(intervalCall);
+
+    return () => {
+      // clean up
+      clearInterval(intervalCall);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (goResultsReady) {
+      clearInterval(intervalId);
+    }
+  }, [goResultsReady, intervalId]);
+
   const getSection = () => {
     let displayResult = null;
 
@@ -199,8 +200,8 @@ const DataSection = ({
             displayResult = (
               <VolcanoPlot
                 data={allFiles["volcano.csv"].data}
-                pval={searchParams.get("pValue")}
-                foldChange={searchParams.get("foldChange")}
+                pval={searchParams["pValue"]}
+                foldChange={searchParams["foldChange"]}
                 xCol={2}
                 yCol={4}
                 details={["-log10(p)", "log2(FC)"]}
@@ -244,8 +245,7 @@ const DataSection = ({
             displayResult = (
               <StatisticalParametricPlot
                 data={allFiles["all_data.tsv"].data}
-                pval={searchParams.get("pValue")}
-                // TODO: make pval a user input
+                pval={searchParams["pValue"]}
               />
             );
           } else if (tab === "Data Matrix") {
@@ -262,7 +262,7 @@ const DataSection = ({
             displayResult = (
               <FoldChangePlot
                 data={allFiles["all_data.tsv"].data}
-                fc={searchParams.get("foldChange")}
+                fc={searchParams["foldChange"]}
               />
             );
           } else if (tab === "Data Matrix") {

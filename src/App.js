@@ -56,6 +56,7 @@ import ScrollToTop from "@Components/ScrollToTop.js";
 import ApiPage from "./pages/ApiPage.js";
 import ForgotPassword from "./pages/UserAuth/ForgotPassword.js";
 import Submissions from "./pages/Submissions.js";
+import Workspace from "./pages/Workspace/Workspace.tsx";
 
 if (process.env.REACT_APP_DEPLOY_ENV === "PROD")
   ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
@@ -233,7 +234,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/differential-expression/results/:jobId"
+                  path="/differential-expression/results"
                   element={
                     <AuthGuard>
                       <DifferentialExpressionResults />
@@ -301,6 +302,14 @@ function App() {
                   element={
                     <AuthGuard>
                       <Submissions />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/workspace"
+                  element={
+                    <AuthGuard>
+                      <Workspace />
                     </AuthGuard>
                   }
                 />
