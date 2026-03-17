@@ -10,6 +10,7 @@ source("../../function/home/resources/rscripts/metaboanalystr/stats_univariates.
 source("../../function/home/resources/rscripts/metaboanalystr/general_misc_utils.R")
 source("../../function/home/resources/rscripts/metaboanalystr/stats_classification.R")
 
+
 args <- commandArgs(trailingOnly = TRUE)
 log=args[1]
 fc=as.numeric(args[2])
@@ -17,10 +18,39 @@ pvalue=as.numeric(args[3])
 fdr=args[4]
 tst=args[5]
 
+load_inputdata <- function(file_path) {
+	data <- read.table(
+		file_path,
+		sep = "\t",
+		header = TRUE,
+		row.names = 1,
+		check.names = FALSE,
+		quote = "",
+		comment.char = ""
+	)
+
+	if (!("Group" %in% colnames(data))) {
+		stop("Input file must include a Group column after the identifier column.")
+	}
+
+	data
+}
+
+write_metabo_input_csv <- function(data, file_path) {
+	export_data <- data.frame(
+		Identifiers = rownames(data),
+		data,
+		check.names = FALSE,
+		stringsAsFactors = FALSE
+	)
+
+	write.csv(export_data, file_path, row.names = FALSE, quote = TRUE)
+}
+
 set.seed(123)
 mSet<-InitDataObjects("conc", "stat", FALSE)
 
-inputdata<-read.table("inputdata.txt",sep="\t",header=TRUE,row.names=1)
+inputdata<-load_inputdata("inputdata.txt")
 un<-unique(inputdata$Group)
 set1=inputdata[inputdata$Group == un[1],]
 set2=inputdata[inputdata$Group == un[2],]
@@ -42,7 +72,9 @@ venn_out_data<-rbind.fill(cm,s1,s2)
 write.table(venn_out_data,"venn_out_data.txt",sep="\t",row.names = FALSE)
 
 mSet<-InitDataObjects("conc", "stat", FALSE)
-mSet<-Read.TextData(mSet, "inputdata.txt", "rowu", "disc")
+metabo_input_file <- tempfile("inputdata_metabo_", fileext = ".csv")
+write_metabo_input_csv(inputdata, metabo_input_file)
+mSet<-Read.TextData(mSet, metabo_input_file, "rowu", "disc")
 mSet<-SanityCheckData(mSet)
 mSet<-ReplaceMin(mSet)
 mSet<-SanityCheckData(mSet)
