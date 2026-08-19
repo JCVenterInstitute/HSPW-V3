@@ -11,18 +11,16 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
 import axios from "axios";
 import { useParams } from "react-router";
-import ProtvistaUniprot from "protvista-uniprot";
 import "font-awesome/css/font-awesome.min.css";
 import "resize-observer-polyfill";
 import { Link as ReactLink } from "react-router-dom";
 
 import BChart from "@Components/SalivaryProtein/TwoSidedBarChart";
 import CommentTable from "@Components/SalivaryProtein/CommentTable";
+import FeatureMap from "@Components/SalivaryProtein/FeatureMap";
 import GlycanTable from "@Components/SalivaryProtein/GlycanTable";
 import PageHeader from "@Components/Layout/PageHeader";
 import "../../style.css";
-
-window.customElements.define("protvista-uniprot", ProtvistaUniprot);
 
 const th = {
   background: "#f2f2f2",
@@ -622,13 +620,11 @@ const ProteinDetail = (props) => {
           >
             Feature Map
           </h2>
-          <div style={{ overflowX: "auto" }}>
-            <protvista-uniprot
-              accession={
-                data[0]["_source"]["salivary_proteins"]["uniprot_accession"]
-              }
-            ></protvista-uniprot>
-          </div>
+          <FeatureMap
+            accession={
+              data[0]["_source"]["salivary_proteins"]["uniprot_accession"]
+            }
+          />
           <div
             style={{
               height: "3px",
